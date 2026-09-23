@@ -30,5 +30,90 @@
   "NotFound": {
     "title": "Page not found",
     "home": "Back to home"
+  },
+  "Auth": {
+    "loginTitle": "Agency sign in",
+    "loginSubtitle": "Manage your agency page, posts and client messages.",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign in",
+    "noAccount": "No account yet?",
+    "joinLink": "Create your agency page for free",
+    "joinTitle": "Showcase your agency",
+    "joinSubtitle": "A free page for social media agencies and freelancers in Jordan. Businesses browse your work and contact you directly.",
+    "agencyName": "Agency name",
+    "handle": "Username",
+    "handleHint": "Your page link will look like this: sawwiq.jo/a/{handle}",
+    "city": "City",
+    "whatsapp": "WhatsApp number",
+    "consent": "I agree to the terms and privacy policy, and to showing my contact details on my public page.",
+    "joinButton": "Create page",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign in",
+    "logout": "Sign out",
+    "onlyAgencies": "Accounts are for agencies only. Businesses browse without an account.",
+    "errors": {
+      "invalidCredentials": "Wrong email or password.",
+      "rateLimited": "Too many attempts. Try again in a few minutes.",
+      "emailTaken": "This email is already registered.",
+      "handleTaken": "That username is taken. Try another.",
+      "handleInvalid": "Use 3 to 30 lowercase letters, numbers, . or _",
+      "handleReserved": "That username is not available.",
+      "passwordShort": "Password must be at least 8 characters.",
+      "required": "This field is required.",
+      "consentRequired": "You need to agree to continue.",
+      "invalidEmail": "Enter a valid email address.",
+      "invalidPhone": "Enter a valid phone number.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "Cities": {
+    "amman": "Amman",
+    "zarqa": "Zarqa",
+    "irbid": "Irbid",
+    "aqaba": "Aqaba",
+    "salt": "Salt",
+    "madaba": "Madaba",
+    "karak": "Karak",
+    "mafraq": "Mafraq",
+    "jerash": "Jerash",
+    "ajloun": "Ajloun",
+    "tafilah": "Tafilah",
+    "maan": "Ma'an"
+  },
+  "Platforms": {
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "snapchat": "Snapchat",
+    "linkedin": "LinkedIn",
+    "youtube": "YouTube",
+    "google": "Google",
+    "x": "X"
+  },
+  "Industries": {
+    "restaurant_cafe": "Restaurants & cafés",
+    "clinic_health": "Clinics & health",
+    "retail_shop": "Retail shops",
+    "real_estate": "Real estate",
+    "education": "Education",
+    "beauty_fitness": "Beauty & fitness",
+    "ecommerce": "E-commerce",
+    "professional_services": "Professional services",
+    "tourism_hospitality": "Tourism & hospitality",
+    "manufacturing": "Manufacturing",
+    "ngo": "NGOs",
+    "other": "Other"
+  },
+  "TeamSize": {
+    "1": "Freelancer",
+    "2-5": "2–5 people",
+    "6-15": "6–15 people",
+    "16-40": "16–40 people",
+    "40+": "40+ people"
+  },
+  "Languages": {
+    "ar": "Arabic",
+    "en": "English"
   }
 }

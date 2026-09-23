@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
   ...nextTs,
   {
     files: ["**/*.tsx"],
+    // shadcn components are vendored and already RTL-aware (rtl: true).
+    ignores: ["components/ui/**"],
     rules: {
       "no-restricted-syntax": [
         "error",
