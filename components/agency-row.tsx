@@ -1,5 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
+import { RatingBadge } from "@/components/reviews/stars";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import type { AgencySummary } from "@/lib/data/agencies";
@@ -22,6 +23,7 @@ export async function AgencyRow({ agency }: { agency: AgencySummary }) {
         <p className="truncate text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)} · {agency.postCount} {tp("posts")}
         </p>
+        {agency.ratingAverage !== null && <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} />}
         <p className="truncate text-xs text-muted-foreground">
           {agency.services.slice(0, 3).map((s) => serviceLabel(s, locale)).join(" · ")}
           {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale) })}` : ""}

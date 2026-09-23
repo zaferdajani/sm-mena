@@ -11,7 +11,7 @@ import { processAvatar, processImage, newAvatarKey } from "../images";
 import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
-import { agencies, events, follows, inquiries, likes, posts, promotions, saves } from "./schema";
+import { agencies, events, follows, inquiries, likes, packages, posts, promotions, reviews, saves } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
 
@@ -76,7 +76,7 @@ function kindFor(service: string): DemoKind {
 
 async function reset() {
   const db = await getDb();
-  await db.execute(sql`truncate table audit_logs, events, reports, promotions, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
+  await db.execute(sql`truncate table audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
 export async function seed({ reset: doReset = false, quiet = false } = {}) {
@@ -185,6 +185,58 @@ export async function seed({ reset: doReset = false, quiet = false } = {}) {
     { agencyId: agencyIds[0], name: "سارة", phone: "+962790000001", businessName: "مقهى الياسمين", service: "smm_management", message: "نبحث عن إدارة حساب إنستغرام لمقهى جديد في جبل عمّان. ما هي الباقات المتاحة؟", consentVersion: "2026-09" },
     { agencyId: agencyIds[1], name: "Omar", phone: "+962790000002", businessName: "Desert Threads", service: "ads_meta", message: "We sell clothing online and want to scale Meta ads. Budget around 800 JOD a month.", consentVersion: "2026-09" },
   ]);
+
+  // Demo packages and client reviews (demo agencies only; removable with them).
+  const REVIEW_TEXTS = [
+    ["سارة", "مقهى الورد", "فريق محترف جداً، التزموا بالمواعيد وتضاعف التفاعل على حسابنا خلال شهرين."],
+    ["Omar", "Desert Threads", "Clear reporting every week and our cost per sale dropped by a third. Would hire again."],
+    ["لينا", "عيادة بسمة", "التواصل ممتاز والمحتوى مناسب لجمهورنا. نتمنى سرعة أكبر في التعديلات."],
+    ["Khaled", "Levant Tours", "Great creative ideas and solid execution on our Reels. Pricing was fair for the quality."],
+    ["رنا", "متجر رنا", "نتائج جيدة في الإعلانات لكن احتجنا لمتابعة أكثر في البداية."],
+    ["Yousef", "Amman Realty", "Professional team that understood the Jordanian market. Leads improved quickly."],
+  ];
+  for (const [index, agencyId] of agencyIds.entries()) {
+    const demo = DEMO_AGENCIES[index];
+    const pkgRows = demo.services.slice(0, 2).map((service, i) => ({
+      agencyId,
+      service,
+      title: i === 0 ? (demo.handle.includes(".") && /[a-z]/.test(demo.name) ? "Starter" : "الباقة الأساسية") : (/[a-z]/i.test(demo.name) ? "Growth" : "باقة النمو"),
+      description: "",
+      priceJod: i === 0 ? demo.price : demo.price * 2,
+      billing: "monthly" as const,
+      deliverables: i === 0 ? ["12 posts", "8 stories", "Monthly report"] : ["20 posts", "4 Reels", "Paid ads management", "Weekly report"],
+      position: i,
+    }));
+    await db.insert(packages).values(pkgRows);
+    const count = 2 + Math.floor(r() * 4);
+    let sum = 0;
+    const rows = [];
+    for (let k = 0; k < count; k++) {
+      const [name, business, body] = REVIEW_TEXTS[(index + k) % REVIEW_TEXTS.length];
+      const rating = r() > 0.25 ? 5 : r() > 0.4 ? 4 : 3;
+      sum += rating;
+      rows.push({
+        agencyId,
+        source: (k % 3 === 2 ? "inquiry" : "invite") as "invite" | "inquiry",
+        rating,
+        quality: Math.min(5, rating + (r() > 0.7 ? 0 : 0)),
+        communication: Math.max(3, rating - (r() > 0.6 ? 1 : 0)),
+        value: Math.max(3, rating - (r() > 0.5 ? 1 : 0)),
+        timeliness: Math.max(3, rating - (r() > 0.7 ? 1 : 0)),
+        body,
+        reviewerName: name,
+        reviewerBusiness: business,
+        service: demo.services[k % demo.services.length],
+        visitorId: `demo-reviewer-${index}-${k}`,
+        reply: k === 0 ? (/[a-z]/i.test(demo.name) ? "Thank you, it was a pleasure working with you!" : "شكراً لثقتكم، سعدنا بالعمل معكم!") : null,
+        repliedAt: k === 0 ? new Date() : null,
+        consentVersion: "2026-09",
+        createdAt: new Date(now - Math.floor(r() * 90) * 24 * 3600 * 1000),
+      });
+    }
+    await db.insert(reviews).values(rows);
+    await db.update(agencies).set({ ratingSum: sum, ratingCount: count }).where(sql`${agencies.id} = ${agencyId}`);
+  }
 
   // One demo promotion so the sponsored slot is visible. Admin can end it.
   const [firstPost] = await db.select({ id: posts.id, agencyId: posts.agencyId }).from(posts).where(sql`${posts.agencyId} = ${agencyIds[1]}`).limit(1);

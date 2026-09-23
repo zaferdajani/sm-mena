@@ -1,4 +1,4 @@
-import { Copy, Megaphone } from "lucide-react";
+import { Copy, Megaphone, Pin } from "lucide-react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import type { PostView } from "@/lib/data/posts";
@@ -22,6 +22,7 @@ export function PostGrid({ posts, sponsoredLabel }: { posts: PostView[]; sponsor
               />
             )}
             {post.images.length > 1 && <Copy className="absolute end-1.5 top-1.5 size-4 text-white drop-shadow" />}
+            {post.pinned && <Pin className="absolute start-1.5 bottom-1.5 size-4 fill-white text-white drop-shadow" aria-hidden />}
             {post.sponsored && sponsoredLabel && (
               <span className="absolute start-1.5 top-1.5 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
                 <Megaphone className="size-3" />

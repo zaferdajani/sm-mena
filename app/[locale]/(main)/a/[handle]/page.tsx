@@ -1,13 +1,18 @@
-import { Grid3x3, Info } from "lucide-react";
+import { Grid3x3, Info, Star } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FeedList } from "@/components/feed/feed-list";
 import { InquiryDialog } from "@/components/profile/inquiry-dialog";
+import { PackageList } from "@/components/profile/package-list";
 import { ProfileHeader } from "@/components/profile/profile-header";
+import { ReviewList, ReviewSummary } from "@/components/reviews/review-list";
+import { WriteReviewDialog } from "@/components/reviews/write-review-dialog";
 import { Link } from "@/i18n/navigation";
 import { getAgencyByHandle } from "@/lib/data/agencies";
 import { isFollowing, recordView } from "@/lib/data/interactions";
+import { listPackages } from "@/lib/data/packages";
+import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/lib/data/reviews";
 import { feedPage } from "@/lib/feed";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -32,20 +37,27 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
 export default async function AgencyPage({ params, searchParams }: PageProps<"/[locale]/a/[handle]">) {
   const { locale, handle } = await params;
   setRequestLocale(locale);
-  const tab = (await searchParams).tab === "about" ? "about" : "work";
+  const rawTab = (await searchParams).tab;
+  const tab = rawTab === "about" || rawTab === "reviews" ? rawTab : "work";
   const agency = await getAgencyByHandle(handle);
   if (!agency) notFound();
 
   const t = await getTranslations("Profile");
+  const tr = await getTranslations("Reviews");
   const [tCity, tPlat, tInd, tTeam, tLang] = await Promise.all([
     getTranslations("Cities"), getTranslations("Platforms"), getTranslations("Industries"), getTranslations("TeamSize"), getTranslations("Languages"),
   ]);
   const visitorId = await getVisitorId();
-  const [following, posts] = await Promise.all([
+  const [following, posts, reviewRows, sub, canReview, pkgs] = await Promise.all([
     isFollowing(visitorId, agency.id),
     tab === "work" ? feedPage({ agencyId: agency.id }, null, visitorId, { limit: 24 }) : null,
+    tab === "reviews" ? listReviews(agency.id) : null,
+    tab === "reviews" ? subScores(agency.id) : null,
+    tab === "reviews" ? canReviewAfterInquiry(visitorId, agency.id) : false,
+    tab === "about" ? listPackages(agency.id) : null,
     recordView("profile_view", agency.id, null, visitorId),
   ]);
+  const rating = ratingSummary(agency);
 
   const about: [string, string][] = [
     [t("city"), tCity(agency.city)],
@@ -61,12 +73,12 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   return (
     <div className="mx-auto w-full max-w-4xl">
       <ProfileHeader
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey) }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}
         inquirySlot={<InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
       />
       <div className="mt-5 flex border-t text-xs font-semibold uppercase tracking-wide" role="tablist">
-        {([["work", Grid3x3], ["about", Info]] as const).map(([key, Icon]) => (
+        {([["work", Grid3x3], ["reviews", Star], ["about", Info]] as const).map(([key, Icon]) => (
           <Link
             key={key}
             href={{ pathname: `/a/${agency.handle}`, query: key === "work" ? {} : { tab: key } }}
@@ -75,7 +87,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
             className={cn("-mt-px flex flex-1 items-center justify-center gap-1.5 border-t-2 border-transparent py-3 text-muted-foreground", tab === key && "border-foreground text-foreground")}
           >
             <Icon className="size-4" />
-            {key === "work" ? t("tabWork") : t("tabAbout")}
+            {key === "work" ? t("tabWork") : key === "reviews" ? `${tr("tab")}${rating.count ? ` (${rating.count})` : ""}` : t("tabAbout")}
           </Link>
         ))}
       </div>
@@ -85,6 +97,18 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
+      {tab === "reviews" && reviewRows && sub && (
+        <div className="space-y-4 px-4 py-4">
+          <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
+          {canReview && <WriteReviewDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
+          <ReviewList reviews={reviewRows} agencyName={agency.name} />
+        </div>
+      )}
+      {tab === "about" && pkgs && pkgs.length > 0 && (
+        <div className="px-4 pt-4">
+          <PackageList packages={pkgs} />
+        </div>
+      )}
       {tab === "about" && (
         <div className="px-4 py-4">
           {agency.isVerified && <p className="mb-4 rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">✓ {t("verifiedNote")}</p>}

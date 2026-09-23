@@ -527,5 +527,110 @@
     "relatedCities": "{service} in other cities",
     "relatedServices": "Related services",
     "forAgencies": "Offer this service? Show your work for free"
+  },
+  "Reviews": {
+    "tab": "Reviews",
+    "title": "Client reviews",
+    "count": "{count, plural, =0 {No reviews} one {1 review} other {# reviews}}",
+    "none": "No reviews yet.",
+    "google": "on Google",
+    "googleReviews": "{count} Google reviews",
+    "fromGoogle": "Rating from Google",
+    "verifiedClient": "Verified client",
+    "viaSawwiq": "Contacted via Sawwiq",
+    "reply": "Agency reply",
+    "write": "Write a review",
+    "sub": {
+      "quality": "Quality of work",
+      "communication": "Communication",
+      "value": "Value for money",
+      "timeliness": "Timeliness"
+    },
+    "form": {
+      "title": "Rate your experience with {name}",
+      "subtitle": "An honest review helps other business owners choose, and helps the agency improve.",
+      "overall": "Overall rating",
+      "body": "Tell us about it",
+      "bodyPlaceholder": "What did they deliver? How were the results and communication?",
+      "name": "Your name",
+      "business": "Business name (optional)",
+      "service": "Service",
+      "anyService": "Not specified",
+      "consent": "I confirm I am a real client of this agency and agree to publish my first name and business with the review.",
+      "submit": "Publish review",
+      "thanks": "Thank you! Your review is published.",
+      "invalid": "This link is invalid or has already been used.",
+      "notEligible": "You can review this agency {days} days after contacting it through Sawwiq.",
+      "errors": {
+        "rating": "Choose a rating from 1 to 5 stars.",
+        "body": "Write at least 20 characters.",
+        "name": "Your name is required.",
+        "consent": "Please confirm to continue.",
+        "rateLimited": "Too many attempts. Try again later.",
+        "generic": "Could not publish the review."
+      }
+    },
+    "studio": {
+      "tab": "Reviews",
+      "inviteTitle": "Ask a client for a review",
+      "inviteBody": "Create a private link for a client you worked with and send it on WhatsApp. Each link works once and expires after 30 days.",
+      "clientName": "Client name (for your reference)",
+      "create": "Create link",
+      "linkReady": "Link ready. Send it to your client:",
+      "copy": "Copy",
+      "copied": "Copied",
+      "sendWhatsapp": "Send on WhatsApp",
+      "inviteMessage": "Hello {name}, thank you for working with us. We'd love your review of {agency} on Sawwiq:",
+      "invites": "Review links",
+      "used": "Used",
+      "pending": "Waiting for client",
+      "expired": "Expired",
+      "replyPlaceholder": "Write a public reply…",
+      "saveReply": "Post reply",
+      "google": "Google rating",
+      "googleHint": "Paste your Google Maps business link or Place ID to show your Google rating on your page.",
+      "googleConnected": "Connected: {name} ★ {rating} ({count})",
+      "googleSaved": "Link saved. The rating appears once a Google API key is configured.",
+      "googleNotFound": "We couldn't find this place on Google. Check the link."
+    },
+    "admin": {
+      "title": "Reviews",
+      "hide": "Hide",
+      "show": "Show",
+      "hidden": "Hidden"
+    }
+  },
+  "Packages": {
+    "title": "Packages",
+    "perMonth": "per month",
+    "oneOff": "one-off",
+    "deliverables": "Includes",
+    "studio": {
+      "tab": "Packages",
+      "intro": "Add up to 6 clearly priced packages. They show on your page and the AI assistant uses them to estimate budgets and recommend you.",
+      "new": "New package",
+      "title": "Package name",
+      "titlePlaceholder": "Example: Instagram Starter",
+      "description": "Short description",
+      "service": "Service",
+      "price": "Price (JOD)",
+      "billing": "Billing",
+      "deliverables": "What's included (one per line)",
+      "deliverablesPlaceholder": "12 posts per month\n8 stories\nMonthly report",
+      "add": "Add package",
+      "save": "Save",
+      "delete": "Delete",
+      "limit": "You reached the maximum (6 packages).",
+      "errors": {
+        "title": "Package name is required.",
+        "price": "Enter a valid price.",
+        "service": "Choose the service.",
+        "generic": "Could not save."
+      }
+    },
+    "pin": "Pin to top",
+    "unpin": "Unpin",
+    "pinned": "Pinned",
+    "pinLimit": "You can pin up to 3 posts."
   }
 }

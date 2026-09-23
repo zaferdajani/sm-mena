@@ -2,6 +2,7 @@ import { BadgeCheck, Compass, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
+import { RatingBadge } from "@/components/reviews/stars";
 import { ContactLink } from "@/components/post/contact-link";
 import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -87,6 +88,10 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
                     <p className="text-xs text-muted-foreground">
                       <span dir="ltr">@{a.handle}</span> · {tCity(a.city)} · {t("posts", { count: a.postCount })}
                     </p>
+                    <div className="mt-1 flex flex-wrap gap-x-3">
+                      {a.ratingAverage !== null && <RatingBadge average={a.ratingAverage} count={a.ratingCount} />}
+                      {a.googleRating !== null && <RatingBadge average={a.googleRating} count={a.googleRatingCount ?? 0} label="Google" />}
+                    </div>
                     {a.startingPriceJod !== null && <p className="mt-1 text-sm font-semibold">{tc("from", { price: formatJod(a.startingPriceJod, locale) })}</p>}
                   </div>
                 </div>

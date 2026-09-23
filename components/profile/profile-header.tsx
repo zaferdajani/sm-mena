@@ -12,6 +12,8 @@ import { compactNumber, whatsappLink } from "@/lib/text";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
+import { RatingBadge } from "@/components/reviews/stars";
+import { Link } from "@/i18n/navigation";
 import { FollowButton } from "./follow-button";
 
 export type ProfileData = {
@@ -32,6 +34,11 @@ export type ProfileData = {
   email: string | null;
   website: string | null;
   instagram: string | null;
+  ratingAverage: number | null;
+  ratingCount: number;
+  googleRating: number | null;
+  googleRatingCount: number | null;
+  googleMapsUrl: string | null;
 };
 
 export function ProfileHeader({ agency, following, inquirySlot }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode }) {
@@ -39,6 +46,7 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
   const tCity = useTranslations("Cities");
+  const tr = useTranslations("Reviews");
   const locale = useLocale();
   const [followers, setFollowers] = useState(agency.followerCount);
   const iconLink = buttonVariants({ variant: "secondary", className: "size-9 px-0" });
@@ -69,7 +77,21 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
           <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)}
           {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale) })}` : ""}
         </p>
-        {agency.bio && <p className="whitespace-pre-line text-sm">{agency.bio}</p>}
+        {(agency.ratingAverage !== null || agency.googleRating !== null) && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            {agency.ratingAverage !== null && (
+              <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "reviews" } }}>
+                <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} label={tr("tab")} />
+              </Link>
+            )}
+            {agency.googleRating !== null && (
+              <a href={agency.googleMapsUrl ?? "#"} target="_blank" rel="noopener noreferrer" data-testid="google-rating">
+                <RatingBadge average={agency.googleRating} count={agency.googleRatingCount ?? 0} label={tr("google")} />
+              </a>
+            )}
+          </div>
+        )}
+        {agency.bio && <p className="whitespace-pre-line text-sm" dir="auto">{agency.bio}</p>}
         {agency.services.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
             {agency.services.map((s) => (

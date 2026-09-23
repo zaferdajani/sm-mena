@@ -11,6 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const user = await requireAdmin();
   const t = await getTranslations("Admin");
   const ta = await getTranslations("Auth");
+  const tr = await getTranslations("Reviews");
   return (
     <div className="mx-auto w-full max-w-5xl">
       <div className="flex items-center justify-between px-4 pt-4 sm:pt-8">
@@ -31,6 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             { href: "/admin", label: t("dashboard") },
             { href: "/admin/agencies", label: t("agencies") },
             { href: "/admin/reports", label: t("reports") },
+            { href: "/admin/reviews", label: tr("admin.title") },
             { href: "/admin/promotions", label: t("promotions") },
           ]}
         />

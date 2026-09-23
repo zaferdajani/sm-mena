@@ -46,7 +46,7 @@ export default async function InboxPage({ params, searchParams }: PageProps<"/[l
               </div>
               <ArchiveButton id={inquiry.id} archived={inquiry.status === "archived"} />
             </div>
-            <p className="mt-2 whitespace-pre-line text-sm">{inquiry.message}</p>
+            <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{inquiry.message}</p>
             {postCaption && <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{t("about")}: {postCaption}</p>}
             <div className="mt-3 flex gap-2">
               <a

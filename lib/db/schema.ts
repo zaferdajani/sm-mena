@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   bigserial,
+  real,
   boolean,
   index,
   integer,
@@ -40,6 +41,8 @@ export const eventType = pgEnum("event_type", [
   "follow",
   "promotion_impression",
   "promotion_click",
+  "recommended",
+  "proposal",
 ]);
 export const contactChannel = pgEnum("contact_channel", [
   "whatsapp",
@@ -50,6 +53,11 @@ export const contactChannel = pgEnum("contact_channel", [
 ]);
 export const promotionPlacement = pgEnum("promotion_placement", ["feed", "strip", "explore"]);
 export const promotionStatus = pgEnum("promotion_status", ["active", "paused", "ended"]);
+export const reviewStatus = pgEnum("review_status", ["published", "hidden"]);
+export const reviewSource = pgEnum("review_source", ["invite", "inquiry"]);
+export const billing = pgEnum("billing", ["monthly", "one_off"]);
+export const requestStatus = pgEnum("request_status", ["open", "closed"]);
+export const proposalStatus = pgEnum("proposal_status", ["sent", "shortlisted", "accepted", "declined"]);
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -117,6 +125,15 @@ export const agencies = pgTable(
     planExpiresAt: timestamp("plan_expires_at", { withTimezone: true }),
     followerCount: integer("follower_count").notNull().default(0),
     postCount: integer("post_count").notNull().default(0),
+    // client reviews on Sawwiq (sum of overall ratings / number of reviews)
+    ratingSum: integer("rating_sum").notNull().default(0),
+    ratingCount: integer("rating_count").notNull().default(0),
+    // Google Business Profile (Places API); refreshed periodically
+    googlePlaceId: text("google_place_id"),
+    googleMapsUrl: text("google_maps_url"),
+    googleRating: real("google_rating"),
+    googleRatingCount: integer("google_rating_count"),
+    googleFetchedAt: timestamp("google_fetched_at", { withTimezone: true }),
     // lowercase, Arabic-normalised name + handle + bio for search
     searchText: text("search_text").notNull().default(""),
     createdAt: createdAt(),
@@ -148,6 +165,7 @@ export const posts = pgTable(
     likeCount: integer("like_count").notNull().default(0),
     saveCount: integer("save_count").notNull().default(0),
     viewCount: integer("view_count").notNull().default(0),
+    pinnedAt: timestamp("pinned_at", { withTimezone: true }),
     searchText: text("search_text").notNull().default(""),
     createdAt: createdAt(),
   },
@@ -315,6 +333,147 @@ export const promotions = pgTable(
   (t) => [index("promotions_active_idx").on(t.placement, t.status, t.startsAt, t.endsAt)],
 );
 
+// ---------------------------------------------------------------------------
+// Reviews (Airbnb-style: only real clients, via an invite link from the agency
+// or after contacting the agency through Sawwiq)
+// ---------------------------------------------------------------------------
+export const reviewRequests = pgTable(
+  "review_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    // sha256 of the link token
+    tokenHash: text("token_hash").notNull().unique(),
+    clientName: text("client_name").notNull().default(""),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("review_requests_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    requestId: uuid("request_id").unique().references(() => reviewRequests.id, { onDelete: "set null" }),
+    source: reviewSource("source").notNull(),
+    rating: integer("rating").notNull(),
+    quality: integer("quality"),
+    communication: integer("communication"),
+    value: integer("value"),
+    timeliness: integer("timeliness"),
+    body: text("body").notNull(),
+    reviewerName: text("reviewer_name").notNull(),
+    reviewerBusiness: text("reviewer_business"),
+    service: text("service"),
+    visitorId: text("visitor_id"),
+    status: reviewStatus("status").notNull().default("published"),
+    reply: text("reply"),
+    repliedAt: timestamp("replied_at", { withTimezone: true }),
+    consentVersion: text("consent_version").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("reviews_agency_idx").on(t.agencyId, t.status, t.createdAt),
+    uniqueIndex("reviews_visitor_agency_idx").on(t.agencyId, t.visitorId),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Portfolio: fixed-price service packages
+// ---------------------------------------------------------------------------
+export const packages = pgTable(
+  "packages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    service: text("service").notNull(),
+    priceJod: integer("price_jod").notNull(),
+    billing: billing("billing").notNull().default("monthly"),
+    deliverables: text("deliverables").array().notNull().default(sql`'{}'::text[]`),
+    position: integer("position").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [index("packages_agency_idx").on(t.agencyId, t.position), index("packages_service_idx").on(t.service, t.priceJod)],
+);
+
+// ---------------------------------------------------------------------------
+// Project requests and proposals (posted by clients, often via the AI matchmaker)
+// ---------------------------------------------------------------------------
+export const projectRequests = pgTable(
+  "project_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // sha256 of the client's private link token
+    tokenHash: text("token_hash").notNull().unique(),
+    clientName: text("client_name").notNull(),
+    phone: text("phone").notNull(),
+    businessName: text("business_name"),
+    businessType: text("business_type"),
+    services: text("services").array().notNull().default(sql`'{}'::text[]`),
+    platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
+    city: text("city"),
+    budgetMinJod: integer("budget_min_jod"),
+    budgetMaxJod: integer("budget_max_jod"),
+    timeline: text("timeline"),
+    description: text("description").notNull(),
+    source: text("source").notNull().default("form"),
+    status: requestStatus("status").notNull().default("open"),
+    visitorId: text("visitor_id"),
+    consentVersion: text("consent_version").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("project_requests_open_idx").on(t.status, t.createdAt), index("project_requests_services_idx").using("gin", t.services)],
+);
+
+export const requestMatches = pgTable(
+  "request_matches",
+  {
+    requestId: uuid("request_id")
+      .notNull()
+      .references(() => projectRequests.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    score: integer("score").notNull(),
+    invited: boolean("invited").notNull().default(false),
+    viewedAt: timestamp("viewed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.requestId, t.agencyId] }), index("request_matches_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
+export const proposals = pgTable(
+  "proposals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    requestId: uuid("request_id")
+      .notNull()
+      .references(() => projectRequests.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    priceJod: integer("price_jod").notNull(),
+    billing: billing("billing").notNull().default("monthly"),
+    timeline: text("timeline").notNull(),
+    message: text("message").notNull(),
+    status: proposalStatus("status").notNull().default("sent"),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("proposals_request_agency_idx").on(t.requestId, t.agencyId), index("proposals_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
 export const auditLogs = pgTable("audit_logs", {
   id: bigserial("id", { mode: "number" }).primaryKey(),
   actorUserId: uuid("actor_user_id").references(() => users.id, { onDelete: "set null" }),
@@ -332,3 +491,7 @@ export type PostImage = typeof postImages.$inferSelect;
 export type Inquiry = typeof inquiries.$inferSelect;
 export type Promotion = typeof promotions.$inferSelect;
 export type Report = typeof reports.$inferSelect;
+export type Review = typeof reviews.$inferSelect;
+export type Package = typeof packages.$inferSelect;
+export type ProjectRequest = typeof projectRequests.$inferSelect;
+export type Proposal = typeof proposals.$inferSelect;

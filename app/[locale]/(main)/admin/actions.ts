@@ -8,6 +8,7 @@ import { audit, getAgencyByHandle } from "@/lib/data/agencies";
 import { createPromotion, removeDemoData, resolveReport, setAgencyFlags, setPostStatus, setPromotionStatus } from "@/lib/data/admin";
 import { getDb } from "@/lib/db";
 import { posts } from "@/lib/db/schema";
+import { setReviewStatus } from "@/lib/data/reviews";
 import { CITIES } from "@/lib/labels";
 import { isServiceKey } from "@/lib/taxonomy";
 
@@ -109,5 +110,12 @@ export async function setPromotionStatusAction(id: string, status: "active" | "p
   const admin = await requireAdmin();
   await setPromotionStatus(uuid.parse(id), z.enum(["active", "paused", "ended"]).parse(status));
   await audit(admin.id, `promotion.${status}`, "promotion", id);
+  refresh();
+}
+
+export async function setReviewStatusAction(reviewId: string, status: "published" | "hidden") {
+  const admin = await requireAdmin();
+  await setReviewStatus(uuid.parse(reviewId), z.enum(["published", "hidden"]).parse(status));
+  await audit(admin.id, `review.${status}`, "review", reviewId);
   refresh();
 }

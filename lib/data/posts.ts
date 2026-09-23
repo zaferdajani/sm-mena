@@ -49,6 +49,7 @@ export type PostView = {
     whatsapp: string | null;
   };
   sponsored?: { promotionId: string };
+  pinned?: boolean;
 };
 
 /** Creates a post from raw image buffers (already validated for count). */
@@ -227,9 +228,17 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
 }
 
 /** Newest-first page of posts. Cursor paging (createdAt, id) never repeats or skips. */
-export async function getFeed(filters: FeedFilters, cursor: string | null | undefined, limit = 12) {
+export async function getFeed(
+  filters: FeedFilters,
+  cursor: string | null | undefined,
+  limit = 12,
+): Promise<{ items: PostView[]; nextCursor: string | null }> {
   const db = await getDb();
   const conditions = filterConditions(filters);
+  // On an agency's own grid, pinned posts come first (page one only) and are
+  // excluded from the chronological pages so they never repeat.
+  const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platform);
+  if (onProfile) conditions.push(sql`${posts.pinnedAt} is null`);
   const c = decodeCursor(cursor);
   if (c) {
     const t = new Date(c.t);
@@ -244,10 +253,22 @@ export async function getFeed(filters: FeedFilters, cursor: string | null | unde
     .limit(limit + 1);
   const page = rows.slice(0, limit);
   const last = page.at(-1);
+  const pinned = onProfile && !c ? await pinnedPosts(filters.agencyId!) : [];
   return {
-    items: await attachImages(page),
+    items: [...pinned, ...(await attachImages(page))],
     nextCursor: rows.length > limit && last ? encodeCursor({ t: last.post.createdAt.toISOString(), id: last.post.id }) : null,
   };
+}
+
+async function pinnedPosts(agencyId: string): Promise<PostView[]> {
+  const db = await getDb();
+  const rows = await db
+    .select({ post: posts, agency: agencies })
+    .from(posts)
+    .innerJoin(agencies, eq(posts.agencyId, agencies.id))
+    .where(and(eq(posts.agencyId, agencyId), eq(posts.status, "published"), sql`${posts.pinnedAt} is not null`))
+    .orderBy(desc(posts.pinnedAt));
+  return (await attachImages(rows)).map((p) => ({ ...p, pinned: true }));
 }
 
 export async function getPostsByIds(ids: string[]): Promise<PostView[]> {
@@ -280,13 +301,31 @@ export async function getPost(postId: string, ownerAgencyId?: string): Promise<P
 }
 
 /** All posts of one agency for the studio, including hidden ones. */
-export async function getAgencyPostsForOwner(agencyId: string) {
+export async function getAgencyPostsForOwner(agencyId: string): Promise<PostView[]> {
   const db = await getDb();
   const rows = await db
     .select({ post: posts, agency: agencies })
     .from(posts)
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
     .where(eq(posts.agencyId, agencyId))
-    .orderBy(desc(posts.createdAt));
-  return attachImages(rows);
+    .orderBy(desc(sql`${posts.pinnedAt} is not null`), desc(posts.pinnedAt), desc(posts.createdAt));
+  const pinnedIds = new Set(rows.filter((r) => r.post.pinnedAt).map((r) => r.post.id));
+  return (await attachImages(rows)).map((p) => ({ ...p, pinned: pinnedIds.has(p.id) }));
+}
+
+export const MAX_PINNED = 3;
+
+/** Pins or unpins a post on the agency's profile grid (max three pinned). */
+export async function togglePin(agencyId: string, postId: string): Promise<{ pinned: boolean } | { error: "limit" | "not_found" }> {
+  const db = await getDb();
+  const [post] = await db.select({ pinnedAt: posts.pinnedAt }).from(posts).where(and(eq(posts.id, postId), eq(posts.agencyId, agencyId)));
+  if (!post) return { error: "not_found" };
+  if (post.pinnedAt) {
+    await db.update(posts).set({ pinnedAt: null }).where(eq(posts.id, postId));
+    return { pinned: false };
+  }
+  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(posts).where(and(eq(posts.agencyId, agencyId), sql`${posts.pinnedAt} is not null`));
+  if (n >= MAX_PINNED) return { error: "limit" };
+  await db.update(posts).set({ pinnedAt: new Date() }).where(eq(posts.id, postId));
+  return { pinned: true };
 }

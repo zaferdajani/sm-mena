@@ -102,6 +102,10 @@ export type AgencySummary = {
   services: string[];
   startingPriceJod: number | null;
   whatsapp: string | null;
+  ratingAverage: number | null;
+  ratingCount: number;
+  googleRating: number | null;
+  googleRatingCount: number | null;
 };
 
 export function toSummary(a: Agency): AgencySummary {
@@ -118,6 +122,10 @@ export function toSummary(a: Agency): AgencySummary {
     services: a.services,
     startingPriceJod: a.startingPriceJod,
     whatsapp: a.whatsapp,
+    ratingAverage: a.ratingCount ? Math.round((a.ratingSum / a.ratingCount) * 10) / 10 : null,
+    ratingCount: a.ratingCount,
+    googleRating: a.googleRating,
+    googleRatingCount: a.googleRatingCount,
   };
 }
 

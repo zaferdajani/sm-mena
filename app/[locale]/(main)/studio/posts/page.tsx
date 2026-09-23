@@ -1,6 +1,7 @@
 import { EyeOff, Pencil } from "lucide-react";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { PinButton } from "@/components/studio/pin-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
@@ -34,6 +35,7 @@ export default async function StudioPostsPage({ params }: PageProps<"/[locale]/s
           </Link>
           <div className="flex items-center justify-between gap-2 p-2 text-xs text-muted-foreground">
             <span>👁 {post.viewCount} · ♥ {post.likeCount}</span>
+            <PinButton postId={post.id} pinned={Boolean(post.pinned)} />
             <Link href={`/studio/posts/${post.id}`} className="flex items-center gap-1 text-foreground" aria-label={t("form.saveChanges")}>
               <Pencil className="size-3.5" />
             </Link>

@@ -15,6 +15,8 @@ export default async function StudioLayout({ children }: { children: React.React
   const { agency } = await requireAgency();
   const t = await getTranslations("Studio");
   const ta = await getTranslations("Auth");
+  const tr = await getTranslations("Reviews");
+  const tp = await getTranslations("Packages");
   const unread = await unreadCount(agency.id);
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -40,6 +42,8 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
             { href: "/studio/inbox", label: t("inbox"), badge: unread },
+            { href: "/studio/reviews", label: tr("studio.tab") },
+            { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/profile", label: t("profile") },
           ]}
         />

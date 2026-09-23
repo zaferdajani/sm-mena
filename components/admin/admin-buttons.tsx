@@ -7,6 +7,7 @@ import {
   resolveReportAction,
   setPostStatusAction,
   setPromotionStatusAction,
+  setReviewStatusAction,
   setStatusAction,
   setVerifiedAction,
 } from "@/app/[locale]/(main)/admin/actions";
@@ -73,5 +74,14 @@ export function PromotionButtons({ id, status }: { id: string; status: "active" 
       </ActionButton>
       <ActionButton variant="destructive" onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
     </div>
+  );
+}
+
+export function ReviewStatusButton({ id, status }: { id: string; status: "published" | "hidden" }) {
+  const t = useTranslations("Reviews.admin");
+  return (
+    <ActionButton variant={status === "published" ? "destructive" : "outline"} onRun={() => setReviewStatusAction(id, status === "published" ? "hidden" : "published")}>
+      {status === "published" ? t("hide") : t("show")}
+    </ActionButton>
   );
 }

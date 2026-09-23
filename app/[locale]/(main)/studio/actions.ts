@@ -7,7 +7,10 @@ import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
-import { createPost, deletePost, updatePost } from "@/lib/data/posts";
+import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
+import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
+import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
+import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
@@ -154,4 +157,74 @@ export async function markAllReadAction() {
   const { agency } = await requireAgency();
   await markAllRead(agency.id);
   revalidatePath("/[locale]/studio/inbox", "page");
+}
+
+// ---------------------------------------------------------------------------
+// Reviews, packages, pins and Google rating
+// ---------------------------------------------------------------------------
+export type InviteState = { token?: string; clientName?: string; error?: string } | undefined;
+
+export async function createReviewInviteAction(_: InviteState, formData: FormData): Promise<InviteState> {
+  const { agency } = await requireAgency();
+  const clientName = String(formData.get("clientName") ?? "").trim().slice(0, 80);
+  const { token } = await createReviewInvite(agency.id, clientName);
+  revalidatePath("/[locale]/studio/reviews", "page");
+  return { token, clientName };
+}
+
+export async function replyReviewAction(formData: FormData) {
+  const { agency } = await requireAgency();
+  const reviewId = z.string().uuid().parse(formData.get("reviewId"));
+  await replyToReview(agency.id, reviewId, String(formData.get("reply") ?? ""));
+  revalidatePath("/[locale]", "layout");
+}
+
+const packageSchema = z.object({
+  title: z.string().trim().min(2).max(80),
+  description: z.string().trim().max(300).default(""),
+  service: z.string().refine(isServiceKey),
+  priceJod: z.coerce.number().int().min(1).max(100000),
+  billing: z.enum(["monthly", "one_off"]),
+  deliverables: z.string().max(1000).default(""),
+});
+
+export async function savePackageAction(_: StudioState, formData: FormData): Promise<StudioState> {
+  const { agency } = await requireAgency();
+  const parsed = packageSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    const f = String(parsed.error.issues[0]?.path[0]);
+    return { error: f === "title" ? "title" : f === "priceJod" ? "price" : f === "service" ? "service" : "generic" };
+  }
+  const input = {
+    ...parsed.data,
+    deliverables: parsed.data.deliverables.split("\n").map((d) => d.trim()).filter(Boolean).slice(0, 12),
+  };
+  const id = String(formData.get("packageId") ?? "");
+  const ok = id ? await updatePackage(agency.id, z.string().uuid().parse(id), input) : await createPackage(agency.id, input);
+  if (!ok) return { error: id ? "generic" : "limit" };
+  revalidatePath("/[locale]", "layout");
+  return { ok: true };
+}
+
+export async function deletePackageAction(packageId: string) {
+  const { agency } = await requireAgency();
+  await deletePackage(agency.id, z.string().uuid().parse(packageId));
+  revalidatePath("/[locale]", "layout");
+}
+
+export async function togglePinAction(postId: string) {
+  const { agency } = await requireAgency();
+  const result = await togglePin(agency.id, z.string().uuid().parse(postId));
+  revalidatePath("/[locale]", "layout");
+  return result;
+}
+
+export type GoogleState = { status?: "connected" | "saved" | "not_found" | "cleared"; name?: string | null; rating?: number | null; count?: number | null } | undefined;
+
+export async function connectGoogleAction(_: GoogleState, formData: FormData): Promise<GoogleState> {
+  const { agency } = await requireAgency();
+  const input = String(formData.get("google") ?? "").trim().slice(0, 500);
+  const result = await connectGoogle(agency.id, agency.name, input);
+  revalidatePath("/[locale]", "layout");
+  return { status: result.status, name: result.place?.name, rating: result.place?.rating, count: result.place?.count };
 }

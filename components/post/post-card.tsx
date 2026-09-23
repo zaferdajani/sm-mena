@@ -72,7 +72,7 @@ export function PostCard({ post, priority = false, linkToPost = true }: { post: 
             <Link href={`/a/${post.agency.handle}`} className="font-semibold">
               <bdi>{post.agency.handle}</bdi>
             </Link>{" "}
-            {post.caption}
+            <span dir="auto">{post.caption}</span>
           </p>
         )}
         {post.result && (
