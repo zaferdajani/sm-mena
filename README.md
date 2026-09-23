@@ -72,7 +72,7 @@ One machine with a 1 GB volume holds the database and uploads, so no other servi
    - `GOOGLE_PLACES_API_KEY` (optional, Google ratings)
 3. Run **Actions → Deploy to Fly.io → Run workflow** (it also runs on every push to `main`).
 
-The site comes up at `https://sawwiq-jo.fly.dev` with demo agencies. The admin account is created on the first boot after the admin secrets are set, so you can add them later (remove them in Admin → Agencies when real agencies join). Change `app` in `fly.toml` for a different name. On a live deployment demo agency passwords are random unless `SEED_DEMO_PASSWORD` is set. For the daily Google refresh, point any scheduler at `GET /api/cron/google` with `Authorization: Bearer $CRON_SECRET`.
+The site comes up at `https://sawwiq-jo.fly.dev` with demo agencies (remove them in Admin → Agencies when real agencies join). The admin account is created on the first boot after the admin secrets are set, so you can add them later. Change `app` in `fly.toml` for a different name. On a live deployment demo agency passwords are random unless `SEED_DEMO_PASSWORD` is set. For the daily Google refresh, point any scheduler at `GET /api/cron/google` with `Authorization: Bearer $CRON_SECRET`.
 
 From a terminal instead: `fly launch --copy-config --no-deploy`, `fly volumes create sawwiq_data --size 1`, `fly secrets set SEED_ADMIN_EMAIL=… SEED_ADMIN_PASSWORD=…`, `fly deploy --ha=false`.
 
