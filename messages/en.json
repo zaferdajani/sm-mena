@@ -403,5 +403,91 @@
       "showActive": "Show current messages",
       "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq."
     }
+  },
+  "Admin": {
+    "title": "Admin",
+    "dashboard": "Platform",
+    "agencies": "Agencies",
+    "reports": "Reports",
+    "promotions": "Promotions",
+    "stats": {
+      "agencies": "Active agencies",
+      "verified": "Verified",
+      "demo": "Demo",
+      "paid": "On paid plans",
+      "posts": "Posts",
+      "postsRecent": "Posts, last 30 days",
+      "visitors": "Visitors (30 days)",
+      "views": "Views (30 days)",
+      "contacts": "Contact clicks (30 days)",
+      "inquiries": "Messages (30 days)",
+      "openReports": "Open reports",
+      "contactsPerAgency": "Clicks per agency"
+    },
+    "readiness": {
+      "title": "Revenue switch-on readiness",
+      "body": "Per the monetization plan, payments are switched on once these thresholds are met. Until then the platform is free.",
+      "visitors": "Monthly visitors",
+      "agencies": "Real active agencies",
+      "medianContacts": "Median contact clicks per agency",
+      "met": "Met",
+      "notMet": "Not yet",
+      "flag": "Revenue: {state}",
+      "on": "enabled",
+      "off": "off (free for everyone)"
+    },
+    "search": "Search by name or username",
+    "owner": "Owner",
+    "verify": "Verify",
+    "unverify": "Remove verification",
+    "suspend": "Suspend",
+    "activate": "Reactivate",
+    "suspended": "Suspended",
+    "plan": "Plan",
+    "planUntil": "Until",
+    "setPlan": "Update plan",
+    "removeDemo": "Remove all demo data",
+    "removeDemoConfirm": "All demo agencies and their posts will be permanently deleted. Continue?",
+    "removedDemo": "Removed {count} demo agencies.",
+    "noReports": "No open reports.",
+    "reason": "Reason",
+    "hidePost": "Hide post",
+    "dismiss": "Dismiss",
+    "unhide": "Unhide post",
+    "promo": {
+      "new": "New promotion",
+      "agencyHandle": "Agency username",
+      "postId": "Post ID (required for feed and explore)",
+      "placement": "Placement",
+      "placements": {
+        "feed": "Feed",
+        "strip": "Agencies strip",
+        "explore": "Top of explore"
+      },
+      "service": "Target service (optional)",
+      "city": "Target city (optional)",
+      "starts": "Starts",
+      "ends": "Ends",
+      "note": "Note",
+      "create": "Create",
+      "pause": "Pause",
+      "resume": "Resume",
+      "end": "End",
+      "impressions": "impressions",
+      "clicks": "clicks",
+      "status": {
+        "active": "Active",
+        "paused": "Paused",
+        "ended": "Ended"
+      },
+      "empty": "No promotions yet.",
+      "errors": {
+        "agency": "Agency not found.",
+        "post": "Post not found or not owned by this agency.",
+        "dates": "End must be after start.",
+        "generic": "Could not create."
+      },
+      "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day."
+    }
   }
 }

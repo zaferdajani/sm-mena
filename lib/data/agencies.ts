@@ -1,6 +1,7 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
+import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -151,7 +152,13 @@ export async function listAgencies(filters: {
     .select()
     .from(agencies)
     .where(and(...conditions))
-    .orderBy(desc(agencies.isVerified), desc(agencies.followerCount), desc(agencies.postCount))
+    .orderBy(
+      desc(agencies.isVerified),
+      // Paid plans get a ranking boost only once monetization is switched on.
+      ...(monetizationEnabled() ? [desc(sql`case ${agencies.plan} when 'business' then 2 when 'pro' then 1 else 0 end`)] : []),
+      desc(agencies.followerCount),
+      desc(agencies.postCount),
+    )
     .limit(filters.limit ?? 30);
   return rows.map(toSummary);
 }

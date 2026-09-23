@@ -89,6 +89,22 @@ describe("agencies", () => {
     expect((await listAgencies({ q: "الفا" })).map((a) => a.handle)).toEqual(["alpha.media"]);
   });
 
+  it("ranks paid plans first once monetization is on", async () => {
+    const { setAgencyFlags } = await import("@/lib/data/admin");
+    await setAgencyFlags(agencyB, { plan: "business" });
+    process.env.MONETIZATION_ENABLED = "true";
+    try {
+      // alpha is verified, so it stays first; among unverified agencies the paid one ranks higher
+      expect((await listAgencies({})).map((a) => a.handle)).toEqual(["alpha.media", "beta.studio"]);
+      await setAgencyFlags(agencyA, { isVerified: false });
+      expect((await listAgencies({})).map((a) => a.handle)).toEqual(["beta.studio", "alpha.media"]);
+    } finally {
+      delete process.env.MONETIZATION_ENABLED;
+      await setAgencyFlags(agencyA, { isVerified: true });
+      await setAgencyFlags(agencyB, { plan: "free" });
+    }
+  });
+
   it("deletes a post only for its owner and updates the count", async () => {
     const [post] = (await getFeed({ agencyId: agencyB }, null)).items;
     expect(await deletePost(post.id, agencyA)).toBe(false);

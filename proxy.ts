@@ -23,6 +23,12 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip API routes, media, Next.js internals and files with an extension.
-  matcher: "/((?!api|media|_next|_vercel|.*\\..*).*)",
+  matcher: [
+    // Everything except API routes, media, Next.js internals and static files.
+    "/((?!api|media|_next|_vercel|.*\\..*).*)",
+    // Agency handles may contain dots (e.g. /ar/a/nakhla.studio), which the
+    // rule above would mistake for files.
+    "/(ar|en)/a/:handle*",
+    "/a/:handle*",
+  ],
 };

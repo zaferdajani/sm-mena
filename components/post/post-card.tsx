@@ -11,6 +11,7 @@ import { timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
 import { whatsappLink } from "@/lib/text";
+import { trackPromotionClick } from "@/app/[locale]/(main)/actions";
 import { ContactLink } from "./contact-link";
 import { ImageCarousel } from "./image-carousel";
 import { PostActions, useLike } from "./post-actions";
@@ -24,15 +25,16 @@ export function PostCard({ post, priority = false, linkToPost = true }: { post: 
   const [expanded, setExpanded] = useState(false);
   const promotionId = post.sponsored?.promotionId;
   const postHref = `/p/${post.id}`;
+  const onPromoClick = promotionId ? () => void trackPromotionClick(promotionId).catch(() => {}) : undefined;
 
   return (
     <article className="border-b bg-card sm:rounded-xl sm:border" data-testid="post-card">
       <header className="flex items-center gap-3 px-3 py-2.5">
-        <Link href={`/a/${post.agency.handle}`} className="shrink-0">
+        <Link href={`/a/${post.agency.handle}`} className="shrink-0" onClick={onPromoClick}>
           <AgencyAvatar name={post.agency.name} src={post.agency.avatarUrl} size={36} ring />
         </Link>
         <div className="min-w-0 flex-1 leading-tight">
-          <Link href={`/a/${post.agency.handle}`} className="flex items-center gap-1 text-sm font-semibold">
+          <Link href={`/a/${post.agency.handle}`} className="flex items-center gap-1 text-sm font-semibold" onClick={onPromoClick}>
             <span className="truncate">{post.agency.name}</span>
             {post.agency.isVerified && <VerifiedBadge label={tc("verified")} />}
           </Link>
