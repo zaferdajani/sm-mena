@@ -1,5 +1,7 @@
 # 05 · Implementation Roadmap for Claude Code
 
+> **Update (September 2026):** Sprint 0 stands. Sprints 1–10 are replaced for v1 by the stages in `11-build-stages.md`.
+
 This is the build order. Each sprint is a self-contained instruction set that Claude Code can execute in a session. Complete a sprint, run its checks, commit, then start the next. Do not skip ahead to payments before the directory and brief flows work with mock providers.
 
 Conventions: Conventional Commits; one PR per sprint; CI must pass; Arabic strings go in `messages/ar.json` and English in `messages/en.json`, never inline.

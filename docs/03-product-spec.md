@@ -1,5 +1,7 @@
 # 03 · Product Specification (PRD)
 
+> **Update (September 2026):** v1 ships the simpler Instagram-style showcase model in `09-benchmark-and-model.md`. The brief-and-proposal flow below moves to a later phase.
+
 Scope: Phases 1–3 as defined in `01-business-plan.md`. Everything is Arabic-first with English as a full second locale. Mobile-first. Right-to-left layout is the default.
 
 ---
