@@ -1,0 +1,157 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getLocale } from "next-intl/server";
+import { z } from "zod";
+import { redirect } from "@/i18n/navigation";
+import { requireAgency } from "@/lib/auth/guards";
+import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
+import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
+import { createPost, deletePost, updatePost } from "@/lib/data/posts";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
+import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
+import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
+import { storage } from "@/lib/storage";
+import { isServiceKey } from "@/lib/taxonomy";
+import { instagramHandle, normalizePhone, normalizeUrl, validateHandle } from "@/lib/text";
+
+export type StudioState = { ok?: boolean; error?: string } | undefined;
+
+const list = (formData: FormData, key: string) => formData.getAll(key).map(String).filter(Boolean);
+const oneOf = <T extends readonly string[]>(values: T, allowed: T) => [...new Set(values)].filter((v) => (allowed as readonly string[]).includes(v));
+
+function postFields(formData: FormData) {
+  const services = [...new Set(list(formData, "services"))].filter(isServiceKey);
+  const platforms = oneOf(list(formData, "platforms") as unknown as typeof PLATFORMS, PLATFORMS);
+  const industryRaw = String(formData.get("industry") ?? "");
+  return {
+    caption: String(formData.get("caption") ?? "").trim().slice(0, 2200),
+    services,
+    platforms: platforms as string[],
+    industry: (INDUSTRIES as readonly string[]).includes(industryRaw) ? industryRaw : null,
+    result: String(formData.get("result") ?? "").trim().slice(0, 80) || null,
+  };
+}
+
+export async function createPostAction(_: StudioState, formData: FormData): Promise<StudioState> {
+  const { agency } = await requireAgency();
+  const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  if (!files.length) return { error: "noImages" };
+  if (files.length > MAX_IMAGES_PER_POST) return { error: "tooMany" };
+  const fields = postFields(formData);
+  if (!fields.services.length) return { error: "noServices" };
+  if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
+
+  let postId: string;
+  try {
+    const buffers = await Promise.all(files.map(async (f) => Buffer.from(await f.arrayBuffer())));
+    const post = await createPost(agency.id, fields, buffers);
+    postId = post.id;
+  } catch (error) {
+    return { error: error instanceof ImageError ? error.code : "generic" };
+  }
+  const locale = await getLocale();
+  return redirect({ href: `/p/${postId}`, locale });
+}
+
+export async function updatePostAction(_: StudioState, formData: FormData): Promise<StudioState> {
+  const { agency } = await requireAgency();
+  const postId = z.string().uuid().safeParse(formData.get("postId"));
+  if (!postId.success) return { error: "generic" };
+  const fields = postFields(formData);
+  if (!fields.services.length) return { error: "noServices" };
+  const updated = await updatePost(postId.data, agency.id, fields);
+  if (!updated) return { error: "generic" };
+  revalidatePath("/[locale]", "layout");
+  return { ok: true };
+}
+
+export async function deletePostAction(postId: string) {
+  const { user, agency } = await requireAgency();
+  const id = z.string().uuid().parse(postId);
+  if (await deletePost(id, agency.id)) await audit(user.id, "post.delete", "post", id);
+  const locale = await getLocale();
+  return redirect({ href: "/studio/posts", locale });
+}
+
+const profileSchema = z.object({
+  name: z.string().trim().min(2).max(80),
+  handle: z.string().trim().toLowerCase(),
+  bio: z.string().trim().max(500).default(""),
+  city: z.enum(CITIES),
+  startingPriceJod: z.union([z.literal(""), z.coerce.number().int().min(0).max(100000)]),
+  whatsapp: z.string().trim().max(20),
+  phone: z.string().trim().max(20),
+  email: z.union([z.literal(""), z.string().trim().email()]),
+  website: z.string().trim().max(200),
+  instagram: z.string().trim().max(200),
+  foundedYear: z.union([z.literal(""), z.coerce.number().int().min(1950).max(new Date().getFullYear())]),
+  teamSize: z.union([z.literal(""), z.enum(TEAM_SIZES)]),
+});
+
+export async function updateProfileAction(_: StudioState, formData: FormData): Promise<StudioState> {
+  const { user, agency } = await requireAgency();
+  const parsed = profileSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    const field = String(parsed.error.issues[0]?.path[0] ?? "");
+    return { error: field === "name" ? "name" : field === "email" ? "email" : "generic" };
+  }
+  const d = parsed.data;
+  const handleCheck = validateHandle(d.handle);
+  if (handleCheck === "invalid") return { error: "handleInvalid" };
+  if (handleCheck === "reserved") return { error: "handleReserved" };
+  if (await isHandleTaken(d.handle, agency.id)) return { error: "handleTaken" };
+
+  const whatsapp = d.whatsapp ? normalizePhone(d.whatsapp) : null;
+  const phone = d.phone ? normalizePhone(d.phone) : null;
+  if ((whatsapp && !/^\+?\d{8,15}$/.test(whatsapp)) || (phone && !/^\+?\d{8,15}$/.test(phone))) return { error: "phone" };
+  const website = d.website ? normalizeUrl(d.website) : null;
+  if (d.website && !website) return { error: "website" };
+
+  let avatarKey: string | undefined;
+  const avatar = formData.get("avatar");
+  if (avatar instanceof File && avatar.size > 0) {
+    try {
+      avatarKey = newAvatarKey(agency.id);
+      await storage().put(avatarKey, await processAvatar(Buffer.from(await avatar.arrayBuffer())), "image/webp");
+    } catch {
+      return { error: "avatar" };
+    }
+  }
+
+  await updateAgency(agency.id, {
+    name: d.name,
+    handle: d.handle,
+    bio: d.bio,
+    city: d.city,
+    services: [...new Set(list(formData, "services"))].filter(isServiceKey),
+    platforms: oneOf(list(formData, "platforms") as unknown as typeof PLATFORMS, PLATFORMS) as string[],
+    industries: oneOf(list(formData, "industries") as unknown as typeof INDUSTRIES, INDUSTRIES) as string[],
+    languages: oneOf(list(formData, "languages") as unknown as readonly ["ar", "en"], ["ar", "en"] as const) as string[],
+    startingPriceJod: d.startingPriceJod === "" ? null : d.startingPriceJod,
+    whatsapp,
+    phone,
+    email: d.email || null,
+    website,
+    instagram: d.instagram ? instagramHandle(d.instagram) : null,
+    foundedYear: d.foundedYear === "" ? null : d.foundedYear,
+    teamSize: d.teamSize || null,
+    ...(avatarKey ? { avatarKey } : {}),
+  });
+  if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
+  await audit(user.id, "agency.update", "agency", agency.id);
+  revalidatePath("/[locale]", "layout");
+  return { ok: true };
+}
+
+export async function setInquiryStatusAction(inquiryId: string, status: "read" | "archived" | "new") {
+  const { agency } = await requireAgency();
+  await setInquiryStatus(agency.id, z.string().uuid().parse(inquiryId), z.enum(["read", "archived", "new"]).parse(status));
+  revalidatePath("/[locale]/studio/inbox", "page");
+}
+
+export async function markAllReadAction() {
+  const { agency } = await requireAgency();
+  await markAllRead(agency.id);
+  revalidatePath("/[locale]/studio/inbox", "page");
+}
