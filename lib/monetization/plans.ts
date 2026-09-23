@@ -13,12 +13,14 @@ export type Plan = {
   badge: boolean;
   teamSeats: number;
   leadExport: boolean;
+  proposalsPerMonth: number | null; // null = unlimited
+  recommendationBoost: boolean; // capped boost + "Featured" label in AI matches
 };
 
 export const PLANS: Record<PlanId, Plan> = {
-  free: { id: "free", priceJodMonthly: 0, maxPosts: 12, insightsDays: 30, rankingBoost: 0, badge: false, teamSeats: 1, leadExport: false },
-  pro: { id: "pro", priceJodMonthly: 19, maxPosts: null, insightsDays: 365, rankingBoost: 1, badge: true, teamSeats: 1, leadExport: false },
-  business: { id: "business", priceJodMonthly: 49, maxPosts: null, insightsDays: 365, rankingBoost: 2, badge: true, teamSeats: 3, leadExport: true },
+  free: { id: "free", priceJodMonthly: 0, maxPosts: 12, insightsDays: 30, rankingBoost: 0, badge: false, teamSeats: 1, leadExport: false, proposalsPerMonth: 5, recommendationBoost: false },
+  pro: { id: "pro", priceJodMonthly: 19, maxPosts: null, insightsDays: 365, rankingBoost: 1, badge: true, teamSeats: 1, leadExport: false, proposalsPerMonth: 30, recommendationBoost: true },
+  business: { id: "business", priceJodMonthly: 49, maxPosts: null, insightsDays: 365, rankingBoost: 2, badge: true, teamSeats: 3, leadExport: true, proposalsPerMonth: null, recommendationBoost: true },
 };
 
 /** Sponsored slot pacing rules (docs/10-monetization.md §3). */

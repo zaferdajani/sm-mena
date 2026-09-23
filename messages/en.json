@@ -129,7 +129,8 @@
     "admin": "Admin",
     "menu": "Menu",
     "newPost": "New post",
-    "hire": "Hire an agency"
+    "hire": "Hire an agency",
+    "match": "AI assistant"
   },
   "Common": {
     "verified": "Verified",
@@ -297,7 +298,9 @@
       "inquiries": "Client messages",
       "likes": "Likes",
       "saves": "Saves",
-      "follows": "New followers"
+      "follows": "New followers",
+      "recommended": "AI recommendations",
+      "proposals": "Quotes sent"
     },
     "channels": {
       "whatsapp": "WhatsApp",
@@ -632,5 +635,131 @@
     "unpin": "Unpin",
     "pinned": "Pinned",
     "pinLimit": "You can pin up to 3 posts."
+  },
+  "Match": {
+    "title": "AI agency matchmaker",
+    "subtitle": "Describe your project and I'll recommend the best-suited agencies and estimate a budget.",
+    "placeholder": "Example: Instagram and TikTok management for a restaurant in Amman, 300 JOD budget",
+    "send": "Send",
+    "thinking": "Finding the best agencies…",
+    "error": "Something went wrong. Please try again.",
+    "rateLimited": "Too many messages. Wait a moment and try again.",
+    "basicMode": "Basic matching mode (no AI)",
+    "budget": "Suggested budget",
+    "perMonth": "JOD / month",
+    "matchScore": "{score}% match",
+    "featured": "Featured",
+    "featuredHint": "On a paid plan, ranked slightly higher because it already fits your project.",
+    "why": "Why?",
+    "viewProfile": "View page",
+    "sendProject": "Send my project to these agencies and get quotes",
+    "startOver": "New chat",
+    "intro": "Hi! I'm Sawwiq's assistant. Tell me what your business needs and I'll find the best-suited agencies.",
+    "reasons": {
+      "services": "Offers {matched} of {total} services",
+      "portfolio": "{posts} similar past projects",
+      "budget_fit": "Within budget ({price} JOD)",
+      "over_budget": "Above budget ({price} JOD)",
+      "same_city": "In your city",
+      "platform": "Platform experience",
+      "industry": "Industry experience",
+      "rating": "Rated {average} ({count})",
+      "google": "Google {average} ({count})",
+      "verified": "Verified",
+      "featured": "Featured"
+    }
+  },
+  "Requests": {
+    "formTitle": "Send your project and get quotes",
+    "formSubtitle": "We send your project to the 5 best-matched agencies, and any specialised agency can send a quote. Quotes arrive on your private page.",
+    "name": "Your name",
+    "phone": "Phone (WhatsApp)",
+    "business": "Business name (optional)",
+    "services": "Services needed",
+    "city": "City",
+    "anyCity": "Any city",
+    "budgetMin": "Budget from (JOD)",
+    "budgetMax": "to (JOD)",
+    "timeline": "When do you want to start?",
+    "timelines": {
+      "asap": "As soon as possible",
+      "this_month": "This month",
+      "within_3_months": "Within 3 months"
+    },
+    "description": "Project description",
+    "descriptionPlaceholder": "What's your business? What's the goal? What have you tried?",
+    "consent": "I agree to share my name and number with agencies that send me quotes.",
+    "submit": "Send project",
+    "errors": {
+      "required": "Fill in your name, phone and description and choose at least one service.",
+      "phone": "Invalid phone number.",
+      "consent": "Please agree to continue.",
+      "rateLimited": "Too many projects sent. Try again later.",
+      "generic": "Could not send."
+    },
+    "created": "Your project was sent! We invited {count} agencies to send quotes.",
+    "saveLink": "Save this link to follow quotes from any device:",
+    "pageTitle": "Quotes for your project",
+    "status": {
+      "open": "Open for quotes",
+      "closed": "Closed"
+    },
+    "expires": "Accepting quotes until {date}",
+    "invited": "{count} agencies invited",
+    "noProposals": "No quotes yet. They usually arrive within 24–48 hours.",
+    "proposals": "{count, plural, =0 {No quotes} one {1 quote} other {# quotes}}",
+    "price": "Price",
+    "timelineLabel": "Timeline",
+    "shortlist": "Shortlist",
+    "unshortlist": "Remove from shortlist",
+    "accept": "Accept quote",
+    "decline": "Decline",
+    "acceptConfirm": "Accepting this quote closes the project and declines the others. Continue?",
+    "proposalStatus": {
+      "sent": "New",
+      "shortlisted": "Shortlisted",
+      "accepted": "Accepted",
+      "declined": "Declined"
+    },
+    "close": "Close project",
+    "contactAgency": "Contact on WhatsApp",
+    "myRequests": "My projects",
+    "noRequests": "You haven't sent a project yet.",
+    "newRequest": "New project",
+    "notFound": "This link is not valid.",
+    "whatsappMessage": "Hello, about your quote for my project on Sawwiq."
+  },
+  "Opportunities": {
+    "tab": "Opportunities",
+    "intro": "Real projects from business owners looking for an agency. Invited ones were matched to you by the AI assistant.",
+    "empty": "No open opportunities for your services right now.",
+    "invited": "Invited",
+    "proposals": "{count} quotes",
+    "budget": "Budget",
+    "any": "Not set",
+    "sent": "Quote sent",
+    "form": {
+      "title": "Send your quote",
+      "price": "Price (JOD)",
+      "billing": "Billing",
+      "timeline": "Timeline / start",
+      "timelinePlaceholder": "Example: start within a week, 3-month contract",
+      "message": "Message to the client",
+      "messagePlaceholder": "Why are you a good fit? What's included?",
+      "submit": "Send quote",
+      "sent": "Your quote was sent.",
+      "errors": {
+        "closed": "This project is closed.",
+        "exists": "You already sent a quote.",
+        "full": "This project has reached the maximum number of quotes.",
+        "limit": "You reached your plan's monthly quote limit.",
+        "invalid": "Fill in the price, timeline and message.",
+        "generic": "Could not send."
+      }
+    },
+    "client": "Client",
+    "clientHidden": "Contact details appear after you send a quote.",
+    "yourProposal": "Your quote",
+    "status": "Status"
   }
 }

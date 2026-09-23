@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
 import { PostGrid } from "@/components/post/post-grid";
+import { Link } from "@/i18n/navigation";
 import { toSummary } from "@/lib/data/agencies";
 import { followedAgencyIds, savedPostIds } from "@/lib/data/interactions";
 import { getPostsByIds } from "@/lib/data/posts";
@@ -20,6 +21,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Saved");
+  const tr = await getTranslations("Requests");
   const visitorId = await getVisitorId();
   const [postIds, agencyIds] = visitorId ? await Promise.all([savedPostIds(visitorId), followedAgencyIds(visitorId)]) : [[], []];
   const posts = await getPostsByIds(postIds);
@@ -33,6 +35,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
       <div className="px-4 sm:px-0">
         <h1 className="text-xl font-bold">{t("title")}</h1>
         <p className="text-xs text-muted-foreground">{t("deviceNote")}</p>
+        <Link href="/requests" className="mt-2 inline-block text-sm font-medium text-brand">{tr("myRequests")} →</Link>
       </div>
       <section>
         <h2 className="mb-2 px-4 text-sm font-semibold sm:px-0">{t("agencies")}</h2>

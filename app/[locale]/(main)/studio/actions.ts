@@ -13,7 +13,8 @@ import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
 import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
-import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
+import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
+import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
 import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
 import { instagramHandle, normalizePhone, normalizeUrl, validateHandle } from "@/lib/text";
@@ -227,4 +228,29 @@ export async function connectGoogleAction(_: GoogleState, formData: FormData): P
   const result = await connectGoogle(agency.id, agency.name, input);
   revalidatePath("/[locale]", "layout");
   return { status: result.status, name: result.place?.name, rating: result.place?.rating, count: result.place?.count };
+}
+
+// ---------------------------------------------------------------------------
+// Opportunities (quotes on client project requests)
+// ---------------------------------------------------------------------------
+export type ProposalState = { ok?: boolean; error?: string } | undefined;
+
+export async function submitProposalAction(_: ProposalState, formData: FormData): Promise<ProposalState> {
+  const { agency } = await requireAgency();
+  const parsed = z
+    .object({
+      requestId: z.string().uuid(),
+      priceJod: z.coerce.number().int().min(1).max(1_000_000),
+      billing: z.enum(["monthly", "one_off"]),
+      timeline: z.string().trim().min(2).max(200),
+      message: z.string().trim().min(10).max(2000),
+    })
+    .safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  if (!canSendProposal(entitlementsFor(agency), await proposalsThisMonth(agency.id))) return { error: "limit" };
+  const { requestId, ...input } = parsed.data;
+  const result = await submitProposal(agency, requestId, input);
+  if ("error" in result) return { error: result.error };
+  revalidatePath("/[locale]", "layout");
+  return { ok: true };
 }

@@ -18,3 +18,7 @@ export function entitlementsFor(agency: { plan: PlanId; planExpiresAt: Date | nu
 export function canCreatePost(ent: Entitlements, currentPosts: number): boolean {
   return ent.maxPosts === null || currentPosts < ent.maxPosts;
 }
+
+export function canSendProposal(ent: Entitlements, sentThisMonth: number): boolean {
+  return ent.proposalsPerMonth === null || sentThisMonth < ent.proposalsPerMonth;
+}

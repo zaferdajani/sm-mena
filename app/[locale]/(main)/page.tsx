@@ -1,4 +1,4 @@
-import { Compass } from "lucide-react";
+import { Compass, Sparkles } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgenciesStrip } from "@/components/feed/agencies-strip";
 import { FeedList } from "@/components/feed/feed-list";
@@ -13,6 +13,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Home");
+  const tn = await getTranslations("Nav");
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
   const [strip, page] = await Promise.all([stripAgencies(), feedPage({}, null, visitorId, { placement: "feed" })]);
 
@@ -24,7 +25,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <h1 className="text-lg font-bold leading-snug">{t("introTitle")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("introBody")}</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <Link href="/explore" className={buttonVariants({ className: "h-9 gap-2 px-4" })}>
+          <Link href="/match" className={buttonVariants({ className: "h-9 gap-2 px-4" })} data-testid="home-ai">
+            <Sparkles className="size-4" />
+            {tn("match")}
+          </Link>
+          <Link href="/explore" className={buttonVariants({ variant: "outline", className: "h-9 gap-2 px-4" })}>
             <Compass className="size-4" />
             {t("introCta")}
           </Link>

@@ -20,6 +20,8 @@ export default async function StudioOverview({ params }: PageProps<"/[locale]/st
   const tiles = [
     ["contacts", insights.totals.contact_click],
     ["inquiries", insights.totals.inquiry],
+    ["recommended", insights.totals.recommended],
+    ["proposals", insights.totals.proposal],
     ["profileViews", insights.totals.profile_view],
     ["postViews", insights.totals.post_view],
     ["likes", insights.totals.like],

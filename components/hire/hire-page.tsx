@@ -1,4 +1,4 @@
-import { BadgeCheck, Compass, MessageCircle } from "lucide-react";
+import { BadgeCheck, Compass, MessageCircle, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -30,6 +30,7 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
   const { t, place, serviceName } = await hireCopy(locale, service, city);
   const tc = await getTranslations("Common");
   const tp = await getTranslations("Post");
+  const tr = await getTranslations("Requests");
   const tCity = await getTranslations("Cities");
   const [cards, price, cities] = await Promise.all([hireCards(service, city), priceGuide(service, city), citiesForService(service)]);
   const category = taxonomy.categories.find((c) => c.services.some((s) => s.key === service));
@@ -67,10 +68,16 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
           {t("summary", { count: price.agencies, verified: price.verified })}
           {price.min !== null && ` · ${tc("from", { price: formatJod(price.min, locale) })}`}
         </p>
-        <Link href={{ pathname: "/explore", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ className: "h-10 gap-2" })}>
-          <Compass className="size-4" />
-          {t("browseWork")}
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href={{ pathname: "/request/new", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ className: "h-10 gap-2" })} data-testid="hire-get-quotes">
+            <Sparkles className="size-4" />
+            {tr("formTitle")}
+          </Link>
+          <Link href={{ pathname: "/explore", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ variant: "outline", className: "h-10 gap-2" })}>
+            <Compass className="size-4" />
+            {t("browseWork")}
+          </Link>
+        </div>
       </header>
 
       <section>

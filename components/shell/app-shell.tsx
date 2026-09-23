@@ -14,6 +14,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
+    { href: "/match", label: t("match"), icon: "match" },
     { href: "/saved", label: t("saved"), icon: "saved" },
     user?.role === "admin"
       ? { href: "/admin", label: t("admin"), icon: "admin" }
@@ -29,7 +30,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {th("brand")}
         </Link>
         <nav aria-label={t("menu")}>
-          <SideNav items={[...items.slice(0, 2), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(2)]} />
+          <SideNav items={[...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3)]} />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />

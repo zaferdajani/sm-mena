@@ -4,7 +4,7 @@ import { events, posts } from "@/lib/db/schema";
 
 export type Insights = {
   days: number;
-  totals: Record<"profile_view" | "post_view" | "contact_click" | "inquiry" | "like" | "save" | "follow", number>;
+  totals: Record<"profile_view" | "post_view" | "contact_click" | "inquiry" | "like" | "save" | "follow" | "recommended" | "proposal", number>;
   channels: Record<string, number>;
   daily: { date: string; clicks: number }[];
 };
@@ -29,7 +29,7 @@ export async function agencyInsights(agencyId: string, days: number, now = new D
       .groupBy(sql`1`),
   ]);
 
-  const totals = { profile_view: 0, post_view: 0, contact_click: 0, inquiry: 0, like: 0, save: 0, follow: 0 };
+  const totals = { profile_view: 0, post_view: 0, contact_click: 0, inquiry: 0, like: 0, save: 0, follow: 0, recommended: 0, proposal: 0 };
   for (const row of byType) if (row.type in totals) totals[row.type as keyof typeof totals] = row.n;
   const channels = Object.fromEntries(byChannel.filter((r) => r.channel).map((r) => [r.channel!, r.n]));
   const perDay = new Map(byDay.map((r) => [r.day, r.n]));

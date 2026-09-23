@@ -1,0 +1,61 @@
+import { Phone } from "lucide-react";
+import { notFound } from "next/navigation";
+import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { ProposalForm } from "@/components/studio/proposal-form";
+import { requireAgency } from "@/lib/auth/guards";
+import { cheapestPackages } from "@/lib/data/packages";
+import { getOpportunity } from "@/lib/data/requests";
+import { formatJod } from "@/lib/format";
+import { serviceLabel } from "@/lib/labels";
+import { whatsappLink } from "@/lib/text";
+
+export default async function OpportunityPage({ params }: PageProps<"/[locale]/studio/opportunities/[id]">) {
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  const { agency } = await requireAgency();
+  const o = await getOpportunity(agency, id);
+  if (!o) notFound();
+  const t = await getTranslations("Opportunities");
+  const tr = await getTranslations("Requests");
+  const tCity = await getTranslations("Cities");
+  const tpk = await getTranslations("Packages");
+  const lang = await getLocale();
+  const pkg = (await cheapestPackages([agency.id], o.request.services[0])).get(agency.id);
+  const r = o.request;
+  return (
+    <div className="mx-auto max-w-xl space-y-4">
+      <div className="space-y-2 rounded-xl bg-muted p-4 text-sm">
+        <p className="font-semibold">{r.services.map((s) => serviceLabel(s, lang)).join(" · ")}</p>
+        <p className="text-xs text-muted-foreground">
+          {r.city ? tCity(r.city) : "—"} · {t("budget")}: {r.budgetMaxJod ? `${r.budgetMinJod ?? 0}–${r.budgetMaxJod} JOD` : t("any")}
+          {r.timeline ? ` · ${tr(`timelines.${r.timeline}` as "timelines.asap")}` : ""}
+        </p>
+        <p className="whitespace-pre-line" dir="auto">{r.description}</p>
+        <div className="border-t pt-2">
+          <p className="text-xs font-medium">{t("client")}</p>
+          {o.myProposal ? (
+            <p className="flex flex-wrap items-center gap-2">
+              {r.clientName}{r.businessName ? ` · ${r.businessName}` : ""} ·{" "}
+              <a href={whatsappLink(r.phone)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand" dir="ltr" data-testid="client-phone">
+                <Phone className="size-3.5" /> {r.phone}
+              </a>
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t("clientHidden")}</p>
+          )}
+        </div>
+      </div>
+      {o.myProposal ? (
+        <div className="rounded-xl border p-4 text-sm" data-testid="my-proposal">
+          <p className="font-semibold">{t("yourProposal")}: {formatJod(o.myProposal.priceJod, lang)} {o.myProposal.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
+          <p className="text-muted-foreground">{t("status")}: {tr(`proposalStatus.${o.myProposal.status}`)}</p>
+          <p className="mt-2 whitespace-pre-line" dir="auto">{o.myProposal.message}</p>
+        </div>
+      ) : r.status === "open" ? (
+        <ProposalForm requestId={r.id} suggestedPrice={pkg?.priceJod ?? agency.startingPriceJod} />
+      ) : (
+        <p className="text-sm text-muted-foreground">{t("form.errors.closed")}</p>
+      )}
+    </div>
+  );
+}
