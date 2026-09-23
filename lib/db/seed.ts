@@ -1,8 +1,10 @@
 // Seeds a local database with clearly fictional demo agencies.
 //   npm run db:seed            seed if empty
 //   npm run db:seed -- --reset wipe everything first
+//   npm run db:seed -- --admin-only   only ensure the SEED_ADMIN_* account exists
 // Demo agencies carry is_demo=true so they can be removed before launch
 // (Admin → Agencies → "Remove demo data").
+import { randomBytes } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { updateAgency, createAgency } from "../data/agencies";
 import { createPostFromProcessed } from "../data/posts";
@@ -79,19 +81,33 @@ async function reset() {
   await db.execute(sql`truncate table audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
-export async function seed({ reset: doReset = false, quiet = false } = {}) {
+export async function seed({ reset: doReset = false, quiet = false, adminOnly = false } = {}) {
   const log = quiet ? () => {} : console.log;
   const db = await getDb();
   if (doReset) await reset();
+  const production = process.env.NODE_ENV === "production";
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (production ? null : "admin@sawwiq.test");
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (production ? null : "admin-pass-123");
+  // The admin is ensured on every run, so secrets added after the first deploy still work.
+  if (adminEmail && adminPassword && (!production || adminPassword.length >= 12)) {
+    if (!(await getUserByEmail(adminEmail))) {
+      await createUser(adminEmail, adminPassword, "admin");
+      log(`Admin account created for ${adminEmail}.`);
+    }
+  } else {
+    log("No admin created: set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (12+ characters in production).");
+  }
+  if (adminOnly) return;
+
   const [{ n }] = (await db.select({ n: sql<number>`count(*)::int` }).from(agencies)) as { n: number }[];
   if (n > 0) {
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
   }
 
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? "admin@sawwiq.test";
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? "admin-pass-123";
-  if (!(await getUserByEmail(adminEmail))) await createUser(adminEmail, adminPassword, "admin");
+  // Demo agency accounts must not share a known password on a public deployment.
+  const demoPassword =
+    process.env.SEED_DEMO_PASSWORD ?? (production ? randomBytes(18).toString("base64url") : DEMO_PASSWORD);
 
   const now = Date.now();
   const r = rng(42);
@@ -99,7 +115,7 @@ export async function seed({ reset: doReset = false, quiet = false } = {}) {
   const agencyIds: string[] = [];
 
   for (const [index, demo] of DEMO_AGENCIES.entries()) {
-    const user = await createUser(`${demo.handle.replace(/\./g, "-")}@sawwiq.test`, DEMO_PASSWORD);
+    const user = await createUser(`${demo.handle.replace(/\./g, "-")}@sawwiq.test`, demoPassword);
     const agency = await createAgency(
       user.id,
       {
@@ -252,12 +268,14 @@ export async function seed({ reset: doReset = false, quiet = false } = {}) {
   }
 
   log(`Seeded ${DEMO_AGENCIES.length} demo agencies and ${postIds.length} posts.`);
-  log(`Admin: ${adminEmail} / ${adminPassword}`);
-  log(`Demo agency login: ${DEMO_AGENCIES[0].handle.replace(/\./g, "-")}@sawwiq.test / ${DEMO_PASSWORD}`);
+  if (!production) {
+    log(`Admin: ${adminEmail} / ${adminPassword}`);
+    log(`Demo agency login: ${DEMO_AGENCIES[0].handle.replace(/\./g, "-")}@sawwiq.test / ${demoPassword}`);
+  }
 }
 
 if (process.argv[1] && /seed\.ts$/.test(process.argv[1])) {
-  seed({ reset: process.argv.includes("--reset") })
+  seed({ reset: process.argv.includes("--reset"), adminOnly: process.argv.includes("--admin-only") })
     .then(() => closeDb())
     .catch(async (error) => {
       console.error(error);

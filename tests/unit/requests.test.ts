@@ -6,6 +6,7 @@ import { createProjectRequest, getRequestByToken, listOpportunities, submitPropo
 import { createUser } from "@/lib/data/users";
 import { closeDb } from "@/lib/db";
 import { findMatches, marketPrices } from "@/lib/matching";
+import { setAgencyFlags } from "@/lib/data/admin";
 
 let a: { id: string; services: string[] };
 let b: { id: string; services: string[] };
@@ -29,6 +30,20 @@ describe("matching over the database", () => {
     const matches = await findMatches({ services: ["ads_meta"], city: "amman", budgetMaxJod: 400 });
     expect(matches.map((m) => m.handle)).toEqual(["ads.amman", "ads.irbid"]);
     expect(matches[1].cheapestPackage?.priceJod).toBe(250); // package beats the 900 starting price
+  });
+
+  it("gives paid plans priority only while monetization is on", async () => {
+    await setAgencyFlags(b.id, { plan: "business" });
+    try {
+      const free = await findMatches({ services: ["ads_meta"] });
+      expect(free.some((m) => m.featured)).toBe(false);
+      process.env.MONETIZATION_ENABLED = "true";
+      const paid = await findMatches({ services: ["ads_meta"] });
+      expect(paid.find((m) => m.id === b.id)?.featured).toBe(true);
+    } finally {
+      delete process.env.MONETIZATION_ENABLED;
+      await setAgencyFlags(b.id, { plan: "free" });
+    }
   });
 
   it("builds a budget range from starting prices and packages", async () => {

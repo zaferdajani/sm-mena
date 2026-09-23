@@ -22,6 +22,7 @@ Each agency sees its own numbers in Studio → Insights. Admin sees totals.
 | 1 | **Promoted posts and profiles** | Agency pays to appear in a clearly labelled "Sponsored" slot in the feed, the agencies strip, or at the top of an explore filter (for example "Instagram ads, Amman"). First-party only, no ad networks | Instagram ads; Houzz advertising; app-mall house ads | ≥ 20,000 monthly visitors |
 | 2 | **Pro plan** | Monthly subscription: verified fast-track, higher post limit, full insights history, boosted ranking, custom profile link, "Pro" badge | Contra Pro $29/mo, Behance Pro $9.99/mo, Dribbble Pro $4–99/mo | ≥ 150 active agencies and median ≥ 10 contact clicks per agency per month |
 | 3 | **Business plan** | Pro plus team seats, lead export, priority in strip, monthly performance report | Houzz Pro tiers | ≥ 20 Pro agencies asking for more |
+| 3b | **Recommendation priority** (part of Pro and Business) | Capped boost in AI matchmaker and project-request invitations, labelled "Featured"; more quotes per month | Upwork Freelancer Plus / Connects, Fiverr Promoted Gigs | ≥ 200 AI match conversations per month |
 | 4 | **Pay per lead (optional)** | Inquiry details unlocked per lead for non-subscribers | Thumbtack/Bark $15–75 per lead | Only if inquiry volume is high and subscriptions stall. Never expire credits |
 | 5 | **Data and sponsorships** | Annual "State of Social Media Pricing in Jordan" report; brand/telco/bank sponsorship of categories | — | Year 2 |
 
@@ -29,9 +30,9 @@ Each agency sees its own numbers in Studio → Insights. Admin sees totals.
 
 | Plan | Price (JOD / month) | Limits when monetization is on |
 |---|---|---|
-| Free | 0 | 12 posts, 30 days of insights, standard ranking |
-| Pro | 19 | Unlimited posts, 12 months of insights, ranking boost, Pro badge |
-| Business | 49 | Pro + 3 team seats, lead export, priority strip placement |
+| Free | 0 | 12 posts, 30 days of insights, standard ranking, 5 quotes a month |
+| Pro | 19 | Unlimited posts, 12 months of insights, ranking boost, Pro badge, 30 quotes a month, +6 recommendation priority |
+| Business | 49 | Pro + 3 team seats, lead export, priority strip placement, unlimited quotes, +10 recommendation priority |
 | Promoted post | from 5 JOD / day | One sponsored slot rotation per placement |
 
 Jordanian agencies already pay 800–2,500 USD per month in retainers from each client (`02-market-research.md`), so one extra client pays for years of Pro.
@@ -43,6 +44,8 @@ Jordanian agencies already pay 800–2,500 USD per month in retainers from each 
 - Only verified, active agencies can be promoted. Eligibility is checked when the slot is served.
 - Never promote an agency to a visitor on that agency's own profile.
 - No third-party ad scripts, ever.
+- **Paid priority never beats relevance.** In the AI matchmaker and request invitations, a plan boost (Pro +6, Business +10 out of 100) applies only to agencies whose relevance score is already 45 or more, and boosted results are labelled "Featured". The agent tells clients what Featured means.
+- Reviews can't be bought, hidden or reordered by plan. Ratings come only from verified clients (invite link or platform contact) and Google.
 
 ## 4. How it is built (already in code)
 
@@ -53,5 +56,6 @@ Jordanian agencies already pay 800–2,500 USD per month in retainers from each 
 | `entitlementsFor(agency)` | `lib/monetization/entitlements.ts` | Every limit check goes through this function |
 | Promotions table | database | Admin creates promotions (free pilot now); feed, strip and explore inject them with the rules above |
 | Plan per agency | Admin → Agencies | Admin can grant Pro manually (founding members) |
+| `proposalsPerMonth`, `recommendationBoost` | `lib/monetization/plans.ts` | Quote limits (checked by `canSendProposal`) and the matchmaker boost; both inactive while the flag is off |
 
 Turning on revenue later means: set the flag, connect a payment provider (see `08-legal-compliance.md`), and add a checkout page. The limits, badges and sponsored slots already work.

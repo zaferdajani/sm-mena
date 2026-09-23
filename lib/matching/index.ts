@@ -3,6 +3,7 @@ import { and, arrayOverlaps, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, packages, posts } from "@/lib/db/schema";
 import { toSummary, type AgencySummary } from "@/lib/data/agencies";
+import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isServiceKey } from "@/lib/taxonomy";
 import { rank, suggestBudget, type Need, type Reason } from "./score";
 
@@ -64,7 +65,8 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
       googleRatingCount: a.googleRatingCount,
       servicePosts: postsBy.get(a.id) ?? 0,
       plan: a.plan,
-      planActive: a.plan !== "free" && (!a.planExpiresAt || a.planExpiresAt > now),
+      // No paid priority while the platform is free for everyone.
+      planActive: monetizationEnabled() && a.plan !== "free" && (!a.planExpiresAt || a.planExpiresAt > now),
     })),
     limit,
   );

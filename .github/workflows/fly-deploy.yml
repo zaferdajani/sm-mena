@@ -1,0 +1,95 @@
+# Deploys Sawwiq to Fly.io on every push to main.
+#
+# One-time setup (browser only):
+#   1. Fly dashboard → Account → Access Tokens → create an org-scoped token.
+#   2. GitHub → this repo → Settings → Secrets and variables → Actions:
+#        FLY_API_TOKEN        (required)
+#        SEED_ADMIN_EMAIL     (recommended: your admin login)
+#        SEED_ADMIN_PASSWORD  (recommended: a strong password)
+#        ANTHROPIC_API_KEY    (optional: turns on the Claude matchmaker)
+#        GOOGLE_PLACES_API_KEY (optional: Google ratings)
+#        CRON_SECRET          (optional: lets an external scheduler call
+#                              /api/cron/google; generated if missing)
+# The first run creates the app and its volume. Without FLY_API_TOKEN the job
+# skips with a notice instead of failing.
+name: Deploy to Fly.io
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: fly-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      FLY_REGION: fra
+    steps:
+      - name: Skip when Fly is not configured
+        id: gate
+        run: |
+          if [ -z "$FLY_API_TOKEN" ]; then
+            echo "::notice::FLY_API_TOKEN is not set, so nothing was deployed. See the comment at the top of .github/workflows/fly-deploy.yml."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v5
+        if: steps.gate.outputs.go == 'true'
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        if: steps.gate.outputs.go == 'true'
+
+      - name: Read the app name from fly.toml
+        if: steps.gate.outputs.go == 'true'
+        id: app
+        run: echo "name=$(sed -n 's/^app *= *"\(.*\)"/\1/p' fly.toml)" >> "$GITHUB_OUTPUT"
+
+      - name: Create the app and volume on first run
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          APP="${{ steps.app.outputs.name }}"
+          flyctl apps list --json | grep -q "\"Name\": *\"$APP\"" || flyctl apps create "$APP" --org personal
+          flyctl volumes list -a "$APP" --json | grep -q '"name": *"sawwiq_data"' || flyctl volumes create sawwiq_data -a "$APP" --region "$FLY_REGION" --size 1 --yes
+
+      - name: Stage secrets that are present in GitHub (values are never printed)
+        if: steps.gate.outputs.go == 'true'
+        env:
+          SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
+          SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          APP="${{ steps.app.outputs.name }}"
+          args=""
+          for name in SEED_ADMIN_EMAIL SEED_ADMIN_PASSWORD ANTHROPIC_API_KEY GOOGLE_PLACES_API_KEY CRON_SECRET; do
+            value="$(printenv "$name" || true)"
+            [ -n "$value" ] && args="$args $name=$value"
+          done
+          case "$args" in *CRON_SECRET=*) ;; *) flyctl secrets list -a "$APP" | grep -q CRON_SECRET || args="$args CRON_SECRET=$(openssl rand -hex 24)" ;; esac
+          [ -n "$args" ] && flyctl secrets set $args -a "$APP" --stage > /dev/null || true
+
+      - name: Deploy (one machine)
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          APP="${{ steps.app.outputs.name }}"
+          flyctl deploy --remote-only --ha=false -a "$APP" --build-arg NEXT_PUBLIC_SITE_URL="https://$APP.fly.dev"
+
+      - name: Verify health
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          APP="${{ steps.app.outputs.name }}"
+          for i in $(seq 1 24); do
+            curl -fsS "https://$APP.fly.dev/api/health" > health.json 2>/dev/null && break
+            sleep 5
+          done
+          cat health.json; echo
+          grep -q '"ok":true' health.json
+          echo "::notice::Live at https://$APP.fly.dev"
