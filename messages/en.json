@@ -1,12 +1,7 @@
 {
   "Metadata": {
-    "title": "Sawwiq · Verified marketing agencies in Jordan",
-    "description": "Get proposals from verified social media and digital marketing agencies in Jordan within 48 hours, free."
-  },
-  "Header": {
-    "brand": "Sawwiq",
-    "switchLocale": "العربية",
-    "switchLocaleLabel": "Switch to Arabic"
+    "title": "Sawwiq · Social media agencies in Jordan",
+    "description": "Browse the work of social media and digital marketing agencies in Jordan, filter by service, city and budget, and contact them directly on WhatsApp."
   },
   "Home": {
     "eyebrow": "Coming soon in Jordan",
@@ -22,10 +17,19 @@
     "step3Title": "Choose with confidence",
     "step3Body": "Compare prices, reviews and portfolios, then start with the best fit.",
     "agenciesTitle": "Run a marketing agency?",
-    "agenciesBody": "Join the first 40 founding agencies and get lifetime free Pro."
+    "agenciesBody": "Join the first 40 founding agencies and get lifetime free Pro.",
+    "introTitle": "Find the right social media agency for your business",
+    "introBody": "Browse real work from Jordanian agencies, filter by service, city and budget, then contact them directly. No sign-up.",
+    "introCta": "Start exploring",
+    "introAgency": "Run an agency? Show your work for free",
+    "emptyFeed": "No posts yet. Be the first agency to share your work.",
+    "agenciesStrip": "Agencies",
+    "joinStrip": "Join"
   },
   "Footer": {
-    "rights": "© {year} Sawwiq. All rights reserved."
+    "rights": "© {year} Sawwiq. All rights reserved.",
+    "legal": "Terms & privacy",
+    "forAgencies": "For agencies"
   },
   "NotFound": {
     "title": "Page not found",
@@ -115,5 +119,164 @@
   "Languages": {
     "ar": "Arabic",
     "en": "English"
+  },
+  "Nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "saved": "Saved",
+    "studio": "Studio",
+    "join": "For agencies",
+    "admin": "Admin",
+    "menu": "Menu",
+    "newPost": "New post"
+  },
+  "Common": {
+    "verified": "Verified",
+    "sponsored": "Sponsored",
+    "loadMore": "Load more",
+    "loading": "Loading…",
+    "noResults": "No matching results.",
+    "clearFilters": "Clear filters",
+    "back": "Back",
+    "all": "All",
+    "from": "From {price} / month",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "copied": "Link copied",
+    "share": "Share",
+    "demo": "Demo account"
+  },
+  "Post": {
+    "like": "Like",
+    "unlike": "Unlike",
+    "save": "Save",
+    "unsave": "Remove from saved",
+    "shareTitle": "See this work on Sawwiq",
+    "likes": "{count, plural, =0 {Be the first to like this} one {1 like} other {# likes}}",
+    "views": "{count} views",
+    "whatsapp": "WhatsApp",
+    "contact": "Contact",
+    "result": "Result",
+    "services": "Services",
+    "industry": "Industry",
+    "platform": "Platform",
+    "viewProfile": "View agency page",
+    "moreFrom": "More from @{handle}",
+    "slide": "Image {n} of {total}",
+    "whatsappMessage": "Hello, I saw your work on Sawwiq and would like to ask about your services.",
+    "report": "Report",
+    "notFound": "This post is not available."
+  },
+  "Profile": {
+    "posts": "posts",
+    "followers": "followers",
+    "follow": "Follow",
+    "following": "Following",
+    "message": "Message",
+    "call": "Call",
+    "email": "Email",
+    "website": "Website",
+    "instagram": "Instagram",
+    "tabWork": "Work",
+    "tabAbout": "About",
+    "noPosts": "This agency hasn't shared any work yet.",
+    "city": "City",
+    "startingPrice": "Pricing",
+    "team": "Team size",
+    "founded": "Founded",
+    "languages": "Languages",
+    "platforms": "Platforms",
+    "industries": "Industries",
+    "services": "Services",
+    "notSet": "Not set",
+    "verifiedNote": "We checked this agency's commercial registration.",
+    "notFound": "This page doesn't exist."
+  },
+  "Explore": {
+    "title": "Explore",
+    "search": "Search agencies or services",
+    "posts": "Work",
+    "agencies": "Agencies",
+    "filters": "Filters",
+    "apply": "Show results",
+    "service": "Service",
+    "city": "City",
+    "platform": "Platform",
+    "industry": "Industry",
+    "budget": "Monthly budget",
+    "verifiedOnly": "Verified only",
+    "anyService": "All services",
+    "anyCity": "All cities",
+    "anyPlatform": "All platforms",
+    "anyIndustry": "All industries",
+    "anyBudget": "Any budget",
+    "upTo": "Up to {price} JOD",
+    "results": "{count, plural, =0 {No results} one {1 result} other {# results}}"
+  },
+  "Saved": {
+    "title": "Saved",
+    "posts": "Saved work",
+    "agencies": "Agencies you follow",
+    "emptyPosts": "Tap the bookmark on any post to keep it here.",
+    "emptyAgencies": "Follow agencies you like to find them here easily.",
+    "deviceNote": "Kept on this device only, no account needed."
+  },
+  "Header": {
+    "brand": "Sawwiq",
+    "switchLocale": "العربية",
+    "switchLocaleLabel": "Switch to Arabic"
+  },
+  "Inquiry": {
+    "open": "Message",
+    "title": "Message {name}",
+    "subtitle": "Your message goes to the agency's inbox and they will contact you on your number.",
+    "name": "Your name",
+    "phone": "Phone number",
+    "business": "Business name (optional)",
+    "service": "Service needed",
+    "anyService": "Not sure",
+    "message": "Your message",
+    "messagePlaceholder": "Example: New restaurant in Abdoun, we need Instagram and TikTok management with a 300 JOD monthly budget.",
+    "consent": "I agree to share my name and number with this agency so they can reply.",
+    "send": "Send",
+    "sent": "Sent. The agency will contact you soon.",
+    "errors": {
+      "required": "Please fill in your name, phone and message.",
+      "phone": "Enter a valid phone number.",
+      "consent": "You need to agree before sending.",
+      "rateLimited": "Too many messages. Try again later.",
+      "generic": "Could not send. Please try again."
+    }
+  },
+  "Report": {
+    "open": "Report post",
+    "title": "Why are you reporting this post?",
+    "details": "More details (optional)",
+    "send": "Send report",
+    "sent": "Thanks. We will review it.",
+    "reasons": {
+      "spam": "Spam or scam",
+      "stolen_work": "Work copied from someone else",
+      "misleading": "Misleading results or claims",
+      "inappropriate": "Inappropriate content",
+      "other": "Something else"
+    }
+  },
+  "Legal": {
+    "title": "Terms and privacy",
+    "intro": "Sawwiq showcases the work of social media agencies in Jordan. This page summarises how we use data and what each side is responsible for. The full legal version is under review.",
+    "s1t": "Visitors",
+    "s1": "You don't need an account. We use an anonymous cookie to remember your likes, saves and follows on your device, and to count views once a day. We don't sell your data or use third-party ads.",
+    "s2t": "Messages to agencies",
+    "s2": "When you message an agency, we share your name, number and message with that agency only, with your explicit consent. Messages are kept for 24 months, then deleted.",
+    "s3t": "Agencies",
+    "s3": "You are responsible for the accuracy of your page and for having the right to publish the work you show. Sponsored posts are always labelled \"Sponsored\". We may hide content that breaks these rules or suspend accounts.",
+    "s4t": "Your rights",
+    "s4": "Under Jordan's Personal Data Protection Law No. 24 of 2023 you can ask to access, correct or delete your data, or withdraw consent. Write to privacy@sawwiq.jo.",
+    "s5t": "Pricing",
+    "s5": "The platform is currently free for everyone. Any paid plans will be announced in advance and never charged without agreement."
   }
 }

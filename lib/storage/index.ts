@@ -22,7 +22,7 @@ function localStorage(): Storage {
   const root = process.env.UPLOADS_DIR ?? path.join(process.cwd(), ".data", "uploads");
   const resolve = (key: string) => {
     if (!isSafeKey(key)) throw new Error(`Unsafe storage key: ${key}`);
-    return path.join(root, key);
+    return path.join(/* turbopackIgnore: true */ root, key);
   };
   return {
     async put(key, body) {
