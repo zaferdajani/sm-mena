@@ -128,7 +128,8 @@
     "join": "For agencies",
     "admin": "Admin",
     "menu": "Menu",
-    "newPost": "New post"
+    "newPost": "New post",
+    "hire": "Hire an agency"
   },
   "Common": {
     "verified": "Verified",
@@ -489,5 +490,42 @@
       },
       "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day."
     }
+  },
+  "Hire": {
+    "indexTitle": "Hire a social media agency in Jordan",
+    "indexSubtitle": "Pick the service you need to see the best specialised agencies, their work and starting prices.",
+    "title": "Best {service} agencies in {place}",
+    "metaDescription": "Compare {count} {service} agencies in {place}: real work, prices from {min} JOD per month, and direct contact on WhatsApp.",
+    "jordan": "Jordan",
+    "summary": "{count, plural, =0 {No agencies yet} one {1 agency} other {# agencies}} · {verified} verified",
+    "browseWork": "Browse the work",
+    "agencies": "{count, plural, one {agency} other {agencies}}",
+    "viewProfile": "View page",
+    "posts": "{count} posts",
+    "noAgencies": "No agencies for this service in this city yet.",
+    "seeAllJordan": "See all of Jordan",
+    "howTitle": "How to hire an agency on Sawwiq",
+    "how1": "Browse real agency work and filter by service, city and budget.",
+    "how2": "Compare starting prices, verification and followers, and save what you like.",
+    "how3": "Contact them directly on WhatsApp or send a message. No commission, no sign-up.",
+    "priceTitle": "How much does {service} cost in {place}?",
+    "priceBody": "Based on starting prices published by {count} agencies on Sawwiq, monthly packages start from {min} JOD and go up to {max} JOD, with a median of {median} JOD. The final price depends on the number of posts, platforms and paid ads.",
+    "priceNone": "Agencies haven't published prices for this service yet. Contact them directly for a quote.",
+    "priceMin": "Lowest starting price",
+    "priceMedian": "Median",
+    "priceMax": "Highest starting price",
+    "perMonth": "per month",
+    "faqTitle": "Frequently asked questions",
+    "faq1q": "How do I choose the right {service} agency?",
+    "faq1a": "Start with their past work in your industry, then compare the starting price and what it includes. Ask for measurable results and look for the verified badge.",
+    "faq2q": "What does the \"Verified\" badge mean?",
+    "faq2a": "It means the Sawwiq team checked the agency's commercial registration. It is not a guarantee of work quality, so review their work and talk to them before agreeing.",
+    "faq3q": "Do I pay Sawwiq a commission?",
+    "faq3a": "No. Browsing and contacting agencies is completely free, and you agree terms with the agency directly.",
+    "faq4q": "Can I work with an agency from another city?",
+    "faq4a": "Yes. Most social media services are delivered remotely, though photo and video production is easier with an agency near you.",
+    "relatedCities": "{service} in other cities",
+    "relatedServices": "Related services",
+    "forAgencies": "Offer this service? Show your work for free"
   }
 }

@@ -31,6 +31,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const { tab, ...filters } = p;
   const t = await getTranslations("Explore");
   const tc = await getTranslations("Common");
+  const th = await getTranslations("Hire");
   const [tCity, tPlat, tInd] = await Promise.all([getTranslations("Cities"), getTranslations("Platforms"), getTranslations("Industries")]);
   const visitorId = await getVisitorId();
 
@@ -53,6 +54,16 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
       <div className="space-y-3 px-3 pt-3 sm:px-4 sm:pt-6">
         <h1 className="sr-only">{t("title")}</h1>
         <ExploreFilters options={options} resultLabel={resultLabel} />
+        {filters.service && (
+          <Link
+            href={`/hire/${filters.service}${filters.city ? `/${filters.city}` : ""}`}
+            className="flex items-center justify-between rounded-xl border bg-accent/60 px-4 py-2.5 text-sm font-medium"
+            data-testid="hire-link"
+          >
+            {th("title", { service: serviceLabel(filters.service, locale), place: filters.city ? tCity(filters.city) : th("jordan") })}
+            <span aria-hidden className="rtl:rotate-180">→</span>
+          </Link>
+        )}
         <div className="flex border-b text-sm font-semibold" role="tablist">
           {(["posts", "agencies"] as const).map((key) => (
             <Link

@@ -29,7 +29,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {th("brand")}
         </Link>
         <nav aria-label={t("menu")}>
-          <SideNav items={items} />
+          <SideNav items={[...items.slice(0, 2), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(2)]} />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />

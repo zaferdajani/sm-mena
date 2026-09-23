@@ -101,6 +101,7 @@ export type AgencySummary = {
   followerCount: number;
   services: string[];
   startingPriceJod: number | null;
+  whatsapp: string | null;
 };
 
 export function toSummary(a: Agency): AgencySummary {
@@ -116,6 +117,7 @@ export function toSummary(a: Agency): AgencySummary {
     followerCount: a.followerCount,
     services: a.services,
     startingPriceJod: a.startingPriceJod,
+    whatsapp: a.whatsapp,
   };
 }
 
