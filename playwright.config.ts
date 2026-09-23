@@ -7,11 +7,22 @@ const baseURL = `http://localhost:${port}`;
 // (for example in Claude Code cloud sessions).
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined;
 
+// The e2e server gets its own seeded database and upload folder.
+const e2eEnv = {
+  PGLITE_DIR: ".data/e2e/pglite",
+  UPLOADS_DIR: ".data/e2e/uploads",
+  NEXT_PUBLIC_SITE_URL: baseURL,
+};
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
+  workers: process.env.CI ? 2 : 3,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
+  timeout: 60_000,
+  // PGlite is a single embedded process; parallel runs make it slower than Postgres.
+  expect: { timeout: 10_000 },
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,
@@ -23,9 +34,10 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } } },
   ],
   webServer: {
-    command: `npm run start -- --port ${port}`,
+    command: `npm run db:reset && npm run start -- --port ${port}`,
     url: `${baseURL}/ar`,
+    env: e2eEnv,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 240_000,
   },
 });
