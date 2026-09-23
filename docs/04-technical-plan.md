@@ -6,8 +6,8 @@ Optimised for one founder building with Claude Code, low running cost, and a cle
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | **Next.js 15 (App Router) + TypeScript** | SSR/SSG for SEO city pages, API routes for webhooks, one codebase |
-| Styling | Tailwind CSS + shadcn/ui | RTL support via `dir` and logical properties; fast to build forms |
+| Framework | **Next.js 16 (App Router) + TypeScript** | SSR/SSG for SEO city pages, API routes for webhooks, one codebase |
+| Styling | Tailwind CSS 4 + shadcn/ui (Base UI, RTL mode) | RTL support via `dir` and logical properties; fast to build forms |
 | i18n | `next-intl` | Locale routing `/ar` (default) and `/en`, message files, RTL-aware |
 | Database | **PostgreSQL on Supabase** | Managed Postgres, auth, storage, row-level security, EU or Middle East region |
 | ORM | Drizzle ORM | Type-safe schema in code, simple migrations |
@@ -36,6 +36,8 @@ Optimised for one founder building with Claude Code, low running cost, and a cle
 │   │   ├── (agency)/         ← agency/dashboard, profile, briefs, proposals, billing, verification
 │   │   └── (admin)/          ← admin/verifications, briefs, agencies, reviews, metrics
 │   └── api/                  ← webhooks (psp, sms), cron (expire briefs, review prompts)
+├── proxy.ts                  ← locale routing (Next.js 16 name for middleware)
+├── i18n/                     ← routing, request config, navigation helpers
 ├── components/
 ├── lib/
 │   ├── db/                   ← drizzle schema, migrations, seed

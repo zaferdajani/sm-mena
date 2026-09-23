@@ -1,0 +1,34 @@
+{
+  "Metadata": {
+    "title": "Sawwiq · Verified marketing agencies in Jordan",
+    "description": "Get proposals from verified social media and digital marketing agencies in Jordan within 48 hours, free."
+  },
+  "Header": {
+    "brand": "Sawwiq",
+    "switchLocale": "العربية",
+    "switchLocaleLabel": "Switch to Arabic"
+  },
+  "Home": {
+    "eyebrow": "Coming soon in Jordan",
+    "title": "The right agency, in three steps",
+    "subtitle": "Describe what you need once and receive proposals from verified social media and digital marketing agencies within 48 hours.",
+    "cta": "Get proposals",
+    "ctaSoon": "Launching soon",
+    "howTitle": "How it works",
+    "step1Title": "Post your brief",
+    "step1Body": "Your business type, what you need and your monthly budget. Five minutes.",
+    "step2Title": "Receive proposals",
+    "step2Body": "Three to five verified agencies reply in one standard format that is easy to compare.",
+    "step3Title": "Choose with confidence",
+    "step3Body": "Compare prices, reviews and portfolios, then start with the best fit.",
+    "agenciesTitle": "Run a marketing agency?",
+    "agenciesBody": "Join the first 40 founding agencies and get lifetime free Pro."
+  },
+  "Footer": {
+    "rights": "© {year} Sawwiq. All rights reserved."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "home": "Back to home"
+  }
+}

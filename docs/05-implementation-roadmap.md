@@ -6,7 +6,9 @@ Conventions: Conventional Commits; one PR per sprint; CI must pass; Arabic strin
 
 ---
 
-## Sprint 0 · Repository bootstrap
+## Sprint 0 · Repository bootstrap ✅ Done
+
+Built on Next.js 16, where middleware is renamed `proxy.ts`. Locale detection is off so `/` always opens Arabic. Vercel deployment is documented in the README and needs the owner's Vercel account.
 
 **Goal:** a running, deployable, empty bilingual app with CI.
 

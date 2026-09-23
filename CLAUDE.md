@@ -1,5 +1,7 @@
 # CLAUDE.md — Sawwiq (Jordan agency marketplace)
 
+@AGENTS.md
+
 Read `docs/03-product-spec.md`, `docs/04-technical-plan.md` and `docs/05-implementation-roadmap.md` before writing code. Build sprint by sprint in the order given in the roadmap. Do not start payments (Sprint 9+) until Sprint 6's end-to-end test passes.
 
 ## Non-negotiables
@@ -13,8 +15,18 @@ Read `docs/03-product-spec.md`, `docs/04-technical-plan.md` and `docs/05-impleme
 - Matching lives in `lib/matching/` as pure functions with unit tests and returns a score breakdown.
 - Do not commit real agency contact details, secrets, or `.env` files. `data/agency-seed-template.csv` is a template only.
 
+## Stack notes (Next.js 16)
+- Middleware is called **proxy** in Next.js 16 (`proxy.ts`). Do not create `middleware.ts`.
+- `params` and `searchParams` are Promises. Use `await params` in async components or `use(params)` in sync ones; type props with the global `PageProps<"/[locale]">` / `LayoutProps<"/[locale]">` helpers.
+- Read `node_modules/next/dist/docs/` before using an unfamiliar Next.js API.
+- i18n: `i18n/routing.ts` (locales, `directionOf`), `i18n/request.ts`, `i18n/navigation.ts` (use its `Link`, not `next/link`). Locale detection is off: `/` always opens Arabic.
+- UI: shadcn/ui (Base UI primitives) with `rtl: true`; `DirectionProvider` is set in the locale layout. Add components with `npx shadcn@latest add <name>`.
+- Theme tokens live in `app/globals.css` using shadcn names; brand green is `primary`. Dark mode follows the OS.
+- Taxonomy: edit `data/service-taxonomy.json`, then mirror it in `lib/taxonomy.ts`; a unit test fails if they differ.
+
 ## Commands
-- `npm run dev` · `npm run lint` · `npm run typecheck` · `npm test` · `npm run e2e`
+- `npm run dev` · `npm run lint` · `npm run typecheck` · `npm test` · `npm run build && npm run e2e`
+- In Claude Code cloud sessions run e2e with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium`.
 - `npm run db:generate` · `npm run db:migrate` · `npm run db:seed`
 - `npm run import:agencies -- path/to/agencies.csv`
 
