@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { aiEnabled } from "@/lib/ai/agent";
+import { aiStatus } from "@/lib/ai/agent";
 import { getDb } from "@/lib/db";
 import { googleConfigured } from "@/lib/google";
 import { monetizationEnabled } from "@/lib/monetization/plans";
@@ -16,7 +16,7 @@ export async function GET() {
       ok: true,
       database: process.env.DATABASE_URL ? "postgres" : "pglite",
       storage: process.env.STORAGE_PROVIDER === "supabase" ? "supabase" : "local",
-      ai: aiEnabled() ? "claude" : "basic",
+      ai: aiStatus(),
       google: googleConfigured(),
       monetization: monetizationEnabled(),
     });

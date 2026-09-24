@@ -667,7 +667,8 @@
       "google": "Google {average} ({count})",
       "verified": "Verified",
       "featured": "Featured"
-    }
+    },
+    "mockMode": "Test mode: mock AI for testing"
   },
   "Requests": {
     "formTitle": "Send your project and get quotes",

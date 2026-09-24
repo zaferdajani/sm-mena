@@ -60,7 +60,7 @@ describe("Claude matchmaker loop", () => {
       msg("end_turn", [{ type: "text", text: "Meta Pros is a strong fit." }]),
     );
     const res = await runMatchmaker([{ role: "user", content: "Meta ads for my café in Amman, 400 JOD" }], "en", "v1");
-    expect(res.mode).toBe("ai");
+    expect(res).toMatchObject({ mode: "ai", provider: "anthropic" });
     expect(res.reply).toBe("Meta Pros is a strong fit.");
     expect(res.recommendation?.agencies.map((a) => a.handle)).toEqual(["meta.pros"]);
     expect(res.recommendation?.budgetMaxJod).toBe(400);

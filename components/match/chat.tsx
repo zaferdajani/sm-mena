@@ -10,7 +10,7 @@ import type { MatchResponse, Recommendation } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
 import { RecommendationCard } from "./recommendation-card";
 
-type Turn = { role: "user" | "assistant"; content: string; recommendation?: Recommendation | null; suggestions?: string[]; mode?: "ai" | "basic" };
+type Turn = { role: "user" | "assistant"; content: string; recommendation?: Recommendation | null; suggestions?: string[]; mode?: "ai" | "basic"; provider?: string };
 type Option = { key: string; label: string };
 
 const STORAGE_KEY = "sawwiq-match-chat";
@@ -60,7 +60,7 @@ export function MatchChat({ services, cities, starters }: { services: Option[]; 
       if (res.status === 429) throw new Error("rateLimited");
       if (!res.ok) throw new Error("error");
       const data = (await res.json()) as MatchResponse;
-      setTurns([...next, { role: "assistant", content: data.reply, recommendation: data.recommendation, suggestions: data.suggestions, mode: data.mode }]);
+      setTurns([...next, { role: "assistant", content: data.reply, recommendation: data.recommendation, suggestions: data.suggestions, mode: data.mode, provider: data.provider }]);
     } catch (e) {
       setError(e instanceof Error && e.message === "rateLimited" ? t("rateLimited") : t("error"));
       setTurns(turns);
@@ -132,7 +132,9 @@ export function MatchChat({ services, cities, starters }: { services: Option[]; 
                 )}
               </div>
             )}
-            {turn.mode === "basic" && turn === lastAssistant && <p className="text-[11px] text-muted-foreground">{t("basicMode")}</p>}
+            {turn === lastAssistant && (turn.mode === "basic" || turn.provider === "mock") && (
+              <p className="text-[11px] text-muted-foreground">{t(turn.provider === "mock" ? "mockMode" : "basicMode")}</p>
+            )}
           </div>
         ))}
         {pending && <Bubble role="assistant"><span className="animate-pulse">{t("thinking")}</span></Bubble>}

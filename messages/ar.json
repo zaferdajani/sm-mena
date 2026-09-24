@@ -667,7 +667,8 @@
       "google": "Google {average} ({count})",
       "verified": "موثّقة",
       "featured": "مميّزة"
-    }
+    },
+    "mockMode": "وضع تجريبي: ذكاء اصطناعي وهمي للاختبار"
   },
   "Requests": {
     "formTitle": "أرسل مشروعك واحصل على عروض",

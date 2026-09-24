@@ -4,8 +4,8 @@ import { normalizeForSearch } from "@/lib/text";
 import { serviceLabel } from "@/lib/labels";
 import type { ChatMessage, MatchResponse } from "./types";
 
-// Rule-based matchmaker used when no Anthropic API key is configured or the
-// API is unavailable. Keyword lists are normalised with normalizeForSearch.
+// Rule-based matchmaker used when no AI provider is configured or every
+// configured provider failed. Keyword lists are normalised with normalizeForSearch.
 const SERVICE_KEYWORDS: [string, string[]][] = [
   ["ads_meta", ["اعلانات فيسبوك", "اعلانات انستغرام", "اعلانات انستقرام", "اعلان ممول", "ممول", "meta ads", "facebook ads", "instagram ads", "sponsored"]],
   ["ads_tiktok", ["اعلانات تيك توك", "اعلان تيك توك", "tiktok ads"]],
@@ -81,7 +81,7 @@ export function extractNeed(text: string) {
   return { services: [...new Set(services)].slice(0, 4), platforms, industry: industries[0] ?? null, city: cities[0] ?? null, budget };
 }
 
-const isArabic = (text: string) => /[؀-ۿ]/.test(text);
+export const isArabic = (text: string) => /[؀-ۿ]/.test(text);
 
 export async function basicMatchmaker(history: ChatMessage[], locale: string): Promise<MatchResponse> {
   const userText = history.filter((m) => m.role === "user").map((m) => m.content).join(" \n ");
@@ -92,6 +92,7 @@ export async function basicMatchmaker(history: ChatMessage[], locale: string): P
   if (!need.services.length) {
     return {
       mode: "basic",
+      provider: "basic",
       recommendation: null,
       reply: ar
         ? "أهلاً! أخبرني عن نشاطك وما تحتاجه: إدارة حسابات، إعلانات ممولة، تصوير وفيديو، أو هوية بصرية؟ ويفيدني أن أعرف مدينتك وميزانيتك الشهرية."
@@ -119,6 +120,7 @@ export async function basicMatchmaker(history: ChatMessage[], locale: string): P
   if (!matches.length) {
     return {
       mode: "basic",
+      provider: "basic",
       recommendation: null,
       reply: ar ? `لم أجد وكالات لـ ${serviceNames} بهذه الشروط. جرّب مدينة أخرى أو ميزانية أوسع.` : `I couldn't find agencies for ${serviceNames} with these filters. Try another city or a wider budget.`,
       suggestions: ar ? ["في أي مدينة", "ميزانية أعلى"] : ["Any city", "Higher budget"],
@@ -131,6 +133,7 @@ export async function basicMatchmaker(history: ChatMessage[], locale: string): P
 
   return {
     mode: "basic",
+    provider: "basic",
     reply: ar
       ? `وجدت ${matches.length} وكالات مناسبة لـ ${serviceNames}. رتّبتها حسب ملاءمة الخدمات وأعمالها السابقة والتقييمات والسعر والموقع. تواصل معها عبر واتساب، أو أرسل مشروعك لتصلك عروض أسعار.`
       : `I found ${matches.length} agencies that fit ${serviceNames}, ranked by service fit, past work, reviews, price and location. Contact them on WhatsApp, or send your project to receive quotes.`,

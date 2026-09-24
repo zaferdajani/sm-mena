@@ -24,7 +24,11 @@ Subscriptions buy **priority, not relevance**: Pro adds 6 points and Business 10
 
 ### The AI agent
 
-With `ANTHROPIC_API_KEY` set, Claude runs the chat with three tools (`search_agencies`, `price_guide`, `recommend_agencies`). It asks a few questions at most, searches the real database, quotes market prices from actual packages, and returns a structured recommendation. Without a key, or if the API fails, a rule-based Arabic/English matchmaker gives the same kind of answer, so the feature never goes down.
+The chat runs on **Claude or OpenAI**, whichever key you set (`AI_PROVIDER` picks the order when both are set). Either model uses the same three tools (`search_agencies`, `price_guide`, `recommend_agencies`): it asks a few questions at most, searches the real database, quotes market prices from actual packages, and returns a structured recommendation. If a provider fails (outage, spend limit, refusal) the other one answers, and if neither can, a rule-based Arabic/English matchmaker does, so the feature never goes down.
+
+`AI_PROVIDER=mock` runs a scripted, offline stand-in for the model through the same tools: free, no key, for development and demos (answers are marked "test mode").
+
+**Compare providers before choosing:** `npm run ai:eval` scores providers on 30 test conversations (`tests/fixtures/matchmaker-cases.ts`: Arabic, Jordanian dialect, English, mixed, vague, off-topic and a prompt-injection attempt) and reports pass rate, tokens and latency. For example, `npm run ai:eval -- --provider openai,anthropic --price-in 0.15 --price-out 0.60` (prices in USD per million tokens; each real run costs a few cents).
 
 ## Run it locally
 
@@ -53,6 +57,7 @@ Every demo agency logs in as `<handle with dots replaced by dashes>@sawwiq.test`
 | `npm test` | Unit tests (Vitest, in-memory PGlite) |
 | `npm run build && npm run e2e` | Production build, then browser tests (Playwright, mobile and desktop) on a freshly seeded database |
 | `npm run db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations and seed |
+| `npm run ai:eval` | Score AI providers on the test conversations (mock and rules when no key is set) |
 
 First time running browser tests: `npx playwright install chromium`, or point to an existing Chromium with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome`.
 
@@ -68,7 +73,7 @@ One machine with a 1 GB volume holds the database and uploads, so no other servi
 2. In GitHub → this repo → Settings → Secrets and variables → Actions, add:
    - `FLY_API_TOKEN` (required)
    - `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (12+ characters) for your admin login
-   - `ANTHROPIC_API_KEY` (optional, turns on the Claude matchmaker)
+   - `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY` (optional, turns on the AI matchmaker); optionally `AI_PROVIDER`, `ANTHROPIC_MODEL` (e.g. `claude-haiku-4-5`) or `OPENAI_MODEL` (e.g. `gpt-4o-mini`)
    - `GOOGLE_PLACES_API_KEY` (optional, Google ratings)
 3. Run **Actions → Deploy to Fly.io → Run workflow** (it also runs on every push to `main`).
 
@@ -105,7 +110,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 
 ## Stack
 
-Next.js 16 (App Router, `proxy.ts`), React 19, TypeScript, Tailwind CSS 4, shadcn/ui with RTL, next-intl, Drizzle ORM on PostgreSQL (PGlite locally), sharp, Anthropic TypeScript SDK, Vitest, Playwright, GitHub Actions.
+Next.js 16 (App Router, `proxy.ts`), React 19, TypeScript, Tailwind CSS 4, shadcn/ui with RTL, next-intl, Drizzle ORM on PostgreSQL (PGlite locally), sharp, Anthropic and OpenAI TypeScript SDKs, Vitest, Playwright, GitHub Actions.
 
 ## Working name
 

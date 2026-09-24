@@ -6,7 +6,9 @@
 #        FLY_API_TOKEN        (required)
 #        SEED_ADMIN_EMAIL     (recommended: your admin login)
 #        SEED_ADMIN_PASSWORD  (recommended: a strong password)
-#        ANTHROPIC_API_KEY    (optional: turns on the Claude matchmaker)
+#        ANTHROPIC_API_KEY    (optional: Claude runs the matchmaker)
+#        OPENAI_API_KEY       (optional: OpenAI runs the matchmaker)
+#        AI_PROVIDER, ANTHROPIC_MODEL, OPENAI_MODEL (optional: see .env.example)
 #        GOOGLE_PLACES_API_KEY (optional: Google ratings)
 #        CRON_SECRET          (optional: lets an external scheduler call
 #                              /api/cron/google; generated if missing)
@@ -64,12 +66,16 @@ jobs:
           SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
           SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           APP="${{ steps.app.outputs.name }}"
           args=""
-          for name in SEED_ADMIN_EMAIL SEED_ADMIN_PASSWORD ANTHROPIC_API_KEY GOOGLE_PLACES_API_KEY CRON_SECRET; do
+          for name in SEED_ADMIN_EMAIL SEED_ADMIN_PASSWORD ANTHROPIC_API_KEY OPENAI_API_KEY AI_PROVIDER ANTHROPIC_MODEL OPENAI_MODEL GOOGLE_PLACES_API_KEY CRON_SECRET; do
             value="$(printenv "$name" || true)"
             [ -n "$value" ] && args="$args $name=$value"
           done
