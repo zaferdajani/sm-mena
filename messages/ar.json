@@ -24,7 +24,9 @@
     "introAgency": "هل تملك وكالة؟ اعرض أعمالك مجاناً",
     "emptyFeed": "لا توجد منشورات بعد. كن أول وكالة تنشر أعمالها.",
     "agenciesStrip": "الوكالات",
-    "joinStrip": "انضم"
+    "joinStrip": "انضم",
+    "suggestedTitle": "وكالات مقترحة",
+    "suggestedAll": "كل الخدمات"
   },
   "Footer": {
     "rights": "© {year} سوّق. جميع الحقوق محفوظة.",

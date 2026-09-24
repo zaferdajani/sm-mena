@@ -24,7 +24,9 @@
     "introAgency": "Run an agency? Show your work for free",
     "emptyFeed": "No posts yet. Be the first agency to share your work.",
     "agenciesStrip": "Agencies",
-    "joinStrip": "Join"
+    "joinStrip": "Join",
+    "suggestedTitle": "Suggested agencies",
+    "suggestedAll": "All services"
   },
   "Footer": {
     "rights": "© {year} Sawwiq. All rights reserved.",
