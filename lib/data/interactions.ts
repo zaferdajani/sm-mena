@@ -1,6 +1,7 @@
 import { and, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, follows, inquiries, likes, posts, reports, saves } from "@/lib/db/schema";
+import { openInquiryConversation } from "./conversations";
 import { CONSENT_VERSION } from "./users";
 
 type Channel = "whatsapp" | "phone" | "email" | "website" | "instagram";
@@ -132,9 +133,13 @@ export async function createInquiry(input: {
   visitorId: string | null;
 }) {
   const db = await getDb();
-  const [row] = await db.insert(inquiries).values({ ...input, consentVersion: CONSENT_VERSION }).returning();
-  await db.insert(events).values({ type: "inquiry", agencyId: input.agencyId, postId: input.postId ?? null, visitorId: input.visitorId });
-  return row;
+  return db.transaction(async (tx) => {
+    const [row] = await tx.insert(inquiries).values({ ...input, consentVersion: CONSENT_VERSION }).returning();
+    await tx.insert(events).values({ type: "inquiry", agencyId: input.agencyId, postId: input.postId ?? null, visitorId: input.visitorId });
+    // The message also opens a chat (and notifies the agency) so it can answer inside Sawwiq.
+    await openInquiryConversation(row, tx);
+    return row;
+  });
 }
 
 export async function createReport(input: {

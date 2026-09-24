@@ -1,9 +1,10 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, MessagesSquare, Phone } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArchiveButton } from "@/components/studio/inbox-actions";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
+import { conversationsForInquiries } from "@/lib/data/conversations";
 import { listInquiries, markAllRead } from "@/lib/data/inbox";
 import { timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -17,6 +18,8 @@ export default async function InboxPage({ params, searchParams }: PageProps<"/[l
   const { agency } = await requireAgency();
   const t = await getTranslations("Studio.inboxPage");
   const rows = await listInquiries(agency.id, archived);
+  const tchat = await getTranslations("Chat");
+  const chats = await conversationsForInquiries(rows.map((r) => r.inquiry.id));
   const unreadIds = new Set(rows.filter((r) => r.inquiry.status === "new").map((r) => r.inquiry.id));
   // Opening the inbox marks everything as read; the badge disappears on the next navigation.
   if (unreadIds.size) await markAllRead(agency.id);
@@ -48,7 +51,13 @@ export default async function InboxPage({ params, searchParams }: PageProps<"/[l
             </div>
             <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{inquiry.message}</p>
             {postCaption && <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{t("about")}: {postCaption}</p>}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
+              {chats.get(inquiry.id) && (
+                <Link href={`/studio/messages/${chats.get(inquiry.id)}`} className={buttonVariants({ variant: "outline", className: "h-8 gap-1.5" })} data-testid="inquiry-chat">
+                  <MessagesSquare className="size-4" />
+                  {tchat("replyInChat")}
+                </Link>
+              )}
               <a
                 href={whatsappLink(inquiry.phone, t("replyMessage", { name: inquiry.name, agency: agency.name }))}
                 target="_blank"

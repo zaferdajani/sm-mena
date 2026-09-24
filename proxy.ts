@@ -61,5 +61,8 @@ export const config = {
     // rule above would mistake for files.
     "/(ar|en)/a/:handle*",
     "/a/:handle*",
+    // Client chat pages end with the agency handle too.
+    "/(ar|en)/r/:token/chat/:handle*",
+    "/(ar|en)/requests/:id/chat/:handle*",
   ],
 };

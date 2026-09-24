@@ -57,6 +57,13 @@
       "when": 1790266518855,
       "tag": "0007_legal_documents",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790268790814,
+      "tag": "0008_conversations",
+      "breakpoints": true
     }
   ]
 }

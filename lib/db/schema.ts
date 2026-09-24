@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import {
+  bigint,
   bigserial,
+  check,
   real,
   boolean,
   index,
@@ -895,6 +897,96 @@ export const appSettings = pgTable("app_settings", {
   updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
 });
 
+// ---------------------------------------------------------------------------
+// Chat between clients and agencies (docs/23-chat-and-notifications.md).
+// Every message is kept as sent: a database trigger refuses edits and deletes
+// (staff can only hide a message), so what staff review in a dispute is exactly
+// what was said. Clients have no account: they are the visitor cookie that
+// posted the request or inquiry, or whoever holds the request's private link.
+// ---------------------------------------------------------------------------
+export const conversationStatus = pgEnum("conversation_status", ["open", "closed", "blocked"]);
+export const messageSide = pgEnum("message_side", ["client", "agency", "system", "staff"]);
+
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    requestId: uuid("request_id").references(() => projectRequests.id, { onDelete: "set null" }),
+    proposalId: uuid("proposal_id").references(() => proposals.id, { onDelete: "set null" }),
+    inquiryId: uuid("inquiry_id").references(() => inquiries.id, { onDelete: "set null" }),
+    clientVisitorId: text("client_visitor_id"),
+    clientName: text("client_name").notNull(), // snapshot; never a phone or email
+    status: conversationStatus("status").notNull().default("open"),
+    // Version of the "chats are recorded for quality assurance" notice shown.
+    noticeVersion: text("notice_version").notNull(),
+    lastMessageId: bigint("last_message_id", { mode: "number" }).notNull().default(0),
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }),
+    agencyLastReadId: bigint("agency_last_read_id", { mode: "number" }).notNull().default(0),
+    clientLastReadId: bigint("client_last_read_id", { mode: "number" }).notNull().default(0),
+    // Email throttle: at most one "new message" email per conversation per 15 minutes.
+    agencyEmailedAt: timestamp("agency_emailed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("conversations_request_agency_idx").on(t.requestId, t.agencyId).where(sql`${t.requestId} is not null`),
+    uniqueIndex("conversations_inquiry_idx").on(t.inquiryId).where(sql`${t.inquiryId} is not null`),
+    index("conversations_agency_idx").on(t.agencyId, t.lastMessageAt),
+    index("conversations_visitor_idx").on(t.clientVisitorId, t.lastMessageAt),
+  ],
+);
+
+export const conversationMessages = pgTable(
+  "conversation_messages",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    side: messageSide("side").notNull(),
+    senderUserId: uuid("sender_user_id").references(() => users.id, { onDelete: "set null" }),
+    senderVisitorId: text("sender_visitor_id"),
+    body: text("body").notNull(),
+    ipHash: text("ip_hash"),
+    // Staff moderation only: the text stays in the log, participants see a placeholder.
+    hiddenAt: timestamp("hidden_at", { withTimezone: true }),
+    hiddenBy: uuid("hidden_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("conversation_messages_conversation_idx").on(t.conversationId, t.id),
+    check("conversation_messages_body_length", sql`char_length(${t.body}) between 1 and 2000`),
+  ],
+);
+
+/**
+ * In-app notifications for an agency (agencyId) or a client device (visitorId).
+ * The text is rendered from `kind` + `params` in the reader's language; params
+ * never hold a phone number or an email.
+ */
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    agencyId: uuid("agency_id").references(() => agencies.id, { onDelete: "cascade" }),
+    visitorId: text("visitor_id"),
+    requestId: uuid("request_id").references(() => projectRequests.id, { onDelete: "set null" }),
+    conversationId: uuid("conversation_id").references(() => conversations.id, { onDelete: "cascade" }),
+    // message | proposal_received | proposal_accepted | proposal_declined | request_invited | inquiry
+    kind: text("kind").notNull(),
+    params: jsonb("params").$type<Record<string, string | number>>().notNull().default({}),
+    href: text("href").notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("notifications_agency_idx").on(t.agencyId, t.readAt, t.createdAt),
+    index("notifications_visitor_idx").on(t.visitorId, t.readAt, t.createdAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type Agency = typeof agencies.$inferSelect;
 export type Post = typeof posts.$inferSelect;
@@ -914,3 +1006,6 @@ export type Milestone = typeof milestones.$inferSelect;
 export type MilestoneCheck = typeof milestoneChecks.$inferSelect;
 export type ContractChange = typeof contractChanges.$inferSelect;
 export type Nda = typeof ndas.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type ConversationMessage = typeof conversationMessages.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;

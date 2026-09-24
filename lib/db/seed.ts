@@ -5,16 +5,21 @@
 // Demo agencies carry is_demo=true so they can be removed before launch
 // (Admin → Agencies → "Remove demo data").
 import { randomBytes } from "node:crypto";
-import { sql } from "drizzle-orm";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { and, eq, gt, sql } from "drizzle-orm";
+import { countryOf, countryOfCity } from "../countries";
 import { updateAgency, createAgency } from "../data/agencies";
 import { createPostFromProcessed } from "../data/posts";
+import { createProjectRequest } from "../data/requests";
 import { ensureOwner, recoverOwner } from "../data/staff";
 import { createUser, getUserByEmail } from "../data/users";
 import { processAvatar, processImage, newAvatarKey } from "../images";
 import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
-import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, promotions, reviews, saves, type DeliverableLine } from "./schema";
+import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
+import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, type DeliverableLine } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
 
@@ -116,7 +121,97 @@ export const DEMO_AGENCIES: DemoAgency[] = [
   { handle: "muscat.media", name: "مسقط ميديا", bio: "محتوى وتصوير وإعلانات للسياحة والضيافة والمطاعم في عُمان.", city: "muscat", services: ["smm_management", "photography", "ads_meta"], platforms: ["instagram", "tiktok"], industries: ["tourism_hospitality", "restaurant_cafe"], price: 250, verified: true, founded: 2019, team: "6-15" },
   { handle: "nile.digital", name: "نايل ديجيتال", bio: "فريق متكامل: هوية بصرية ومحتوى وإعلانات ممولة للعلامات المصرية في القاهرة.", city: "cairo", services: ["brand_identity", "smm_management", "smm_content", "ads_meta"], platforms: ["facebook", "instagram", "tiktok"], industries: ["ecommerce", "retail_shop", "real_estate"], price: 12000, verified: true, founded: 2015, team: "16-40" },
   { handle: "alex.reels", name: "Alex Reels", bio: "Reels, TikToks and creator campaigns from Alexandria for Egyptian brands.", city: "alexandria", services: ["video_production", "ads_tiktok", "smm_influencer"], platforms: ["tiktok", "instagram"], industries: ["beauty_fitness", "restaurant_cafe"], price: 8000, verified: false, founded: 2022, team: "2-5" },
+  // More Saudi agencies for testing the multi-country interface city by city.
+  ...SAUDI_DEMO_AGENCIES,
 ];
+
+const PORTFOLIO_DIR = path.join(process.cwd(), "data", "demo-portfolio");
+const PORTFOLIO_FLAG = "demo_portfolio_v1";
+
+/**
+ * Real-looking portfolio posts (Higgsfield photos in data/demo-portfolio) for
+ * every demo agency, newest in its feed. Runs once per database (flag in
+ * app_settings), so existing deployments get them on the next boot too.
+ */
+async function addDemoPortfolio(log: (...a: unknown[]) => void) {
+  const db = await getDb();
+  const [done] = await db.select().from(appSettings).where(eq(appSettings.key, PORTFOLIO_FLAG));
+  if (done || !existsSync(PORTFOLIO_DIR)) return;
+  const demos = await db
+    .select({ id: agencies.id, handle: agencies.handle, services: agencies.services, platforms: agencies.platforms, industries: agencies.industries })
+    .from(agencies)
+    .where(eq(agencies.isDemo, true));
+  let added = 0;
+  const now = Date.now();
+  for (const [i, a] of demos.entries()) {
+    const captions = PORTFOLIO_CAPTIONS[a.handle] ?? [];
+    for (let n = 1; n <= 3; n++) {
+      const file = path.join(PORTFOLIO_DIR, `${a.handle}-${n}.webp`);
+      if (!existsSync(file)) continue;
+      const processed = await processImage(readFileSync(file));
+      await createPostFromProcessed(
+        a.id,
+        {
+          caption: captions[n - 1] ?? "",
+          services: [a.services[(n - 1) % a.services.length]].filter(Boolean),
+          platforms: a.platforms.length ? [a.platforms[(n - 1) % a.platforms.length]] : [],
+          industry: a.industries[(n - 1) % Math.max(1, a.industries.length)] ?? null,
+          result: null,
+        },
+        [processed],
+        new Date(now - (n * 5 + i) * 3600 * 1000),
+      );
+      added++;
+    }
+  }
+  await db.insert(appSettings).values({ key: PORTFOLIO_FLAG, value: true }).onConflictDoNothing();
+  log(`Added ${added} portfolio posts to demo agencies.`);
+}
+
+/** Keeps a few open demo client requests (they expire after 14 days) so the agency request feed is never empty. */
+async function addDemoRequests(log: (...a: unknown[]) => void) {
+  const db = await getDb();
+  const [{ open }] = (await db
+    .select({ open: sql<number>`count(*)::int` })
+    .from(projectRequests)
+    .where(and(eq(projectRequests.source, "demo"), eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, new Date())))) as { open: number }[];
+  if (open > 0) return;
+  const demos = await db.select({ id: agencies.id, country: agencies.country, services: agencies.services }).from(agencies).where(eq(agencies.isDemo, true));
+  for (const [i, d] of DEMO_REQUESTS.entries()) {
+    const matches = demos
+      .filter((a) => a.country === d.country)
+      .map((a) => ({ agencyId: a.id, score: 50 + 10 * a.services.filter((s) => d.services.includes(s)).length }))
+      .filter((m) => m.score > 50)
+      .sort((x, y) => y.score - x.score);
+    await createProjectRequest(
+      {
+        clientName: d.clientName,
+        phone: `+${countryOf(d.country).dial}5000000${String(i).padStart(2, "0")}`,
+        businessName: d.businessName,
+        businessType: d.businessType,
+        services: d.services,
+        platforms: d.platforms,
+        city: d.city,
+        country: d.country,
+        budgetMinJod: d.budget[0],
+        budgetMaxJod: d.budget[1],
+        timeline: d.timeline,
+        description: d.description,
+        source: "demo",
+        visitorId: `demo-client-${i}`,
+      },
+      matches,
+    );
+  }
+  log(`Added ${DEMO_REQUESTS.length} open demo client requests.`);
+}
+
+/** A fictional number in the agency's own country (Jordan keeps its old demo numbers). */
+function demoPhone(city: string, index: number) {
+  const code = countryOfCity(city) ?? "jo";
+  const digits = String(1000000 + index * 7919).slice(0, 7);
+  return code === "jo" ? `+96279${digits}` : `+${countryOf(code).dial}5${digits}`;
+}
 
 const HEADLINES: Record<DemoKind, string[]> = {
   ad: ["-30% اليوم فقط", "NEW DROP", "اطلب الآن", "Limited offer"],
@@ -196,6 +291,8 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const existing = new Set((await db.select({ handle: agencies.handle }).from(agencies)).map((a) => a.handle));
   const toCreate = [...DEMO_AGENCIES.entries()].filter(([, d]) => !existing.has(d.handle));
   if (!toCreate.length) {
+    await addDemoPortfolio(log);
+    await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
   }
@@ -225,8 +322,8 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
         industries: demo.industries,
         languages: ["ar", "en"],
         startingPriceJod: demo.price,
-        whatsapp: `+96279${String(1000000 + index * 7919).slice(0, 7)}`,
-        phone: `+96279${String(1000000 + index * 7919).slice(0, 7)}`,
+        whatsapp: demoPhone(demo.city, index),
+        phone: demoPhone(demo.city, index),
         email: `hello@${demo.handle.replace(/\./g, "-")}.example`,
         website: `https://${demo.handle.replace(/\./g, "-")}.example`,
         instagram: demo.handle.replace(/\./g, "_"),
@@ -371,6 +468,8 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     });
   }
 
+  await addDemoPortfolio(log);
+  await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
   if (!production) {
     log(`Admin: ${adminEmail} / ${adminPassword}`);

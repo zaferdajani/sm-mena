@@ -12,7 +12,7 @@ export interface Storage {
   url(key: string): string;
 }
 
-const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|png|jpg)$/;
+const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|png|jpg|mp4|webm)$/;
 
 export function isSafeKey(key: string): boolean {
   return KEY_PATTERN.test(key) && !key.includes("..") && !key.includes("//");

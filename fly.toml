@@ -38,7 +38,8 @@ primary_region = "fra"
     path = "/api/health"
     interval = "30s"
     timeout = "5s"
-    grace_period = "60s"
+    # First boot after new demo content processes the portfolio photos before the server starts.
+    grace_period = "300s"
 
 [[vm]]
   memory = "1gb"

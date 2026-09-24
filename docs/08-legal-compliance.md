@@ -77,3 +77,16 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 | Client's change request / decline note on an NDA | Negotiation before signing | May contain personal data | Same as the document |
 
 Consent: each signer ticks an explicit declaration (legal age, authority, agreement to sign electronically) before signing; the declaration text is versioned with `LEGAL_VERSION`. Staff downloads of contract/NDA PDFs are written to the audit log.
+
+## Data added with chat and notifications (2026-09)
+
+See `docs/23-chat-and-notifications.md`.
+
+| Data | Why | Personal? | Retention |
+|---|---|---|---|
+| Chat messages between a client and an agency (text, side, time, sender account or visitor cookie id, hashed IP `sha256("sawwiq-chat:" + ip)`) | Let clients and agencies talk inside Sawwiq; quality assurance; evidence in disputes | Yes (whatever people write; pseudonymous ids) | 24 months from sending, then deleted by `/api/cron/retention`. Deleted earlier only with the whole conversation (e.g. an agency account erased on request). Messages cannot be edited or deleted by anyone before that (database trigger); staff can only hide one from the participants. |
+| Conversation record (client's name snapshot, visitor cookie id, read positions, notice version) | Routing and unread counts | Pseudonymous; the client's first name as they typed it | Same as its messages |
+| In-app notifications (kind, the other party's display name, link; never a phone number or email) | Tell an agency about invitations, messages, accepted or declined quotes and inquiries; tell a client's device about quotes and replies | Pseudonymous | 90 days, then deleted by `/api/cron/retention` |
+| An inquiry's text copied as the first message of a chat | So the agency can answer inside Sawwiq | Same as the inquiry | Same as chat messages |
+
+Transparency: every chat shows, before the first message can be sent, that chats "are recorded and may be reviewed by our team for quality assurance and to resolve disputes", with a reminder under the composer; the inquiry form says an inquiry also starts a recorded chat. The notice text is versioned (`CHAT_NOTICE_VERSION` in `lib/chat.ts`, currently `2026-09`) and each conversation stores the version its participants were shown. Staff access to transcripts needs the `conversations.view` permission (owner, admin, support); opening a transcript (`conversation.view`) and hiding or restoring a message (`conversation.hide` / `conversation.unhide`) are written to the audit log.

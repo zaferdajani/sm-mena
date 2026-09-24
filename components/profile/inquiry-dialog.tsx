@@ -11,10 +11,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Link } from "@/i18n/navigation";
 import { serviceLabel } from "@/lib/labels";
 
 export function InquiryDialog({ agencyId, agencyName, services, postId }: { agencyId: string; agencyName: string; services: string[]; postId?: string }) {
   const t = useTranslations("Inquiry");
+  const tchat = useTranslations("Chat");
   const locale = useLocale();
   const [state, action] = useActionState(sendInquiry, undefined);
   return (
@@ -30,7 +32,10 @@ export function InquiryDialog({ agencyId, agencyName, services, postId }: { agen
         </DialogHeader>
         {state?.ok ? (
           <p role="status" className="rounded-lg bg-accent px-3 py-4 text-center text-sm text-accent-foreground" data-testid="inquiry-sent">
-            ✓ {t("sent")}
+            ✓ {t("sent")}{" "}
+            <Link href="/chats" className="font-semibold underline">
+              {tchat("openChats")}
+            </Link>
           </p>
         ) : (
           <form action={action} className="grid gap-3">
@@ -70,6 +75,7 @@ export function InquiryDialog({ agencyId, agencyName, services, postId }: { agen
               <input type="checkbox" name="consent" required className="mt-0.5 size-4 accent-[var(--primary)]" />
               {t("consent")}
             </label>
+            <p className="text-xs text-muted-foreground" data-testid="inquiry-chat-notice">{tchat("inquiryNotice")}</p>
             <SubmitButton className="h-10">{t("send")}</SubmitButton>
           </form>
         )}

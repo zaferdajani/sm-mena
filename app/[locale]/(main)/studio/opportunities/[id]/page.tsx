@@ -1,4 +1,4 @@
-import { FileSignature, Phone } from "lucide-react";
+import { FileSignature, MessagesSquare, Phone } from "lucide-react";
 import { currencyOf } from "@/lib/countries";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
@@ -7,7 +7,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { cheapestPackages } from "@/lib/data/packages";
-import { getOpportunity } from "@/lib/data/requests";
+import { getOpportunity, markOpportunityViewed } from "@/lib/data/requests";
+import { openClientChatAction } from "@/app/[locale]/(main)/chat-actions";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { whatsappLink } from "@/lib/text";
@@ -18,6 +19,8 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
   const { agency } = await requireAgency();
   const o = await getOpportunity(agency, id);
   if (!o) notFound();
+  if (o.isNew) await markOpportunityViewed(agency.id, o.request.id);
+  const tchat = await getTranslations("Chat");
   const t = await getTranslations("Opportunities");
   const tc = await getTranslations("Contracts");
   const tr = await getTranslations("Requests");
@@ -31,7 +34,7 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
       <div className="space-y-2 rounded-xl bg-muted p-4 text-sm">
         <p className="font-semibold">{r.services.map((s) => serviceLabel(s, lang)).join(" · ")}</p>
         <p className="text-xs text-muted-foreground">
-          {r.city ? tCity(r.city) : "—"} · {t("budget")}: {r.budgetMaxJod ? `${r.budgetMinJod ?? 0}–${r.budgetMaxJod} JOD` : t("any")}
+          {r.city ? tCity(r.city) : "—"} · {t("budget")}: {r.budgetMaxJod ? `${formatJod(r.budgetMinJod ?? 0, lang, currencyOf(r.country))} – ${formatJod(r.budgetMaxJod, lang, currencyOf(r.country))}` : t("any")}
           {r.timeline ? ` · ${tr(`timelines.${r.timeline}` as "timelines.asap")}` : ""}
         </p>
         {(r.fullService || r.brands) && (
@@ -60,11 +63,18 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
           <p className="font-semibold">{t("yourProposal")}: {formatJod(o.myProposal.priceJod, lang, currencyOf(agency.country))} {o.myProposal.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
           <p className="text-muted-foreground">{t("status")}: {tr(`proposalStatus.${o.myProposal.status}`)}</p>
           <p className="mt-2 whitespace-pre-line" dir="auto">{o.myProposal.message}</p>
-          {o.myProposal.status === "accepted" && (
-            <Link href={{ pathname: "/studio/contracts/new", query: { proposal: o.myProposal.id } }} className={buttonVariants({ className: "mt-3 gap-1.5" })} data-testid="create-contract">
-              <FileSignature className="size-4" /> {tc("fromProposal")}
-            </Link>
-          )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <form action={openClientChatAction.bind(null, r.id)}>
+              <button type="submit" className={buttonVariants({ variant: "outline", className: "gap-1.5" })} data-testid="message-client">
+                <MessagesSquare className="size-4" /> {tchat("messageClient")}
+              </button>
+            </form>
+            {o.myProposal.status === "accepted" && (
+              <Link href={{ pathname: "/studio/contracts/new", query: { proposal: o.myProposal.id } }} className={buttonVariants({ className: "gap-1.5" })} data-testid="create-contract">
+                <FileSignature className="size-4" /> {tc("fromProposal")}
+              </Link>
+            )}
+          </div>
         </div>
       ) : r.status === "open" ? (
         <ProposalForm requestId={r.id} suggestedPrice={pkg?.priceJod ?? agency.startingPriceJod} />

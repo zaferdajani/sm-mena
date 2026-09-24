@@ -17,6 +17,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
   const tt = await getTranslations("AdminTeam");
+  const tp = await getTranslations("Appearance");
+  const tchat = await getTranslations("Chat");
   // Each person sees only the sections their role allows (pages check again on the server).
   const nav: { href: string; label: string; badge?: number; perm: Permission }[] = [
     { href: "/admin", label: t("dashboard"), perm: "dashboard.view" },
@@ -26,9 +28,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/agencies", label: t("agencies"), perm: "agencies.view" },
     { href: "/admin/reports", label: t("reports"), perm: "content.moderate" },
     { href: "/admin/reviews", label: tr("admin.title"), perm: "content.moderate" },
+    { href: "/admin/conversations", label: tchat("admin.nav"), perm: "conversations.view" },
     { href: "/admin/promotions", label: t("promotions"), perm: "promotions.manage" },
     { href: "/admin/users", label: t("users"), perm: "users.view" },
     { href: "/admin/team", label: tt("nav"), perm: "staff.manage" },
+    { href: "/admin/appearance", label: tp("nav"), perm: "appearance.manage" },
     { href: "/admin/audit", label: t("audit"), perm: "audit.view" },
     { href: "/admin/security", label: t("security"), perm: "dashboard.view" },
   ];

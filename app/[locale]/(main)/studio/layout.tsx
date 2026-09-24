@@ -6,7 +6,10 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { StudioNav } from "@/components/studio/studio-nav";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
+import { unreadForAgency } from "@/lib/data/conversations";
 import { unreadCount } from "@/lib/data/inbox";
+import { unreadNotificationCount } from "@/lib/data/notifications";
+import { newOpportunityCount } from "@/lib/data/requests";
 import { mediaUrl } from "@/lib/storage";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -19,7 +22,14 @@ export default async function StudioLayout({ children }: { children: React.React
   const tp = await getTranslations("Packages");
   const to = await getTranslations("Opportunities");
   const tl = await getTranslations("Agreements");
-  const unread = await unreadCount(agency.id);
+  const tchat = await getTranslations("Chat");
+  const tn = await getTranslations("Notifications");
+  const [unread, unreadChats, newOpportunities, unreadNotes] = await Promise.all([
+    unreadCount(agency.id),
+    unreadForAgency(agency.id),
+    newOpportunityCount(agency),
+    unreadNotificationCount({ agencyId: agency.id }),
+  ]);
   return (
     <div className="mx-auto w-full max-w-4xl">
       <div className="flex items-center gap-3 px-4 pt-4 sm:pt-8">
@@ -43,7 +53,9 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio", label: t("overview") },
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
-            { href: "/studio/opportunities", label: to("tab") },
+            { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
+            { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
+            { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
             { href: "/studio/inbox", label: t("inbox"), badge: unread },
             { href: "/studio/reviews", label: tr("studio.tab") },
             { href: "/studio/packages", label: tp("studio.tab") },

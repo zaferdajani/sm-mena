@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, MessagesSquare } from "lucide-react";
 import { currencyOf } from "@/lib/countries";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import type { ProjectRequest } from "@/lib/db/schema";
+import { unreadByAgencyForRequest } from "@/lib/data/conversations";
 import type { ProposalView } from "@/lib/data/requests";
 import { formatJod, timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -20,7 +21,10 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
   const tCity = await getTranslations("Cities");
   const tp = await getTranslations("Post");
   const tpk = await getTranslations("Packages");
+  const tchat = await getTranslations("Chat");
   const locale = await getLocale();
+  const unreadFrom = await unreadByAgencyForRequest(request.id);
+  const chatHref = (handle: string) => (access.token ? `/r/${access.token}/chat/${handle}` : `/requests/${request.id}/chat/${handle}`);
   const open = request.status === "open" && request.expiresAt > new Date();
   const fmtDate = new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { day: "numeric", month: "long" });
   return (
@@ -74,17 +78,24 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
               <p className="whitespace-pre-line text-sm" dir="auto">{p.message}</p>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <ProposalActions access={access} proposalId={p.id} status={p.status} />
-                {p.agency.whatsapp && (
-                  <a
-                    href={whatsappLink(p.agency.whatsapp, t("whatsappMessage"))}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ size: "sm" }), "gap-1.5 bg-[#25D366] text-white hover:bg-[#1ebe5b]")}
-                  >
-                    <MessageCircle className="size-3.5" />
-                    {tp("whatsapp")}
-                  </a>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link href={chatHref(p.agency.handle)} className={cn(buttonVariants({ size: "sm", variant: "outline" }), "relative gap-1.5")} data-testid="proposal-chat">
+                    <MessagesSquare className="size-3.5" />
+                    {tchat("openChat")}
+                    {unreadFrom.has(p.agency.id) && <span className="absolute -end-1 -top-1 size-2.5 rounded-full bg-destructive ring-2 ring-background" aria-label={tchat("unread")} data-testid="proposal-chat-unread" />}
+                  </Link>
+                  {p.agency.whatsapp && (
+                    <a
+                      href={whatsappLink(p.agency.whatsapp, t("whatsappMessage"))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(buttonVariants({ size: "sm" }), "gap-1.5 bg-[#25D366] text-white hover:bg-[#1ebe5b]")}
+                    >
+                      <MessageCircle className="size-3.5" />
+                      {tp("whatsapp")}
+                    </a>
+                  )}
+                </div>
               </div>
             </li>
           ))}

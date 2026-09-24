@@ -3,6 +3,8 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { HeaderBell } from "@/components/notifications/header-bell";
+import { InterfaceBackground } from "@/components/theme/interface-background";
 import { Link } from "@/i18n/navigation";
 import { isStaffRole } from "@/lib/auth/permissions";
 import { getSessionUser } from "@/lib/auth/session";
@@ -43,6 +45,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh md:flex">
+      <InterfaceBackground />
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-e px-3 py-6 md:flex">
         <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
           <Image src="/brand/mark-192.png" alt="" width={32} height={32} className="rounded-lg" priority />
@@ -50,6 +53,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav aria-label={t("menu")}>
           <SideNav items={[...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3)]} />
+          <HeaderBell variant="row" />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
           {picker}
@@ -65,12 +69,13 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
-        <Link href="/" className="flex items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
+        <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
           <Image src="/brand/mark-192.png" alt="" width={28} height={28} className="rounded-md" priority />
           {th("brand")}
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-0 items-center gap-1">
           {picker}
+          <HeaderBell />
           <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
             <LifeBuoy className="size-5" />
           </Link>

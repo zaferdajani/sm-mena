@@ -78,13 +78,14 @@ export function CountryPicker({
   }, []);
 
   return (
-    <div className="flex items-center gap-1" data-testid="country-picker">
+    <div className="flex min-w-0 items-center gap-1" data-testid="country-picker">
+      {/* min-w-0: on narrow phones the select gives way instead of widening the header. */}
       <select
         aria-label={label}
         value={value}
         disabled={pending}
         onChange={(e) => apply(e.target.value as CountryCode)}
-        className="h-8 max-w-40 rounded-md border bg-background px-1.5 text-sm"
+        className="h-8 min-w-0 max-w-40 rounded-md border bg-background px-1.5 text-sm"
       >
         {options.map((o) => (
           <option key={o.code} value={o.code}>

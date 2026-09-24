@@ -18,7 +18,7 @@ export function StudioNav({ items }: { items: { href: string; label: string; bad
             className={cn("-mb-px flex shrink-0 items-center gap-1.5 border-b-2 border-transparent px-3 py-3 text-sm text-muted-foreground", active && "border-foreground font-semibold text-foreground")}
           >
             {item.label}
-            {item.badge ? <span className="rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white">{item.badge}</span> : null}
+            {item.badge ? <span className="rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white" data-testid="nav-badge">{item.badge}</span> : null}
           </Link>
         );
       })}
