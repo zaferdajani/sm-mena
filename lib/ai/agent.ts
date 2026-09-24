@@ -10,6 +10,9 @@ const MODEL = process.env.AI_MODEL || "claude-opus-5";
 // Chat matching works well at medium effort; raise AI_EFFORT for harder briefs.
 const EFFORT = (process.env.AI_EFFORT as "low" | "medium" | "high" | "xhigh" | "max" | undefined) || "medium";
 const MAX_STEPS = 6;
+// Haiku 4.5 (the low-cost option) predates the effort control and server-side
+// fallbacks, so those are only sent to models that support them.
+const ADVANCED = !MODEL.startsWith("claude-haiku");
 
 export function aiEnabled() {
   return Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
@@ -51,12 +54,12 @@ async function claudeMatchmaker(history: ChatMessage[]): Promise<MatchResponse> 
   for (let step = 0; step < MAX_STEPS; step++) {
     const response = await anthropic.beta.messages.create({
       model: MODEL,
-      max_tokens: 16000,
+      max_tokens: ADVANCED ? 16000 : 4000,
       // Server-side fallback: if a safety classifier declines, the API retries
       // on Anthropic's recommended model for that category.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
-      output_config: { effort: EFFORT },
+      ...(ADVANCED
+        ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const, output_config: { effort: EFFORT } }
+        : {}),
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       tools: TOOL_DEFINITIONS as unknown as Anthropic.Beta.BetaTool[],
       messages,
