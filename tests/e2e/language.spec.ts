@@ -17,7 +17,7 @@ test("an English phone in Amman is offered Arabic, and the choice is remembered"
 test("a visitor abroad is offered English once; a saved choice opens at /", async ({ browser }) => {
   const context = await browser.newContext({ locale: "en-GB", timezoneId: "Europe/London" });
   const page = await context.newPage();
-  await page.goto("/ar");
+  await page.goto("/ar/feed");
   await expect(page.getByTestId("language-offer")).toContainText("Show it in English");
   await page.getByTestId("language-offer").getByRole("button", { name: "الإبقاء على هذه اللغة" }).click();
   await page.reload();
@@ -25,7 +25,7 @@ test("a visitor abroad is offered English once; a saved choice opens at /", asyn
 
   // Switching with the header toggle saves the choice: "/" now opens English.
   await page.locator('[data-testid="locale-switcher"]:visible').first().click();
-  await expect(page).toHaveURL(/\/en$/);
+  await expect(page).toHaveURL(/\/en\/feed$/);
   await page.goto("/");
   await expect(page).toHaveURL(/\/en$/);
   await context.close();

@@ -1509,7 +1509,9 @@
     "reviewsTitle": "What {name}'s clients say",
     "allReviews": "{count, plural, one {See the review} other {See all # reviews}}",
     "postTitle": "{service} by {agency}",
-    "postDescription": "Work by {agency} in {service}. See more of the agency's work and contact it on Sawwiq."
+    "postDescription": "Work by {agency} in {service}. See more of the agency's work and contact it on Sawwiq.",
+    "feedTitle": "Latest work from marketing agencies in Jordan",
+    "feedDescription": "Follow the latest work from marketing and social media agencies in Jordan: real campaigns, reels and designs, with package prices and direct contact on WhatsApp."
   },
   "About": {
     "title": "About Sawwiq",

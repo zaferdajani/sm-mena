@@ -40,7 +40,8 @@ export function LanguageOffer({ texts }: { texts: Record<string, OfferText> }) {
   }, [locale]);
 
   const offer = suggestion ? texts[suggestion] : null;
-  if (!suggestion || !offer) return null;
+  // The front page (landing) has its own language switch in its header.
+  if (!suggestion || !offer || pathname === "/") return null;
   const dir = isRtl(suggestion) ? "rtl" : "ltr";
 
   const accept = () => {

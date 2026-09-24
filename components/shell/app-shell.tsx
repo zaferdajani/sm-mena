@@ -16,7 +16,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
 
   const items: NavItem[] = [
-    { href: "/", label: t("home"), icon: "home" },
+    { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
     { href: "/match", label: t("match"), icon: "match" },
     { href: "/saved", label: t("saved"), icon: "saved" },

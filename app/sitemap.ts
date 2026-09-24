@@ -46,6 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const newestPost = postRows[0]?.createdAt ?? null;
   return [
     ...entries("", newestPost ?? latest, 1),
+    ...entries("/feed", newestPost, 0.8),
     ...entries("/hire", latest, 0.9),
     ...[...services].filter(([, n]) => n >= INDEX_MIN_SERVICE).flatMap(([s]) => entries(`/hire/${s}`, latest, 0.9)),
     ...[...pairs].filter(([, n]) => n >= INDEX_MIN_CITY).flatMap(([k]) => {

@@ -12,6 +12,11 @@
 #        GOOGLE_PLACES_API_KEY (optional: Google ratings)
 #        CRON_SECRET          (optional: lets an external scheduler call
 #                              /api/cron/google; generated if missing)
+#   3. Own domain (optional): Settings → Secrets and variables → Actions →
+#      Variables → New repository variable SITE_URL = https://your-domain
+#      (no trailing slash). The next deploy requests the HTTPS certificate and
+#      prints the DNS records to add; the site switches to the domain on the
+#      first deploy after the domain answers (docs/19-domain.md).
 # The first run creates the app and its volume. Without FLY_API_TOKEN the job
 # skips with a notice instead of failing.
 name: Deploy to Fly.io
@@ -86,11 +91,40 @@ jobs:
           echo "$existing" | grep -q PAYMENTS_WEBHOOK_SECRET || args="$args PAYMENTS_WEBHOOK_SECRET=$(openssl rand -hex 32)"
           [ -n "$args" ] && flyctl secrets set $args -a "$APP" --stage > /dev/null || true
 
+      - name: Own domain (when the SITE_URL variable is set)
+        if: steps.gate.outputs.go == 'true'
+        id: domain
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          APP="${{ steps.app.outputs.name }}"
+          URL="https://$APP.fly.dev"
+          if [ -n "$SITE_URL" ]; then
+            HOST="$(echo "$SITE_URL" | sed -E 's#^https?://##; s#/.*$##')"
+            for h in "$HOST" "www.$HOST"; do
+              flyctl certs show "$h" -a "$APP" > /dev/null 2>&1 || flyctl certs add "$h" -a "$APP" || true
+            done
+            echo "::group::DNS records for $HOST (add these at your domain registrar)"
+            flyctl certs setup "$HOST" -a "$APP" 2>/dev/null || flyctl certs show "$HOST" -a "$APP" || true
+            flyctl certs setup "www.$HOST" -a "$APP" 2>/dev/null || true
+            flyctl ips list -a "$APP" || true
+            echo "::endgroup::"
+            # Switch only when the domain already reaches this app over HTTPS,
+            # so a deploy never points links and redirects at a dead address.
+            if curl -fsS --max-time 10 "https://$HOST/api/health" | grep -q '"ok":true'; then
+              URL="https://$HOST"
+              echo "::notice::Serving on https://$HOST (fly.dev and www redirect there)."
+            else
+              echo "::warning::https://$HOST does not reach the app yet: add the DNS records shown above, wait for the certificate, then run this workflow again. Staying on $URL for now."
+            fi
+          fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
       - name: Deploy (one machine)
         if: steps.gate.outputs.go == 'true'
         run: |
           APP="${{ steps.app.outputs.name }}"
-          flyctl deploy --remote-only --ha=false -a "$APP" --build-arg NEXT_PUBLIC_SITE_URL="https://$APP.fly.dev"
+          flyctl deploy --remote-only --ha=false -a "$APP" --build-arg NEXT_PUBLIC_SITE_URL="${{ steps.domain.outputs.url }}"
 
       - name: Verify health
         if: steps.gate.outputs.go == 'true'
@@ -102,4 +136,4 @@ jobs:
           done
           cat health.json; echo
           grep -q '"ok":true' health.json
-          echo "::notice::Live at https://$APP.fly.dev"
+          echo "::notice::Live at ${{ steps.domain.outputs.url }}"

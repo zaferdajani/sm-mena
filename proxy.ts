@@ -28,8 +28,16 @@ export function proxy(request: NextRequest) {
     url.pathname = `/${saved}`;
     return NextResponse.redirect(url);
   }
-  const response = intl(request);
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (process.env.NODE_ENV === "production" && CANONICAL_HOST && host && host !== CANONICAL_HOST) {
+    // Once the site runs on its own domain, the fly.dev address and www send
+    // people and search engines there (permanently, keeping the path).
+    if (host.endsWith(".fly.dev") || host === `www.${CANONICAL_HOST}`) {
+      const url = new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${CANONICAL_HOST}`);
+      return NextResponse.redirect(url, 308);
+    }
+  }
+  const response = intl(request);
   if (process.env.NODE_ENV === "production" && CANONICAL_HOST && host && host !== CANONICAL_HOST) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
   }

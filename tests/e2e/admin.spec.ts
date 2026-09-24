@@ -49,6 +49,6 @@ test("admin creates a strip promotion and it shows as sponsored", async ({ page 
   await page.selectOption("#placement", "strip");
   await page.getByRole("button", { name: "Create" }).click();
   await expect(page.getByTestId("admin-promotions")).toContainText("@linked.levant");
-  await page.goto("/en");
+  await page.goto("/en/feed");
   await expect(page.getByRole("navigation", { name: "Agencies" }).getByText("Sponsored")).toBeVisible();
 });

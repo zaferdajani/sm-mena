@@ -130,6 +130,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/15-languages.md` | Language offer, location concept, RTL, translation pipeline |
 | `docs/14-contracts-and-milestones.md` | Deliverables catalogue, contracts and NDA, milestones, protected and direct payments |
 | `docs/18-seo.md` | SEO: the OneClickConvert playbook, what's in place, owner to-do, keyword map |
+| `docs/19-domain.md` | Connecting your own domain: GitHub variable, DNS records, automatic switch-over and redirects |
 | `docs/17-team-access.md` | Staff roles, owner protections, GitHub/Fly.io access for the team, break-glass, sites directory |
 | `CLAUDE.md` | Build rules for Claude Code |
 

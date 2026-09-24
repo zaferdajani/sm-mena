@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { AgenciesStrip } from "@/components/feed/agencies-strip";
 import { FeedList } from "@/components/feed/feed-list";
-import { JsonLd } from "@/components/seo/json-ld";
 import { FOOTER_SERVICES } from "@/components/shell/site-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -14,17 +13,16 @@ import { feedPage } from "@/lib/feed";
 import { serviceLabel } from "@/lib/labels";
 import { serviceLinkText } from "@/lib/hire-content";
 import { pageMeta } from "@/lib/seo";
-import { organizationLd, websiteLd } from "@/lib/structured-data";
 import { stripAgencies } from "@/lib/strip";
 import { getVisitorId } from "@/lib/visitor";
 
-export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/[locale]/feed">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Seo" });
-  return pageMeta({ locale, path: "", title: t("homeTitle"), absoluteTitle: true, description: t("homeDescription") });
+  return pageMeta({ locale, path: "/feed", title: t("feedTitle"), description: t("feedDescription") });
 }
 
-export default async function HomePage({ params }: PageProps<"/[locale]">) {
+export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Home");
@@ -40,7 +38,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   // side column (intro, popular services, suggested agencies), like Instagram.
   return (
     <div className="mx-auto grid w-full max-w-[470px] grid-cols-1 sm:pt-6 lg:max-w-[1000px] lg:grid-cols-[minmax(0,560px)_minmax(0,340px)] lg:justify-center lg:gap-x-12 lg:px-6 lg:pt-8 lg:[grid-template-areas:'strip_aside''feed_aside']">
-      <JsonLd data={[organizationLd(), websiteLd(locale)]} />
       <div className="min-w-0 lg:[grid-area:strip]">
         <AgenciesStrip agencies={strip} showJoin={!user} />
       </div>

@@ -13,16 +13,27 @@ test.describe("with an English browser", () => {
   });
 });
 
-test("Arabic home renders right-to-left with the feed", async ({ page }) => {
+test("the front page is the landing page, and its calls to action open the app", async ({ page }) => {
   await page.goto("/ar");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator(".sw-bubble").first()).toHaveAttribute("href", "/ar/match");
+  await expect(page.locator("#who")).toBeVisible(); // who we help, healthcare included
+  await page.locator(".sw-switch").click();
+  await expect(page).toHaveURL(/\/en$/);
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+});
+
+test("Arabic feed renders right-to-left", async ({ page }) => {
+  await page.goto("/ar/feed");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("اعثر على شركة التسويق والسوشيال ميديا المناسبة لنشاطك في الأردن");
   await expect(page.getByTestId("post-card").first()).toBeVisible();
 });
 
-test("English home renders left-to-right", async ({ page }) => {
-  await page.goto("/en");
+test("English feed renders left-to-right", async ({ page }) => {
+  await page.goto("/en/feed");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Find the right marketing and social media agency for your business in Jordan");
 });
@@ -42,7 +53,7 @@ test("agency pages with dots in the handle keep their locale", async ({ page }) 
 });
 
 test("pages have no horizontal scroll", async ({ page }) => {
-  for (const path of ["/ar", "/ar/explore", "/ar/a/nakhla.studio", "/ar/hire/ads_meta"]) {
+  for (const path of ["/ar", "/ar/feed", "/ar/explore", "/ar/a/nakhla.studio", "/ar/hire/ads_meta"]) {
     await page.goto(path);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, path).toBeLessThanOrEqual(0);

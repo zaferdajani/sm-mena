@@ -17,6 +17,7 @@ test("the home page carries the site's identity and links to the hire hubs", asy
   const ld = (await page.locator('script[type="application/ld+json"]').allTextContents()).join("\n");
   expect(ld).toContain('"Organization"');
   expect(ld).toContain('"WebSite"');
+  await page.goto("/en/feed");
   await expect(page.getByTestId("home-service-link")).toHaveCount(8);
   const footer = page.getByTestId("site-footer");
   await expect(footer.getByRole("link", { name: "Social media management" })).toHaveAttribute("href", "/en/hire/smm_management");
