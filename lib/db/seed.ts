@@ -13,7 +13,7 @@ import { processAvatar, processImage, newAvatarKey } from "../images";
 import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
-import { agencies, events, follows, inquiries, likes, packages, posts, promotions, reviews, saves } from "./schema";
+import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, promotions, reviews, saves, type DeliverableLine } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
 
@@ -29,6 +29,11 @@ type DemoAgency = {
   verified: boolean;
   founded: number;
   team: string;
+  // Optional, for specialised agencies: their own post headlines/captions, packages and client reviews.
+  headlines?: string[];
+  captions?: string[];
+  packages?: { title: string; service: string; priceJod: number; items: DeliverableLine[]; deliverables?: string[]; deliveryDays?: number }[];
+  reviews?: [string, string, string][];
 };
 
 // Fictional names. Any resemblance to a real agency is unintended.
@@ -45,6 +50,60 @@ export const DEMO_AGENCIES: DemoAgency[] = [
   { handle: "salt.stories", name: "Salt Stories", bio: "Storytelling for NGOs, heritage and education projects.", city: "salt", services: ["smm_content", "video_production", "smm_strategy"], platforms: ["facebook", "instagram", "youtube"], industries: ["ngo", "education"], price: 220, verified: true, founded: 2019, team: "2-5" },
   { handle: "madaba.pixels", name: "مادبا بكسلز", bio: "تصوير منتجات وتصميم منشورات للمتاجر والمطاعم.", city: "madaba", services: ["photography", "graphic_design", "smm_content"], platforms: ["instagram", "facebook"], industries: ["restaurant_cafe", "retail_shop"], price: 150, verified: false, founded: 2023, team: "1" },
   { handle: "search.first.jo", name: "Search First", bio: "SEO, Google Ads and websites that bring customers from search.", city: "amman", services: ["seo", "ads_google", "web_design"], platforms: ["google"], industries: ["real_estate", "clinic_health", "professional_services"], price: 350, verified: true, founded: 2014, team: "16-40" },
+  {
+    handle: "shifa.digital",
+    name: "شفاء ديجيتال",
+    bio: "تسويق طبي للعيادات ومراكز الأسنان والصيدليات والعلاج الطبيعي: حجوزات عبر جوجل وميتا، فيديوهات يقدمها الأطباء، وإدارة التقييمات، بما يتوافق مع تعليمات وزارة الصحة والنقابات.",
+    city: "amman",
+    services: ["ads_google", "smm_management", "video_production", "seo"],
+    platforms: ["google", "instagram", "facebook"],
+    industries: ["clinic_health"],
+    price: 320,
+    verified: true,
+    founded: 2018,
+    team: "6-15",
+    headlines: ["احجز موعدك", "Book online", "عيادة الأسنان", "Meet the doctor", "توصيل الصيدلية", "+62% bookings"],
+    captions: [
+      "حملة حجوزات لعيادة أسنان في عبدون: إعلانات جوجل، تحسين خرائط جوجل، ومتابعة عبر واتساب.",
+      "Doctor-led Reels for a dermatology clinic: three videos a week, every script reviewed by the medical team.",
+      "إطلاق خدمة التوصيل لصيدلية في إربد عبر إعلانات ميتا وطلبات واتساب.",
+      "Physiotherapy centre: explainer videos and a booking funnel. +62% bookings in 60 days.",
+      "تحسين ظهور مركز طبي على جوجل: صفحات للخدمات، تقييمات المرضى، وموقع أسرع.",
+    ],
+    packages: [
+      {
+        title: "باقة العيادة",
+        service: "smm_management",
+        priceJod: 320,
+        items: [
+          { key: "account_management", quantity: 1, platform: "instagram" },
+          { key: "reels", quantity: 8, platform: "instagram" },
+          { key: "community_replies", quantity: 1, platform: "facebook" },
+          { key: "monthly_report", quantity: 1 },
+        ],
+        deliverables: ["يراجع الطبيب كل محتوى قبل نشره"],
+        deliveryDays: 30,
+      },
+      {
+        title: "Bookings Growth",
+        service: "ads_google",
+        priceJod: 550,
+        items: [
+          { key: "ad_campaigns", quantity: 2, platform: "google" },
+          { key: "ad_campaigns", quantity: 1, platform: "instagram" },
+          { key: "seo_optimization", quantity: 1 },
+          { key: "monthly_report", quantity: 1 },
+        ],
+        deliverables: ["Google Business Profile and reviews set up"],
+        deliveryDays: 30,
+      },
+    ],
+    reviews: [
+      ["د. لينا", "عيادة بسمة لطب الأسنان", "تضاعفت الحجوزات من جوجل خلال شهرين، والمحتوى كان دقيقاً طبياً ومحترماً للمرضى."],
+      ["Dr. Hani", "Irbid Physio Centre", "They understood medical advertising rules and our patients' concerns. Clear weekly reports."],
+      ["مها", "صيدلية الريحان", "حملة التوصيل عبر واتساب رفعت الطلبات بشكل واضح، وفريقهم سريع في الرد."],
+    ],
+  },
 ];
 
 const HEADLINES: Record<DemoKind, string[]> = {
@@ -78,7 +137,7 @@ function kindFor(service: string): DemoKind {
 
 async function reset() {
   const db = await getDb();
-  await db.execute(sql`truncate table audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
+  await db.execute(sql`truncate table app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false } = {}) {
@@ -99,8 +158,24 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   }
   if (adminOnly) return;
 
-  const [{ n }] = (await db.select({ n: sql<number>`count(*)::int` }).from(agencies)) as { n: number }[];
-  if (n > 0) {
+  const [{ n, demo: demoCount }] = (await db
+    .select({ n: sql<number>`count(*)::int`, demo: sql<number>`count(*) filter (where ${agencies.isDemo})::int` })
+    .from(agencies)) as { n: number; demo: number }[];
+  const [removedFlag] = await db.select().from(appSettings).where(sql`${appSettings.key} = 'demo_removed'`);
+  if (removedFlag && !doReset) {
+    log("Demo data was removed by an admin; not adding it back. Use --reset to start over.");
+    return;
+  }
+  const fresh = n === 0;
+  // An existing database with demo data gets any demo agencies added since it
+  // was seeded. Once an admin removes the demo data, nothing is added back.
+  if (!fresh && demoCount === 0) {
+    log(`Database already has ${n} agencies and no demo data. Use --reset to start over.`);
+    return;
+  }
+  const existing = new Set((await db.select({ handle: agencies.handle }).from(agencies)).map((a) => a.handle));
+  const toCreate = [...DEMO_AGENCIES.entries()].filter(([, d]) => !existing.has(d.handle));
+  if (!toCreate.length) {
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
   }
@@ -113,9 +188,11 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const r = rng(42);
   const postIds: string[] = [];
   const agencyIds: string[] = [];
+  const createdIndex: number[] = []; // DEMO_AGENCIES index for each created agency
 
-  for (const [index, demo] of DEMO_AGENCIES.entries()) {
-    const user = await createUser(`${demo.handle.replace(/\./g, "-")}@sawwiq.test`, demoPassword);
+  for (const [index, demo] of toCreate) {
+    const email = `${demo.handle.replace(/\./g, "-")}@sawwiq.test`;
+    const user = (await getUserByEmail(email)) ?? (await createUser(email, demoPassword));
     const agency = await createAgency(
       user.id,
       {
@@ -139,6 +216,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
       { isVerified: demo.verified, isDemo: true },
     );
     agencyIds.push(agency.id);
+    createdIndex.push(index);
 
     const initials = demo.name.replace(/[^A-Za-z؀-ۿ ]/g, "").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
     const avatarKey = newAvatarKey(agency.id);
@@ -152,14 +230,15 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
       const imageCount = 1 + Math.floor(r() * 3);
       const processed = [];
       for (let i = 0; i < imageCount; i++) {
-        const headline = HEADLINES[kind][Math.floor(r() * HEADLINES[kind].length)];
+        const pool = demo.headlines ?? HEADLINES[kind];
+        const headline = pool[Math.floor(r() * pool.length)];
         const tall = p % 3 === 1;
         processed.push(await processImage(await demoImage(i === imageCount - 1 && imageCount > 1 ? "results" : kind, index * 100 + p * 10 + i, headline, `@${demo.handle}`, tall)));
       }
       const post = await createPostFromProcessed(
         agency.id,
         {
-          caption: CAPTIONS[Math.floor(r() * CAPTIONS.length)],
+          caption: (demo.captions ?? CAPTIONS)[Math.floor(r() * (demo.captions ?? CAPTIONS).length)],
           services: [service, ...(r() > 0.6 ? [demo.services[(p + 1) % demo.services.length]] : [])].filter((v, i, a) => a.indexOf(v) === i),
           platforms: [demo.platforms[p % demo.platforms.length]],
           industry: demo.industries[p % demo.industries.length],
@@ -197,7 +276,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   }
   await db.execute(sql`update agencies set follower_count = (select count(*) from follows f where f.agency_id = agencies.id)`);
 
-  await db.insert(inquiries).values([
+  if (fresh) await db.insert(inquiries).values([
     { agencyId: agencyIds[0], name: "سارة", phone: "+962790000001", businessName: "مقهى الياسمين", service: "smm_management", message: "نبحث عن إدارة حساب إنستغرام لمقهى جديد في جبل عمّان. ما هي الباقات المتاحة؟", consentVersion: "2026-09" },
     { agencyId: agencyIds[1], name: "Omar", phone: "+962790000002", businessName: "Desert Threads", service: "ads_meta", message: "We sell clothing online and want to scale Meta ads. Budget around 800 JOD a month.", consentVersion: "2026-09" },
   ]);
@@ -211,9 +290,12 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     ["رنا", "متجر رنا", "نتائج جيدة في الإعلانات لكن احتجنا لمتابعة أكثر في البداية."],
     ["Yousef", "Amman Realty", "Professional team that understood the Jordanian market. Leads improved quickly."],
   ];
-  for (const [index, agencyId] of agencyIds.entries()) {
+  for (const [i2, agencyId] of agencyIds.entries()) {
+    const index = createdIndex[i2];
     const demo = DEMO_AGENCIES[index];
-    const pkgRows = demo.services.slice(0, 2).map((service, i) => ({
+    const pkgRows = demo.packages
+      ? demo.packages.map((p, i) => ({ agencyId, service: p.service, title: p.title, description: "", priceJod: p.priceJod, billing: "monthly" as const, deliverables: p.deliverables ?? [], items: p.items, deliveryDays: p.deliveryDays ?? null, position: i }))
+      : demo.services.slice(0, 2).map((service, i) => ({
       agencyId,
       service,
       title: i === 0 ? (demo.handle.includes(".") && /[a-z]/.test(demo.name) ? "Starter" : "الباقة الأساسية") : (/[a-z]/i.test(demo.name) ? "Growth" : "باقة النمو"),
@@ -224,11 +306,12 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
       position: i,
     }));
     await db.insert(packages).values(pkgRows);
+    const reviewTexts = demo.reviews ?? REVIEW_TEXTS;
     const count = 2 + Math.floor(r() * 4);
     let sum = 0;
     const rows = [];
     for (let k = 0; k < count; k++) {
-      const [name, business, body] = REVIEW_TEXTS[(index + k) % REVIEW_TEXTS.length];
+      const [name, business, body] = reviewTexts[(index + k) % reviewTexts.length];
       const rating = r() > 0.25 ? 5 : r() > 0.4 ? 4 : 3;
       sum += rating;
       rows.push({
@@ -255,7 +338,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   }
 
   // One demo promotion so the sponsored slot is visible. Admin can end it.
-  const [firstPost] = await db.select({ id: posts.id, agencyId: posts.agencyId }).from(posts).where(sql`${posts.agencyId} = ${agencyIds[1]}`).limit(1);
+  const [firstPost] = fresh ? await db.select({ id: posts.id, agencyId: posts.agencyId }).from(posts).where(sql`${posts.agencyId} = ${agencyIds[1]}`).limit(1) : [];
   if (firstPost) {
     await db.insert(promotions).values({
       agencyId: firstPost.agencyId,
@@ -267,7 +350,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     });
   }
 
-  log(`Seeded ${DEMO_AGENCIES.length} demo agencies and ${postIds.length} posts.`);
+  log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
   if (!production) {
     log(`Admin: ${adminEmail} / ${adminPassword}`);
     log(`Demo agency login: ${DEMO_AGENCIES[0].handle.replace(/\./g, "-")}@sawwiq.test / ${demoPassword}`);

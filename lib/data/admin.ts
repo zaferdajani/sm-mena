@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, auditLogs, events, inquiries, postImages, posts, promotions, reports, users } from "@/lib/db/schema";
+import { agencies, appSettings, auditLogs, events, inquiries, postImages, posts, promotions, reports, users } from "@/lib/db/schema";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -79,6 +79,8 @@ export async function removeDemoData() {
   const ids = demo.map((d) => d.id);
   const images = await db.select({ key: postImages.key, thumbKey: postImages.thumbKey }).from(postImages).innerJoin(posts, eq(postImages.postId, posts.id)).where(inArray(posts.agencyId, ids));
   await db.delete(users).where(inArray(users.id, demo.map((d) => d.owner)));
+  // Remembered so the demo seed (SEED_DEMO on boot) never brings it back.
+  await db.insert(appSettings).values({ key: "demo_removed", value: true }).onConflictDoUpdate({ target: appSettings.key, set: { value: true, updatedAt: new Date() } });
   await storage().remove([...images.flatMap((i) => [i.key, i.thumbKey]), ...demo.flatMap((d) => (d.avatarKey ? [d.avatarKey] : []))]).catch(() => {});
   return demo.length;
 }
