@@ -12,6 +12,8 @@ DNS for `sawwiq.org` (Fly app `sawwiq-jo`):
 
 If the deploy run also prints an `_acme-challenge` CNAME, add it too.
 
+Status (2026-09-24): records added at Namecheap, certificate issued, `https://sawwiq.org` live.
+
 You do three things; the deploy does the rest.
 
 ## 1. Buy the domain
