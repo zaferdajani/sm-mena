@@ -1,7 +1,9 @@
-import { Phone } from "lucide-react";
+import { FileSignature, Phone } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { ProposalForm } from "@/components/studio/proposal-form";
+import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { cheapestPackages } from "@/lib/data/packages";
 import { getOpportunity } from "@/lib/data/requests";
@@ -16,6 +18,7 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
   const o = await getOpportunity(agency, id);
   if (!o) notFound();
   const t = await getTranslations("Opportunities");
+  const tc = await getTranslations("Contracts");
   const tr = await getTranslations("Requests");
   const tCity = await getTranslations("Cities");
   const tpk = await getTranslations("Packages");
@@ -50,6 +53,11 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
           <p className="font-semibold">{t("yourProposal")}: {formatJod(o.myProposal.priceJod, lang)} {o.myProposal.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
           <p className="text-muted-foreground">{t("status")}: {tr(`proposalStatus.${o.myProposal.status}`)}</p>
           <p className="mt-2 whitespace-pre-line" dir="auto">{o.myProposal.message}</p>
+          {o.myProposal.status === "accepted" && (
+            <Link href={{ pathname: "/studio/contracts/new", query: { proposal: o.myProposal.id } }} className={buttonVariants({ className: "mt-3 gap-1.5" })} data-testid="create-contract">
+              <FileSignature className="size-4" /> {tc("fromProposal")}
+            </Link>
+          )}
         </div>
       ) : r.status === "open" ? (
         <ProposalForm requestId={r.id} suggestedPrice={pkg?.priceJod ?? agency.startingPriceJod} />

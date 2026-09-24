@@ -1,5 +1,6 @@
 "use server";
 
+
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
@@ -10,6 +11,7 @@ import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
 import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
+import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
@@ -196,9 +198,18 @@ export async function savePackageAction(_: StudioState, formData: FormData): Pro
     const f = String(parsed.error.issues[0]?.path[0]);
     return { error: f === "title" ? "title" : f === "priceJod" ? "price" : f === "service" ? "service" : "generic" };
   }
+  let items: unknown = [];
+  try {
+    items = JSON.parse(String(formData.get("items") ?? "[]"));
+  } catch {
+    items = [];
+  }
+  const days = Number(formData.get("deliveryDays"));
   const input = {
     ...parsed.data,
     deliverables: parsed.data.deliverables.split("\n").map((d) => d.trim()).filter(Boolean).slice(0, 12),
+    items: normalizeLines(items, PLATFORMS),
+    deliveryDays: Number.isInteger(days) && days > 0 && days <= 365 ? days : null,
   };
   const id = String(formData.get("packageId") ?? "");
   const ok = id ? await updatePackage(agency.id, z.string().uuid().parse(id), input) : await createPackage(agency.id, input);

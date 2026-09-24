@@ -54,5 +54,4 @@ export const isTestPayments = () => paymentProvider().id === "mock";
 
 /** JOD amounts: 1 dinar = 1000 fils. */
 export const jodToFils = (jod: number) => Math.round(jod * 1000);
-export const formatFils = (fils: number, locale: string) =>
-  `${(fils / 1000).toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { minimumFractionDigits: 0, maximumFractionDigits: 3 })} ${locale === "ar" ? "د.أ" : "JOD"}`;
+export { formatFils } from "@/lib/format";

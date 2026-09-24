@@ -16,6 +16,10 @@ Arabic first (RTL), English second. **Free for everyone at launch.** Paid plans,
 | Verified reviews (Airbnb style), Google rating | Connect Google Business Profile for the rating | Health endpoint, daily Google refresh cron |
 | Upwork-style hire pages per service and city (SEO) | Inbox for inquiries | |
 
+### Contracts and protected payments
+
+Agencies build packages from a catalogue (posts, reels, stories, accounts handled per platform, ads, websites and maintenance, branding, on-site shoots and events, reports), then turn a package or a won quote into a contract: milestones with dates, amounts and checklists, the client's special requests pinned to milestones, an optional NDA, and a choice of **protected payment** (the client pays each milestone into Sawwiq; it's released when the client confirms every checklist item; disputes go to admin) or **direct payment** (no guarantees). Both sides sign online; the client needs only a private link. See `docs/14-contracts-and-milestones.md`.
+
 ### Admin console
 
 Platform overview and system status, statistics (traffic sources, how visitors arrived, funnel, activity), payments (plans, CliQ/bank/cash recording, refunds, CSV export), bugs (automatic error journal and user reports), agencies, reports, reviews, promotions, users, audit log. Admins sign in with an authenticator app (two-factor, required in production and checked on the server). See `docs/13-admin-console.md`.
@@ -113,6 +117,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/11-build-stages.md` | What was built, stage by stage |
 | `docs/12-ai-matchmaker.md` | Matching score, AI agent design, requests and quotes, safety |
 | `docs/13-admin-console.md` | Admin console, two-factor sign-in, payments, bugs, statistics |
+| `docs/14-contracts-and-milestones.md` | Deliverables catalogue, contracts and NDA, milestones, protected and direct payments |
 | `CLAUDE.md` | Build rules for Claude Code |
 
 ## Stack

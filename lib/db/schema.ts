@@ -64,6 +64,12 @@ export const paymentKind = pgEnum("payment_kind", ["subscription", "promotion"])
 export const errorStatus = pgEnum("error_status", ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"]);
 export const supportStatus = pgEnum("support_status", ["new", "planned", "done", "declined"]);
 export const supportKind = pgEnum("support_kind", ["bug", "question", "suggestion"]);
+export const contractStatus = pgEnum("contract_status", ["sent", "active", "completed", "cancelled", "disputed"]);
+export const paymentMode = pgEnum("payment_mode", ["protected", "direct"]);
+export const milestoneStatus = pgEnum("milestone_status", ["pending", "funded", "submitted", "changes_requested", "approved", "released", "refunded", "cancelled"]);
+export const ledgerType = pgEnum("ledger_type", ["deposit", "release", "refund", "fee"]);
+
+export type DeliverableLine = { key: string; quantity: number; platform?: string | null };
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -420,6 +426,9 @@ export const packages = pgTable(
     priceJod: integer("price_jod").notNull(),
     billing: billing("billing").notNull().default("monthly"),
     deliverables: text("deliverables").array().notNull().default(sql`'{}'::text[]`),
+    // Structured contents: [{ key: "reels", quantity: 12, platform: "instagram" }] (lib/deliverables.ts)
+    items: jsonb("items").$type<DeliverableLine[]>().notNull().default([]),
+    deliveryDays: integer("delivery_days"),
     position: integer("position").notNull().default(0),
     createdAt: createdAt(),
   },
@@ -552,6 +561,132 @@ export const paymentEvents = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// Contracts, milestones and protected (escrow) payments
+// ---------------------------------------------------------------------------
+export const contracts = pgTable(
+  "contracts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    number: text("number").notNull().unique(), // SW-2026-4F7K2
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    requestId: uuid("request_id").references(() => projectRequests.id, { onDelete: "set null" }),
+    proposalId: uuid("proposal_id").references(() => proposals.id, { onDelete: "set null" }),
+    packageId: uuid("package_id").references(() => packages.id, { onDelete: "set null" }),
+    locale: text("locale").notNull().default("ar"),
+    title: text("title").notNull(),
+    summary: text("summary").notNull().default(""),
+    items: jsonb("items").$type<DeliverableLine[]>().notNull().default([]),
+    specialRequests: jsonb("special_requests").$type<string[]>().notNull().default([]),
+    startDate: text("start_date").notNull(), // YYYY-MM-DD
+    endDate: text("end_date").notNull(),
+    totalFils: integer("total_fils").notNull(),
+    feePercent: real("fee_percent").notNull().default(0),
+    paymentMode: paymentMode("payment_mode").notNull(),
+    nda: boolean("nda").notNull().default(false),
+    ndaExtra: text("nda_extra"),
+    status: contractStatus("status").notNull().default("sent"),
+    // Client (no account needed): reached through a private link
+    clientName: text("client_name").notNull(),
+    clientPhone: text("client_phone").notNull(),
+    clientEmail: text("client_email"),
+    clientTokenHash: text("client_token_hash").notNull().unique(),
+    // Same token, encrypted, so the agency can copy the client's link again.
+    clientTokenEnc: text("client_token_enc").notNull(),
+    // Signatures: typed full name over the exact terms (sha256), with time and a hashed IP
+    termsHash: text("terms_hash").notNull(),
+    agencySignerName: text("agency_signer_name").notNull(),
+    agencySignedAt: timestamp("agency_signed_at", { withTimezone: true }).notNull(),
+    clientSignerName: text("client_signer_name"),
+    clientSignedAt: timestamp("client_signed_at", { withTimezone: true }),
+    clientSignIpHash: text("client_sign_ip_hash"),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("contracts_agency_idx").on(t.agencyId, t.createdAt), index("contracts_status_idx").on(t.status)],
+);
+
+export const milestones = pgTable(
+  "milestones",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    contractId: uuid("contract_id")
+      .notNull()
+      .references(() => contracts.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    title: text("title").notNull(),
+    dueDate: text("due_date").notNull(),
+    amountFils: integer("amount_fils").notNull(),
+    status: milestoneStatus("status").notNull().default("pending"),
+    submissionNote: text("submission_note"),
+    changesNote: text("changes_note"),
+    clientPaidDirect: boolean("client_paid_direct").notNull().default(false), // direct mode: client says it paid
+    agencyConfirmedPaid: boolean("agency_confirmed_paid").notNull().default(false),
+    fundedAt: timestamp("funded_at", { withTimezone: true }),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    releasedAt: timestamp("released_at", { withTimezone: true }),
+  },
+  (t) => [index("milestones_contract_idx").on(t.contractId, t.position)],
+);
+
+/** What must be done in a milestone: deliverables and the client's special requests. */
+export const milestoneChecks = pgTable(
+  "milestone_checks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    milestoneId: uuid("milestone_id")
+      .notNull()
+      .references(() => milestones.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    text: text("text").notNull(),
+    source: text("source").notNull(), // deliverable | special_request
+    doneByAgency: boolean("done_by_agency").notNull().default(false),
+    confirmedByClient: boolean("confirmed_by_client").notNull().default(false),
+  },
+  (t) => [index("milestone_checks_idx").on(t.milestoneId, t.position)],
+);
+
+/** Money movements for protected contracts. Held = deposits − releases − refunds. */
+export const escrowLedger = pgTable(
+  "escrow_ledger",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    contractId: uuid("contract_id")
+      .notNull()
+      .references(() => contracts.id, { onDelete: "restrict" }),
+    milestoneId: uuid("milestone_id").references(() => milestones.id, { onDelete: "set null" }),
+    type: ledgerType("type").notNull(),
+    amountFils: integer("amount_fils").notNull(),
+    status: text("status").notNull().default("succeeded"), // pending | succeeded | failed
+    provider: text("provider").notNull(),
+    providerRef: text("provider_ref"),
+    note: text("note"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("escrow_contract_idx").on(t.contractId), index("escrow_type_idx").on(t.type, t.createdAt)],
+);
+
+/** Contract timeline: who did what, shown to both sides and to admins in disputes. */
+export const contractEvents = pgTable(
+  "contract_events",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    contractId: uuid("contract_id")
+      .notNull()
+      .references(() => contracts.id, { onDelete: "cascade" }),
+    actor: text("actor").notNull(), // agency | client | admin | system
+    type: text("type").notNull(),
+    note: text("note"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("contract_events_idx").on(t.contractId, t.createdAt)],
+);
+
+// ---------------------------------------------------------------------------
 // Bugs: automatic error journal and user-submitted reports
 // ---------------------------------------------------------------------------
 export const errorEvents = pgTable(
@@ -640,3 +775,6 @@ export type Proposal = typeof proposals.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type ErrorEvent = typeof errorEvents.$inferSelect;
 export type SupportRequest = typeof supportRequests.$inferSelect;
+export type Contract = typeof contracts.$inferSelect;
+export type Milestone = typeof milestones.$inferSelect;
+export type MilestoneCheck = typeof milestoneChecks.$inferSelect;

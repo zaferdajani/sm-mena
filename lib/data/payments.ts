@@ -69,6 +69,12 @@ export async function applyProviderEvent(provider: string, event: ProviderEvent)
     .onConflictDoNothing()
     .returning({ id: paymentEvents.id });
   if (!inserted.length) return "duplicate" as const;
+  // Milestone deposits for protected contracts use "ms_<milestone id>".
+  if (event.paymentRef.startsWith("ms_")) {
+    if (event.type !== "payment.succeeded") return "ok" as const;
+    const { recordDeposit } = await import("./contracts");
+    return recordDeposit(event.paymentRef.slice(3), event.amountFils, event.providerRef);
+  }
   const [p] = await db.select().from(payments).where(eq(payments.id, event.paymentRef));
   if (!p) return "unknown_payment" as const;
   if (event.amountFils !== p.amountFils) return "amount_mismatch" as const;

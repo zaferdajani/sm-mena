@@ -27,3 +27,8 @@ export function formatJod(value: number, locale: string): string {
 export function formatDate(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
+
+/** Money stored in fils (1 JOD = 1000 fils), shown in dinars. */
+export function formatFils(fils: number, locale: string): string {
+  return `${(fils / 1000).toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { minimumFractionDigits: 0, maximumFractionDigits: 3 })} ${locale === "ar" ? "د.أ" : "JOD"}`;
+}

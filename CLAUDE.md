@@ -10,6 +10,7 @@ The product is an Instagram-style showcase for agencies plus an AI matchmaker wi
 - Mobile first. Test at 390px width before desktop.
 - Every external provider (email, storage, Google Places, Anthropic, OpenAI, payments later) is optional. The app must run and pass tests with no credentials: PGlite instead of Postgres, local disk instead of Supabase Storage, the rule-based or mock matchmaker instead of Claude or OpenAI (`AI_PROVIDER`, see `lib/ai/agent.ts`).
 - Paid plans may add priority, never relevance: keep the boost capped, gated on relevance and `MONETIZATION_ENABLED`, and labelled "Featured".
+- Contracts are immutable once sent (terms hash); money for protected contracts moves only through the escrow ledger in `lib/data/contracts.ts`. Never release without every checklist item confirmed by the client, except by an audited admin decision.
 - The AI agent only recommends agencies returned by its own tool calls. Never send client phone numbers or emails to the model; treat agency text as untrusted data.
 - Personal data: capture consent with version; never log phone numbers or emails; signed URLs for documents; write an AuditLog entry when staff view contact data. See `docs/08-legal-compliance.md`.
 - Briefs are anonymised to agencies until they submit a proposal.

@@ -6,11 +6,31 @@
       "name_ar": "إدارة السوشيال ميديا",
       "name_en": "Social media management",
       "services": [
-        {"key": "smm_management", "name_ar": "إدارة حسابات التواصل الاجتماعي", "name_en": "Social media account management"},
-        {"key": "smm_content", "name_ar": "صناعة المحتوى والتصميم", "name_en": "Content creation and design"},
-        {"key": "smm_community", "name_ar": "إدارة المجتمع والردود", "name_en": "Community management"},
-        {"key": "smm_strategy", "name_ar": "استراتيجية السوشيال ميديا", "name_en": "Social media strategy"},
-        {"key": "smm_influencer", "name_ar": "حملات المؤثرين", "name_en": "Influencer campaigns"}
+        {
+          "key": "smm_management",
+          "name_ar": "إدارة حسابات التواصل الاجتماعي",
+          "name_en": "Social media account management"
+        },
+        {
+          "key": "smm_content",
+          "name_ar": "صناعة المحتوى والتصميم",
+          "name_en": "Content creation and design"
+        },
+        {
+          "key": "smm_community",
+          "name_ar": "إدارة المجتمع والردود",
+          "name_en": "Community management"
+        },
+        {
+          "key": "smm_strategy",
+          "name_ar": "استراتيجية السوشيال ميديا",
+          "name_en": "Social media strategy"
+        },
+        {
+          "key": "smm_influencer",
+          "name_ar": "حملات المؤثرين",
+          "name_en": "Influencer campaigns"
+        }
       ]
     },
     {
@@ -18,11 +38,31 @@
       "name_ar": "الإعلانات المدفوعة",
       "name_en": "Paid advertising",
       "services": [
-        {"key": "ads_meta", "name_ar": "إعلانات فيسبوك وإنستغرام", "name_en": "Facebook and Instagram ads"},
-        {"key": "ads_tiktok", "name_ar": "إعلانات تيك توك", "name_en": "TikTok ads"},
-        {"key": "ads_snapchat", "name_ar": "إعلانات سناب شات", "name_en": "Snapchat ads"},
-        {"key": "ads_google", "name_ar": "إعلانات جوجل", "name_en": "Google ads"},
-        {"key": "ads_linkedin", "name_ar": "إعلانات لينكد إن", "name_en": "LinkedIn ads"}
+        {
+          "key": "ads_meta",
+          "name_ar": "إعلانات فيسبوك وإنستغرام",
+          "name_en": "Facebook and Instagram ads"
+        },
+        {
+          "key": "ads_tiktok",
+          "name_ar": "إعلانات تيك توك",
+          "name_en": "TikTok ads"
+        },
+        {
+          "key": "ads_snapchat",
+          "name_ar": "إعلانات سناب شات",
+          "name_en": "Snapchat ads"
+        },
+        {
+          "key": "ads_google",
+          "name_ar": "إعلانات جوجل",
+          "name_en": "Google ads"
+        },
+        {
+          "key": "ads_linkedin",
+          "name_ar": "إعلانات لينكد إن",
+          "name_en": "LinkedIn ads"
+        }
       ]
     },
     {
@@ -30,10 +70,31 @@
       "name_ar": "الإنتاج الإبداعي",
       "name_en": "Creative production",
       "services": [
-        {"key": "video_production", "name_ar": "إنتاج الفيديو والريلز", "name_en": "Video and Reels production"},
-        {"key": "photography", "name_ar": "التصوير الفوتوغرافي", "name_en": "Photography"},
-        {"key": "graphic_design", "name_ar": "التصميم الجرافيكي", "name_en": "Graphic design"},
-        {"key": "copywriting", "name_ar": "كتابة المحتوى", "name_en": "Copywriting"}
+        {
+          "key": "video_production",
+          "name_ar": "إنتاج الفيديو والريلز",
+          "name_en": "Video and Reels production"
+        },
+        {
+          "key": "photography",
+          "name_ar": "التصوير الفوتوغرافي",
+          "name_en": "Photography"
+        },
+        {
+          "key": "graphic_design",
+          "name_ar": "التصميم الجرافيكي",
+          "name_en": "Graphic design"
+        },
+        {
+          "key": "copywriting",
+          "name_ar": "كتابة المحتوى",
+          "name_en": "Copywriting"
+        },
+        {
+          "key": "motion_graphics",
+          "name_ar": "الموشن جرافيك والرسوم المتحركة",
+          "name_en": "Motion graphics and animation"
+        }
       ]
     },
     {
@@ -41,8 +102,21 @@
       "name_ar": "الهوية والعلامة التجارية",
       "name_en": "Branding",
       "services": [
-        {"key": "brand_identity", "name_ar": "تصميم الهوية البصرية", "name_en": "Brand identity"},
-        {"key": "brand_strategy", "name_ar": "استراتيجية العلامة التجارية", "name_en": "Brand strategy"}
+        {
+          "key": "brand_identity",
+          "name_ar": "تصميم الهوية البصرية",
+          "name_en": "Brand identity"
+        },
+        {
+          "key": "brand_strategy",
+          "name_ar": "استراتيجية العلامة التجارية",
+          "name_en": "Brand strategy"
+        },
+        {
+          "key": "packaging_design",
+          "name_ar": "تصميم التغليف",
+          "name_en": "Packaging design"
+        }
       ]
     },
     {
@@ -50,23 +124,142 @@
       "name_ar": "التسويق الرقمي",
       "name_en": "Digital marketing",
       "services": [
-        {"key": "seo", "name_ar": "تحسين محركات البحث", "name_en": "SEO"},
-        {"key": "email_marketing", "name_ar": "التسويق عبر البريد والواتساب", "name_en": "Email and WhatsApp marketing"},
-        {"key": "web_design", "name_ar": "تصميم المواقع والمتاجر", "name_en": "Website and e-commerce design"},
-        {"key": "analytics", "name_ar": "التحليلات والتقارير", "name_en": "Analytics and reporting"}
+        {
+          "key": "seo",
+          "name_ar": "تحسين محركات البحث",
+          "name_en": "SEO"
+        },
+        {
+          "key": "email_marketing",
+          "name_ar": "التسويق عبر البريد والواتساب",
+          "name_en": "Email and WhatsApp marketing"
+        },
+        {
+          "key": "web_design",
+          "name_ar": "تصميم المواقع والمتاجر",
+          "name_en": "Website and e-commerce design"
+        },
+        {
+          "key": "analytics",
+          "name_ar": "التحليلات والتقارير",
+          "name_en": "Analytics and reporting"
+        },
+        {
+          "key": "web_maintenance",
+          "name_ar": "صيانة المواقع والاستضافة",
+          "name_en": "Website maintenance and hosting"
+        },
+        {
+          "key": "ecommerce_setup",
+          "name_ar": "إنشاء المتاجر الإلكترونية",
+          "name_en": "Online store setup"
+        }
+      ]
+    },
+    {
+      "key": "offline",
+      "name_ar": "خدمات على أرض الواقع",
+      "name_en": "Offline and on-site services",
+      "services": [
+        {
+          "key": "event_coverage",
+          "name_ar": "تغطية الفعاليات",
+          "name_en": "Event coverage"
+        },
+        {
+          "key": "print_design",
+          "name_ar": "المطبوعات والتصميم الطباعي",
+          "name_en": "Print materials and design"
+        },
+        {
+          "key": "outdoor_ads",
+          "name_ar": "الإعلانات الخارجية واللوحات",
+          "name_en": "Outdoor ads and billboards"
+        },
+        {
+          "key": "activations",
+          "name_ar": "الفعاليات والتفعيلات التسويقية",
+          "name_en": "Brand activations and events"
+        }
       ]
     }
   ],
-  "business_types": ["restaurant_cafe", "clinic_health", "retail_shop", "real_estate", "education", "beauty_fitness", "ecommerce", "professional_services", "tourism_hospitality", "manufacturing", "ngo", "other"],
-  "platforms": ["instagram", "facebook", "tiktok", "snapchat", "linkedin", "youtube", "google", "x"],
-  "budget_bands_jod": [
-    {"key": "under_300", "min": 0, "max": 299},
-    {"key": "300_600", "min": 300, "max": 600},
-    {"key": "600_1200", "min": 600, "max": 1200},
-    {"key": "1200_2500", "min": 1200, "max": 2500},
-    {"key": "over_2500", "min": 2500, "max": null},
-    {"key": "unsure", "min": null, "max": null}
+  "business_types": [
+    "restaurant_cafe",
+    "clinic_health",
+    "retail_shop",
+    "real_estate",
+    "education",
+    "beauty_fitness",
+    "ecommerce",
+    "professional_services",
+    "tourism_hospitality",
+    "manufacturing",
+    "ngo",
+    "other"
   ],
-  "cities": ["amman", "zarqa", "irbid", "aqaba", "salt", "madaba", "karak", "mafraq", "jerash", "ajloun", "tafilah", "maan"],
-  "timelines": ["asap", "this_month", "within_3_months"]
+  "platforms": [
+    "instagram",
+    "facebook",
+    "tiktok",
+    "snapchat",
+    "linkedin",
+    "youtube",
+    "google",
+    "x",
+    "whatsapp",
+    "threads",
+    "pinterest"
+  ],
+  "budget_bands_jod": [
+    {
+      "key": "under_300",
+      "min": 0,
+      "max": 299
+    },
+    {
+      "key": "300_600",
+      "min": 300,
+      "max": 600
+    },
+    {
+      "key": "600_1200",
+      "min": 600,
+      "max": 1200
+    },
+    {
+      "key": "1200_2500",
+      "min": 1200,
+      "max": 2500
+    },
+    {
+      "key": "over_2500",
+      "min": 2500,
+      "max": null
+    },
+    {
+      "key": "unsure",
+      "min": null,
+      "max": null
+    }
+  ],
+  "cities": [
+    "amman",
+    "zarqa",
+    "irbid",
+    "aqaba",
+    "salt",
+    "madaba",
+    "karak",
+    "mafraq",
+    "jerash",
+    "ajloun",
+    "tafilah",
+    "maan"
+  ],
+  "timelines": [
+    "asap",
+    "this_month",
+    "within_3_months"
+  ]
 }

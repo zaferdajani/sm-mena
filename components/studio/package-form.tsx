@@ -1,22 +1,25 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useActionState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { deletePackageAction, savePackageAction } from "@/app/[locale]/(main)/studio/actions";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DeliverablesPicker } from "@/components/contracts/deliverables-picker";
+import type { DeliverableLine } from "@/lib/db/schema";
 import { Field } from "./chips";
 
 type Option = { key: string; label: string };
-type Pkg = { id: string; title: string; description: string; service: string; priceJod: number; billing: "monthly" | "one_off"; deliverables: string[] };
+type Pkg = { id: string; title: string; description: string; service: string; priceJod: number; billing: "monthly" | "one_off"; deliverables: string[]; items: DeliverableLine[]; deliveryDays: number | null };
 
-export function PackageForm({ services, initial }: { services: Option[]; initial?: Pkg }) {
+export function PackageForm({ services, platforms, initial }: { services: Option[]; platforms: Option[]; initial?: Pkg }) {
   const t = useTranslations("Packages");
   const [state, action] = useActionState(savePackageAction, undefined);
   const [deleting, start] = useTransition();
+  const [items, setItems] = useState<DeliverableLine[]>(initial?.items ?? []);
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
   return (
     <form action={action} className="grid gap-3 rounded-xl border p-4" data-testid="package-form">
@@ -45,6 +48,13 @@ export function PackageForm({ services, initial }: { services: Option[]; initial
       </div>
       <Field label={t("studio.description")}>
         <Input name="description" maxLength={300} defaultValue={initial?.description} />
+      </Field>
+      <input type="hidden" name="items" value={JSON.stringify(items)} />
+      <Field label={t("studio.includes")}>
+        <DeliverablesPicker value={items} onChange={setItems} platforms={platforms} />
+      </Field>
+      <Field label={t("studio.deliveryDays")}>
+        <Input name="deliveryDays" type="number" min={1} max={365} dir="ltr" defaultValue={initial?.deliveryDays ?? ""} className="w-32" />
       </Field>
       <Field label={t("studio.deliverables")}>
         <Textarea name="deliverables" rows={3} maxLength={1000} defaultValue={initial?.deliverables.join("\n")} placeholder={t("studio.deliverablesPlaceholder")} />

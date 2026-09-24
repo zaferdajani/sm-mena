@@ -92,6 +92,11 @@ export const taxonomy = {
           "key": "copywriting",
           "name_ar": "كتابة المحتوى",
           "name_en": "Copywriting"
+        },
+        {
+          "key": "motion_graphics",
+          "name_ar": "الموشن جرافيك والرسوم المتحركة",
+          "name_en": "Motion graphics and animation"
         }
       ]
     },
@@ -109,6 +114,11 @@ export const taxonomy = {
           "key": "brand_strategy",
           "name_ar": "استراتيجية العلامة التجارية",
           "name_en": "Brand strategy"
+        },
+        {
+          "key": "packaging_design",
+          "name_ar": "تصميم التغليف",
+          "name_en": "Packaging design"
         }
       ]
     },
@@ -136,6 +146,43 @@ export const taxonomy = {
           "key": "analytics",
           "name_ar": "التحليلات والتقارير",
           "name_en": "Analytics and reporting"
+        },
+        {
+          "key": "web_maintenance",
+          "name_ar": "صيانة المواقع والاستضافة",
+          "name_en": "Website maintenance and hosting"
+        },
+        {
+          "key": "ecommerce_setup",
+          "name_ar": "إنشاء المتاجر الإلكترونية",
+          "name_en": "Online store setup"
+        }
+      ]
+    },
+    {
+      "key": "offline",
+      "name_ar": "خدمات على أرض الواقع",
+      "name_en": "Offline and on-site services",
+      "services": [
+        {
+          "key": "event_coverage",
+          "name_ar": "تغطية الفعاليات",
+          "name_en": "Event coverage"
+        },
+        {
+          "key": "print_design",
+          "name_ar": "المطبوعات والتصميم الطباعي",
+          "name_en": "Print materials and design"
+        },
+        {
+          "key": "outdoor_ads",
+          "name_ar": "الإعلانات الخارجية واللوحات",
+          "name_en": "Outdoor ads and billboards"
+        },
+        {
+          "key": "activations",
+          "name_ar": "الفعاليات والتفعيلات التسويقية",
+          "name_en": "Brand activations and events"
         }
       ]
     }
@@ -162,7 +209,10 @@ export const taxonomy = {
     "linkedin",
     "youtube",
     "google",
-    "x"
+    "x",
+    "whatsapp",
+    "threads",
+    "pinterest"
   ],
   "budget_bands_jod": [
     {
