@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, joinAgency, login } from "./helpers";
+import { ADMIN, drawSignature, joinAgency, login } from "./helpers";
 
 async function tickAll(page: Page) {
   const milestone = page.getByTestId("milestone").first();
@@ -45,7 +45,8 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   await page.getByLabel("Request").fill("Owner approves captions before posting");
   await page.getByTestId("nda-toggle").check();
   await page.fill("#c-signer", "Sara Haddad");
-  await page.getByText(/I agree to this contract on behalf of/).click();
+  await drawSignature(page);
+  await page.getByText(/I agree to this document on behalf of/).click();
   await page.getByRole("button", { name: "Sign and send to client" }).click();
   await expect(page).toHaveURL(/\/en\/studio\/contracts\/[0-9a-f-]+\?sent=1/);
   await expect(page.getByTestId("contract-status")).toHaveText("Waiting for client signature");
@@ -55,10 +56,17 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   // Client: read, sign, pay the first milestone into protection.
   const client = await browser.newPage();
   await client.goto(clientUrl);
-  await expect(client.getByTestId("contract-document")).toContainText("Confidentiality (NDA)");
+  await expect(client.getByTestId("contract-document")).toContainText("Confidentiality");
+  await expect(client.getByTestId("contract-document")).toContainText("governed by the laws of Jordan");
+  await expect(client.getByTestId("contract-document")).toContainText("Electronic Transactions Law No. 15 of 2015");
+  const pdfHref = (await client.getByTestId("legal-pdf-link").first().getAttribute("href"))!;
+  const pdf = await client.request.get(pdfHref);
+  expect(pdf.headers()["content-type"]).toBe("application/pdf");
+  expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
   await expect(client.getByTestId("contract-document")).toContainText("★ Owner approves captions before posting");
   await client.fill("#signer", "Nour Khalil");
-  await client.getByText("I have read and agree to this contract.").click();
+  await drawSignature(client);
+  await client.getByText(/I have read this document and agree to it/).click();
   await client.getByRole("button", { name: "Sign contract" }).click();
   await expect(client.getByTestId("contract-status")).toHaveText("Active");
   await client.getByRole("button", { name: /Pay 150 JOD into protection/ }).click();
@@ -106,9 +114,12 @@ test("protections: targets and reporting, extra money only by the client's appro
   await page.getByLabel("Target", { exact: true }).fill("B2B leads per month");
   await page.getByLabel("Number").fill("60");
   await page.getByTestId("cadence").selectOption("weekly");
-  await page.getByRole("radio", { name: /Direct between you and the client/ }).check({ force: true });
+  await expect(page.getByTestId("guaranteed-payment")).toContainText("10%");
+  await page.getByTestId("agency-terms").fill("Two rounds of revisions per design.");
+  await page.getByTestId("client-terms").fill("No work for our direct competitors during the contract.");
   await page.fill("#c-signer", "Lina Growth");
-  await page.getByText(/I agree to this contract on behalf of/).click();
+  await drawSignature(page);
+  await page.getByText(/I agree to this document on behalf of/).click();
   await page.getByRole("button", { name: "Sign and send to client" }).click();
   await expect(page).toHaveURL(/\/en\/studio\/contracts\/[0-9a-f-]+\?sent=1/);
   const clientUrl = (await page.getByTestId("client-link").textContent())!.trim();
@@ -119,9 +130,12 @@ test("protections: targets and reporting, extra money only by the client's appro
   const doc = client.getByTestId("contract-document");
   await expect(doc).toContainText("B2B leads per month: 60");
   await expect(doc).toContainText("Ownership of accounts and files");
-  await expect(doc).toContainText("No surprise charges");
+  await expect(doc).toContainText("The agency is owed nothing extra for work not approved this way");
+  await expect(doc).toContainText("Two rounds of revisions per design.");
+  await expect(doc).toContainText("No work for our direct competitors during the contract.");
   await client.fill("#signer", "Omar Khalil");
-  await client.getByText("I have read and agree to this contract.").click();
+  await drawSignature(client);
+  await client.getByText(/I have read this document and agree to it/).click();
   await client.getByRole("button", { name: "Sign contract" }).click();
   await expect(client.getByTestId("commitments")).toContainText("Weekly report");
 
@@ -147,4 +161,45 @@ test("protections: targets and reporting, extra money only by the client's appro
   await pending.getByRole("button", { name: "Accept and add to the contract" }).click();
   await expect(client.getByTestId("change-requests")).toContainText("Accepted by the client");
   await expect(client.getByTestId("milestone")).toHaveCount(2);
+});
+
+test("NDA: the agency signs and sends, the client asks for a change, then signs; both get the PDF", async ({ page, browser }) => {
+  await joinAgency(page, "secret");
+  await page.goto("/en/studio/ndas");
+  await page.getByTestId("new-nda").click();
+  await page.fill("#n-name", "Hala Foods");
+  await page.fill("#n-phone", "0790000077");
+  await page.fill("#n-purpose", "Discussing a launch plan for a new line of frozen meals");
+  await page.getByText("The client shares, the agency keeps it confidential").click();
+  await page.getByTestId("nda-form-years").selectOption("3");
+  await page.fill("#n-signer", "Rami Secret");
+  await drawSignature(page);
+  await page.getByText(/I agree to this document on behalf of/).click();
+  await page.getByRole("button", { name: "Sign and send to client" }).click();
+  await expect(page).toHaveURL(/\/en\/studio\/ndas\/[0-9a-f-]+\?sent=1/);
+  await expect(page.getByTestId("nda-status")).toContainText("Waiting for the client");
+  const clientUrl = (await page.getByTestId("client-link").textContent())!.trim();
+
+  const client = await browser.newPage();
+  await client.goto(clientUrl);
+  const doc = client.getByTestId("nda-document");
+  await expect(doc).toContainText("One-way: the client discloses and the agency keeps it confidential.");
+  await expect(doc).toContainText("3 years after");
+  await client.getByText("Ask for a change or decline").click();
+  await client.getByPlaceholder("What would you like changed, and why?").fill("Please add our sister company as a party.");
+  await client.getByRole("button", { name: "Send to the agency" }).click();
+  await expect(client.getByText("Sent to the agency.")).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("nda-client-note")).toContainText("sister company");
+
+  await client.fill("#nda-signer", "Hala Haddad");
+  await drawSignature(client);
+  await client.getByText(/I have read this document and agree to it/).click();
+  await client.getByRole("button", { name: "Sign agreement" }).click();
+  await expect(client.getByTestId("nda-signed")).toBeVisible();
+  await expect(client.getByTestId("legal-signatures").locator("img")).toHaveCount(2);
+  await page.reload();
+  await expect(page.getByTestId("nda-status")).toContainText("Signed by both");
+  const pdf = await page.request.get((await page.getByTestId("legal-pdf-link").first().getAttribute("href"))!);
+  expect(pdf.headers()["content-type"]).toBe("application/pdf");
 });

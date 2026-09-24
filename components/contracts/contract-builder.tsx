@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 import { createContractAction } from "@/app/[locale]/(main)/contract-actions";
@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { DeliverableLine } from "@/lib/db/schema";
 import { deliverable } from "@/lib/deliverables";
-import { cn } from "@/lib/utils";
 import { DeliverablesPicker } from "./deliverables-picker";
+import { SignaturePad } from "./signature-pad";
 
 type MilestoneDraft = { title: string; dueDate: string; amountJod: string; checks: string };
 export type BuilderInitial = {
@@ -27,6 +27,8 @@ export type BuilderInitial = {
   packageId?: string;
   note?: string;
   kpis?: { label: string; target: string }[];
+  clientTerms?: string;
+  agencyLegalName?: string;
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -46,8 +48,23 @@ function Step({ n, title, hint, children }: { n: number; title: string; hint?: s
   );
 }
 
-export function ContractBuilder({ initial, agencyName, platforms, feePercent }: { initial: BuilderInitial; agencyName: string; platforms: { key: string; label: string }[]; feePercent: number }) {
+export function ContractBuilder({
+  initial,
+  agencyName,
+  platforms,
+  feePercent,
+  currency,
+  countryName,
+}: {
+  initial: BuilderInitial;
+  agencyName: string;
+  platforms: { key: string; label: string }[];
+  feePercent: number;
+  currency: string;
+  countryName: string;
+}) {
   const t = useTranslations("Contracts.builder");
+  const tl = useTranslations("Agreements");
   const td = useTranslations("Deliverables");
   const [state, action] = useActionState(createContractAction, undefined);
   const today = iso(new Date());
@@ -62,12 +79,15 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
   const [totalJod, setTotalJod] = useState(String(initial.totalJod ?? ""));
   const [milestones, setMilestones] = useState<MilestoneDraft[]>([]);
   const [requests, setRequests] = useState<{ text: string; milestone: number }[]>([]);
-  const [mode, setMode] = useState<"protected" | "direct">("protected");
   const [kpis, setKpis] = useState<{ label: string; target: string }[]>(initial.kpis ?? []);
   const [cadence, setCadence] = useState<string>("weekly");
   const [mediaBudget, setMediaBudget] = useState("");
   const [nda, setNda] = useState(false);
   const [ndaExtra, setNdaExtra] = useState("");
+  const [ndaYears, setNdaYears] = useState(2);
+  const [legal, setLegal] = useState({ agencyLegalName: initial.agencyLegalName ?? agencyName, agencyRegNumber: "", clientRegNumber: "" });
+  const [agencyTerms, setAgencyTerms] = useState("");
+  const [clientTerms, setClientTerms] = useState(initial.clientTerms ?? "");
   const [signer, setSigner] = useState("");
   const [agree, setAgree] = useState(false);
 
@@ -110,9 +130,13 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
     specialRequests: requests.filter((r) => r.text.trim()),
     startDate: start,
     endDate: end,
-    paymentMode: mode,
+    paymentMode: "protected",
     nda,
     ndaExtra: nda ? ndaExtra : null,
+    ndaYears: nda ? ndaYears : null,
+    ...legal,
+    agencyTerms: agencyTerms || null,
+    clientTerms: clientTerms || null,
     client,
     milestones: milestones.map((m) => ({ title: m.title, dueDate: m.dueDate, amountJod: Number(m.amountJod) || 0, checks: m.checks.split("\n").map((c) => c.trim()).filter(Boolean) })),
     kpis: kpis.filter((k) => k.label.trim() || k.target.trim()),
@@ -145,6 +169,21 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
             <Input id="c-email" type="email" value={client.email} onChange={(e) => setClient({ ...client, email: e.target.value })} dir="ltr" />
           </div>
         </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-1.5">
+            <Label htmlFor="c-reg">{tl("clientReg")}</Label>
+            <Input id="c-reg" value={legal.clientRegNumber} onChange={(e) => setLegal({ ...legal, clientRegNumber: e.target.value })} maxLength={60} dir="ltr" />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="a-legal">{tl("agencyLegalName")}</Label>
+            <Input id="a-legal" value={legal.agencyLegalName} onChange={(e) => setLegal({ ...legal, agencyLegalName: e.target.value })} maxLength={160} dir="auto" />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="a-reg">{tl("agencyReg")}</Label>
+            <Input id="a-reg" value={legal.agencyRegNumber} onChange={(e) => setLegal({ ...legal, agencyRegNumber: e.target.value })} maxLength={60} dir="ltr" />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">{tl("identityHint")}</p>
       </Step>
 
       <Step n={2} title={t("s2")}>
@@ -178,7 +217,7 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
       <Step n={5} title={t("s5")} hint={t("s5hint")}>
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid gap-1.5">
-            <Label htmlFor="c-total">{t("totalPrice")}</Label>
+            <Label htmlFor="c-total">{tl("totalPrice", { currency })}</Label>
             <Input id="c-total" type="number" min={0} step="0.001" value={totalJod} onChange={(e) => setTotalJod(e.target.value)} className="w-36" dir="ltr" />
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-sm">
@@ -223,7 +262,7 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
           >
             <Plus className="size-4" /> {t("addMilestone")}
           </button>
-          <p className="font-semibold tabular-nums" data-testid="contract-total">{t("total", { amount: `${sum.toLocaleString("en", { maximumFractionDigits: 3 })} JOD` })}</p>
+          <p className="font-semibold tabular-nums" data-testid="contract-total">{t("total", { amount: `${sum.toLocaleString("en", { maximumFractionDigits: 3 })} ${currency}` })}</p>
         </div>
       </Step>
 
@@ -249,6 +288,10 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
         <button type="button" onClick={() => setRequests([...requests, { text: "", milestone: 0 }])} className="flex items-center gap-1 rounded-lg border border-dashed px-3 py-1.5 text-sm hover:bg-muted">
           <Plus className="size-4" /> {t("addRequest")}
         </button>
+        <div className="grid gap-1.5">
+          <Label htmlFor="c-terms">{tl("clientTerms")}</Label>
+          <Textarea id="c-terms" value={clientTerms} onChange={(e) => setClientTerms(e.target.value)} placeholder={tl("clientTermsPh")} rows={2} maxLength={3000} dir="auto" data-testid="client-terms" />
+        </div>
       </Step>
 
       <Step n={7} title={t("results.title")} hint={t("results.hint")}>
@@ -289,23 +332,18 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
         </ul>
       </Step>
 
-      <Step n={8} title={t("s7")}>
-        <div className="grid gap-3 sm:grid-cols-2" role="radiogroup">
-          {(
-            [
-              ["protected", ShieldCheck, t("protectedTitle"), t("protectedBody"), t("protectedFee", { fee: feePercent })],
-              ["direct", HandCoins, t("directTitle"), t("directBody"), ""],
-            ] as const
-          ).map(([key, Icon, heading, body, extra]) => (
-            <label key={key} className={cn("cursor-pointer space-y-1 rounded-xl border-2 p-4", mode === key ? "border-brand bg-brand/5" : "border-border")}>
-              <input type="radio" name="mode" value={key} checked={mode === key} onChange={() => setMode(key)} className="sr-only" />
-              <span className="flex items-center gap-2 font-semibold">
-                <Icon className={cn("size-5", key === "protected" ? "text-brand" : "text-muted-foreground")} /> {heading}
-              </span>
-              <span className="block text-sm text-muted-foreground">{body}</span>
-              {extra && <span className="block text-xs text-muted-foreground">{extra}</span>}
-            </label>
-          ))}
+      <Step n={8} title={tl("paymentTitle")}>
+        <div className="space-y-1 rounded-xl border-2 border-brand bg-brand/5 p-4" data-testid="guaranteed-payment">
+          <span className="flex items-center gap-2 font-semibold">
+            <ShieldCheck className="size-5 text-brand" /> {tl("paymentHeading")}
+          </span>
+          <span className="block text-sm text-muted-foreground">{tl("paymentBody")}</span>
+          <span className="block text-xs text-muted-foreground">{tl("paymentFee", { fee: feePercent })}</span>
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="a-terms">{tl("agencyTerms")}</Label>
+          <Textarea id="a-terms" value={agencyTerms} onChange={(e) => setAgencyTerms(e.target.value)} placeholder={tl("agencyTermsPh")} rows={3} maxLength={3000} dir="auto" data-testid="agency-terms" />
+          <span className="text-xs text-muted-foreground">{tl("agencyTermsHint")}</span>
         </div>
       </Step>
 
@@ -314,7 +352,19 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
           <input type="checkbox" checked={nda} onChange={(e) => setNda(e.target.checked)} className="size-4 accent-[var(--brand)]" data-testid="nda-toggle" />
           {t("nda")}
         </label>
-        {nda && <Textarea aria-label={t("ndaExtra")} placeholder={t("ndaExtra")} value={ndaExtra} onChange={(e) => setNdaExtra(e.target.value)} rows={2} dir="auto" />}
+        {nda && (
+          <>
+            <label className="flex items-center gap-2 text-sm">
+              {tl("ndaYears")}
+              <select value={ndaYears} onChange={(e) => setNdaYears(Number(e.target.value))} className="h-9 rounded-md border bg-background px-2" data-testid="nda-years">
+                {[1, 2, 3, 5].map((n) => (
+                  <option key={n} value={n}>{tl("years", { n })}</option>
+                ))}
+              </select>
+            </label>
+            <Textarea aria-label={t("ndaExtra")} placeholder={t("ndaExtra")} value={ndaExtra} onChange={(e) => setNdaExtra(e.target.value)} rows={2} dir="auto" />
+          </>
+        )}
       </Step>
 
       <Step n={10} title={t("s9")}>
@@ -322,9 +372,11 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
           <Label htmlFor="c-signer">{t("signer")}</Label>
           <Input id="c-signer" value={signer} onChange={(e) => setSigner(e.target.value)} required minLength={3} className="font-serif text-lg italic" dir="auto" />
         </div>
+        <SignaturePad name="signature" label={tl("drawSignature")} clearLabel={tl("clear")} hint={tl("drawHint")} required requiredMessage={tl("drawRequired")} />
+        <p className="text-xs text-muted-foreground">{tl("lawNote", { country: countryName })}</p>
         <label className="flex items-start gap-2 text-sm">
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 size-4 accent-[var(--brand)]" />
-          {t("agree", { agency: agencyName })}
+          {tl("agencyDeclaration", { agency: agencyName })}
         </label>
         <FormError message={state?.error ? t(`errors.${state.error}` as "errors.invalid") : undefined} />
         <SubmitButton className="h-11 w-full sm:w-auto">{t("submit")}</SubmitButton>

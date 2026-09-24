@@ -376,7 +376,7 @@
     "s4t": "Your rights",
     "s4": "Under Jordan's Personal Data Protection Law No. 24 of 2023 you can ask to access, correct or delete your data, or withdraw consent. Write to privacy@sawwiq.jo.",
     "s5t": "Pricing",
-    "s5": "The platform is currently free for everyone. Any paid plans will be announced in advance and never charged without agreement.",
+    "s5": "Browsing, contacting agencies and asking for quotes are free. Every contract signed on Sawwiq is guaranteed: the client pays each milestone to a trusted third party, and it is released to the agency when the client confirms the work. For this guarantee Sawwiq takes 10% of each released payment, deducted from what the agency receives; the client never pays more than the contract amount.",
     "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for."
   },
   "Studio": {
@@ -632,7 +632,7 @@
     "howTitle": "How to hire an agency on Sawwiq",
     "how1": "Browse real agency work and filter by service, city and budget.",
     "how2": "Compare starting prices, verification and followers, and save what you like.",
-    "how3": "Contact them directly on WhatsApp or send a message. No commission, no sign-up.",
+    "how3": "Contact them directly on WhatsApp or send a message. Free for you, no sign-up.",
     "priceTitle": "How much does {service} cost in {place}?",
     "priceBody": "Based on starting prices published by {count} agencies on Sawwiq, monthly packages start from {min} {currency} and go up to {max} {currency}, with a median of {median} {currency}. The final price depends on the number of posts, platforms and paid ads.",
     "priceNone": "Agencies haven't published prices for this service yet. Contact them directly for a quote.",
@@ -646,7 +646,7 @@
     "faq2q": "What does the \"Verified\" badge mean?",
     "faq2a": "It means the Sawwiq team checked the agency's commercial registration. It is not a guarantee of work quality, so review their work and talk to them before agreeing.",
     "faq3q": "Do I pay Sawwiq a commission?",
-    "faq3a": "No. Browsing and contacting agencies is completely free, and you agree terms with the agency directly.",
+    "faq3a": "No. Browsing, contacting agencies and getting quotes are free. If you sign a contract on Sawwiq, your money is held by a trusted third party and released to the agency only when you confirm each milestone; the 10% guarantee fee comes out of the agency's payment, so you never pay more than the contract amount.",
     "faq4q": "Can I work with an agency from another city?",
     "faq4a": "Yes. Most social media services are delivered remotely, though photo and video production is easier with an agency near you.",
     "relatedCities": "{service} in other cities",
@@ -1417,7 +1417,8 @@
         "client": "Enter the client's name and phone.",
         "title": "Give the project a title.",
         "invalid": "Check the form and try again.",
-        "kpis": "Complete each target (name and number), up to six."
+        "kpis": "Complete each target (name and number), up to six.",
+        "signature": "Draw your signature to sign."
       },
       "results": {
         "title": "Results and reporting",
@@ -1515,7 +1516,9 @@
         "agree": "Tick the box to agree.",
         "notSignable": "This contract can't be signed any more.",
         "tampered": "This contract changed after the agency signed it. Ask them to send it again.",
-        "rateLimited": "Too many attempts. Try again later."
+        "rateLimited": "Too many attempts. Try again later.",
+        "signature": "Draw your signature to sign.",
+        "notFound": "This contract was not found."
       }
     },
     "dispute": {
@@ -1555,7 +1558,8 @@
       "change_withdrawn": "Agency withdrew a change request: {note}",
       "change_declined": "Client declined a change: {note}",
       "change_accepted": "Client accepted a change: {note}",
-      "update": "Progress update from the agency"
+      "update": "Progress update from the agency",
+      "amend_requested": "Client asked for a change: {note}"
     },
     "actors": {
       "agency": "Agency",
@@ -1724,7 +1728,7 @@
     },
     "money": {
       "title": "How Sawwiq makes money",
-      "body": "Browsing and contacting agencies is free for everyone, and we take no commission on direct deals. Later we may offer agencies subscriptions that give them priority placement; these are always clearly labelled and never change how reviews rank."
+      "body": "Browsing, contacting agencies and asking for quotes are free for everyone. Contracts signed on Sawwiq are guaranteed: the client's payments are held by a trusted third party and released when the client confirms each milestone, and Sawwiq takes 10% of each released payment from the agency for that guarantee. Later we may offer agencies subscriptions for priority placement; these are always clearly labelled and never change how reviews rank."
     },
     "ctaHire": "Start looking for an agency",
     "ctaContact": "Contact us"
@@ -1755,5 +1759,107 @@
     "bh": "Bahrain",
     "om": "Oman",
     "eg": "Egypt"
+  },
+  "Agreements": {
+    "pdfAr": "PDF (Arabic)",
+    "pdfEn": "PDF (English)",
+    "drawSignature": "Draw your signature",
+    "drawHint": "Sign here with your finger or mouse",
+    "drawRequired": "Draw your signature to sign.",
+    "clear": "Clear",
+    "clientDeclaration": "I have read this document and agree to it. I am of legal age, authorised to sign for the client, and I agree to sign electronically; my typed name and drawn signature bind me like a handwritten signature.",
+    "agencyDeclaration": "I agree to this document on behalf of {agency}. I am of legal age, authorised to sign for the agency, and I agree to sign electronically; my typed name and drawn signature bind the agency like a handwritten signature.",
+    "lawNote": "Written under the laws of {country} (where your agency is based), with Sawwiq's standard general conditions. The client keeps any protection its own country's law requires.",
+    "clientReg": "Client commercial registration or ID no. (optional)",
+    "agencyLegalName": "Agency legal name (as registered)",
+    "agencyReg": "Agency commercial registration no.",
+    "identityHint": "Legal names and registration numbers make the contract fully enforceable in every country Sawwiq serves.",
+    "clientTerms": "The client's special conditions (optional)",
+    "clientTermsPh": "e.g. no use of our work in your portfolio; exclusivity in our sector during the contract",
+    "agencyTerms": "Your special conditions (optional)",
+    "agencyTermsPh": "e.g. two rounds of revisions per design; content approval within 3 working days",
+    "agencyTermsHint": "Both parties sign them. They can't reduce the client's ownership of its accounts, the no-extra-charges rule or data protection.",
+    "totalPrice": "Total price ({currency})",
+    "paymentTitle": "Guaranteed payment",
+    "paymentHeading": "Protected by Sawwiq",
+    "paymentBody": "Every contract on Sawwiq is guaranteed: the client pays each milestone to a trusted third party before you start it, so the money is there; it's released to you as soon as the client confirms the milestone.",
+    "paymentFee": "Sawwiq's guarantee fee: {fee}% of each released payment.",
+    "ndaYears": "Confidentiality lasts for",
+    "years": "{n, plural, one {# year} other {# years}}",
+    "amendTitle": "Ask for a change before signing",
+    "amendPh": "What would you like changed, and why?",
+    "amendSend": "Send to the agency",
+    "amendSent": "Sent. The agency will send you a revised version to sign.",
+    "amendError": "Write what you'd like changed (at least a few words).",
+    "amendReceived": "The client asked for a change before signing",
+    "amendHowTo": "A sent contract can't be edited (its fingerprint is signed). Cancel it and send a new one with the change.",
+    "ndaStudio": {
+      "tab": "NDAs",
+      "title": "Non-disclosure agreements",
+      "intro": "Send an NDA before a client shares its brief, plans or account access. Signed electronically by both sides.",
+      "new": "New NDA",
+      "empty": "No NDAs yet.",
+      "newTitle": "New non-disclosure agreement",
+      "newIntro": "Fill in who shares what and why. The client gets a private link to read and sign.",
+      "sent": "Signed and sent. Share the private link with the client.",
+      "statusLabel": "Status",
+      "status": {
+        "sent": "Waiting for the client",
+        "signed": "Signed by both",
+        "declined": "Declined by the client",
+        "cancelled": "Cancelled"
+      },
+      "shareTitle": "Non-disclosure agreement",
+      "declined": "The client declined",
+      "amendHowTo": "Cancel this NDA and send a new one with the change.",
+      "cancel": "Cancel NDA"
+    },
+    "ndaForm": {
+      "client": "The client",
+      "clientName": "Client name",
+      "clientPhone": "Client phone (WhatsApp)",
+      "clientEmail": "Client email (optional)",
+      "terms": "What is confidential",
+      "purpose": "Purpose",
+      "purposePh": "e.g. Discussing a social media and ads plan for the client's restaurants",
+      "direction": "Who shares confidential information?",
+      "directions": {
+        "mutual": "Both sides (mutual)",
+        "client_discloses": "The client shares, the agency keeps it confidential",
+        "agency_discloses": "The agency shares, the client keeps it confidential"
+      },
+      "sign": "Sign and send",
+      "signer": "Your full name (as signature)",
+      "submit": "Sign and send to client",
+      "errors": {
+        "purpose": "Describe the purpose in a sentence.",
+        "client": "Enter the client's name and phone.",
+        "signer": "Type your full name to sign.",
+        "signature": "Draw your signature to sign.",
+        "agree": "Tick the box to agree.",
+        "rateLimited": "Too many attempts. Try again later.",
+        "invalid": "Check the form and try again."
+      }
+    },
+    "ndaClient": {
+      "from": "Non-disclosure agreement from",
+      "intro": "Read what stays confidential, for how long and why. Sign when you're happy, or ask for a change.",
+      "sign": "Sign the agreement",
+      "signer": "Your full name (as signature)",
+      "signButton": "Sign agreement",
+      "signed": "Signed by both parties. Download your copy below.",
+      "amendOrDecline": "Ask for a change or decline",
+      "decline": "Decline",
+      "answered": "Sent to the agency.",
+      "errors": {
+        "signer": "Type your full name to sign.",
+        "signature": "Draw your signature to sign.",
+        "agree": "Tick the box to agree.",
+        "notSignable": "This agreement can't be signed any more.",
+        "tampered": "This agreement changed after the agency signed it. Ask them to send it again.",
+        "rateLimited": "Too many attempts. Try again later.",
+        "notFound": "This agreement was not found."
+      }
+    }
   }
 }

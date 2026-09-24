@@ -38,7 +38,7 @@ Each milestone has a name, due date (inside the contract period), amount and che
 | Release | Automatically to the agency when the client approves the milestone | — (both sides can mark "paid" / "received" for the record) |
 | Guarantee | Agency knows the money is there; client knows it's released only on confirmation | None; Sawwiq keeps the contract, checklists and history |
 | Problems | Either side reports a problem → admin releases or refunds each held milestone | Contract history only |
-| Fee | `PLATFORM_FEE_PERCENT` on released amounts (0 during launch), fixed per contract when sent | None |
+| Fee | `PLATFORM_FEE_PERCENT` on released amounts (**10% by default**), fixed per contract when sent, deducted from the agency's payout | None |
 
 Money movements are an append-only ledger (`escrow_ledger`: deposit, release, fee, refund). Held = deposits − releases − fees − refunds. Deposits arrive through the payment provider's verified webhook (`ms_<milestone>` references), once per event, amount checked. Cancelling is allowed only while nothing is held; otherwise a dispute.
 
@@ -47,3 +47,8 @@ Admin → Payments → Protected client payments shows money held, paid in, paid
 ## Before real money
 
 Holding client funds for later release is regulated. Run protected payments through a licensed Jordanian payment provider that supports marketplace / split payouts or escrow (and confirm with the Central Bank of Jordan's requirements), rather than holding funds in a company account. Until then the built-in test checkout (`PAYMENTS_PROVIDER=mock`) lets you run the whole flow without money.
+
+
+## Update (2026-09): every contract is guaranteed
+
+New contracts are always **protected**. The client pays each milestone to a trusted third party (a licensed payment or escrow provider); the money is released when the client confirms the milestone. The guarantee fee is 10%. "Direct" remains only for contracts sent before this change. Terms v3 adds the universal general conditions, the country annex and drawn signatures (docs/22-legal-documents.md).

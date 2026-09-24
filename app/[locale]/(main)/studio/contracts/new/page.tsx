@@ -3,6 +3,7 @@ import { ContractBuilder, type BuilderInitial } from "@/components/contracts/con
 import { requireAgency } from "@/lib/auth/guards";
 import { feePercent, proposalForContract } from "@/lib/data/contracts";
 import { listPackages } from "@/lib/data/packages";
+import { countryName, currencyOf } from "@/lib/countries";
 import { PLATFORMS, serviceLabel } from "@/lib/labels";
 
 export default async function NewContract({ params, searchParams }: PageProps<"/[locale]/studio/contracts/new">) {
@@ -41,7 +42,7 @@ export default async function NewContract({ params, searchParams }: PageProps<"/
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="text-sm text-muted-foreground">{t("intro")}</p>
       </div>
-      <ContractBuilder initial={initial} agencyName={agency.name} platforms={PLATFORMS.map((p) => ({ key: p, label: tp(p) }))} feePercent={feePercent()} />
+      <ContractBuilder initial={initial} agencyName={agency.name} platforms={PLATFORMS.map((p) => ({ key: p, label: tp(p) }))} feePercent={feePercent()} currency={currencyOf(agency.country)} countryName={countryName(agency.country, locale)} />
     </div>
   );
 }

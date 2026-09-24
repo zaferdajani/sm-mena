@@ -46,7 +46,7 @@ export default async function ClientContract({ params, searchParams }: PageProps
         <>
           <p className="text-sm text-muted-foreground">{t("client.intro")}</p>
           <div className="rounded-2xl border p-4">
-            <ContractDocument v={v} locale={locale} />
+            <ContractDocument v={v} locale={locale} pdfRef={token} />
           </div>
           <ClientSign token={token} />
         </>
@@ -65,7 +65,7 @@ export default async function ClientContract({ params, searchParams }: PageProps
           <details className="rounded-2xl border p-4">
             <summary className="cursor-pointer font-semibold">{t("view.readFull")}</summary>
             <div className="mt-3">
-              <ContractDocument v={v} locale={locale} />
+              <ContractDocument v={v} locale={locale} pdfRef={token} />
             </div>
           </details>
           <PrintButton label={t("view.print")} icon={<Printer className="size-4" />} />

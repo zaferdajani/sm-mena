@@ -1,5 +1,6 @@
 import "./setup-db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { SIGNATURE_PNG } from "./png";
 import { createAgency, listAgencies, updateAgency } from "@/lib/data/agencies";
 import {
   canonicalTerms,
@@ -52,6 +53,7 @@ const draft = (over: Partial<ContractInput> = {}): ContractInput => ({
   reportingCadence: "weekly",
   mediaBudgetJod: 1500,
   signerName: "Lina Growth",
+  signature: SIGNATURE_PNG,
   locale: "en",
   ...over,
 });
@@ -70,12 +72,12 @@ describe("terms v2", () => {
     expect(validateContract(draft({ kpis: [{ label: "Leads", target: "" }] }))).toBe("kpis");
   });
 
-  it("the client signs a v2 contract and sees the commitments", async () => {
+  it("the client signs a contract and sees the commitments", async () => {
     const created = await createContract(agencyId, draft());
     if ("error" in created) throw new Error(created.error);
-    expect(await clientSign(created.token, "Omar Khalil", "1.1.1.1")).toEqual({ ok: true });
+    expect(await clientSign(created.token, "Omar Khalil", "1.1.1.1", SIGNATURE_PNG)).toEqual({ ok: true });
     const v = (await getContractByToken(created.token))!;
-    expect(v.contract).toMatchObject({ termsVersion: 2, reportingCadence: "weekly", mediaBudgetJod: 1500, status: "active" });
+    expect(v.contract).toMatchObject({ termsVersion: 3, reportingCadence: "weekly", mediaBudgetJod: 1500, status: "active" });
     expect(v.contract.kpis).toHaveLength(2);
   });
 });
@@ -84,7 +86,7 @@ describe("no surprise charges", () => {
   it("extra money only through a change request the client accepts", async () => {
     const created = await createContract(agencyId, draft());
     if ("error" in created) throw new Error(created.error);
-    await clientSign(created.token, "Omar Khalil", "1.1.1.1");
+    await clientSign(created.token, "Omar Khalil", "1.1.1.1", SIGNATURE_PNG);
     let v = (await getContractByToken(created.token))!;
     const total = v.contract.totalFils;
 
@@ -128,7 +130,7 @@ describe("no chasing the agency", () => {
   it("updates reset the clock", async () => {
     const created = await createContract(agencyId, draft());
     if ("error" in created) throw new Error(created.error);
-    await clientSign(created.token, "Omar Khalil", "1.1.1.1");
+    await clientSign(created.token, "Omar Khalil", "1.1.1.1", SIGNATURE_PNG);
     let v = (await getContractByToken(created.token))!;
     expect(await postUpdate(v, "short")).toEqual({ error: "note" });
     expect(await postUpdate(v, "Week 1: brand guidelines drafted, Meta pixel installed, 14 leads at 7.2 JOD each.")).toEqual({ ok: true });

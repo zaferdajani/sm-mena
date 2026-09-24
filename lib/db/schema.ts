@@ -642,6 +642,23 @@ export const contracts = pgTable(
     clientSignerName: text("client_signer_name"),
     clientSignedAt: timestamp("client_signed_at", { withTimezone: true }),
     clientSignIpHash: text("client_sign_ip_hash"),
+    // Terms v3 (docs/22-legal-documents.md): the universal general conditions
+    // (version `legalVersion`), the law and courts of the agency's country,
+    // both parties' legal identity, each side's special conditions, and a
+    // drawn signature from each signer (PNG, base64). Signatures are
+    // fill-once: a database trigger refuses to change them once set.
+    jurisdiction: text("jurisdiction"),
+    jurisdictionCity: text("jurisdiction_city"),
+    legalVersion: text("legal_version"),
+    agencyLegalName: text("agency_legal_name"),
+    agencyRegNumber: text("agency_reg_number"),
+    clientRegNumber: text("client_reg_number"),
+    agencyTerms: text("agency_terms"),
+    clientTerms: text("client_terms"),
+    ndaYears: integer("nda_years"),
+    agencySignature: text("agency_signature"),
+    agencySignIpHash: text("agency_sign_ip_hash"),
+    clientSignature: text("client_signature"),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     createdAt: createdAt(),
@@ -754,6 +771,55 @@ export const contractChanges = pgTable(
   (t) => [index("contract_changes_idx").on(t.contractId, t.createdAt)],
 );
 
+/**
+ * A standalone non-disclosure agreement between an agency and a (future)
+ * client, signed the same way as a contract: the agency signs when it sends,
+ * the client signs through a private link. Same general conditions, same
+ * jurisdiction annex, same fill-once signatures.
+ */
+export const ndas = pgTable(
+  "ndas",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    number: text("number").notNull().unique(), // NDA-2026-4F7K2
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    locale: text("locale").notNull().default("ar"),
+    direction: text("direction").notNull().default("mutual"), // mutual | client_discloses | agency_discloses
+    purpose: text("purpose").notNull(),
+    years: integer("years").notNull().default(2),
+    jurisdiction: text("jurisdiction").notNull(),
+    jurisdictionCity: text("jurisdiction_city").notNull(),
+    legalVersion: text("legal_version").notNull(),
+    agencyLegalName: text("agency_legal_name").notNull(),
+    agencyRegNumber: text("agency_reg_number"),
+    agencyTerms: text("agency_terms"),
+    clientTerms: text("client_terms"),
+    clientName: text("client_name").notNull(),
+    clientPhone: text("client_phone").notNull(),
+    clientEmail: text("client_email"),
+    clientRegNumber: text("client_reg_number"),
+    clientTokenHash: text("client_token_hash").notNull().unique(),
+    clientTokenEnc: text("client_token_enc").notNull(),
+    termsHash: text("terms_hash").notNull(),
+    status: text("status").notNull().default("sent"), // sent | signed | declined | cancelled
+    agencySignerName: text("agency_signer_name").notNull(),
+    agencySignedAt: timestamp("agency_signed_at", { withTimezone: true }).notNull(),
+    agencySignature: text("agency_signature").notNull(),
+    agencySignIpHash: text("agency_sign_ip_hash"),
+    clientSignerName: text("client_signer_name"),
+    clientSignedAt: timestamp("client_signed_at", { withTimezone: true }),
+    clientSignature: text("client_signature"),
+    clientSignIpHash: text("client_sign_ip_hash"),
+    /** The client's reason for declining, or the change it asked for before signing. */
+    clientNote: text("client_note"),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("ndas_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
 // ---------------------------------------------------------------------------
 // Bugs: automatic error journal and user-submitted reports
 // ---------------------------------------------------------------------------
@@ -847,3 +913,4 @@ export type Contract = typeof contracts.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type MilestoneCheck = typeof milestoneChecks.$inferSelect;
 export type ContractChange = typeof contractChanges.$inferSelect;
+export type Nda = typeof ndas.$inferSelect;

@@ -1,6 +1,7 @@
 import "./setup-db";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { SIGNATURE_PNG } from "./png";
 import { createAgency } from "@/lib/data/agencies";
 import {
   approveMilestone,
@@ -25,7 +26,7 @@ import {
 import { applyProviderEvent } from "@/lib/data/payments";
 import { createUser } from "@/lib/data/users";
 import { closeDb, getDb } from "@/lib/db";
-import { milestoneChecks } from "@/lib/db/schema";
+import { contracts, milestoneChecks } from "@/lib/db/schema";
 import { normalizeLines } from "@/lib/deliverables";
 
 let agencyId: string;
@@ -51,6 +52,7 @@ const draft = (over: Partial<ContractInput> = {}): ContractInput => ({
     { title: "November", dueDate: "2026-11-30", amountFils: 250_000, checks: ["4 reels", "Monthly report"] },
   ],
   signerName: "Sara Haddad",
+  signature: SIGNATURE_PNG,
   locale: "en",
   ...over,
 });
@@ -87,8 +89,8 @@ describe("protected contract", () => {
     expect(v.milestones[0].checks.map((c) => [c.text, c.source])).toContainEqual(["Arabic captions reviewed by the owner before posting", "special_request"]);
     expect(nextFundable(v)).toBeNull(); // not signed yet
 
-    expect(await clientSign(token, "Nour Khalil", "1.2.3.4")).toEqual({ ok: true });
-    expect(await clientSign(token, "Nour Khalil", "1.2.3.4")).toEqual({ error: "notSignable" });
+    expect(await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG)).toEqual({ ok: true });
+    expect(await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG)).toEqual({ error: "notSignable" });
     v = (await getContractByToken(token))!;
     expect(v.contract.status).toBe("active");
 
@@ -123,7 +125,7 @@ describe("protected contract", () => {
 
     v = (await getContractByToken(token))!;
     expect(v.milestones[0].status).toBe("released");
-    expect(v.money).toMatchObject({ deposited: 250_000, released: 250_000, held: 0 });
+    expect(v.money).toMatchObject({ deposited: 250_000, released: 225_000, fees: 25_000, held: 0 });
     expect(nextFundable(v)?.id).toBe(v.milestones[1].id);
     expect(v.events.map((e) => e.type)).toEqual(expect.arrayContaining(["signed", "funded", "submitted", "changes_requested", "approved", "released"]));
   });
@@ -134,7 +136,7 @@ describe("protected contract", () => {
     const v = (await getContractByToken(created.token))!;
     const db = await getDb();
     await db.update(milestoneChecks).set({ text: "Only 1 reel" }).where(eq(milestoneChecks.id, v.milestones[0].checks[0].id));
-    expect(await clientSign(created.token, "Nour Khalil", "1.2.3.4")).toEqual({ error: "tampered" });
+    expect(await clientSign(created.token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG)).toEqual({ error: "tampered" });
   });
 
   it("takes the platform fee on release and lets an admin settle disputes", async () => {
@@ -143,7 +145,7 @@ describe("protected contract", () => {
     delete process.env.PLATFORM_FEE_PERCENT;
     if (!("token" in created)) throw new Error(created.error);
     const { token } = created;
-    await clientSign(token, "Nour Khalil", "1.2.3.4");
+    await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG);
     let v = (await getContractByToken(token))!;
     await applyProviderEvent("mock", { id: "evt_fee", type: "payment.succeeded", paymentRef: `ms_${v.milestones[0].id}`, providerRef: "mock_2", amountFils: 200_000 });
     v = (await getContractByToken(token))!;
@@ -161,7 +163,7 @@ describe("protected contract", () => {
   it("refunds the client when an admin decides so", async () => {
     const created = await createContract(agencyId, draft({ milestones: [{ title: "All", dueDate: "2026-11-30", amountFils: 90_000, checks: ["Logo"] }] }));
     if (!("token" in created)) throw new Error(created.error);
-    await clientSign(created.token, "Nour Khalil", "1.2.3.4");
+    await clientSign(created.token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG);
     let v = (await getContractByToken(created.token))!;
     await applyProviderEvent("mock", { id: "evt_ref", type: "payment.succeeded", paymentRef: `ms_${v.milestones[0].id}`, providerRef: "mock_3", amountFils: 90_000 });
     v = (await getContractByToken(created.token))!;
@@ -173,13 +175,40 @@ describe("protected contract", () => {
   });
 });
 
-describe("direct contract", () => {
-  it("tracks delivery and confirmations without holding money", async () => {
-    const created = await createContract(agencyId, draft({ paymentMode: "direct", nda: false }));
+describe("every contract is protected", () => {
+  it("ignores a request for direct payment and applies the 10% guarantee fee", async () => {
+    const created = await createContract(agencyId, draft({ paymentMode: "direct" }));
+    if (!("token" in created)) throw new Error(created.error);
+    expect(created.contract).toMatchObject({ paymentMode: "protected", feePercent: 10, termsVersion: 3, jurisdiction: "jo", jurisdictionCity: "amman" });
+    expect(created.contract.agencySignature).toBeTruthy();
+  });
+
+  it("refuses to send without a drawn signature, and the client must draw one too", async () => {
+    expect(await createContract(agencyId, draft({ signature: null }))).toEqual({ error: "signature" });
+    const created = await createContract(agencyId, draft());
+    if (!("token" in created)) throw new Error(created.error);
+    expect(await clientSign(created.token, "Nour Khalil", "1.2.3.4", null)).toEqual({ error: "signature" });
+  });
+
+  it("freezes signatures in the database", async () => {
+    const created = await createContract(agencyId, draft());
+    if (!("token" in created)) throw new Error(created.error);
+    await clientSign(created.token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG);
+    const db = await getDb();
+    await expect(db.update(contracts).set({ clientSignerName: "Someone else" }).where(eq(contracts.id, created.contract.id))).rejects.toThrow();
+    await expect(db.update(contracts).set({ termsHash: "0".repeat(64) }).where(eq(contracts.id, created.contract.id))).rejects.toThrow();
+    await expect(db.update(contracts).set({ agencySignature: "AAAA" }).where(eq(contracts.id, created.contract.id))).rejects.toThrow();
+  });
+});
+
+describe("legacy direct contract", () => {
+  it("still tracks delivery and confirmations without holding money", async () => {
+    const created = await createContract(agencyId, draft({ nda: false }));
     if (!("token" in created)) throw new Error(created.error);
     const { token, contract } = created;
-    expect(contract.feePercent).toBe(0);
-    await clientSign(token, "Nour Khalil", "5.6.7.8");
+    await clientSign(token, "Nour Khalil", "5.6.7.8", SIGNATURE_PNG);
+    // Contracts sent before every contract became protected were "direct".
+    await (await getDb()).update(contracts).set({ paymentMode: "direct", feePercent: 0 }).where(eq(contracts.id, contract.id));
     let v = (await getContractByToken(token))!;
     expect(nextFundable(v)).toBeNull();
     await tickAll(token, "agency", 0);

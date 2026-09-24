@@ -66,3 +66,14 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 | "Report a problem" messages (text, optional email, page, user agent) | Support | Email if given | 12 months after handling |
 | Two-factor secrets and backup codes | Account security | Encrypted secret, hashed codes | Until 2FA is turned off or the account is deleted |
 | Payment records (agency name, amount, method, reference) | Accounting | Business data | As required by tax law (typically 7 years) |
+
+## Data added with contracts v3 and NDAs (2026-09)
+
+| Data | Why | Personal? | Retention |
+|---|---|---|---|
+| Drawn signature (PNG) and typed name of each signer | Electronic signature of a contract or NDA | Yes (biometric-like mark; not used for identification) | Signed record kept for at least 10 years after the contract ends, or as long as the law requires |
+| Party legal name and commercial registration / ID number | Identify the parties so the contract is enforceable | Business data; an individual's ID number is personal | Same as the signed record |
+| Hashed IP at signing (`sha256("sawwiq-sign:" + ip)`) | Evidence of the signing event | Pseudonymous | Same as the signed record |
+| Client's change request / decline note on an NDA | Negotiation before signing | May contain personal data | Same as the document |
+
+Consent: each signer ticks an explicit declaration (legal age, authority, agreement to sign electronically) before signing; the declaration text is versioned with `LEGAL_VERSION`. Staff downloads of contract/NDA PDFs are written to the audit log.

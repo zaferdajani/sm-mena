@@ -21,6 +21,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
   if (!v) notFound();
   const sp = await searchParams;
   const t = await getTranslations("Contracts");
+  const tl = await getTranslations("Agreements");
   const c = v.contract;
   const hidden = { contractId: c.id };
 
@@ -32,6 +33,16 @@ export default async function StudioContract({ params, searchParams }: PageProps
         </p>
       )}
       <ContractSummary v={v} locale={locale} />
+      {c.status === "sent" &&
+        v.events
+          .filter((e) => e.type === "amend_requested")
+          .map((e) => (
+            <div key={e.id} className="space-y-2 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm dark:bg-amber-950/30" data-testid="amend-notice">
+              <p className="font-semibold">{tl("amendReceived")}</p>
+              <p dir="auto">{e.note}</p>
+              <p className="text-xs text-muted-foreground">{tl("amendHowTo")}</p>
+            </div>
+          ))}
       {["sent", "active", "disputed"].includes(c.status) && <ShareLink path={`/${locale}/c/${clientToken(c)}`} phone={c.clientPhone} name={c.clientName} title={c.title} />}
       {c.status === "disputed" && <p className="rounded-xl bg-destructive/10 p-3 text-sm">{t("dispute.active")}</p>}
       <ContractCommitments v={v} locale={locale} />
@@ -46,7 +57,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
       <details className="rounded-2xl border p-4">
         <summary className="cursor-pointer font-semibold">{t("view.readFull")}</summary>
         <div className="mt-3">
-          <ContractDocument v={v} locale={locale} />
+          <ContractDocument v={v} locale={locale} pdfRef={c.id} />
         </div>
       </details>
       <PrintButton label={t("view.print")} icon={<Printer className="size-4" />} />

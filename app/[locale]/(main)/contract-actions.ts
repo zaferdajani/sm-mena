@@ -15,8 +15,10 @@ import {
   getContractForAgency,
   markDirectPayment,
   openDispute,
+  NDA_YEARS,
   postUpdate,
   REPORTING_CADENCES,
+  requestAmendment,
   requestChange,
   requestChanges,
   setCheck,
@@ -28,6 +30,7 @@ import {
 import { normalizeLines } from "@/lib/deliverables";
 import { PLATFORMS } from "@/lib/labels";
 import { isTestPayments } from "@/lib/payments/provider";
+import { parseSignatureDataUrl } from "@/lib/pdf/signature-image";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 
@@ -44,7 +47,8 @@ const draftSchema = z.object({
   specialRequests: z.array(z.object({ text: z.string().max(300), milestone: z.number().int().min(0) })).max(20),
   startDate: z.string(),
   endDate: z.string(),
-  paymentMode: z.enum(["protected", "direct"]),
+  // Every contract is payment-protected; the field is kept for old clients of this action.
+  paymentMode: z.enum(["protected", "direct"]).default("protected"),
   nda: z.boolean(),
   ndaExtra: z.string().max(2000).nullish(),
   client: z.object({ name: z.string().trim().min(2).max(80), phone: z.string().trim().min(7).max(20), email: z.union([z.literal(""), z.string().email().max(200)]).nullish() }),
@@ -52,6 +56,12 @@ const draftSchema = z.object({
   kpis: z.array(z.object({ label: z.string().max(120), target: z.string().max(120) })).max(6).default([]),
   reportingCadence: z.enum(REPORTING_CADENCES).nullish(),
   mediaBudgetJod: z.number().min(0).max(10_000_000).nullish(),
+  agencyLegalName: z.string().max(160).nullish(),
+  agencyRegNumber: z.string().max(60).nullish(),
+  clientRegNumber: z.string().max(60).nullish(),
+  agencyTerms: z.string().max(3000).nullish(),
+  clientTerms: z.string().max(3000).nullish(),
+  ndaYears: z.number().int().refine((n) => (NDA_YEARS as readonly number[]).includes(n)).nullish(),
   signerName: z.string().max(80),
   agree: z.literal(true),
   requestId: z.string().uuid().nullish(),
@@ -80,6 +90,8 @@ export async function createContractAction(_: ActionState, formData: FormData): 
     items: normalizeLines(d.items, PLATFORMS),
     client: { ...d.client, email: d.client.email || null },
     milestones: d.milestones.map((m) => ({ title: m.title, dueDate: m.dueDate, amountFils: fils(m.amountJod), checks: m.checks })),
+    signature: parseSignatureDataUrl(formData.get("signature")),
+    signIp: await clientIp(),
     locale,
   });
   if ("error" in result) return { error: result.error satisfies ContractError };
@@ -168,7 +180,16 @@ export async function clientSignAction(_: ActionState, formData: FormData): Prom
   const ip = await clientIp();
   if (!rateLimit(`sign:${ip}`, 10, 10 * 60 * 1000)) return { error: "rateLimited" };
   if (formData.get("agree") !== "on") return { error: "agree" };
-  const r = await clientSign(token, String(formData.get("signer") ?? ""), ip);
+  const r = await clientSign(token, String(formData.get("signer") ?? ""), ip, parseSignatureDataUrl(formData.get("signature")));
+  refresh();
+  return "error" in r ? { error: r.error } : { ok: true };
+}
+
+/** Before signing: ask the agency to change something (it answers with a revised contract). */
+export async function clientAmendAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const c = await clientContract(formData);
+  if (!c) return { error: "notFound" };
+  const r = await requestAmendment(c.v, String(formData.get("note") ?? ""));
   refresh();
   return "error" in r ? { error: r.error } : { ok: true };
 }

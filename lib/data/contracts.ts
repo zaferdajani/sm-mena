@@ -2,6 +2,7 @@ import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { currencyOf } from "@/lib/countries";
+import { LEGAL_VERSION } from "@/lib/legal/jurisdictions";
 import { getDb } from "@/lib/db";
 import {
   agencies,
@@ -37,13 +38,28 @@ import { hashToken } from "./reviews";
 // two fixed clauses: the client owns every account and file, and nothing costs
 // more than signed unless the client approves a change request. v1 contracts
 // keep their original fingerprint.
-export const TERMS_VERSION = 2;
+//
+// v3 (docs/22-legal-documents.md) adds the universal general conditions
+// (lib/legal/clauses.ts, by version), the governing law and courts of the
+// agency's country, both parties' legal identity, each side's special
+// conditions, the NDA term, and a drawn signature from each signer.
+export const TERMS_VERSION = 3;
 export const MAX_KPIS = 6;
 export const REPORTING_CADENCES = ["weekly", "biweekly", "monthly"] as const;
 export type ReportingCadence = (typeof REPORTING_CADENCES)[number];
 export const CADENCE_DAYS: Record<ReportingCadence, number> = { weekly: 7, biweekly: 14, monthly: 31 };
 export const MAX_MILESTONES = 12;
-export const feePercent = () => Math.min(30, Math.max(0, Number(process.env.PLATFORM_FEE_PERCENT) || 0));
+/**
+ * Sawwiq's fee for guaranteeing payment and delivery: 10% of every released
+ * milestone by default (PLATFORM_FEE_PERCENT overrides it, 0–30).
+ */
+export const DEFAULT_FEE_PERCENT = 10;
+export const feePercent = () => {
+  const raw = process.env.PLATFORM_FEE_PERCENT?.trim();
+  const n = raw ? Number(raw) : DEFAULT_FEE_PERCENT;
+  return Number.isFinite(n) ? Math.min(30, Math.max(0, n)) : DEFAULT_FEE_PERCENT;
+};
+export const NDA_YEARS = [1, 2, 3, 5] as const;
 
 export type MilestoneInput = { title: string; dueDate: string; amountFils: number; checks: string[] };
 export type ContractInput = {
@@ -61,7 +77,17 @@ export type ContractInput = {
   kpis?: { label: string; target: string }[];
   reportingCadence?: ReportingCadence | null;
   mediaBudgetJod?: number | null;
+  /** v3: legal identity and each side's special conditions. */
+  agencyLegalName?: string | null;
+  agencyRegNumber?: string | null;
+  clientRegNumber?: string | null;
+  agencyTerms?: string | null;
+  clientTerms?: string | null;
+  ndaYears?: number | null;
   signerName: string;
+  /** The agency signer's drawn signature (PNG). Required for new contracts. */
+  signature?: Uint8Array | null;
+  signIp?: string | null;
   locale: string;
   requestId?: string | null;
   proposalId?: string | null;
@@ -76,7 +102,8 @@ export type ContractError =
   | "amounts"
   | "emptyChecklist"
   | "kpis"
-  | "signer";
+  | "signer"
+  | "signature";
 
 const isDate = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`));
 
@@ -98,7 +125,14 @@ export function validateContract(input: Pick<ContractInput, "startDate" | "endDa
 
 /** Everything both parties agree to, in a stable order. Its hash is what gets signed. */
 export function canonicalTerms(
-  c: Omit<ContractInput, "signerName" | "locale" | "requestId" | "proposalId" | "packageId"> & { number: string; agencyId: string; feePercent: number; version?: number },
+  c: Omit<ContractInput, "signerName" | "locale" | "requestId" | "proposalId" | "packageId" | "signature" | "signIp"> & {
+    number: string;
+    agencyId: string;
+    feePercent: number;
+    version?: number;
+    /** v3: the law the contract is written against (the agency's country and city). */
+    legal?: { version: string; jurisdiction: string; city: string } | null;
+  },
 ) {
   const version = c.version ?? TERMS_VERSION;
   return JSON.stringify({
@@ -127,9 +161,20 @@ export function canonicalTerms(
           clauses: ["client-owns-accounts-and-files", "no-extra-charges-without-approved-change"],
         }
       : {}),
+    ...(version >= 3
+      ? {
+          legal: c.legal ? [c.legal.version, c.legal.jurisdiction, c.legal.city] : null,
+          parties: [c.agencyLegalName?.trim() || null, c.agencyRegNumber?.trim() || null, c.clientRegNumber?.trim() || null],
+          agencyTerms: c.agencyTerms?.trim() || null,
+          clientTerms: c.clientTerms?.trim() || null,
+          ndaYears: c.nda ? (c.ndaYears ?? 2) : null,
+        }
+      : {}),
   });
 }
 export const hashTerms = (canonical: string) => createHash("sha256").update(canonical).digest("hex");
+export const ipHash = (ip: string) => createHash("sha256").update(`sawwiq-sign:${ip}`).digest("hex");
+const b64 = (bytes: Uint8Array | null | undefined) => (bytes?.length ? Buffer.from(bytes).toString("base64") : null);
 
 function contractNumber() {
   const alphabet = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
@@ -157,6 +202,14 @@ function clean(input: ContractInput): ContractInput {
     kpis: (input.kpis ?? []).map((k) => ({ label: cut(k.label, 120), target: cut(k.target, 120) })).filter((k) => k.label || k.target),
     reportingCadence: input.reportingCadence && (REPORTING_CADENCES as readonly string[]).includes(input.reportingCadence) ? input.reportingCadence : null,
     mediaBudgetJod: input.mediaBudgetJod && input.mediaBudgetJod > 0 ? Math.round(input.mediaBudgetJod) : null,
+    agencyLegalName: input.agencyLegalName ? cut(input.agencyLegalName, 160) || null : null,
+    agencyRegNumber: input.agencyRegNumber ? cut(input.agencyRegNumber, 60) || null : null,
+    clientRegNumber: input.clientRegNumber ? cut(input.clientRegNumber, 60) || null : null,
+    agencyTerms: input.agencyTerms ? cut(input.agencyTerms, 3000) || null : null,
+    clientTerms: input.clientTerms ? cut(input.clientTerms, 3000) || null : null,
+    ndaYears: input.nda ? ((NDA_YEARS as readonly number[]).includes(input.ndaYears ?? 0) ? input.ndaYears! : 2) : null,
+    // Every contract on Sawwiq is payment-protected (docs/22-legal-documents.md).
+    paymentMode: "protected",
     signerName: cut(input.signerName, 80),
   };
 }
@@ -165,14 +218,20 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   const input = clean(raw);
   const error = validateContract(input);
   if (error) return { error };
+  if (!input.signature?.length) return { error: "signature" };
   const db = await getDb();
   const number = contractNumber();
   const token = randomBytes(18).toString("base64url");
-  const fee = input.paymentMode === "protected" ? feePercent() : 0;
+  const fee = feePercent();
   const specialRequests = input.specialRequests;
-  const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee });
+  const [{ country, city, name } = { country: "jo", city: "amman", name: "" }] = await db
+    .select({ country: agencies.country, city: agencies.city, name: agencies.name })
+    .from(agencies)
+    .where(eq(agencies.id, agencyId));
+  const legal = { version: LEGAL_VERSION, jurisdiction: country, city };
+  input.agencyLegalName ??= name;
+  const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee, legal });
   const totalFils = input.milestones.reduce((s, m) => s + m.amountFils, 0);
-  const [{ country } = { country: "jo" }] = await db.select({ country: agencies.country }).from(agencies).where(eq(agencies.id, agencyId));
 
   const contract = await db.transaction(async (tx) => {
     const [row] = await tx
@@ -200,6 +259,17 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
         kpis: input.kpis ?? [],
         reportingCadence: input.reportingCadence ?? null,
         mediaBudgetJod: input.mediaBudgetJod ?? null,
+        jurisdiction: legal.jurisdiction,
+        jurisdictionCity: legal.city,
+        legalVersion: legal.version,
+        agencyLegalName: input.agencyLegalName,
+        agencyRegNumber: input.agencyRegNumber,
+        clientRegNumber: input.clientRegNumber,
+        agencyTerms: input.agencyTerms,
+        clientTerms: input.clientTerms,
+        ndaYears: input.ndaYears,
+        agencySignature: b64(input.signature),
+        agencySignIpHash: input.signIp ? ipHash(input.signIp) : null,
         clientName: input.client.name,
         clientPhone: input.client.phone,
         clientEmail: input.client.email,
@@ -344,24 +414,49 @@ function storedTermsHash(v: ContractView) {
       kpis: c.kpis,
       reportingCadence: (c.reportingCadence as ReportingCadence | null) ?? null,
       mediaBudgetJod: c.mediaBudgetJod,
+      legal: c.legalVersion && c.jurisdiction ? { version: c.legalVersion, jurisdiction: c.jurisdiction, city: c.jurisdictionCity ?? "" } : null,
+      agencyLegalName: c.agencyLegalName,
+      agencyRegNumber: c.agencyRegNumber,
+      clientRegNumber: c.clientRegNumber,
+      agencyTerms: c.agencyTerms,
+      clientTerms: c.clientTerms,
+      ndaYears: c.ndaYears,
     }),
   );
 }
 
 type Result = { ok: true } | { error: string };
 
-export async function clientSign(token: string, signerName: string, ip: string): Promise<Result> {
+/** Checks what is stored still matches what the agency signed (used before showing "signed" copies too). */
+export const termsIntact = (v: ContractView) => storedTermsHash(v) === v.contract.termsHash;
+
+export async function clientSign(token: string, signerName: string, ip: string, signature?: Uint8Array | null): Promise<Result> {
   const v = await getContractByToken(token);
   if (!v) return { error: "notFound" };
   if (v.contract.status !== "sent") return { error: "notSignable" };
   if (signerName.trim().length < 3) return { error: "signer" };
-  if (storedTermsHash(v) !== v.contract.termsHash) return { error: "tampered" };
+  // Contracts with the universal conditions need a drawn signature as well as the typed name.
+  if (v.contract.termsVersion >= 3 && !signature?.length) return { error: "signature" };
+  if (!termsIntact(v)) return { error: "tampered" };
   const db = await getDb();
   await db
     .update(contracts)
-    .set({ status: "active", clientSignerName: signerName.trim().slice(0, 80), clientSignedAt: new Date(), clientSignIpHash: createHash("sha256").update(`sawwiq-sign:${ip}`).digest("hex"), updatedAt: new Date() })
+    .set({ status: "active", clientSignerName: signerName.trim().slice(0, 80), clientSignedAt: new Date(), clientSignIpHash: ipHash(ip), clientSignature: b64(signature), updatedAt: new Date() })
     .where(and(eq(contracts.id, v.contract.id), eq(contracts.status, "sent")));
   await logEvent(v.contract.id, "client", "signed", signerName.trim());
+  return { ok: true };
+}
+
+/**
+ * Client, before signing: ask the agency to change something. The sent
+ * contract can't change (its fingerprint is signed), so the agency answers by
+ * sending a revised contract; this only records the request for both sides.
+ */
+export async function requestAmendment(v: ContractView, note: string): Promise<Result> {
+  if (v.contract.status !== "sent") return { error: "notSignable" };
+  const text = note.trim().slice(0, 2000);
+  if (text.length < 5) return { error: "note" };
+  await logEvent(v.contract.id, "client", "amend_requested", text);
   return { ok: true };
 }
 

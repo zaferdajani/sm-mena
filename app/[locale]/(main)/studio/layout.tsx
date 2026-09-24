@@ -18,6 +18,7 @@ export default async function StudioLayout({ children }: { children: React.React
   const tr = await getTranslations("Reviews");
   const tp = await getTranslations("Packages");
   const to = await getTranslations("Opportunities");
+  const tl = await getTranslations("Agreements");
   const unread = await unreadCount(agency.id);
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -47,6 +48,7 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/reviews", label: tr("studio.tab") },
             { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/contracts", label: t("contracts") },
+            { href: "/studio/ndas", label: tl("ndaStudio.tab") },
             { href: "/studio/profile", label: t("profile") },
             { href: "/studio/billing", label: t("billing") },
             { href: "/studio/security", label: t("security") },
