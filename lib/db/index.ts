@@ -30,7 +30,13 @@ async function connect(): Promise<DB> {
     const { drizzle } = await import("drizzle-orm/postgres-js");
     const client = postgres(url, { prepare: false, max: 10 });
     cache.close = () => client.end();
-    return drizzle(client, { schema }) as unknown as DB;
+    const db = drizzle(client, { schema });
+    // drizzle turns postgres-js's date serializers into pass-throughs (it maps
+    // column values itself), so a Date used directly in a sql`` template
+    // would reach the driver unconverted. Send those as ISO strings.
+    const toText = (v: unknown) => (v instanceof Date ? v.toISOString() : v);
+    for (const oid of [1082, 1083, 1114, 1184, 1266]) client.options.serializers[oid] = toText;
+    return db as unknown as DB;
   }
 
   const { PGlite } = await import("@electric-sql/pglite");

@@ -13,6 +13,7 @@
     "e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env.local lib/db/migrate.ts",
+    "db:move-to-supabase": "tsx lib/db/move-to-supabase.ts",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx --env-file-if-exists=.env.local lib/db/seed.ts",
     "db:reset": "tsx --env-file-if-exists=.env.local lib/db/seed.ts --reset",

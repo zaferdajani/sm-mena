@@ -12,6 +12,10 @@
 #        GOOGLE_PLACES_API_KEY (optional: Google ratings)
 #        CRON_SECRET          (optional: lets an external scheduler call
 #                              /api/cron/google; generated if missing)
+#        DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+#                             (optional: run on Supabase Postgres + Storage;
+#                              the first boot copies the old data across,
+#                              docs/25-supabase.md)
 #   3. Own domain (optional): Settings → Secrets and variables → Actions →
 #      Variables → New repository variable SITE_URL = https://your-domain
 #      (no trailing slash). The next deploy requests the HTTPS certificate and
@@ -77,19 +81,28 @@ jobs:
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           APP="${{ steps.app.outputs.name }}"
-          args=""
-          for name in SEED_ADMIN_EMAIL SEED_ADMIN_PASSWORD ANTHROPIC_API_KEY OPENAI_API_KEY AI_PROVIDER ANTHROPIC_MODEL OPENAI_MODEL GOOGLE_PLACES_API_KEY CRON_SECRET; do
+          # NAME=VALUE lines fed to `flyctl secrets import`, so values with
+          # symbols (database passwords) are passed exactly, never re-parsed by the shell.
+          lines="$RUNNER_TEMP/fly-secrets"
+          umask 077; : > "$lines"
+          for name in SEED_ADMIN_EMAIL SEED_ADMIN_PASSWORD ANTHROPIC_API_KEY OPENAI_API_KEY AI_PROVIDER ANTHROPIC_MODEL OPENAI_MODEL GOOGLE_PLACES_API_KEY CRON_SECRET DATABASE_URL SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY; do
             value="$(printenv "$name" || true)"
-            [ -n "$value" ] && args="$args $name=$value"
+            [ -n "$value" ] && printf '%s=%s\n' "$name" "$value" >> "$lines"
           done
+          # Supabase (docs/25-supabase.md): files go to Supabase Storage too.
+          [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] && echo "STORAGE_PROVIDER=supabase" >> "$lines"
           existing="$(flyctl secrets list -a "$APP" 2>/dev/null || true)"
-          case "$args" in *CRON_SECRET=*) ;; *) echo "$existing" | grep -q CRON_SECRET || args="$args CRON_SECRET=$(openssl rand -hex 24)" ;; esac
+          grep -q '^CRON_SECRET=' "$lines" || echo "$existing" | grep -q CRON_SECRET || echo "CRON_SECRET=$(openssl rand -hex 24)" >> "$lines"
           # Generated once and kept: it encrypts two-factor secrets, so never rotate it casually.
-          echo "$existing" | grep -q MFA_ENCRYPTION_KEY || args="$args MFA_ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d '=+/')"
-          echo "$existing" | grep -q PAYMENTS_WEBHOOK_SECRET || args="$args PAYMENTS_WEBHOOK_SECRET=$(openssl rand -hex 32)"
-          [ -n "$args" ] && flyctl secrets set $args -a "$APP" --stage > /dev/null || true
+          echo "$existing" | grep -q MFA_ENCRYPTION_KEY || echo "MFA_ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d '=+/')" >> "$lines"
+          echo "$existing" | grep -q PAYMENTS_WEBHOOK_SECRET || echo "PAYMENTS_WEBHOOK_SECRET=$(openssl rand -hex 32)" >> "$lines"
+          [ -s "$lines" ] && flyctl secrets import -a "$APP" --stage < "$lines" > /dev/null || true
+          rm -f "$lines"
 
       - name: Own domain (when the SITE_URL variable is set)
         if: steps.gate.outputs.go == 'true'
@@ -129,12 +142,18 @@ jobs:
 
       - name: Verify health
         if: steps.gate.outputs.go == 'true'
+        env:
+          HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
         run: |
           APP="${{ steps.app.outputs.name }}"
-          for i in $(seq 1 24); do
+          # The first boot on Supabase copies the old data across first (a few minutes).
+          for i in $(seq 1 72); do
             curl -fsS "https://$APP.fly.dev/api/health" > health.json 2>/dev/null && break
             sleep 5
           done
           cat health.json; echo
           grep -q '"ok":true' health.json
+          if [ "$HAS_DATABASE_URL" = "true" ] && ! grep -q '"database":"postgres' health.json; then
+            echo "::warning::DATABASE_URL is set but the app is still on the embedded database: the move to Supabase failed. Check 'flyctl logs' for lines starting with [move] (docs/25-supabase.md)."
+          fi
           echo "::notice::Live at ${{ steps.domain.outputs.url }}"
