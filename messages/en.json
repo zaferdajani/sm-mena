@@ -29,7 +29,8 @@
   "Footer": {
     "rights": "© {year} Sawwiq. All rights reserved.",
     "legal": "Terms & privacy",
-    "forAgencies": "For agencies"
+    "forAgencies": "For agencies",
+    "report": "Report a problem"
   },
   "NotFound": {
     "title": "Page not found",
@@ -406,7 +407,9 @@
       "showArchived": "Show archived",
       "showActive": "Show current messages",
       "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq."
-    }
+    },
+    "billing": "Plan & billing",
+    "security": "Security"
   },
   "Admin": {
     "title": "Admin",
@@ -492,6 +495,26 @@
         "generic": "Could not create."
       },
       "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day."
+    },
+    "statistics": "Statistics",
+    "payments": "Payments",
+    "bugs": "Bugs",
+    "users": "Users",
+    "audit": "Audit log",
+    "security": "Security",
+    "health": {
+      "title": "System",
+      "database": "Database",
+      "storage": "Image storage",
+      "ai": "AI matchmaker",
+      "google": "Google ratings",
+      "payments": "Payments",
+      "mfa": "Two-factor sign-in",
+      "on": "on",
+      "off": "off",
+      "mfaMissingKey": "MFA_ENCRYPTION_KEY is not set: admins can't use two-factor sign-in.",
+      "mfaYouOff": "Your account has no two-factor sign-in.",
+      "turnOn": "Turn it on"
     }
   },
   "Hire": {
@@ -762,5 +785,278 @@
     "clientHidden": "Contact details appear after you send a quote.",
     "yourProposal": "Your quote",
     "status": "Status"
+  },
+  "Security": {
+    "title": "Two-factor sign-in",
+    "intro": "Protect your account with a 6-digit code from an authenticator app (Google Authenticator, Microsoft Authenticator, 1Password…) in addition to your password.",
+    "offBody": "Two-factor sign-in is off.",
+    "turnOn": "Turn on two-factor sign-in",
+    "step1": "Install an authenticator app on your phone.",
+    "step2": "Scan this QR code in the app, or type the key below.",
+    "step3": "Enter the 6-digit code the app shows.",
+    "qrAlt": "QR code for your authenticator app",
+    "manualKey": "Can't scan? Key:",
+    "confirm": "Confirm and turn on",
+    "enabledNow": "Two-factor sign-in is on.",
+    "backupTitle": "Your backup codes",
+    "backupBody": "Each code works once if you lose your phone. Store them somewhere safe: they won't be shown again.",
+    "copy": "Copy",
+    "download": "Download",
+    "savedCodes": "I've saved my codes",
+    "onBody": "Two-factor sign-in is on. {count, plural, =0 {No backup codes left.} one {# backup code left.} other {# backup codes left.}}",
+    "newCodes": "New backup codes (old ones stop working)",
+    "newCodesButton": "Create new backup codes",
+    "turnOff": "Turn off two-factor sign-in",
+    "turnedOff": "Two-factor sign-in is off.",
+    "password": "Current password",
+    "requiredNotice": "Admins must use two-factor sign-in. Turn it on to open the admin console.",
+    "verifyTitle": "Enter your code",
+    "verifyBody": "Open your authenticator app and enter the 6-digit code for Sawwiq.",
+    "codeLabel": "Code",
+    "codeHint": "Lost your phone? Enter one of your backup codes instead.",
+    "verifyButton": "Verify",
+    "cancel": "Cancel and sign out",
+    "errors": {
+      "badCode": "That code didn't work. Check your phone's time and try the newest code.",
+      "badPassword": "Wrong password.",
+      "rateLimited": "Too many attempts. Wait a few minutes and try again.",
+      "noPending": "Start again: the setup expired.",
+      "alreadyOn": "Two-factor sign-in is already on.",
+      "notConfigured": "Two-factor sign-in isn't available: the server has no MFA_ENCRYPTION_KEY.",
+      "requiredForAdmins": "Admins can't turn off two-factor sign-in."
+    }
+  },
+  "Support": {
+    "title": "Report a problem or ask us",
+    "intro": "Tell us what went wrong or what you need. We read every message.",
+    "kind": "What is it about?",
+    "kinds": {
+      "bug": "Something is broken",
+      "question": "A question",
+      "suggestion": "A suggestion"
+    },
+    "message": "Message",
+    "messageHint": "What happened, on which page, and what you expected.",
+    "email": "Email (optional)",
+    "emailHint": "Only if you'd like a reply.",
+    "send": "Send",
+    "thanks": "Thank you! Your message reached our team.",
+    "crashTitle": "Something went wrong",
+    "crashBody": "This page hit an error. We've been notified automatically.",
+    "retry": "Try again",
+    "reportLink": "Tell us more",
+    "errors": {
+      "required": "Write at least a few words.",
+      "invalidEmail": "Enter a valid email address.",
+      "rateLimited": "Too many messages. Try again later."
+    }
+  },
+  "AdminBugs": {
+    "tiles": {
+      "open": "Open errors",
+      "investigating": "Investigating",
+      "fixed": "Fixed",
+      "occurrences": "Total occurrences",
+      "newReports": "New user reports"
+    },
+    "tabs": {
+      "errors": "Error journal",
+      "reports": "User reports ({count})"
+    },
+    "filters": {
+      "unresolved": "Unresolved",
+      "resolved": "Resolved",
+      "all": "All"
+    },
+    "status": {
+      "open": "Open",
+      "investigating": "Investigating",
+      "fixed": "Fixed",
+      "wont_fix": "Won't fix",
+      "cannot_reproduce": "Can't reproduce"
+    },
+    "mark": {
+      "open": "Reopen",
+      "investigating": "Investigating",
+      "fixed": "Mark fixed",
+      "wont_fix": "Won't fix",
+      "cannot_reproduce": "Can't reproduce"
+    },
+    "reportStatus": {
+      "new": "New",
+      "planned": "Planned",
+      "done": "Done",
+      "declined": "Declined",
+      "all": "All"
+    },
+    "firstSeen": "First seen",
+    "lastSeen": "Last seen",
+    "notes": "Fix notes",
+    "commit": "Fix commit or PR",
+    "note": "Note",
+    "noErrors": "No errors here. 🎉",
+    "noReports": "No reports here."
+  },
+  "AdminStats": {
+    "range": "{days, plural, =365 {Year} other {# days}}",
+    "tiles": {
+      "visitors": "Visitors",
+      "sessions": "Visits",
+      "views": "Page views",
+      "perSession": "Pages per visit",
+      "aiChats": "AI chat answers"
+    },
+    "viewsPerDay": "Page views per day",
+    "viewsPerWeek": "Page views per week",
+    "weekOf": "Week of {date}",
+    "showTable": "Show as table",
+    "funnel": "How far visitors get",
+    "funnelSteps": {
+      "browsed": "Visited the site",
+      "viewedAgency": "Opened an agency page",
+      "contacted": "Contacted an agency",
+      "requests": "Sent a project request",
+      "accepted": "Accepted a quote"
+    },
+    "funnelNote": "Visitors are counted by browser. Percentages are of everyone who visited.",
+    "activity": "Marketplace activity",
+    "activityKeys": {
+      "newAgencies": "New agencies (not demo)",
+      "newPosts": "New posts",
+      "newReviews": "New reviews",
+      "messages": "Messages to agencies",
+      "requests": "Project requests",
+      "quotes": "Quotes sent"
+    },
+    "sources": "Where visits come from",
+    "landings": "How they arrived (first page · source)",
+    "pages": "Most viewed pages",
+    "visitorsCount": "{count, plural, one {# visitor} other {# visitors}}",
+    "devices": "Devices",
+    "deviceNames": {
+      "mobile": "Phone",
+      "tablet": "Tablet",
+      "desktop": "Computer"
+    },
+    "languages": "Language",
+    "timezones": "Time zones",
+    "aiByProvider": "AI answers by provider",
+    "direct": "Direct / unknown",
+    "noData": "No data yet for this period."
+  },
+  "Billing": {
+    "current": "Your plan",
+    "until": "Active until {date}",
+    "freeDuringLaunch": "Everything is free during the launch. Paid plans are optional.",
+    "plans": {
+      "free": "Free",
+      "pro": "Pro",
+      "business": "Business"
+    },
+    "perMonth": "{price} / month",
+    "months": "{count, plural, one {# month} other {# months}}",
+    "twoFree": "2 months free",
+    "choose": "Choose {plan}",
+    "renew": "Extend {plan}",
+    "features": {
+      "pro": [
+        "Unlimited portfolio posts",
+        "Pro badge on your page",
+        "Higher in AI recommendations (labelled Featured)",
+        "30 quotes a month",
+        "12 months of insights"
+      ],
+      "business": [
+        "Everything in Pro",
+        "Top priority in AI recommendations",
+        "Unlimited quotes",
+        "3 team seats and lead export"
+      ]
+    },
+    "limitsNote": "Free plan: 12 posts and {free} quotes a month once paid plans are switched on.",
+    "testBanner": "Test mode: no real money is charged. A real payment gateway is connected before launch.",
+    "payTest": "Pay now (test)",
+    "failTest": "Simulate a failed payment",
+    "back": "Back to billing",
+    "paidOk": "Payment received. Your plan is active.",
+    "paidFail": "The payment didn't go through. Nothing was charged.",
+    "history": "Payment history",
+    "noHistory": "No payments yet.",
+    "status": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    }
+  },
+  "AdminPayments": {
+    "provider": "Payment provider: {name}",
+    "tabs": {
+      "plans": "Agency plans",
+      "protected": "Protected client payments"
+    },
+    "tiles": {
+      "thisMonth": "Revenue this month",
+      "lastMonth": "Last month",
+      "mrr": "Monthly recurring",
+      "mrrHint": "active paid plans",
+      "paidAgencies": "Paying agencies",
+      "pending": "Pending payments",
+      "refunds": "Refunded this month: {amount}"
+    },
+    "recordManual": "Record a CliQ, bank or cash payment",
+    "recordManualHint": "For agencies that pay outside the card checkout. The plan starts (or extends) immediately.",
+    "agencyHandle": "Agency username",
+    "plan": "Plan",
+    "months": "Months",
+    "method": "Method",
+    "amount": "Amount (JOD)",
+    "reference": "Reference",
+    "note": "Note",
+    "record": "Record payment",
+    "recorded": "Payment recorded and plan activated.",
+    "methods": {
+      "cliq": "CliQ",
+      "bank_transfer": "Bank transfer",
+      "cash": "Cash",
+      "card": "Card"
+    },
+    "all": "All",
+    "export": "Export CSV",
+    "empty": "No payments here.",
+    "until": "covers until {date}",
+    "refund": "Refund…",
+    "refundReason": "Reason",
+    "endPlan": "End the plan now",
+    "markRefunded": "Mark refunded",
+    "errors": {
+      "agency": "No agency with that username.",
+      "invalid": "Check the fields and try again."
+    }
+  },
+  "AdminUsers": {
+    "search": "Search email or username",
+    "go": "Search",
+    "roles": {
+      "admin": "Admin",
+      "agency": "Agency"
+    },
+    "mfaOn": "2FA on",
+    "mfaOff": "2FA off",
+    "lastLogin": "last sign-in {when}",
+    "neverLoggedIn": "never signed in",
+    "joined": "joined {date}",
+    "reset": "Reset 2FA…",
+    "resetHint": "Use only after confirming the person's identity. Turns off their two-factor sign-in and signs them out everywhere.",
+    "resetConfirm": "Reset two-factor sign-in"
+  },
+  "AdminAudit": {
+    "intro": "Every admin action, admin sign-in, two-factor change and payment change, newest first.",
+    "empty": "Nothing recorded yet.",
+    "when": "When",
+    "who": "Who",
+    "action": "Action",
+    "details": "Details"
   }
 }

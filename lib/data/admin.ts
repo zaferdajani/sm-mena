@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, events, inquiries, postImages, posts, promotions, reports, users } from "@/lib/db/schema";
+import { agencies, auditLogs, events, inquiries, postImages, posts, promotions, reports, users } from "@/lib/db/schema";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -153,4 +153,36 @@ export async function recentInquiriesCount(days = 30) {
   const db = await getDb();
   const [row] = await db.select({ n: sql<number>`count(*)::int` }).from(inquiries).where(gte(inquiries.createdAt, new Date(Date.now() - days * DAY)));
   return row.n;
+}
+
+/** Accounts with their agency, two-factor state and last sign-in (Admin → Users). */
+export async function adminListUsers(q?: string) {
+  const db = await getDb();
+  const term = q?.trim().toLowerCase();
+  return db
+    .select({
+      id: users.id,
+      email: users.email,
+      role: users.role,
+      mfa: sql<boolean>`${users.totpEnabledAt} is not null`,
+      lastLoginAt: users.lastLoginAt,
+      createdAt: users.createdAt,
+      agencyHandle: agencies.handle,
+      agencyName: agencies.name,
+    })
+    .from(users)
+    .leftJoin(agencies, eq(agencies.ownerUserId, users.id))
+    .where(term ? sql`lower(${users.email}) like ${`%${term}%`} or lower(coalesce(${agencies.handle}, '')) like ${`%${term}%`}` : undefined)
+    .orderBy(desc(users.createdAt))
+    .limit(200);
+}
+
+export async function listAuditLog(limit = 200) {
+  const db = await getDb();
+  return db
+    .select({ id: auditLogs.id, action: auditLogs.action, entity: auditLogs.entity, entityId: auditLogs.entityId, meta: auditLogs.meta, createdAt: auditLogs.createdAt, actor: users.email })
+    .from(auditLogs)
+    .leftJoin(users, eq(users.id, auditLogs.actorUserId))
+    .orderBy(desc(auditLogs.createdAt))
+    .limit(limit);
 }

@@ -1,3 +1,4 @@
+import { LifeBuoy } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Link } from "@/i18n/navigation";
@@ -34,6 +35,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
+          <Link href="/support" className="hover:underline" data-testid="report-problem">
+            {tf("report")}
+          </Link>
           <Link href="/legal" className="hover:underline">
             {tf("legal")}
           </Link>
@@ -45,7 +49,12 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/" className="text-xl font-bold text-brand">
           {th("brand")}
         </Link>
-        <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
+        <div className="flex items-center gap-1">
+          <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
+            <LifeBuoy className="size-5" />
+          </Link>
+          <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
+        </div>
       </header>
 
       <main className="min-w-0 flex-1 pb-20 md:pb-10">{children}</main>

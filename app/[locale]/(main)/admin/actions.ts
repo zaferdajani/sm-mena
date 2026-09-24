@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/guards";
+import { adminResetMfa } from "@/lib/auth/mfa";
 import { audit, getAgencyByHandle } from "@/lib/data/agencies";
 import { createPromotion, removeDemoData, resolveReport, setAgencyFlags, setPostStatus, setPromotionStatus } from "@/lib/data/admin";
 import { getDb } from "@/lib/db";
@@ -117,5 +118,13 @@ export async function setReviewStatusAction(reviewId: string, status: "published
   const admin = await requireAdmin();
   await setReviewStatus(uuid.parse(reviewId), z.enum(["published", "hidden"]).parse(status));
   await audit(admin.id, `review.${status}`, "review", reviewId);
+  refresh();
+}
+
+export async function resetMfaAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const userId = uuid.parse(formData.get("userId"));
+  if (userId === admin.id) return; // your own 2FA is managed under Security
+  await adminResetMfa(admin.id, userId);
   refresh();
 }

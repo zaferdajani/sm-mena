@@ -43,6 +43,7 @@ export const eventType = pgEnum("event_type", [
   "promotion_click",
   "recommended",
   "proposal",
+  "ai_chat",
 ]);
 export const contactChannel = pgEnum("contact_channel", [
   "whatsapp",
@@ -58,6 +59,11 @@ export const reviewSource = pgEnum("review_source", ["invite", "inquiry"]);
 export const billing = pgEnum("billing", ["monthly", "one_off"]);
 export const requestStatus = pgEnum("request_status", ["open", "closed"]);
 export const proposalStatus = pgEnum("proposal_status", ["sent", "shortlisted", "accepted", "declined"]);
+export const paymentStatus = pgEnum("payment_status", ["pending", "paid", "failed", "refunded", "cancelled"]);
+export const paymentKind = pgEnum("payment_kind", ["subscription", "promotion"]);
+export const errorStatus = pgEnum("error_status", ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"]);
+export const supportStatus = pgEnum("support_status", ["new", "planned", "done", "declined"]);
+export const supportKind = pgEnum("support_kind", ["bug", "question", "suggestion"]);
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -72,6 +78,14 @@ export const users = pgTable("users", {
   // PDPL: explicit consent, versioned (docs/08-legal-compliance.md)
   consentVersion: text("consent_version").notNull(),
   consentAt: timestamp("consent_at", { withTimezone: true }).notNull(),
+  // Two-factor authentication (TOTP). Secrets are AES-GCM encrypted with
+  // MFA_ENCRYPTION_KEY; backup codes are stored as sha256 hashes.
+  totpSecretEnc: text("totp_secret_enc"),
+  totpPendingEnc: text("totp_pending_enc"),
+  totpEnabledAt: timestamp("totp_enabled_at", { withTimezone: true }),
+  totpLastStep: integer("totp_last_step").notNull().default(0), // replay protection
+  backupCodeHashes: jsonb("backup_code_hashes").$type<string[]>().notNull().default([]),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   createdAt: createdAt(),
 });
 
@@ -84,6 +98,9 @@ export const sessions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    // Password accepted but the two-factor code is still owed: the session
+    // grants nothing until it is verified.
+    mfaPending: boolean("mfa_pending").notNull().default(false),
     createdAt: createdAt(),
   },
   (t) => [index("sessions_user_idx").on(t.userId)],
@@ -278,9 +295,11 @@ export const events = pgTable(
     promotionId: uuid("promotion_id"),
     channel: contactChannel("channel"),
     visitorId: text("visitor_id"),
+    detail: text("detail"), // e.g. AI provider for ai_chat
     createdAt: createdAt(),
   },
   (t) => [
+    index("events_type_idx").on(t.type, t.createdAt),
     index("events_agency_idx").on(t.agencyId, t.type, t.createdAt),
     index("events_dedupe_idx").on(t.visitorId, t.type, t.postId, t.createdAt),
   ],
@@ -484,6 +503,129 @@ export const auditLogs = pgTable("audit_logs", {
   createdAt: createdAt(),
 });
 
+// ---------------------------------------------------------------------------
+// Payments (subscriptions and promotions). Amounts are in fils (1 JOD = 1000).
+// ---------------------------------------------------------------------------
+export const payments = pgTable(
+  "payments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // Financial records outlive the agency, so keep a name snapshot.
+    agencyId: uuid("agency_id").references(() => agencies.id, { onDelete: "set null" }),
+    agencyName: text("agency_name").notNull(),
+    kind: paymentKind("kind").notNull(),
+    plan: planId("plan"),
+    months: integer("months"),
+    promotionId: uuid("promotion_id"),
+    amountFils: integer("amount_fils").notNull(),
+    currency: text("currency").notNull().default("JOD"),
+    status: paymentStatus("status").notNull().default("pending"),
+    provider: text("provider").notNull(), // mock | manual | (hyperpay, …)
+    method: text("method").notNull(), // card | cliq | bank_transfer | cash
+    providerRef: text("provider_ref"),
+    periodStart: timestamp("period_start", { withTimezone: true }),
+    periodEnd: timestamp("period_end", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    refundedAt: timestamp("refunded_at", { withTimezone: true }),
+    refundReason: text("refund_reason"),
+    note: text("note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("payments_status_idx").on(t.status, t.createdAt), index("payments_agency_idx").on(t.agencyId), index("payments_paid_idx").on(t.paidAt)],
+);
+
+/** Provider notifications (webhooks), stored once per provider event id. */
+export const paymentEvents = pgTable(
+  "payment_events",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    provider: text("provider").notNull(),
+    eventId: text("event_id").notNull(),
+    paymentId: uuid("payment_id").references(() => payments.id, { onDelete: "set null" }),
+    type: text("type").notNull(),
+    payload: jsonb("payload").notNull().default({}),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("payment_events_unique").on(t.provider, t.eventId)],
+);
+
+// ---------------------------------------------------------------------------
+// Bugs: automatic error journal and user-submitted reports
+// ---------------------------------------------------------------------------
+export const errorEvents = pgTable(
+  "error_events",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fingerprint: text("fingerprint").notNull(),
+    source: text("source").notNull(), // client | server
+    kind: text("kind").notNull(),
+    message: text("message").notNull(),
+    stack: text("stack"),
+    path: text("path"),
+    userAgent: text("user_agent"),
+    occurrences: integer("occurrences").notNull().default(1),
+    status: errorStatus("status").notNull().default("open"),
+    resolutionNotes: text("resolution_notes"),
+    resolutionCommit: text("resolution_commit"),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+    resolvedBy: uuid("resolved_by").references(() => users.id, { onDelete: "set null" }),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("error_events_fingerprint").on(t.fingerprint), index("error_events_status_idx").on(t.status, t.lastSeenAt)],
+);
+
+export const supportRequests = pgTable(
+  "support_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    kind: supportKind("kind").notNull(),
+    message: text("message").notNull(),
+    email: text("email"),
+    path: text("path"),
+    locale: text("locale"),
+    userAgent: text("user_agent"),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    visitorId: text("visitor_id"),
+    status: supportStatus("status").notNull().default("new"),
+    adminNote: text("admin_note"),
+    handledBy: uuid("handled_by").references(() => users.id, { onDelete: "set null" }),
+    handledAt: timestamp("handled_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("support_status_idx").on(t.status, t.createdAt)],
+);
+
+// ---------------------------------------------------------------------------
+// First-party traffic statistics (no third-party analytics)
+// ---------------------------------------------------------------------------
+export const pageViews = pgTable(
+  "page_views",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    path: text("path").notNull(),
+    source: text("source").notNull(), // utm_source, referrer host or "(direct)"
+    visitorId: text("visitor_id"),
+    sessionId: text("session_id").notNull(),
+    landing: boolean("landing").notNull().default(false),
+    device: text("device").notNull(), // mobile | tablet | desktop
+    locale: text("locale"),
+    timezone: text("timezone"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("page_views_created_idx").on(t.createdAt), index("page_views_session_idx").on(t.sessionId)],
+);
+
+/** Admin-editable settings (key → JSON value). */
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedBy: uuid("updated_by").references(() => users.id, { onDelete: "set null" }),
+});
+
 export type User = typeof users.$inferSelect;
 export type Agency = typeof agencies.$inferSelect;
 export type Post = typeof posts.$inferSelect;
@@ -495,3 +637,6 @@ export type Review = typeof reviews.$inferSelect;
 export type Package = typeof packages.$inferSelect;
 export type ProjectRequest = typeof projectRequests.$inferSelect;
 export type Proposal = typeof proposals.$inferSelect;
+export type Payment = typeof payments.$inferSelect;
+export type ErrorEvent = typeof errorEvents.$inferSelect;
+export type SupportRequest = typeof supportRequests.$inferSelect;

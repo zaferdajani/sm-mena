@@ -32,6 +32,8 @@
   --brand-soft: oklch(0.97 0.02 157);
   --brand-tint: oklch(0.93 0.05 157);
   --brand-line: oklch(0.85 0.08 157);
+  /* Chart series colour, validated for contrast on the light surface */
+  --chart-1: oklch(0.5 0.11 157);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,6 +60,8 @@
     --brand-soft: oklch(0.22 0.03 157);
     --brand-tint: oklch(0.3 0.05 157);
     --brand-line: oklch(0.38 0.07 157);
+    /* Darker than --brand: stays inside the dark-mode lightness band for marks */
+    --chart-1: oklch(0.64 0.13 157);
   }
 }
 
@@ -83,6 +87,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-brand: var(--brand);
+  --color-chart-1: var(--chart-1);
   --color-brand-soft: var(--brand-soft);
   --color-brand-tint: var(--brand-tint);
   --color-brand-line: var(--brand-line);

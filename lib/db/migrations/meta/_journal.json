@@ -15,6 +15,13 @@
       "when": 1790178428099,
       "tag": "0001_reviews_packages_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790238571473,
+      "tag": "0002_admin_2fa_payments_bugs_stats",
+      "breakpoints": true
     }
   ]
 }

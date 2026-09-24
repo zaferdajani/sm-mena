@@ -56,3 +56,13 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 
 - Ops hire on a Jordanian employment contract with social security registration.
 - Contractors (content, development) on written service agreements with IP assignment.
+
+## Data added with the admin console (2026-09)
+
+| Data | Why | Personal? | Retention |
+|---|---|---|---|
+| Page views (path, source, device type, language, time zone, random per-tab visit id, visitor cookie id) | Traffic statistics | Pseudonymous; no IP, no names | Delete after 13 months |
+| Error reports (message, stack, route, user agent) | Fixing bugs | No (no query strings, no form data) | Until resolved + 6 months |
+| "Report a problem" messages (text, optional email, page, user agent) | Support | Email if given | 12 months after handling |
+| Two-factor secrets and backup codes | Account security | Encrypted secret, hashed codes | Until 2FA is turned off or the account is deleted |
+| Payment records (agency name, amount, method, reference) | Accounting | Business data | As required by tax law (typically 7 years) |

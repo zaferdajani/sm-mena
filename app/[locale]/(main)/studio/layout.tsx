@@ -47,6 +47,8 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/reviews", label: tr("studio.tab") },
             { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/profile", label: t("profile") },
+            { href: "/studio/billing", label: t("billing") },
+            { href: "/studio/security", label: t("security") },
           ]}
         />
       </div>

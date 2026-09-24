@@ -1,4 +1,6 @@
 import "server-only";
+import { getDb } from "@/lib/db";
+import { events } from "@/lib/db/schema";
 import { recordRecommendations } from "@/lib/matching";
 import { basicMatchmaker } from "./fallback";
 import { anthropicConfigured, anthropicMatchmaker, anthropicModel } from "./providers/anthropic";
@@ -56,6 +58,10 @@ export async function runMatchmaker(history: ChatMessage[], locale: string, visi
     }
   }
   result ??= await basicMatchmaker(history, locale);
+  // One ai_chat event per answered turn, tagged with who answered (Admin → Statistics).
+  await getDb()
+    .then((db) => db.insert(events).values({ type: "ai_chat", visitorId, detail: result.provider }))
+    .catch(() => {});
   if (result.recommendation) {
     await recordRecommendations(result.recommendation.agencies.map((a) => a.id), visitorId).catch(() => {});
   }

@@ -23,3 +23,7 @@ export function formatJod(value: number, locale: string): string {
     maximumFractionDigits: 0,
   }).format(value);
 }
+
+export function formatDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(date);
+}

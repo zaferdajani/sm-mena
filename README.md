@@ -16,6 +16,10 @@ Arabic first (RTL), English second. **Free for everyone at launch.** Paid plans,
 | Verified reviews (Airbnb style), Google rating | Connect Google Business Profile for the rating | Health endpoint, daily Google refresh cron |
 | Upwork-style hire pages per service and city (SEO) | Inbox for inquiries | |
 
+### Admin console
+
+Platform overview and system status, statistics (traffic sources, how visitors arrived, funnel, activity), payments (plans, CliQ/bank/cash recording, refunds, CSV export), bugs (automatic error journal and user reports), agencies, reports, reviews, promotions, users, audit log. Admins sign in with an authenticator app (two-factor, required in production and checked on the server). See `docs/13-admin-console.md`.
+
 ### How matching works
 
 `lib/matching/score.ts` scores every active agency out of 100: services (35), portfolio depth (15), budget fit (15), city (10), reputation from verified reviews (15, a Bayesian average so one 5-star review doesn't beat twenty 4.8s), platform (5), industry (5), verified (3). Every score comes with a breakdown that the UI shows as reasons.
@@ -75,6 +79,8 @@ One machine with a 1 GB volume holds the database and uploads, so no other servi
    - `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (12+ characters) for your admin login
    - `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY` (optional, turns on the AI matchmaker); optionally `AI_PROVIDER`, `ANTHROPIC_MODEL` (e.g. `claude-haiku-4-5`) or `OPENAI_MODEL` (e.g. `gpt-4o-mini`)
    - `GOOGLE_PLACES_API_KEY` (optional, Google ratings)
+
+   The workflow also generates `MFA_ENCRYPTION_KEY` (two-factor sign-in), `PAYMENTS_WEBHOOK_SECRET` and `CRON_SECRET` on the first deploy. After signing in the first time, turn on two-factor sign-in (the admin console asks you to).
 3. Run **Actions → Deploy to Fly.io → Run workflow** (it also runs on every push to `main`).
 
 The site comes up at `https://sawwiq-jo.fly.dev` with demo agencies (remove them in Admin → Agencies when real agencies join). The admin account is created on the first boot after the admin secrets are set, so you can add them later. Change `app` in `fly.toml` for a different name. On a live deployment demo agency passwords are random unless `SEED_DEMO_PASSWORD` is set. For the daily Google refresh, point any scheduler at `GET /api/cron/google` with `Authorization: Bearer $CRON_SECRET`.
@@ -106,6 +112,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/10-monetization.md` | Free now, paid later: triggers, prices, recommendation priority, trust rules |
 | `docs/11-build-stages.md` | What was built, stage by stage |
 | `docs/12-ai-matchmaker.md` | Matching score, AI agent design, requests and quotes, safety |
+| `docs/13-admin-console.md` | Admin console, two-factor sign-in, payments, bugs, statistics |
 | `CLAUDE.md` | Build rules for Claude Code |
 
 ## Stack

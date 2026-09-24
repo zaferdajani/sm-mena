@@ -4,11 +4,14 @@ import { getTranslations } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
 import { StudioNav } from "@/components/studio/studio-nav";
 import { requireAdmin } from "@/lib/auth/guards";
+import { bugBadge } from "@/lib/data/bugs";
 
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin();
+  // allowEnroll: the layout renders for /admin/security too; every page and action checks again.
+  const user = await requireAdmin({ allowEnroll: true });
+  const bugs = await bugBadge();
   const t = await getTranslations("Admin");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
@@ -30,10 +33,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <StudioNav
           items={[
             { href: "/admin", label: t("dashboard") },
+            { href: "/admin/stats", label: t("statistics") },
+            { href: "/admin/payments", label: t("payments") },
+            { href: "/admin/bugs", label: t("bugs"), badge: bugs },
             { href: "/admin/agencies", label: t("agencies") },
             { href: "/admin/reports", label: t("reports") },
             { href: "/admin/reviews", label: tr("admin.title") },
             { href: "/admin/promotions", label: t("promotions") },
+            { href: "/admin/users", label: t("users") },
+            { href: "/admin/audit", label: t("audit") },
+            { href: "/admin/security", label: t("security") },
           ]}
         />
       </div>

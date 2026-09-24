@@ -12,6 +12,11 @@ const e2eEnv = {
   PGLITE_DIR: ".data/e2e/pglite",
   UPLOADS_DIR: ".data/e2e/uploads",
   NEXT_PUBLIC_SITE_URL: baseURL,
+  // The seeded admin has no authenticator; 2FA itself is covered by its own tests.
+  ADMIN_REQUIRE_2FA: "false",
+  // The suite creates many accounts and sign-ins from one address.
+  RATE_LIMIT_MULTIPLIER: "20",
+  MFA_ENCRYPTION_KEY: "e2e-only-mfa-key-not-a-secret",
 };
 
 export default defineConfig({

@@ -4,6 +4,8 @@ import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ErrorReporter } from "@/components/error-reporter";
+import { PageTracker } from "@/components/page-tracker";
 import { directionOf, routing } from "@/i18n/routing";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
@@ -53,7 +55,11 @@ export default async function LocaleLayout({
       <body className="min-h-full">
         {/* Tells shadcn/Base UI components (menus, sliders, tabs) which way to read. */}
         <DirectionProvider direction={directionOf(locale)}>
-          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+          <NextIntlClientProvider>
+            {children}
+            <PageTracker />
+          </NextIntlClientProvider>
+          <ErrorReporter />
         </DirectionProvider>
       </body>
     </html>

@@ -4,10 +4,12 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { verifyPassword } from "@/lib/auth/password";
-import { createSession, destroySession } from "@/lib/auth/session";
+import { verifySecondFactor } from "@/lib/auth/mfa";
+import { completeMfaSession, createSession, destroySession, getPendingMfaUser } from "@/lib/auth/session";
+import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
-import { rateLimit } from "@/lib/rate-limit";
+import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { CITIES } from "@/lib/labels";
 import { normalizePhone, validateHandle } from "@/lib/text";
@@ -24,15 +26,50 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
   if (!parsed.success) return { error: "invalidCredentials" };
   const { email, password } = parsed.data;
   const ip = await clientIp();
-  if (!rateLimit(`login:${ip}:${email.toLowerCase()}`, 8, 15 * 60 * 1000)) return { error: "rateLimited" };
+  // Only failed attempts count: 8 wrong passwords per 15 minutes per address and account.
+  const key = `login:${ip}:${email.toLowerCase()}`;
+  if (isRateLimited(key, 8)) return { error: "rateLimited" };
 
   const user = await getUserByEmail(email);
-  if (!user || !(await verifyPassword(password, user.passwordHash))) return { error: "invalidCredentials" };
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    rateLimit(key, 8, 15 * 60 * 1000);
+    return { error: "invalidCredentials" };
+  }
 
-  await createSession(user.id);
   const locale = await getLocale();
-  const agency = user.role === "agency" ? await getAgencyByOwner(user.id) : null;
-  return redirect({ href: user.role === "admin" ? "/admin" : agency ? "/studio" : "/", locale });
+  if (user.totpEnabledAt) {
+    // Password is right; the session stays locked until the code is verified.
+    await createSession(user.id, { mfaPending: true });
+    return redirect({ href: "/login/verify", locale });
+  }
+  await createSession(user.id);
+  if (user.role === "admin") await audit(user.id, "auth.login", "user", user.id, { mfa: false });
+  return redirect({ href: await homeFor(user.id, user.role), locale });
+}
+
+async function homeFor(userId: string, role: string) {
+  if (role === "admin") return "/admin";
+  return (await getAgencyByOwner(userId)) ? "/studio" : "/";
+}
+
+export async function verifyLogin(_: FormState, formData: FormData): Promise<FormState> {
+  const locale = await getLocale();
+  const user = await getPendingMfaUser();
+  if (!user) return redirect({ href: "/login", locale });
+  const ip = await clientIp();
+  // 5 tries per 10 minutes per account (and per IP), then wait.
+  if (!rateLimit(`mfa:${user.id}`, 5, 10 * 60 * 1000) || !rateLimit(`mfa-ip:${ip}`, 20, 10 * 60 * 1000)) return { error: "rateLimited" };
+  const code = String(formData.get("code") ?? "").trim().slice(0, 32);
+  const method = await verifySecondFactor(user.id, code);
+  if (!method) return { error: "badCode" };
+  await completeMfaSession(user.id);
+  if (user.role === "admin") await audit(user.id, "auth.login", "user", user.id, { mfa: method });
+  return redirect({ href: await homeFor(user.id, user.role), locale });
+}
+
+export async function cancelLogin() {
+  await destroySession();
+  return redirect({ href: "/login", locale: await getLocale() });
 }
 
 const joinSchema = z.object({
