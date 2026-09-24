@@ -95,7 +95,8 @@ jobs:
         if: steps.gate.outputs.go == 'true'
         id: domain
         env:
-          SITE_URL: ${{ vars.SITE_URL }}
+          # The SITE_URL repository variable overrides the default domain.
+          SITE_URL: ${{ vars.SITE_URL || 'https://sawwiq.org' }}
         run: |
           APP="${{ steps.app.outputs.name }}"
           URL="https://$APP.fly.dev"

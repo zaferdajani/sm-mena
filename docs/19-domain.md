@@ -1,6 +1,16 @@
 # 19 — Connecting your own domain
 
-Sawwiq is international (starting in Jordan), so use a domain without a country ending, for example `sawwiq.co` or a `.com`. `sawwiq.com` itself is taken (registered in 2019).
+Sawwiq is international (starting in Jordan), so it uses a domain without a country ending: **`sawwiq.org`** (bought 2026-09). The deploy workflow uses it by default; a `SITE_URL` repository variable overrides it. `sawwiq.com` is taken (registered in 2019).
+
+DNS for `sawwiq.org` (Fly app `sawwiq-jo`):
+
+| Type | Name | Value |
+|---|---|---|
+| `A` | `@` | `66.241.124.252` |
+| `AAAA` | `@` | `2a09:8280:1::19a:b84:0` |
+| `CNAME` | `www` | `sawwiq-jo.fly.dev` |
+
+If the deploy run also prints an `_acme-challenge` CNAME, add it too.
 
 You do three things; the deploy does the rest.
 
