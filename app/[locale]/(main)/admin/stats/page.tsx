@@ -2,14 +2,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { BarList, ColumnChart } from "@/components/admin/charts";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { StatTiles } from "@/components/admin/stat-tiles";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { marketplaceStats, RANGES, trafficStats } from "@/lib/data/stats";
 import { countryName, countryOfZone } from "@/lib/i18n/country";
 
 export default async function AdminStats({ params, searchParams }: PageProps<"/[locale]/admin/stats">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("stats.view");
   const sp = await searchParams;
   const days = RANGES.find((r) => String(r) === sp.days) ?? 30;
   const t = await getTranslations("AdminStats");

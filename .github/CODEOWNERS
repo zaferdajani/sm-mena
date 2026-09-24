@@ -1,0 +1,9 @@
+# The platform owner reviews every change. With branch protection on main
+# ("Require review from Code Owners"), team members can open pull requests
+# but nothing reaches production without the owner's approval.
+*                     @zaferdajani
+/.github/             @zaferdajani
+/fly.toml             @zaferdajani
+/Dockerfile           @zaferdajani
+/lib/auth/            @zaferdajani
+/lib/db/migrations/   @zaferdajani

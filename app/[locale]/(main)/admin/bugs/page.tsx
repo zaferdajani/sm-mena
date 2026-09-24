@@ -1,7 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { StatTiles } from "@/components/admin/stat-tiles";
 import { FilterChips } from "@/components/admin/filter-chips";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
+import { can } from "@/lib/auth/permissions";
 import { bugCounts, listErrors, listSupportRequests, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -22,9 +23,11 @@ const STATUS_STYLE: Record<string, string> = {
 export default async function AdminBugs({ params, searchParams }: PageProps<"/[locale]/admin/bugs">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  const me = await requireStaff("support.manage");
+  // Support staff see user reports only; the error journal is for maintenance and backbone.
+  const canErrors = can(me.role, "bugs.manage");
   const sp = await searchParams;
-  const tab = sp.tab === "reports" ? "reports" : "errors";
+  const tab = sp.tab === "reports" || !canErrors ? "reports" : "errors";
   const t = await getTranslations("AdminBugs");
   const counts = await bugCounts();
   const ago = (d: Date) => timeAgo(d.toISOString(), locale);
@@ -45,7 +48,7 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
         param="tab"
         current={tab}
         options={[
-          { value: "errors", label: t("tabs.errors") },
+          ...(canErrors ? [{ value: "errors", label: t("tabs.errors") }] : []),
           { value: "reports", label: t("tabs.reports", { count: counts.newReports }) },
         ]}
       />

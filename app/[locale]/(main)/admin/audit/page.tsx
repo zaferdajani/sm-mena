@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { listAuditLog } from "@/lib/data/admin";
 import { timeAgo } from "@/lib/format";
 
@@ -7,7 +7,7 @@ import { timeAgo } from "@/lib/format";
 export default async function AdminAudit({ params }: PageProps<"/[locale]/admin/audit">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("audit.view");
   const t = await getTranslations("AdminAudit");
   const rows = await listAuditLog();
   return (

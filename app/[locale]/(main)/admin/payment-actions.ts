@@ -2,14 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { getAgencyByHandle } from "@/lib/data/agencies";
 import { PLAN_MONTHS, recordManualPayment, refundPayment } from "@/lib/data/payments";
 
 export type ManualState = { error?: "agency" | "invalid"; ok?: boolean } | undefined;
 
 export async function recordManualPaymentAction(_: ManualState, formData: FormData): Promise<ManualState> {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("payments.manage");
   const parsed = z
     .object({
       handle: z.string().trim().min(2),
@@ -30,7 +30,7 @@ export async function recordManualPaymentAction(_: ManualState, formData: FormDa
 }
 
 export async function refundPaymentAction(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("payments.manage");
   const data = z.object({ id: z.string().uuid(), reason: z.string().trim().min(2).max(500), endPlan: z.literal("on").optional() }).parse(Object.fromEntries(formData));
   await refundPayment(data.id, admin.id, data.reason, data.endPlan === "on");
   revalidatePath("/[locale]/admin", "layout");

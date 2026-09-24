@@ -2,7 +2,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { PromotionButtons } from "@/components/admin/admin-buttons";
 import { PromotionForm } from "@/components/admin/promotion-form";
 import { Link } from "@/i18n/navigation";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { listPromotions } from "@/lib/data/admin";
 import { CITIES } from "@/lib/labels";
 import { PROMOTION_RULES } from "@/lib/monetization/plans";
@@ -11,7 +11,7 @@ import { allServices } from "@/lib/taxonomy";
 export default async function AdminPromotions({ params }: PageProps<"/[locale]/admin/promotions">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("promotions.manage");
   const t = await getTranslations("Admin.promo");
   const tCity = await getTranslations("Cities");
   const lang = await getLocale();

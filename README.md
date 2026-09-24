@@ -28,6 +28,10 @@ Arabic first (right to left), English second. The site never switches language b
 
 Platform overview and system status, statistics (traffic sources, how visitors arrived, funnel, activity), payments (plans, CliQ/bank/cash recording, refunds, CSV export), bugs (automatic error journal and user reports), agencies, reports, reviews, promotions, users, audit log. Admins sign in with an authenticator app (two-factor, required in production and checked on the server). See `docs/13-admin-console.md`.
 
+### Team access
+
+Maintenance, backbone (engineering) and support teams get their own roles with only the tools their job needs (Admin → Team). You stay the **owner**: only you invite people, change roles, time-box or switch off access, export payments or hand over ownership, and nobody can demote or lock out the owner. Invitations are single-use links, staff must turn on two-factor sign-in, and every change is audited. `docs/17-team-access.md` also covers keeping GitHub, Fly.io and the other accounts in your name (CODEOWNERS, branch protection) and a break-glass recovery.
+
 ### How matching works
 
 `lib/matching/score.ts` scores every active agency out of 100: services (35), portfolio depth (15), budget fit (15), city (10), reputation from verified reviews (15, a Bayesian average so one 5-star review doesn't beat twenty 4.8s), platform (5), industry (5), verified (3). Every score comes with a breakdown that the UI shows as reasons.
@@ -124,6 +128,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/13-admin-console.md` | Admin console, two-factor sign-in, payments, bugs, statistics |
 | `docs/15-languages.md` | Language offer, location concept, RTL, translation pipeline |
 | `docs/14-contracts-and-milestones.md` | Deliverables catalogue, contracts and NDA, milestones, protected and direct payments |
+| `docs/17-team-access.md` | Staff roles, owner protections, GitHub/Fly.io access for the team, break-glass, sites directory |
 | `CLAUDE.md` | Build rules for Claude Code |
 
 ## Stack

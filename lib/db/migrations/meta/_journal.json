@@ -29,6 +29,13 @@
       "when": 1790240573497,
       "tag": "0003_contracts_milestones_escrow",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790247724475,
+      "tag": "0004_staff_roles",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,7 @@ import { randomBytes } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { updateAgency, createAgency } from "../data/agencies";
 import { createPostFromProcessed } from "../data/posts";
+import { ensureOwner, recoverOwner } from "../data/staff";
 import { createUser, getUserByEmail } from "../data/users";
 import { processAvatar, processImage, newAvatarKey } from "../images";
 import { storage } from "../storage";
@@ -137,7 +138,7 @@ function kindFor(service: string): DemoKind {
 
 async function reset() {
   const db = await getDb();
-  await db.execute(sql`truncate table app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
+  await db.execute(sql`truncate table staff_invites, app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false } = {}) {
@@ -155,6 +156,14 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     }
   } else {
     log("No admin created: set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD (12+ characters in production).");
+  }
+  // The platform always has exactly one owner (see lib/data/staff.ts).
+  const owner = await ensureOwner(adminEmail ?? undefined);
+  if (owner) log(`${owner} is the platform owner.`);
+  // Break-glass (docs/17-team-access.md): remove the secret again after signing in.
+  if (process.env.OWNER_RECOVERY_EMAIL) {
+    const done = await recoverOwner(process.env.OWNER_RECOVERY_EMAIL, process.env.OWNER_RECOVERY_PASSWORD);
+    log(done ? "Owner recovery applied: two-factor sign-in cleared. Remove OWNER_RECOVERY_* now." : "OWNER_RECOVERY_EMAIL is not the owner; nothing changed.");
   }
   if (adminOnly) return;
 

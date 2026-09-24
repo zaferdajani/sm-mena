@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, isNull, or } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { getAgencyByOwner } from "@/lib/data/agencies";
@@ -13,6 +13,9 @@ const SESSION_DAYS = 30;
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 const PENDING_MINUTES = 10;
+
+/** Disabled accounts and staff whose access period ended have no valid sessions. */
+const accountActive = () => and(isNull(users.disabledAt), or(isNull(users.staffExpiresAt), gt(users.staffExpiresAt, new Date())));
 
 /**
  * Starts a session. With mfaPending the session only lets the user finish the
@@ -41,7 +44,7 @@ export const getSessionUser = cache(async () => {
     .select({ id: users.id, email: users.email, role: users.role, totpEnabledAt: users.totpEnabledAt })
     .from(sessions)
     .innerJoin(users, eq(sessions.userId, users.id))
-    .where(and(eq(sessions.id, hashToken(token)), gt(sessions.expiresAt, new Date()), eq(sessions.mfaPending, false)));
+    .where(and(eq(sessions.id, hashToken(token)), gt(sessions.expiresAt, new Date()), eq(sessions.mfaPending, false), accountActive()));
   return row ? { id: row.id, email: row.email, role: row.role, mfaEnabled: Boolean(row.totpEnabledAt) } : null;
 });
 
@@ -54,7 +57,7 @@ export async function getPendingMfaUser() {
     .select({ id: users.id, email: users.email, role: users.role })
     .from(sessions)
     .innerJoin(users, eq(sessions.userId, users.id))
-    .where(and(eq(sessions.id, hashToken(token)), gt(sessions.expiresAt, new Date()), eq(sessions.mfaPending, true)));
+    .where(and(eq(sessions.id, hashToken(token)), gt(sessions.expiresAt, new Date()), eq(sessions.mfaPending, true), accountActive()));
   return row ?? null;
 }
 
@@ -68,6 +71,12 @@ export const getCurrentAgency = cache(async () => {
   const user = await getSessionUser();
   return user ? getAgencyByOwner(user.id) : null;
 });
+
+/** Signs a user out everywhere (role change, disable, ownership transfer). */
+export async function destroyAllSessions(userId: string) {
+  const db = await getDb();
+  await db.delete(sessions).where(eq(sessions.userId, userId));
+}
 
 export async function destroySession() {
   const store = await cookies();

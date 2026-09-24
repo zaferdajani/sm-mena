@@ -18,7 +18,10 @@ import {
 // ---------------------------------------------------------------------------
 // Enums
 // ---------------------------------------------------------------------------
-export const userRole = pgEnum("user_role", ["agency", "admin"]);
+// agency = an agency account. The rest are staff (lib/auth/permissions.ts):
+// owner (the platform owner; cannot be removed by anyone else), admin, and
+// scoped team roles for engineering (backbone), maintenance and support.
+export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support"]);
 export const agencyStatus = pgEnum("agency_status", ["active", "suspended"]);
 export const planId = pgEnum("plan_id", ["free", "pro", "business"]);
 export const postStatus = pgEnum("post_status", ["published", "hidden"]);
@@ -92,8 +95,30 @@ export const users = pgTable("users", {
   totpLastStep: integer("totp_last_step").notNull().default(0), // replay protection
   backupCodeHashes: jsonb("backup_code_hashes").$type<string[]>().notNull().default([]),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  // Staff access control: time-boxed access for contractors, instant disable.
+  staffExpiresAt: timestamp("staff_expires_at", { withTimezone: true }),
+  disabledAt: timestamp("disabled_at", { withTimezone: true }),
+  invitedBy: uuid("invited_by"),
   createdAt: createdAt(),
 });
+
+/** Single-use invitations to join the staff with a given role (owner only). */
+export const staffInvites = pgTable(
+  "staff_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email").notNull(),
+    role: userRole("role").notNull(),
+    tokenHash: text("token_hash").notNull().unique(),
+    accessUntil: timestamp("access_until", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdBy: uuid("created_by").notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("staff_invites_email_idx").on(t.email)],
+);
 
 export const sessions = pgTable(
   "sessions",

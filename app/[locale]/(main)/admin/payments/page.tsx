@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { ManualPaymentForm } from "@/components/admin/manual-payment-form";
 import { StatTiles } from "@/components/admin/stat-tiles";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { listPayments, paymentSummary } from "@/lib/data/payments";
 import { formatDate } from "@/lib/format";
 import { formatFils, isTestPayments, paymentProvider } from "@/lib/payments/provider";
@@ -23,7 +23,7 @@ const STYLE: Record<string, string> = {
 export default async function AdminPayments({ params, searchParams }: PageProps<"/[locale]/admin/payments">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("payments.view");
   const sp = await searchParams;
   const tab = sp.tab === "protected" ? "protected" : "plans";
   const status = STATUSES.find((s) => s === sp.status) ?? "all";

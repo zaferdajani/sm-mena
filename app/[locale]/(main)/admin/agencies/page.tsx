@@ -5,14 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
+import { can } from "@/lib/auth/permissions";
 import { adminListAgencies } from "@/lib/data/admin";
 import { setPlanAction } from "../actions";
 
 export default async function AdminAgencies({ params, searchParams }: PageProps<"/[locale]/admin/agencies">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  const me = await requireStaff("agencies.view");
+  const moderate = can(me.role, "agencies.moderate");
+  const plans = can(me.role, "agencies.plan");
   const q = String((await searchParams).q ?? "").slice(0, 80);
   const t = await getTranslations("Admin");
   const tc = await getTranslations("Common");
@@ -25,7 +28,7 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
         <form className="flex-1" role="search">
           <Input name="q" type="search" defaultValue={q} placeholder={t("search")} className="h-9" />
         </form>
-        {hasDemo && <RemoveDemoButton />}
+        {hasDemo && can(me.role, "demo.remove") && <RemoveDemoButton />}
       </div>
       <ul className="divide-y rounded-xl border" data-testid="admin-agencies">
         {rows.map((a) => (
@@ -43,15 +46,17 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <AgencyAdminButtons id={a.id} verified={a.isVerified} status={a.status} />
-              <form action={setPlanAction} className="flex items-center gap-1">
-                <input type="hidden" name="agencyId" value={a.id} />
-                <select name="plan" defaultValue={a.plan} aria-label={t("plan")} className="h-8 rounded-md border bg-transparent px-1 text-xs">
-                  {(["free", "pro", "business"] as const).map((p) => <option key={p} value={p}>{tp(p)}</option>)}
-                </select>
-                <input type="date" name="until" aria-label={t("planUntil")} defaultValue={a.planExpiresAt?.toISOString().slice(0, 10) ?? ""} className="h-8 rounded-md border bg-transparent px-1 text-xs" dir="ltr" />
-                <Button type="submit" size="sm" variant="outline">{t("setPlan")}</Button>
-              </form>
+              {moderate && <AgencyAdminButtons id={a.id} verified={a.isVerified} status={a.status} />}
+              {plans && (
+                <form action={setPlanAction} className="flex items-center gap-1">
+                  <input type="hidden" name="agencyId" value={a.id} />
+                  <select name="plan" defaultValue={a.plan} aria-label={t("plan")} className="h-8 rounded-md border bg-transparent px-1 text-xs">
+                    {(["free", "pro", "business"] as const).map((p) => <option key={p} value={p}>{tp(p)}</option>)}
+                  </select>
+                  <input type="date" name="until" aria-label={t("planUntil")} defaultValue={a.planExpiresAt?.toISOString().slice(0, 10) ?? ""} className="h-8 rounded-md border bg-transparent px-1 text-xs" dir="ltr" />
+                  <Button type="submit" size="sm" variant="outline">{t("setPlan")}</Button>
+                </form>
+              )}
             </div>
           </li>
         ))}

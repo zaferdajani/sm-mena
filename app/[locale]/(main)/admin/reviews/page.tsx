@@ -2,14 +2,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ReviewStatusButton } from "@/components/admin/admin-buttons";
 import { Stars } from "@/components/reviews/stars";
 import { Link } from "@/i18n/navigation";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { recentReviewsForAdmin } from "@/lib/data/reviews";
 import { timeAgo } from "@/lib/format";
 
 export default async function AdminReviews({ params }: PageProps<"/[locale]/admin/reviews">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("content.moderate");
   const t = await getTranslations("Reviews");
   const rows = await recentReviewsForAdmin();
   if (!rows.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t("none")}</p>;

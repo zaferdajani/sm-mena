@@ -1049,7 +1049,11 @@
     "go": "Search",
     "roles": {
       "admin": "Admin",
-      "agency": "Agency"
+      "agency": "Agency",
+      "owner": "Owner",
+      "backbone": "Backbone (engineering)",
+      "maintenance": "Maintenance",
+      "support": "Support"
     },
     "mfaOn": "2FA on",
     "mfaOff": "2FA off",
@@ -1059,6 +1063,100 @@
     "reset": "Reset 2FA…",
     "resetHint": "Use only after confirming the person's identity. Turns off their two-factor sign-in and signs them out everywhere.",
     "resetConfirm": "Reset two-factor sign-in"
+  },
+  "AdminTeam": {
+    "nav": "Team",
+    "intro": "Give your team the access they need without giving away the platform. You stay the owner: only you can invite people, change roles, switch accounts off or hand over ownership, and every change is in the audit log.",
+    "members": "Team members",
+    "mfaOn": "2FA on",
+    "mfaOff": "2FA not set up yet",
+    "lastLogin": "last sign-in {when}",
+    "neverLoggedIn": "never signed in",
+    "until": "access until {date}",
+    "disabled": "Switched off",
+    "ended": "Access ended",
+    "change": "Change",
+    "setUntil": "Set end date",
+    "disable": "Switch off",
+    "enable": "Switch on",
+    "pending": "Invitations waiting",
+    "linkExpires": "link valid until {date}",
+    "revoke": "Cancel",
+    "whatTheyCanDo": "What each role can do",
+    "invite": {
+      "title": "Invite someone",
+      "body": "They get a private link to set a password, then must turn on two-factor sign-in before seeing anything. Leave the end date empty for ongoing access; set it for contractors.",
+      "email": "Email",
+      "role": "Role",
+      "until": "Access ends (optional)",
+      "create": "Create invitation link",
+      "ready": "Invitation for {email} is ready. The link works once, for {days} days.",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "message": "You're invited to the Sawwiq team. Set your password here:",
+      "once": "Send it privately. Anyone with the link can create this account until it's used or cancelled."
+    },
+    "transfer": {
+      "title": "Hand over ownership",
+      "body": "Only if you really mean to give the platform to someone else. They must be an active team member with two-factor sign-in on. You stay on as admin, and only the new owner can undo it.",
+      "none": "No one can receive ownership yet: invite someone and wait until they turn on two-factor sign-in.",
+      "to": "New owner",
+      "password": "Your password",
+      "code": "Code from your authenticator app",
+      "confirm": "I understand that I'll no longer be the owner.",
+      "submit": "Hand over ownership"
+    },
+    "accept": {
+      "title": "Join the Sawwiq team as {role}",
+      "password": "Choose a password",
+      "passwordHint": "At least 12 characters.",
+      "confirm": "Repeat the password",
+      "submit": "Create my account",
+      "next": "Next you'll turn on two-factor sign-in with an authenticator app.",
+      "invalidTitle": "This invitation can't be used",
+      "invalidBody": "It was already used, cancelled or has expired. Ask the platform owner for a new one.",
+      "toLogin": "Go to sign in"
+    },
+    "errors": {
+      "invalid": "Please check the details and try again.",
+      "invalidDate": "Pick a date in the future.",
+      "emailTaken": "This email already has an account.",
+      "owner": "The owner's account can't be changed here.",
+      "self": "You can't change your own access here.",
+      "role": "That role can't be given.",
+      "notFound": "That person is not on the team.",
+      "expired": "This invitation can't be used anymore.",
+      "needsMfa": "They need to turn on two-factor sign-in first.",
+      "inactive": "They need active access first.",
+      "badPassword": "Your password is not right.",
+      "badCode": "That code didn't work. Try the newest one.",
+      "ownerNeedsMfa": "Turn on your own two-factor sign-in first.",
+      "rateLimited": "Too many tries. Wait a few minutes.",
+      "weakPassword": "Use at least 12 characters.",
+      "mismatch": "The passwords don't match."
+    },
+    "roles": {
+      "owner": {
+        "name": "Owner",
+        "body": "Everything, plus the only one who can manage the team, export payments, remove demo data or hand over ownership. Nobody can remove or demote the owner."
+      },
+      "admin": {
+        "name": "Admin",
+        "body": "Runs day-to-day operations: agencies, moderation, payments and disputes. Cannot manage the team or export money data."
+      },
+      "backbone": {
+        "name": "Backbone (engineering)",
+        "body": "Core engineering: system health, statistics, the error journal, audit log, and read-only users and agencies. No money, no moderation."
+      },
+      "maintenance": {
+        "name": "Maintenance",
+        "body": "Keeps things running: system health, statistics, the error journal and user reports. No customer data beyond reports."
+      },
+      "support": {
+        "name": "Support",
+        "body": "Helps people: user reports, looking up users and agencies, verification and content moderation. No payments or system settings."
+      }
+    }
   },
   "AdminAudit": {
     "intro": "Every admin action, admin sign-in, two-factor change and payment change, newest first.",

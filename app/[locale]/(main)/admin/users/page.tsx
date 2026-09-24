@@ -1,7 +1,8 @@
 import { ShieldCheck, ShieldOff } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
+import { can } from "@/lib/auth/permissions";
 import { adminListUsers } from "@/lib/data/admin";
 import { formatDate, timeAgo } from "@/lib/format";
 import { resetMfaAction } from "../actions";
@@ -9,7 +10,7 @@ import { resetMfaAction } from "../actions";
 export default async function AdminUsers({ params, searchParams }: PageProps<"/[locale]/admin/users">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const me = await requireAdmin();
+  const me = await requireStaff("users.view");
   const { q } = await searchParams;
   const t = await getTranslations("AdminUsers");
   const rows = await adminListUsers(typeof q === "string" ? q : undefined);
@@ -41,7 +42,7 @@ export default async function AdminUsers({ params, searchParams }: PageProps<"/[
                 {t("joined", { date: formatDate(u.createdAt, locale) })}
               </span>
             </span>
-            {u.mfa && u.id !== me.id && (
+            {u.mfa && u.id !== me.id && u.role !== "owner" && can(me.role, "users.reset_mfa") && (
               <details className="text-xs">
                 <summary className="cursor-pointer text-muted-foreground">{t("reset")}</summary>
                 <form action={resetMfaAction} className="mt-2 space-y-2">

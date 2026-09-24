@@ -5,6 +5,7 @@ import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { verifyPassword } from "@/lib/auth/password";
 import { verifySecondFactor } from "@/lib/auth/mfa";
+import { isStaffRole } from "@/lib/auth/permissions";
 import { completeMfaSession, createSession, destroySession, getPendingMfaUser } from "@/lib/auth/session";
 import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
@@ -31,7 +32,8 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
   if (isRateLimited(key, 8)) return { error: "rateLimited" };
 
   const user = await getUserByEmail(email);
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  const blocked = user && (user.disabledAt || (user.staffExpiresAt && user.staffExpiresAt < new Date()));
+  if (!user || blocked || !(await verifyPassword(password, user.passwordHash))) {
     rateLimit(key, 8, 15 * 60 * 1000);
     return { error: "invalidCredentials" };
   }
@@ -43,12 +45,12 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
     return redirect({ href: "/login/verify", locale });
   }
   await createSession(user.id);
-  if (user.role === "admin") await audit(user.id, "auth.login", "user", user.id, { mfa: false });
+  if (isStaffRole(user.role)) await audit(user.id, "auth.login", "user", user.id, { mfa: false });
   return redirect({ href: await homeFor(user.id, user.role), locale });
 }
 
 async function homeFor(userId: string, role: string) {
-  if (role === "admin") return "/admin";
+  if (isStaffRole(role)) return "/admin";
   return (await getAgencyByOwner(userId)) ? "/studio" : "/";
 }
 
@@ -63,7 +65,7 @@ export async function verifyLogin(_: FormState, formData: FormData): Promise<For
   const method = await verifySecondFactor(user.id, code);
   if (!method) return { error: "badCode" };
   await completeMfaSession(user.id);
-  if (user.role === "admin") await audit(user.id, "auth.login", "user", user.id, { mfa: method });
+  if (isStaffRole(user.role)) await audit(user.id, "auth.login", "user", user.id, { mfa: method });
   return redirect({ href: await homeFor(user.id, user.role), locale });
 }
 

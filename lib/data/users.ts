@@ -5,7 +5,7 @@ import { users } from "@/lib/db/schema";
 
 export const CONSENT_VERSION = "2026-09";
 
-export async function createUser(email: string, password: string, role: "agency" | "admin" = "agency") {
+export async function createUser(email: string, password: string, role: (typeof users.role.enumValues)[number] = "agency") {
   const db = await getDb();
   const [row] = await db
     .insert(users)

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Link } from "@/i18n/navigation";
+import { isStaffRole } from "@/lib/auth/permissions";
 import { getSessionUser } from "@/lib/auth/session";
 import { BottomNav, SideNav, type NavItem } from "./nav-links";
 
@@ -18,7 +19,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     { href: "/explore", label: t("explore"), icon: "explore" },
     { href: "/match", label: t("match"), icon: "match" },
     { href: "/saved", label: t("saved"), icon: "saved" },
-    user?.role === "admin"
+    isStaffRole(user?.role)
       ? { href: "/admin", label: t("admin"), icon: "admin" }
       : user
         ? { href: "/studio", label: t("studio"), icon: "studio" }

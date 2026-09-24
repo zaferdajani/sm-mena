@@ -2,14 +2,14 @@ import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ReportButtons } from "@/components/admin/admin-buttons";
 import { Link } from "@/i18n/navigation";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { listOpenReports } from "@/lib/data/admin";
 import { timeAgo } from "@/lib/format";
 
 export default async function AdminReports({ params }: PageProps<"/[locale]/admin/reports">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  await requireAdmin();
+  await requireStaff("content.moderate");
   const t = await getTranslations("Admin");
   const tr = await getTranslations("Report");
   const rows = await listOpenReports();

@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { requireUser } from "@/lib/auth/guards";
 import { adminMfaRequired, confirmEnrollment, disableMfa, mfaKeyConfigured, regenerateBackupCodes, startEnrollment, verifySecondFactor } from "@/lib/auth/mfa";
 import { verifyPassword } from "@/lib/auth/password";
+import { isStaffRole } from "@/lib/auth/permissions";
 import { getDb } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { rateLimit } from "@/lib/rate-limit";
@@ -38,7 +39,7 @@ export async function regenerateCodesAction(_: MfaResult | undefined, formData: 
 
 export async function disableMfaAction(_: MfaResult | undefined, formData: FormData): Promise<MfaResult> {
   const user = await requireUser();
-  if (user.role === "admin" && adminMfaRequired()) return { error: "requiredForAdmins" };
+  if (isStaffRole(user.role) && adminMfaRequired()) return { error: "requiredForAdmins" };
   if (limited(user.id)) return { error: "rateLimited" };
   const db = await getDb();
   const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, user.id));

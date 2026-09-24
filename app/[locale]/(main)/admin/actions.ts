@@ -3,12 +3,12 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/auth/guards";
+import { requireStaff } from "@/lib/auth/guards";
 import { adminResetMfa } from "@/lib/auth/mfa";
 import { audit, getAgencyByHandle } from "@/lib/data/agencies";
 import { createPromotion, removeDemoData, resolveReport, setAgencyFlags, setPostStatus, setPromotionStatus } from "@/lib/data/admin";
 import { getDb } from "@/lib/db";
-import { posts } from "@/lib/db/schema";
+import { posts, users } from "@/lib/db/schema";
 import { setReviewStatus } from "@/lib/data/reviews";
 import { CITIES } from "@/lib/labels";
 import { isServiceKey } from "@/lib/taxonomy";
@@ -17,21 +17,21 @@ const uuid = z.string().uuid();
 const refresh = () => revalidatePath("/[locale]", "layout");
 
 export async function setVerifiedAction(agencyId: string, verified: boolean) {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("agencies.moderate");
   await setAgencyFlags(uuid.parse(agencyId), { isVerified: verified });
   await audit(admin.id, verified ? "agency.verify" : "agency.unverify", "agency", agencyId);
   refresh();
 }
 
 export async function setStatusAction(agencyId: string, status: "active" | "suspended") {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("agencies.moderate");
   await setAgencyFlags(uuid.parse(agencyId), { status: z.enum(["active", "suspended"]).parse(status) });
   await audit(admin.id, `agency.${status}`, "agency", agencyId);
   refresh();
 }
 
 export async function setPlanAction(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("agencies.plan");
   const data = z
     .object({ agencyId: uuid, plan: z.enum(["free", "pro", "business"]), until: z.union([z.literal(""), z.string().date()]) })
     .parse(Object.fromEntries(formData));
@@ -41,7 +41,7 @@ export async function setPlanAction(formData: FormData) {
 }
 
 export async function removeDemoAction() {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("demo.remove");
   const count = await removeDemoData();
   await audit(admin.id, "demo.remove", "agency", undefined, { count });
   refresh();
@@ -49,14 +49,14 @@ export async function removeDemoAction() {
 }
 
 export async function resolveReportAction(reportId: string, decision: "hide" | "dismiss") {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("content.moderate");
   await resolveReport(uuid.parse(reportId), admin.id, z.enum(["hide", "dismiss"]).parse(decision));
   await audit(admin.id, `report.${decision}`, "report", reportId);
   refresh();
 }
 
 export async function setPostStatusAction(postId: string, status: "published" | "hidden") {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("content.moderate");
   await setPostStatus(uuid.parse(postId), z.enum(["published", "hidden"]).parse(status));
   await audit(admin.id, `post.${status}`, "post", postId);
   refresh();
@@ -65,7 +65,7 @@ export async function setPostStatusAction(postId: string, status: "published" | 
 export type PromoState = { ok?: boolean; error?: string } | undefined;
 
 export async function createPromotionAction(_: PromoState, formData: FormData): Promise<PromoState> {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("promotions.manage");
   const parsed = z
     .object({
       handle: z.string().trim().min(3),
@@ -108,23 +108,30 @@ export async function createPromotionAction(_: PromoState, formData: FormData): 
 }
 
 export async function setPromotionStatusAction(id: string, status: "active" | "paused" | "ended") {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("promotions.manage");
   await setPromotionStatus(uuid.parse(id), z.enum(["active", "paused", "ended"]).parse(status));
   await audit(admin.id, `promotion.${status}`, "promotion", id);
   refresh();
 }
 
 export async function setReviewStatusAction(reviewId: string, status: "published" | "hidden") {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("content.moderate");
   await setReviewStatus(uuid.parse(reviewId), z.enum(["published", "hidden"]).parse(status));
   await audit(admin.id, `review.${status}`, "review", reviewId);
   refresh();
 }
 
 export async function resetMfaAction(formData: FormData) {
-  const admin = await requireAdmin();
+  const admin = await requireStaff("users.reset_mfa");
   const userId = uuid.parse(formData.get("userId"));
   if (userId === admin.id) return; // your own 2FA is managed under Security
+  if ((await getUserRole(userId)) === "owner") return; // nobody can weaken the owner's sign-in
   await adminResetMfa(admin.id, userId);
   refresh();
+}
+
+async function getUserRole(id: string) {
+  const db = await getDb();
+  const [row] = await db.select({ role: users.role }).from(users).where(eq(users.id, id));
+  return row?.role;
 }
