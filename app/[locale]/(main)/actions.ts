@@ -26,9 +26,11 @@ const filtersSchema = z
     q: z.string().max(80).optional(),
     service: z.string().max(40).optional(),
     city: z.string().max(40).optional(),
-    platform: z.string().max(40).optional(),
+    platforms: z.array(z.string().max(40)).max(20).optional(),
     industry: z.string().max(40).optional(),
-    maxPrice: z.number().int().positive().optional(),
+    minPrice: z.number().int().nonnegative().max(1_000_000).optional(),
+    maxPrice: z.number().int().positive().max(1_000_000).optional(),
+    fullService: z.boolean().optional(),
     verified: z.boolean().optional(),
     agencyId: uuid.optional(),
   })

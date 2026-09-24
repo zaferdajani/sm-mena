@@ -33,6 +33,12 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
           {r.city ? tCity(r.city) : "—"} · {t("budget")}: {r.budgetMaxJod ? `${r.budgetMinJod ?? 0}–${r.budgetMaxJod} JOD` : t("any")}
           {r.timeline ? ` · ${tr(`timelines.${r.timeline}` as "timelines.asap")}` : ""}
         </p>
+        {(r.fullService || r.brands) && (
+          <p className="flex flex-wrap gap-1.5 text-xs">
+            {r.fullService && <span className="rounded-full bg-brand/10 px-2 py-0.5 font-medium text-brand">{tr("fullService")}</span>}
+            {r.brands && <span className="rounded-full bg-background px-2 py-0.5" dir="auto">{tr("brands")}: {r.brands}</span>}
+          </p>
+        )}
         <p className="whitespace-pre-line" dir="auto">{r.description}</p>
         <div className="border-t pt-2">
           <p className="text-xs font-medium">{t("client")}</p>

@@ -10,14 +10,19 @@ import {
   cancelContract,
   clientSign,
   createContract,
+  decideChange,
   getContractByToken,
   getContractForAgency,
   markDirectPayment,
   openDispute,
+  postUpdate,
+  REPORTING_CADENCES,
+  requestChange,
   requestChanges,
   setCheck,
   startMilestoneFunding,
   submitMilestone,
+  withdrawChange,
   type ContractError,
 } from "@/lib/data/contracts";
 import { normalizeLines } from "@/lib/deliverables";
@@ -44,6 +49,9 @@ const draftSchema = z.object({
   ndaExtra: z.string().max(2000).nullish(),
   client: z.object({ name: z.string().trim().min(2).max(80), phone: z.string().trim().min(7).max(20), email: z.union([z.literal(""), z.string().email().max(200)]).nullish() }),
   milestones: z.array(z.object({ title: z.string().trim().min(1).max(120), dueDate: z.string(), amountJod: z.number().min(0).max(1_000_000), checks: z.array(z.string().max(300)).max(30) })).max(12),
+  kpis: z.array(z.object({ label: z.string().max(120), target: z.string().max(120) })).max(6).default([]),
+  reportingCadence: z.enum(REPORTING_CADENCES).nullish(),
+  mediaBudgetJod: z.number().min(0).max(10_000_000).nullish(),
   signerName: z.string().max(80),
   agree: z.literal(true),
   requestId: z.string().uuid().nullish(),
@@ -115,6 +123,33 @@ export async function agencyCancelAction(_: ActionState, formData: FormData): Pr
 export async function agencyDisputeAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const v = await agencyContract(formData);
   const r = await openDispute(v, "agency", String(formData.get("note") ?? ""));
+  refresh();
+  return "error" in r ? { error: r.error } : { ok: true };
+}
+
+/** Extra work or money after signing: only a request, until the client accepts it. */
+export async function agencyChangeAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const v = await agencyContract(formData);
+  const parsed = z
+    .object({ title: z.string().max(120), reason: z.string().max(1000), amount: z.coerce.number().min(0).max(1_000_000), dueDate: z.string().max(10), checks: z.string().max(6000) })
+    .safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const d = parsed.data;
+  const r = await requestChange(v, { title: d.title, reason: d.reason, amountFils: fils(d.amount), dueDate: d.dueDate, checks: d.checks.split("\n") });
+  refresh();
+  return "error" in r ? { error: r.error } : { ok: true };
+}
+
+export async function agencyWithdrawChangeAction(formData: FormData) {
+  const v = await agencyContract(formData);
+  await withdrawChange(v, String(formData.get("changeId") ?? ""));
+  refresh();
+}
+
+/** A progress update the client sees on the contract (the agreed reporting rhythm). */
+export async function agencyUpdateAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const v = await agencyContract(formData);
+  const r = await postUpdate(v, String(formData.get("text") ?? ""));
   refresh();
   return "error" in r ? { error: r.error } : { ok: true };
 }
@@ -199,6 +234,15 @@ export async function clientDisputeAction(_: ActionState, formData: FormData): P
   const c = await clientContract(formData);
   if (!c) return { error: "notFound" };
   const r = await openDispute(c.v, "client", String(formData.get("note") ?? ""));
+  refresh();
+  return "error" in r ? { error: r.error } : { ok: true };
+}
+
+export async function clientDecideChangeAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  const c = await clientContract(formData);
+  if (!c) return { error: "notFound" };
+  const accept = formData.get("decision") === "accept";
+  const r = await decideChange(c.v, String(formData.get("changeId") ?? ""), accept, String(formData.get("signer") ?? ""));
   refresh();
   return "error" in r ? { error: r.error } : { ok: true };
 }

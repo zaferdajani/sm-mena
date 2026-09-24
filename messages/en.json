@@ -231,7 +231,16 @@
     "anyBudget": "Any budget",
     "upTo": "Up to {price} JOD",
     "results": "{count, plural, =0 {No results} one {1 result} other {# results}}",
-    "metaDescription": "Explore work by marketing and social media agencies in Jordan: filter by service, city, platform, industry and budget, and contact them directly."
+    "metaDescription": "Explore work by marketing and social media agencies in Jordan: filter by service, city, platform, industry and budget, and contact them directly.",
+    "platforms": "Platforms",
+    "platformsHint": "(pick one or more)",
+    "budgetMonthly": "Monthly budget (JOD)",
+    "budgetMin": "From",
+    "budgetMax": "To",
+    "budgetRange": "{min}–{max} JOD",
+    "budgetFrom": "From {min} JOD",
+    "fullService": "Full service, A to Z",
+    "fullServiceHint": "Agencies that do content, ads and branding together"
   },
   "Saved": {
     "title": "Saved",
@@ -592,7 +601,8 @@
       "quality": "Quality of work",
       "communication": "Communication",
       "value": "Value for money",
-      "timeliness": "Timeliness"
+      "timeliness": "Timeliness",
+      "results": "Results vs targets"
     },
     "form": {
       "title": "Rate your experience with {name}",
@@ -714,7 +724,8 @@
       "rating": "Rated {average} ({count})",
       "google": "Google {average} ({count})",
       "verified": "Verified",
-      "featured": "Featured"
+      "featured": "Featured",
+      "full_service": "Full team, A to Z"
     },
     "mockMode": "Test mode: mock AI for testing"
   },
@@ -776,7 +787,12 @@
     "noRequests": "You haven't sent a project yet.",
     "newRequest": "New project",
     "notFound": "This link is not valid.",
-    "whatsappMessage": "Hello, about your quote for my project on Sawwiq."
+    "whatsappMessage": "Hello, about your quote for my project on Sawwiq.",
+    "platforms": "Platforms (pick all you need)",
+    "fullService": "I want one team for everything, A to Z",
+    "fullServiceHint": "Content, ads and branding together, working on its own without daily chasing. Agencies that cover all of it are shown first.",
+    "brands": "Brands or businesses covered",
+    "brandsPlaceholder": "e.g. Accrues (B2B), Nashmi (B2C), Neo (online store)"
   },
   "Opportunities": {
     "tab": "Opportunities",
@@ -1324,7 +1340,27 @@
         "agree": "Tick the box to agree.",
         "client": "Enter the client's name and phone.",
         "title": "Give the project a title.",
-        "invalid": "Check the form and try again."
+        "invalid": "Check the form and try again.",
+        "kpis": "Complete each target (name and number), up to six."
+      },
+      "results": {
+        "title": "Results and reporting",
+        "hint": "Write measurable targets and when you'll report, so the client knows what to expect without chasing you.",
+        "kpi": "Target",
+        "kpiPh": "e.g. Leads per month",
+        "target": "Number",
+        "targetPh": "e.g. 120",
+        "addKpi": "Add a target",
+        "cadence": "Progress reports",
+        "cadences": {
+          "weekly": "Weekly report",
+          "biweekly": "Report every two weeks",
+          "monthly": "Monthly report"
+        },
+        "media": "Monthly ad budget (JOD)",
+        "mediaHint": "The client pays the ad platforms directly; it isn't part of the agency's fee.",
+        "ownership": "All accounts, pages, files and designs belong to the client and are handed over in full when the contract ends or is cancelled.",
+        "noSurprises": "No extra charges after signing unless the client approves a change request on the platform."
       }
     },
     "share": {
@@ -1438,7 +1474,12 @@
       "cancelled": "Cancelled",
       "dispute": "Problem reported: {note}",
       "dispute_closed": "Dispute closed: {note}",
-      "completed": "Contract completed"
+      "completed": "Contract completed",
+      "change_requested": "Agency asked for a change: {note}",
+      "change_withdrawn": "Agency withdrew a change request: {note}",
+      "change_declined": "Client declined a change: {note}",
+      "change_accepted": "Client accepted a change: {note}",
+      "update": "Progress update from the agency"
     },
     "actors": {
       "agency": "Agency",
@@ -1473,7 +1514,17 @@
       "signedBy": "Signed by {name} on {date}",
       "notSigned": "Not signed yet",
       "fingerprint": "Terms fingerprint: {hash}",
-      "disclaimer": "Standard template provided by Sawwiq for convenience; not legal advice."
+      "disclaimer": "Standard template provided by Sawwiq for convenience; not legal advice.",
+      "kpis": "Measurable targets",
+      "kpisBody": "The agency works towards these targets and shares the numbers in its reports:",
+      "reporting": "Reporting",
+      "reportingBody": "{cadence} on the platform: what was done, the numbers against the targets, and next steps.",
+      "media": "Ad budget",
+      "mediaBody": "The estimated ad budget is {amount} a month, paid by the client directly to the ad platforms from its own account. It isn't part of the agency's fee, and the agency adds no commission to it unless this contract says so explicitly.",
+      "ownership": "Ownership of accounts and files",
+      "ownershipBody": "Social, ad, website and analytics accounts are created in the client's name, or the agency is only given access to them. All content, designs and source files belong to the client once paid for. When the contract ends or is cancelled, the agency hands over all access and files within seven days.",
+      "noSurprises": "No surprise charges",
+      "noSurprisesBody": "The agency asks for no money outside this contract. Any extra work is requested on the platform as a change request with a reason, an amount and a checklist, and binds the client only once the client accepts it."
     },
     "admin": {
       "tiles": {
@@ -1491,7 +1542,65 @@
       "closeDispute": "Close dispute",
       "counts": "Contracts by payment mode and status"
     },
-    "fromPackage": "Create a contract from this package"
+    "fromPackage": "Create a contract from this package",
+    "commit": {
+      "title": "What the agency committed to",
+      "kpis": "Agreed targets",
+      "cadence": {
+        "weekly": "Weekly report",
+        "biweekly": "Report every two weeks",
+        "monthly": "Monthly report"
+      },
+      "lastUpdate": "last update {when}",
+      "noUpdateYet": "no updates yet",
+      "overdue": "update overdue",
+      "media": "Ad budget: {amount} a month",
+      "mediaNote": "Paid by the client straight to the platforms, never through the agency.",
+      "ownership": "Accounts, pages and files belong to the client and are handed over in full at the end.",
+      "noSurprises": "No extra charges unless the client approves a change request."
+    },
+    "changes": {
+      "title": "Change requests and extra work",
+      "clientHint": "The agency is asking for extra work or money. Nothing changes unless you accept.",
+      "agencyHint": "Any extra work or money after signing goes through here only. When the client accepts, it's added as a new milestone with its checklist and amount.",
+      "request": "Ask for extra work or money",
+      "titlePh": "What's the extra work?",
+      "reasonPh": "Why is it needed? What changed?",
+      "amount": "Amount (JOD)",
+      "due": "Due date",
+      "checksPh": "Checklist, one item per line",
+      "send": "Send to the client",
+      "sent": "Sent. Waiting for the client.",
+      "waiting": "Waiting for the client",
+      "withdraw": "Withdraw",
+      "why": "Why",
+      "signer": "Type your full name to accept",
+      "accept": "Accept and add to the contract",
+      "decline": "Decline",
+      "status": {
+        "accepted": "Accepted by the client",
+        "declined": "Declined by the client",
+        "withdrawn": "Withdrawn by the agency"
+      },
+      "errors": {
+        "signer": "Type your full name to accept.",
+        "note": "Give it a clear title and reason.",
+        "amounts": "Enter a valid amount.",
+        "milestoneDate": "Pick a date after the contract starts.",
+        "emptyChecklist": "Add at least one checklist item.",
+        "tooMany": "You already have three requests waiting.",
+        "generic": "Couldn't save. Try again."
+      }
+    },
+    "updates": {
+      "title": "Progress updates",
+      "none": "The agency hasn't posted updates yet.",
+      "post": "Post an update for the client",
+      "placeholder": "What was done? Numbers against the targets, and what's next?",
+      "send": "Post update",
+      "posted": "Update posted.",
+      "error": "Write at least 10 characters."
+    }
   },
   "LangOffer": {
     "text": "Sawwiq is available in English.",

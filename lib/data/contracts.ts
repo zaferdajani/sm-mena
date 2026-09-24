@@ -4,12 +4,14 @@ import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import {
   agencies,
+  contractChanges,
   contractEvents,
   contracts,
   escrowLedger,
   milestoneChecks,
   milestones,
   type Contract,
+  type ContractChange,
   type DeliverableLine,
   type Milestone,
   type MilestoneCheck,
@@ -30,7 +32,15 @@ import { hashToken } from "./reviews";
 // A contract can't change after it is sent: both signatures cover the same
 // terms hash (sha256 of the canonical terms). To change it, cancel and resend.
 
-export const TERMS_VERSION = 1;
+// v2 adds targets (KPIs), the reporting rhythm, the client-paid ad budget and
+// two fixed clauses: the client owns every account and file, and nothing costs
+// more than signed unless the client approves a change request. v1 contracts
+// keep their original fingerprint.
+export const TERMS_VERSION = 2;
+export const MAX_KPIS = 6;
+export const REPORTING_CADENCES = ["weekly", "biweekly", "monthly"] as const;
+export type ReportingCadence = (typeof REPORTING_CADENCES)[number];
+export const CADENCE_DAYS: Record<ReportingCadence, number> = { weekly: 7, biweekly: 14, monthly: 31 };
 export const MAX_MILESTONES = 12;
 export const feePercent = () => Math.min(30, Math.max(0, Number(process.env.PLATFORM_FEE_PERCENT) || 0));
 
@@ -47,6 +57,9 @@ export type ContractInput = {
   ndaExtra?: string | null;
   client: { name: string; phone: string; email?: string | null };
   milestones: MilestoneInput[];
+  kpis?: { label: string; target: string }[];
+  reportingCadence?: ReportingCadence | null;
+  mediaBudgetJod?: number | null;
   signerName: string;
   locale: string;
   requestId?: string | null;
@@ -61,12 +74,13 @@ export type ContractError =
   | "milestoneDate"
   | "amounts"
   | "emptyChecklist"
+  | "kpis"
   | "signer";
 
 const isDate = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(`${d}T00:00:00Z`));
 
 /** Checks a contract draft. Pure, so the form can show the same errors. */
-export function validateContract(input: Pick<ContractInput, "startDate" | "endDate" | "milestones" | "signerName">): ContractError | null {
+export function validateContract(input: Pick<ContractInput, "startDate" | "endDate" | "milestones" | "signerName" | "kpis">): ContractError | null {
   if (!input.milestones.length) return "noMilestones";
   if (input.milestones.length > MAX_MILESTONES) return "tooManyMilestones";
   if (!isDate(input.startDate) || !isDate(input.endDate) || input.endDate < input.startDate) return "dates";
@@ -76,14 +90,18 @@ export function validateContract(input: Pick<ContractInput, "startDate" | "endDa
     if (!m.checks.some((c) => c.trim())) return "emptyChecklist";
   }
   if (input.milestones.reduce((s, m) => s + m.amountFils, 0) <= 0) return "amounts";
+  if ((input.kpis?.length ?? 0) > MAX_KPIS || input.kpis?.some((k) => !k.label.trim() || !k.target.trim())) return "kpis";
   if (input.signerName.trim().length < 3) return "signer";
   return null;
 }
 
 /** Everything both parties agree to, in a stable order. Its hash is what gets signed. */
-export function canonicalTerms(c: Omit<ContractInput, "signerName" | "locale" | "requestId" | "proposalId" | "packageId"> & { number: string; agencyId: string; feePercent: number }) {
+export function canonicalTerms(
+  c: Omit<ContractInput, "signerName" | "locale" | "requestId" | "proposalId" | "packageId"> & { number: string; agencyId: string; feePercent: number; version?: number },
+) {
+  const version = c.version ?? TERMS_VERSION;
   return JSON.stringify({
-    v: TERMS_VERSION,
+    v: version,
     number: c.number,
     agencyId: c.agencyId,
     title: c.title.trim(),
@@ -100,6 +118,14 @@ export function canonicalTerms(c: Omit<ContractInput, "signerName" | "locale" | 
       amount: m.amountFils,
       checks: [...m.checks.map((t) => t.trim()).filter(Boolean), ...c.specialRequests.filter((r) => r.milestone === i).map((r) => `★ ${r.text.trim()}`)],
     })),
+    ...(version >= 2
+      ? {
+          kpis: (c.kpis ?? []).map((k) => [k.label.trim(), k.target.trim()]),
+          reporting: c.reportingCadence ?? null,
+          mediaBudgetJod: c.mediaBudgetJod ?? null,
+          clauses: ["client-owns-accounts-and-files", "no-extra-charges-without-approved-change"],
+        }
+      : {}),
   });
 }
 export const hashTerms = (canonical: string) => createHash("sha256").update(canonical).digest("hex");
@@ -112,7 +138,7 @@ function contractNumber() {
 
 async function logEvent(contractId: string, actor: "agency" | "client" | "admin" | "system", type: string, note?: string | null) {
   const db = await getDb();
-  await db.insert(contractEvents).values({ contractId, actor, type, note: note?.slice(0, 1000) ?? null });
+  await db.insert(contractEvents).values({ contractId, actor, type, note: note?.slice(0, 2000) ?? null });
 }
 
 /** Trims and caps every field once, so what is hashed is exactly what is stored. */
@@ -127,6 +153,9 @@ function clean(input: ContractInput): ContractInput {
     client: { name: cut(input.client.name, 80), phone: cut(input.client.phone, 20), email: input.client.email ? cut(input.client.email, 200) || null : null },
     milestones: ms,
     specialRequests: input.specialRequests.map((r) => ({ text: cut(r.text, 300), milestone: Math.min(Math.max(0, r.milestone), Math.max(0, ms.length - 1)) })).filter((r) => r.text),
+    kpis: (input.kpis ?? []).map((k) => ({ label: cut(k.label, 120), target: cut(k.target, 120) })).filter((k) => k.label || k.target),
+    reportingCadence: input.reportingCadence && (REPORTING_CADENCES as readonly string[]).includes(input.reportingCadence) ? input.reportingCadence : null,
+    mediaBudgetJod: input.mediaBudgetJod && input.mediaBudgetJod > 0 ? Math.round(input.mediaBudgetJod) : null,
     signerName: cut(input.signerName, 80),
   };
 }
@@ -164,6 +193,10 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
         paymentMode: input.paymentMode,
         nda: input.nda,
         ndaExtra: input.ndaExtra,
+        termsVersion: TERMS_VERSION,
+        kpis: input.kpis ?? [],
+        reportingCadence: input.reportingCadence ?? null,
+        mediaBudgetJod: input.mediaBudgetJod ?? null,
         clientName: input.client.name,
         clientPhone: input.client.phone,
         clientEmail: input.client.email,
@@ -197,7 +230,18 @@ export type ContractView = {
   milestones: (Milestone & { checks: MilestoneCheck[] })[];
   events: (typeof contractEvents.$inferSelect)[];
   money: { deposited: number; released: number; refunded: number; fees: number; held: number };
+  changes: ContractChange[];
+  /** The agency's latest progress update and whether it is late for the agreed rhythm. */
+  reporting: { lastUpdateAt: Date | null; overdue: boolean; dueEveryDays: number | null };
 };
+
+/** Late when no update within the agreed rhythm (plus two days' grace) while the contract runs. */
+export function reportingState(c: Pick<Contract, "reportingCadence" | "status" | "clientSignedAt">, lastUpdateAt: Date | null, now = new Date()) {
+  const every = c.reportingCadence && c.reportingCadence in CADENCE_DAYS ? CADENCE_DAYS[c.reportingCadence as ReportingCadence] : null;
+  const since = lastUpdateAt ?? c.clientSignedAt;
+  const overdue = Boolean(every && c.status === "active" && since && now.getTime() - since.getTime() > (every + 2) * 86_400_000);
+  return { lastUpdateAt, overdue, dueEveryDays: every };
+}
 
 async function view(contract: Contract): Promise<ContractView> {
   const db = await getDb();
@@ -212,7 +256,16 @@ async function view(contract: Contract): Promise<ContractView> {
     .groupBy(escrowLedger.type);
   const sum = (t: string) => ledger.find((l) => l.type === t)?.n ?? 0;
   const money = { deposited: sum("deposit"), released: sum("release"), refunded: sum("refund"), fees: sum("fee") };
+  const changes = await db.select().from(contractChanges).where(eq(contractChanges.contractId, contract.id)).orderBy(desc(contractChanges.createdAt));
+  const [lastUpdate] = await db
+    .select({ at: contractEvents.createdAt })
+    .from(contractEvents)
+    .where(and(eq(contractEvents.contractId, contract.id), eq(contractEvents.type, "update")))
+    .orderBy(desc(contractEvents.createdAt))
+    .limit(1);
   return {
+    changes,
+    reporting: reportingState(contract, lastUpdate?.at ?? null),
     contract,
     agency,
     milestones: ms.map((m) => ({ ...m, checks: checks.filter((c) => c.milestoneId === m.id) })),
@@ -258,13 +311,16 @@ export async function listAgencyContracts(agencyId: string) {
 /** Recomputes the hash of what is stored, so a signature always covers the stored terms. */
 function storedTermsHash(v: ContractView) {
   const c = v.contract;
-  const ms = v.milestones.map((m) => ({
+  // Milestones added later by approved change requests are not part of the signed terms.
+  const added = new Set(v.changes.map((ch) => ch.milestoneId).filter(Boolean));
+  const signed = v.milestones.filter((m) => !added.has(m.id));
+  const ms = signed.map((m) => ({
     title: m.title,
     dueDate: m.dueDate,
     amountFils: m.amountFils,
     checks: m.checks.filter((k) => k.source === "deliverable").map((k) => k.text),
   }));
-  const specialRequests = v.milestones.flatMap((m, i) => m.checks.filter((k) => k.source === "special_request").map((k) => ({ text: k.text, milestone: i })));
+  const specialRequests = signed.flatMap((m, i) => m.checks.filter((k) => k.source === "special_request").map((k) => ({ text: k.text, milestone: i })));
   return hashTerms(
     canonicalTerms({
       number: c.number,
@@ -281,6 +337,10 @@ function storedTermsHash(v: ContractView) {
       ndaExtra: c.ndaExtra,
       client: { name: c.clientName, phone: c.clientPhone, email: c.clientEmail },
       milestones: ms,
+      version: c.termsVersion,
+      kpis: c.kpis,
+      reportingCadence: (c.reportingCadence as ReportingCadence | null) ?? null,
+      mediaBudgetJod: c.mediaBudgetJod,
     }),
   );
 }
@@ -512,4 +572,77 @@ export async function proposalForContract(agencyId: string, proposalId: string) 
     .innerJoin(projectRequests, eq(projectRequests.id, proposals.requestId))
     .where(and(eq(proposals.id, proposalId), eq(proposals.agencyId, agencyId), eq(proposals.status, "accepted")));
   return row ?? null;
+}
+
+// ── Protections after signing (docs/20-client-voice.md) ─────────────────
+
+export type ChangeInput = { title: string; reason: string; amountFils: number; dueDate: string; checks: string[] };
+
+/** Agency: ask for extra work or money. Nothing changes until the client accepts. */
+export async function requestChange(v: ContractView, raw: ChangeInput): Promise<Result> {
+  if (v.contract.status !== "active") return { error: "locked" };
+  const title = raw.title.trim().slice(0, 120);
+  const reason = raw.reason.trim().slice(0, 1000);
+  const checks = raw.checks.map((c) => c.trim().slice(0, 300)).filter(Boolean).slice(0, 20);
+  if (title.length < 3 || reason.length < 5) return { error: "note" };
+  if (!Number.isInteger(raw.amountFils) || raw.amountFils < 0 || raw.amountFils > 1_000_000_000) return { error: "amounts" };
+  if (!isDate(raw.dueDate) || raw.dueDate < v.contract.startDate) return { error: "milestoneDate" };
+  if (!checks.length) return { error: "emptyChecklist" };
+  if (v.changes.filter((c) => c.status === "pending").length >= 3) return { error: "tooMany" };
+  const db = await getDb();
+  await db.insert(contractChanges).values({ contractId: v.contract.id, title, reason, amountFils: raw.amountFils, dueDate: raw.dueDate, checks });
+  await logEvent(v.contract.id, "agency", "change_requested", `${title} (${raw.amountFils / 1000} JOD): ${reason}`);
+  return { ok: true };
+}
+
+/** Agency: take back a change request the client hasn't answered. */
+export async function withdrawChange(v: ContractView, changeId: string): Promise<Result> {
+  const ch = v.changes.find((c) => c.id === changeId && c.status === "pending");
+  if (!ch) return { error: "notFound" };
+  const db = await getDb();
+  await db.update(contractChanges).set({ status: "withdrawn", decidedAt: new Date() }).where(eq(contractChanges.id, ch.id));
+  await logEvent(v.contract.id, "agency", "change_withdrawn", ch.title);
+  return { ok: true };
+}
+
+/**
+ * Client: accept (typed name, like a signature) or decline. Accepting adds the
+ * work as a new milestone with its own checklist and amount, and raises the
+ * contract total; declining leaves the contract exactly as signed.
+ */
+export async function decideChange(v: ContractView, changeId: string, accept: boolean, signerName: string): Promise<Result> {
+  const ch = v.changes.find((c) => c.id === changeId && c.status === "pending");
+  if (!ch || v.contract.status !== "active") return { error: "notFound" };
+  const name = signerName.trim().slice(0, 80);
+  if (accept && name.length < 3) return { error: "signer" };
+  const db = await getDb();
+  if (!accept) {
+    await db.update(contractChanges).set({ status: "declined", decidedAt: new Date(), decidedBy: name || null }).where(eq(contractChanges.id, ch.id));
+    await logEvent(v.contract.id, "client", "change_declined", ch.title);
+    return { ok: true };
+  }
+  await db.transaction(async (tx) => {
+    const [ms] = await tx
+      .insert(milestones)
+      .values({ contractId: v.contract.id, position: v.milestones.length, title: ch.title, dueDate: ch.dueDate, amountFils: ch.amountFils })
+      .returning();
+    await tx.insert(milestoneChecks).values(ch.checks.map((text, position) => ({ milestoneId: ms.id, position, text, source: "deliverable" })));
+    await tx.update(contractChanges).set({ status: "accepted", decidedAt: new Date(), decidedBy: name, milestoneId: ms.id }).where(eq(contractChanges.id, ch.id));
+    await tx
+      .update(contracts)
+      // The signed dates stay as signed; the new milestone carries its own due date.
+      .set({ totalFils: sql`${contracts.totalFils} + ${ch.amountFils}`, updatedAt: new Date() })
+      .where(eq(contracts.id, v.contract.id));
+  });
+  await logEvent(v.contract.id, "client", "change_accepted", `${ch.title} (${name})`);
+  return { ok: true };
+}
+
+/** Agency: a progress update (what was done, numbers against the targets, what's next). */
+export async function postUpdate(v: ContractView, text: string): Promise<Result> {
+  if (!["active", "disputed"].includes(v.contract.status)) return { error: "locked" };
+  const note = text.trim().slice(0, 2000);
+  if (note.length < 10) return { error: "note" };
+  await logEvent(v.contract.id, "agency", "update", note);
+  return { ok: true };
 }

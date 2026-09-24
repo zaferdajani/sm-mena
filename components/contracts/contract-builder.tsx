@@ -26,6 +26,7 @@ export type BuilderInitial = {
   proposalId?: string;
   packageId?: string;
   note?: string;
+  kpis?: { label: string; target: string }[];
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -62,6 +63,9 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
   const [milestones, setMilestones] = useState<MilestoneDraft[]>([]);
   const [requests, setRequests] = useState<{ text: string; milestone: number }[]>([]);
   const [mode, setMode] = useState<"protected" | "direct">("protected");
+  const [kpis, setKpis] = useState<{ label: string; target: string }[]>(initial.kpis ?? []);
+  const [cadence, setCadence] = useState<string>("weekly");
+  const [mediaBudget, setMediaBudget] = useState("");
   const [nda, setNda] = useState(false);
   const [ndaExtra, setNdaExtra] = useState("");
   const [signer, setSigner] = useState("");
@@ -111,6 +115,9 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
     ndaExtra: nda ? ndaExtra : null,
     client,
     milestones: milestones.map((m) => ({ title: m.title, dueDate: m.dueDate, amountJod: Number(m.amountJod) || 0, checks: m.checks.split("\n").map((c) => c.trim()).filter(Boolean) })),
+    kpis: kpis.filter((k) => k.label.trim() || k.target.trim()),
+    reportingCadence: cadence || null,
+    mediaBudgetJod: Number(mediaBudget) || null,
     signerName: signer,
     agree,
     requestId: initial.requestId ?? null,
@@ -244,7 +251,45 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
         </button>
       </Step>
 
-      <Step n={7} title={t("s7")}>
+      <Step n={7} title={t("results.title")} hint={t("results.hint")}>
+        <ul className="space-y-2" data-testid="kpi-rows">
+          {kpis.map((k, i) => (
+            <li key={i} className="flex flex-wrap items-center gap-2">
+              <Input aria-label={t("results.kpi")} placeholder={t("results.kpiPh")} value={k.label} onChange={(e) => setKpis(kpis.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))} className="min-w-40 flex-1" dir="auto" />
+              <Input aria-label={t("results.target")} placeholder={t("results.targetPh")} value={k.target} onChange={(e) => setKpis(kpis.map((x, j) => (j === i ? { ...x, target: e.target.value } : x)))} className="w-40" dir="auto" />
+              <button type="button" onClick={() => setKpis(kpis.filter((_, j) => j !== i))} className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label={t("removeMilestone")}>
+                <Trash2 className="size-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+        {kpis.length < 6 && (
+          <button type="button" onClick={() => setKpis([...kpis, { label: "", target: "" }])} className="flex items-center gap-1 rounded-lg border border-dashed px-3 py-1.5 text-sm hover:bg-muted" data-testid="add-kpi">
+            <Plus className="size-4" /> {t("results.addKpi")}
+          </button>
+        )}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="grid gap-1.5 text-sm">
+            <span className="font-medium">{t("results.cadence")}</span>
+            <select value={cadence} onChange={(e) => setCadence(e.target.value)} className="h-10 rounded-lg border bg-background px-2" data-testid="cadence">
+              {(["weekly", "biweekly", "monthly"] as const).map((c) => (
+                <option key={c} value={c}>{t(`results.cadences.${c}`)}</option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-1.5 text-sm">
+            <span className="font-medium">{t("results.media")}</span>
+            <Input type="number" min={0} value={mediaBudget} onChange={(e) => setMediaBudget(e.target.value)} placeholder="0" dir="ltr" />
+            <span className="text-xs text-muted-foreground">{t("results.mediaHint")}</span>
+          </label>
+        </div>
+        <ul className="space-y-1.5 rounded-xl bg-brand/5 p-3 text-sm">
+          <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />{t("results.ownership")}</li>
+          <li className="flex gap-2"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" />{t("results.noSurprises")}</li>
+        </ul>
+      </Step>
+
+      <Step n={8} title={t("s7")}>
         <div className="grid gap-3 sm:grid-cols-2" role="radiogroup">
           {(
             [
@@ -264,7 +309,7 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
         </div>
       </Step>
 
-      <Step n={8} title={t("s8")}>
+      <Step n={9} title={t("s8")}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={nda} onChange={(e) => setNda(e.target.checked)} className="size-4 accent-[var(--brand)]" data-testid="nda-toggle" />
           {t("nda")}
@@ -272,7 +317,7 @@ export function ContractBuilder({ initial, agencyName, platforms, feePercent }: 
         {nda && <Textarea aria-label={t("ndaExtra")} placeholder={t("ndaExtra")} value={ndaExtra} onChange={(e) => setNdaExtra(e.target.value)} rows={2} dir="auto" />}
       </Step>
 
-      <Step n={9} title={t("s9")}>
+      <Step n={10} title={t("s9")}>
         <div className="grid gap-1.5">
           <Label htmlFor="c-signer">{t("signer")}</Label>
           <Input id="c-signer" value={signer} onChange={(e) => setSigner(e.target.value)} required minLength={3} className="font-serif text-lg italic" dir="auto" />

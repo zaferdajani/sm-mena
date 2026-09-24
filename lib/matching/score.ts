@@ -4,12 +4,16 @@
 // agencies that are already a good fit, and boosted results are labelled
 // "Featured" in the UI (docs/10-monetization.md).
 
+import { isFullService } from "@/lib/full-service";
+
 export type Need = {
   services: string[];
   city?: string | null;
   budgetMaxJod?: number | null;
   platforms?: string[];
   industry?: string | null;
+  /** The client wants one team for content, ads and branding ("A to Z"). */
+  fullService?: boolean;
 };
 
 export type AgencyFeatures = {
@@ -41,6 +45,7 @@ export type Reason =
   | { code: "rating"; average: number; count: number }
   | { code: "google"; average: number; count: number }
   | { code: "verified" }
+  | { code: "full_service" }
   | { code: "featured" };
 
 export type Scored = { agencyId: string; score: number; relevance: number; featured: boolean; reasons: Reason[] };
@@ -59,6 +64,7 @@ export const WEIGHTS = {
   industry: 5,
   reputationMax: 15,
   verified: 3,
+  fullService: 8,
   boostMinRelevance: 45,
   boost: { free: 0, pro: 6, business: 10 } as const,
 };
@@ -124,6 +130,10 @@ export function scoreAgency(need: Need, a: AgencyFeatures): Scored | null {
   if (signals.length) {
     const rep = signals.reduce((x, y) => x + y, 0) / signals.length;
     relevance += Math.max(0, ((rep - 3) / 2) * (WEIGHTS.reputationMax - 3)) + (Math.min(reviewsTotal, 20) / 20) * 3;
+  }
+  if (need.fullService && isFullService(a.services)) {
+    relevance += WEIGHTS.fullService;
+    reasons.push({ code: "full_service" });
   }
   if (a.isVerified) {
     relevance += WEIGHTS.verified;

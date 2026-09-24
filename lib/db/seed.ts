@@ -331,6 +331,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
         communication: Math.max(3, rating - (r() > 0.6 ? 1 : 0)),
         value: Math.max(3, rating - (r() > 0.5 ? 1 : 0)),
         timeliness: Math.max(3, rating - (r() > 0.7 ? 1 : 0)),
+        results: Math.max(3, rating - (r() > 0.6 ? 1 : 0)),
         body,
         reviewerName: name,
         reviewerBusiness: business,

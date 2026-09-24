@@ -418,6 +418,7 @@ export const reviews = pgTable(
     communication: integer("communication"),
     value: integer("value"),
     timeliness: integer("timeliness"),
+    results: integer("results"), // results against the agreed targets
     body: text("body").notNull(),
     reviewerName: text("reviewer_name").notNull(),
     reviewerBusiness: text("reviewer_business"),
@@ -480,6 +481,10 @@ export const projectRequests = pgTable(
     budgetMaxJod: integer("budget_max_jod"),
     timeline: text("timeline"),
     description: text("description").notNull(),
+    // One accountable team for content, ads and branding ("A to Z").
+    fullService: boolean("full_service").notNull().default(false),
+    // The brands or businesses the project covers, e.g. "Accrues (B2B), Neo (online store)".
+    brands: text("brands"),
     source: text("source").notNull().default("form"),
     status: requestStatus("status").notNull().default("open"),
     visitorId: text("visitor_id"),
@@ -611,6 +616,14 @@ export const contracts = pgTable(
     paymentMode: paymentMode("payment_mode").notNull(),
     nda: boolean("nda").notNull().default(false),
     ndaExtra: text("nda_extra"),
+    // Terms v2 (docs/20-client-voice.md): measurable targets, a reporting
+    // rhythm the agency commits to, and the monthly ad budget the client pays
+    // the platforms directly (never part of the agency's fee). v2 contracts
+    // also carry the account-ownership and no-surprise-charges clauses.
+    termsVersion: integer("terms_version").notNull().default(1),
+    kpis: jsonb("kpis").$type<{ label: string; target: string }[]>().notNull().default([]),
+    reportingCadence: text("reporting_cadence"), // weekly | biweekly | monthly
+    mediaBudgetJod: integer("media_budget_jod"),
     status: contractStatus("status").notNull().default("sent"),
     // Client (no account needed): reached through a private link
     clientName: text("client_name").notNull(),
@@ -711,6 +724,33 @@ export const contractEvents = pgTable(
   (t) => [index("contract_events_idx").on(t.contractId, t.createdAt)],
 );
 
+export const changeStatus = pgEnum("change_status", ["pending", "accepted", "declined", "withdrawn"]);
+
+/**
+ * Extra work or money after signing. An agency can't charge more on its own:
+ * it asks here, and only the client's approval adds the new milestone.
+ */
+export const contractChanges = pgTable(
+  "contract_changes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    contractId: uuid("contract_id")
+      .notNull()
+      .references(() => contracts.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    reason: text("reason").notNull(),
+    amountFils: integer("amount_fils").notNull(),
+    dueDate: text("due_date").notNull(),
+    checks: jsonb("checks").$type<string[]>().notNull().default([]),
+    status: changeStatus("status").notNull().default("pending"),
+    decidedBy: text("decided_by"), // client's typed name when accepted or declined
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    milestoneId: uuid("milestone_id"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("contract_changes_idx").on(t.contractId, t.createdAt)],
+);
+
 // ---------------------------------------------------------------------------
 // Bugs: automatic error journal and user-submitted reports
 // ---------------------------------------------------------------------------
@@ -803,3 +843,4 @@ export type SupportRequest = typeof supportRequests.$inferSelect;
 export type Contract = typeof contracts.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type MilestoneCheck = typeof milestoneChecks.$inferSelect;
+export type ContractChange = typeof contractChanges.$inferSelect;

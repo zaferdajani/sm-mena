@@ -15,7 +15,7 @@ type Option = { key: string; label: string };
 
 const STORAGE_KEY = "sawwiq-match-chat";
 
-export function MatchChat({ services, cities, starters }: { services: Option[]; cities: Option[]; starters: string[] }) {
+export function MatchChat({ services, cities, platforms, starters }: { services: Option[]; cities: Option[]; platforms: Option[]; starters: string[] }) {
   const t = useTranslations("Match");
   const locale = useLocale();
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -114,6 +114,7 @@ export function MatchChat({ services, cities, starters }: { services: Option[]; 
                       source="ai"
                       services={services}
                       cities={cities}
+                      platforms={platforms}
                       defaults={{
                         services: turn.recommendation.services,
                         platforms: turn.recommendation.platforms,

@@ -65,6 +65,7 @@ export type ReviewInput = {
   communication?: number | null;
   value?: number | null;
   timeliness?: number | null;
+  results?: number | null;
   body: string;
   reviewerName: string;
   reviewerBusiness?: string | null;
@@ -127,10 +128,11 @@ export async function subScores(agencyId: string) {
       communication: sql<number | null>`round(avg(${reviews.communication})::numeric, 1)`,
       value: sql<number | null>`round(avg(${reviews.value})::numeric, 1)`,
       timeliness: sql<number | null>`round(avg(${reviews.timeliness})::numeric, 1)`,
+      results: sql<number | null>`round(avg(${reviews.results})::numeric, 1)`,
     })
     .from(reviews)
     .where(and(eq(reviews.agencyId, agencyId), eq(reviews.status, "published")));
-  return Object.fromEntries(Object.entries(row).map(([k, v]) => [k, v === null ? null : Number(v)])) as Record<"quality" | "communication" | "value" | "timeliness", number | null>;
+  return Object.fromEntries(Object.entries(row).map(([k, v]) => [k, v === null ? null : Number(v)])) as Record<"quality" | "communication" | "value" | "timeliness" | "results", number | null>;
 }
 
 export async function replyToReview(agencyId: string, reviewId: string, reply: string) {

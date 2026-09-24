@@ -53,7 +53,7 @@ test("agency pages with dots in the handle keep their locale", async ({ page }) 
 });
 
 test("pages have no horizontal scroll", async ({ page }) => {
-  for (const path of ["/ar", "/ar/feed", "/ar/explore", "/ar/a/nakhla.studio", "/ar/hire/ads_meta"]) {
+  for (const path of ["/ar", "/ar/feed", "/ar/explore", "/ar/explore?tab=agencies", "/ar/a/nakhla.studio", "/ar/hire/ads_meta"]) {
     await page.goto(path);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, path).toBeLessThanOrEqual(0);

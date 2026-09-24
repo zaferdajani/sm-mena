@@ -15,6 +15,7 @@ export async function ContractDocument({ v, locale }: { v: ContractView; locale:
   const t = await getTranslations("Contracts.doc");
   const td = await getTranslations("Deliverables");
   const tp = await getTranslations("Platforms");
+  const tc = await getTranslations("Contracts.commit");
   const c = v.contract;
   const money = (f: number) => formatFils(f, locale);
   const specials = v.milestones.flatMap((m) => m.checks.filter((k) => k.source === "special_request").map((k) => ({ text: k.text, milestone: m.title })));
@@ -86,6 +87,40 @@ export async function ContractDocument({ v, locale }: { v: ContractView; locale:
 
       <H>{t("payment")}</H>
       <p>{c.paymentMode === "protected" ? t("paymentProtected", { fee: c.feePercent }) : t("paymentDirect")}</p>
+
+      {c.termsVersion >= 2 && (
+        <>
+          {c.kpis.length > 0 && (
+            <>
+              <H>{t("kpis")}</H>
+              <p>{t("kpisBody")}</p>
+              <ul className="list-disc ps-5">
+                {c.kpis.map((k, i) => (
+                  <li key={i} dir="auto">
+                    {k.label}: <b>{k.target}</b>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {c.reportingCadence && (
+            <>
+              <H>{t("reporting")}</H>
+              <p>{t("reportingBody", { cadence: tc(`cadence.${c.reportingCadence as "weekly"}`) })}</p>
+            </>
+          )}
+          {c.mediaBudgetJod ? (
+            <>
+              <H>{t("media")}</H>
+              <p>{t("mediaBody", { amount: money(c.mediaBudgetJod * 1000) })}</p>
+            </>
+          ) : null}
+          <H>{t("ownership")}</H>
+          <p>{t("ownershipBody")}</p>
+          <H>{t("noSurprises")}</H>
+          <p>{t("noSurprisesBody")}</p>
+        </>
+      )}
 
       <H>{t("changes")}</H>
       <p>{t("changesBody")}</p>

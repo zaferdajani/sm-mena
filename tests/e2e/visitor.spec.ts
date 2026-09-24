@@ -61,3 +61,22 @@ test("WhatsApp contact links carry a prefilled message", async ({ page }) => {
   const href = await page.getByTestId("contact-whatsapp").first().getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/962\d+\?text=/);
 });
+
+test("explore takes several platforms, a budget range and full service", async ({ page }) => {
+  await page.goto("/en/explore?tab=agencies");
+  await page.getByTestId("filters-button").click();
+  const options = page.getByTestId("platform-options");
+  await options.getByRole("button", { name: "Instagram" }).click();
+  await options.getByRole("button", { name: "TikTok" }).click();
+  await expect(options.getByRole("button", { name: "Instagram" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByTestId("budget-min").fill("150");
+  await page.getByTestId("budget-max").fill("600");
+  await page.getByTestId("apply-filters").click();
+  await expect(page).toHaveURL(/platforms=instagram%2Ctiktok|platforms=instagram,tiktok/);
+  await expect(page).toHaveURL(/min=150/);
+  await expect(page).toHaveURL(/max=600/);
+  await expect(page.getByRole("button", { name: "150–600 JOD" })).toBeVisible();
+  // Each platform is its own removable chip.
+  await page.getByRole("button", { name: "TikTok", exact: true }).and(page.locator(":not([aria-pressed])")).click();
+  await expect(page).toHaveURL(/platforms=instagram(&|$)/);
+});

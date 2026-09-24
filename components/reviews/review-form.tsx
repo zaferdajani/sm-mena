@@ -29,7 +29,7 @@ export function ReviewForm({ mode, token, agencyId, services }: { mode: "invite"
       {agencyId && <input type="hidden" name="agencyId" value={agencyId} />}
       <StarInput name="rating" label={t("form.overall")} required />
       <div className="grid grid-cols-2 gap-4">
-        {(["quality", "communication", "value", "timeliness"] as const).map((k) => (
+        {(["results", "quality", "communication", "value", "timeliness"] as const).map((k) => (
           <StarInput key={k} name={k} label={t(`sub.${k}`)} size="size-5" />
         ))}
       </div>

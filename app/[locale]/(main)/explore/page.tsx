@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { listAgencies } from "@/lib/data/agencies";
 import { hasActiveFilters, parseExploreParams } from "@/lib/explore-params";
 import { feedPage } from "@/lib/feed";
-import { CITIES, INDUSTRIES, PLATFORMS, PRICE_STEPS, serviceLabel, serviceOptions } from "@/lib/labels";
+import { CITIES, INDUSTRIES, PLATFORMS, serviceLabel, serviceOptions } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
 
@@ -46,7 +46,6 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
     cities: CITIES.map((key) => ({ key, label: tCity(key) })),
     platforms: PLATFORMS.map((key) => ({ key, label: tPlat(key) })),
     industries: INDUSTRIES.map((key) => ({ key, label: tInd(key) })),
-    prices: PRICE_STEPS.map((price) => ({ key: String(price), label: t("upTo", { price }) })),
   };
 
   const posts = tab === "posts" ? await feedPage(filters, null, visitorId, { placement: "explore", limit: 24 }) : null;
@@ -93,7 +92,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           ))}
         {agencies &&
           (agencies.length ? (
-            <div className="grid gap-1 px-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-1 px-2 sm:grid-cols-2">
               {agencies.map((a) => (
                 <AgencyRow key={a.id} agency={a} />
               ))}

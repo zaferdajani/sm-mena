@@ -25,7 +25,7 @@ export default async function MatchPage({ params }: PageProps<"/[locale]/match">
         <h1 className="font-bold">{t("title")}</h1>
         <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
       </header>
-      <MatchChat services={options.services} cities={options.cities} starters={starters} />
+      <MatchChat services={options.services} cities={options.cities} platforms={options.platforms} starters={starters} />
     </div>
   );
 }

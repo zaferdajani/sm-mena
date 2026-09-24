@@ -1,4 +1,5 @@
 import { and, desc, eq, sql } from "drizzle-orm";
+import { agencyConditions } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
@@ -150,6 +151,10 @@ export async function listAgencies(filters: {
   service?: string;
   city?: string;
   verified?: boolean;
+  platforms?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  fullService?: boolean;
   limit?: number;
 }): Promise<AgencySummary[]> {
   const db = await getDb();
@@ -157,6 +162,7 @@ export async function listAgencies(filters: {
   if (filters.service) conditions.push(sql`${filters.service} = any(${agencies.services})`);
   if (filters.city) conditions.push(eq(agencies.city, filters.city));
   if (filters.verified) conditions.push(eq(agencies.isVerified, true));
+  conditions.push(...agencyConditions(filters));
   if (filters.q) {
     conditions.push(sql`${agencies.searchText} like ${`%${normalizeForSearch(filters.q)}%`}`);
   }

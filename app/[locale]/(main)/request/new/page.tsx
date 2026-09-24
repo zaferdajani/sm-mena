@@ -24,7 +24,7 @@ export default async function NewRequestPage({ params, searchParams }: PageProps
     <div className="mx-auto max-w-xl space-y-4 px-4 py-6">
       <h1 className="text-xl font-bold">{t("formTitle")}</h1>
       <p className="text-sm text-muted-foreground">{t("formSubtitle")}</p>
-      <RequestForm services={options.services} cities={options.cities} defaults={{ services: service ? [service] : [], city }} />
+      <RequestForm services={options.services} cities={options.cities} platforms={options.platforms} defaults={{ services: service ? [service] : [], city }} />
     </div>
   );
 }

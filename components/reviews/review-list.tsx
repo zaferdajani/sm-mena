@@ -16,7 +16,7 @@ export async function ReviewSummary({ average, count, sub }: { average: number |
         <p className="mt-1 text-xs text-muted-foreground">{t("count", { count })}</p>
       </div>
       <dl className="grid gap-2 text-sm">
-        {(["quality", "communication", "value", "timeliness"] as const).map((k) =>
+        {(["results", "quality", "communication", "value", "timeliness"] as const).map((k) =>
           sub[k] === null ? null : (
             <div key={k} className="grid grid-cols-[8rem_1fr_2rem] items-center gap-2">
               <dt className="text-muted-foreground">{t(`sub.${k}`)}</dt>

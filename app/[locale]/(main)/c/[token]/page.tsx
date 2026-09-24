@@ -1,9 +1,12 @@
+import { changesFor } from "@/components/contracts/changes-view";
 import { CheckCircle2, Printer } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClientSign } from "@/components/contracts/client-sign";
 import { ContractDocument } from "@/components/contracts/contract-document";
+import { ChangeRequests } from "@/components/contracts/change-requests";
+import { ContractCommitments, UpdatesList } from "@/components/contracts/commitments";
 import { ContractSummary, ContractTimeline } from "@/components/contracts/contract-summary";
 import { MilestoneList } from "@/components/contracts/milestone-list";
 import { PrintButton } from "@/components/contracts/print-button";
@@ -51,10 +54,13 @@ export default async function ClientContract({ params, searchParams }: PageProps
       {c.status === "disputed" && <p className="rounded-xl bg-destructive/10 p-3 text-sm">{t("dispute.active")}</p>}
       {c.status !== "sent" && (
         <>
+          <ContractCommitments v={v} locale={locale} />
+          <ChangeRequests perspective="client" hidden={hidden} changes={changesFor(v, locale)} active={c.status === "active"} />
           <section className="space-y-2">
             <h2 className="font-semibold">{t("view.milestones")}</h2>
             <MilestoneList perspective="client" milestones={v.milestones} mode={c.paymentMode} active={c.status === "active"} fundableId={fundable?.id ?? null} hidden={hidden} />
           </section>
+          <UpdatesList v={v} locale={locale} />
           <ProblemForms perspective="client" hidden={hidden} canCancel={false} canDispute={c.status === "active"} />
           <details className="rounded-2xl border p-4">
             <summary className="cursor-pointer font-semibold">{t("view.readFull")}</summary>

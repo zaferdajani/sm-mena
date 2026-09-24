@@ -23,6 +23,8 @@ export type RequestInput = {
   budgetMaxJod?: number | null;
   timeline?: string | null;
   description: string;
+  fullService?: boolean;
+  brands?: string | null;
   source: "form" | "ai";
   visitorId: string | null;
 };

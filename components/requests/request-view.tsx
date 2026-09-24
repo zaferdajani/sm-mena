@@ -37,6 +37,12 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
             {request.city ? tCity(request.city) : t("anyCity")}
             {request.budgetMaxJod ? ` · ${request.budgetMinJod ?? 0}–${request.budgetMaxJod} JOD` : ""}
           </p>
+          {(request.fullService || request.brands) && (
+            <p className="mt-1 flex flex-wrap gap-1.5 text-xs">
+              {request.fullService && <span className="rounded-full bg-brand/10 px-2 py-0.5 font-medium text-brand">{t("fullService")}</span>}
+              {request.brands && <span className="rounded-full bg-background px-2 py-0.5" dir="auto">{t("brands")}: {request.brands}</span>}
+            </p>
+          )}
           <p className="mt-2 whitespace-pre-line" dir="auto">{request.description}</p>
         </div>
         {open && <CloseRequestButton access={access} />}

@@ -18,6 +18,7 @@ const schema = z.object({
   communication: optionalScore,
   value: optionalScore,
   timeliness: optionalScore,
+  results: optionalScore,
   body: z.string().trim().min(20).max(2000),
   name: z.string().trim().min(2).max(60),
   business: z.string().trim().max(100).optional(),
@@ -44,6 +45,7 @@ async function parse(formData: FormData): Promise<{ error: string } | { input: P
       communication: d.communication,
       value: d.value,
       timeliness: d.timeliness,
+      results: d.results,
       body: d.body,
       reviewerName: d.name.split(/\s+/)[0], // first name only, for privacy
       reviewerBusiness: d.business || null,

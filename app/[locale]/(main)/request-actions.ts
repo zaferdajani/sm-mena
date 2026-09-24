@@ -24,6 +24,7 @@ const schema = z.object({
   budgetMax: optionalInt,
   timeline: z.union([z.literal(""), z.enum(["asap", "this_month", "within_3_months"])]).optional(),
   description: z.string().trim().min(10).max(3000),
+  brands: z.string().trim().max(300).optional(),
   source: z.enum(["form", "ai"]).default("form"),
 });
 
@@ -42,7 +43,8 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
 
   const city = d.city || null;
   const budgetMax = d.budgetMax && d.budgetMin && d.budgetMax < d.budgetMin ? d.budgetMin : d.budgetMax;
-  const matches = await findMatches({ services, city, budgetMaxJod: budgetMax, platforms }, 8);
+  const fullService = formData.get("fullService") === "on";
+  const matches = await findMatches({ services, city, budgetMaxJod: budgetMax, platforms, fullService }, 8);
   const { token, request } = await createProjectRequest(
     {
       clientName: d.name,
@@ -55,6 +57,8 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
       budgetMaxJod: budgetMax,
       timeline: d.timeline || null,
       description: d.description,
+      fullService,
+      brands: d.brands || null,
       source: d.source,
       visitorId,
     },

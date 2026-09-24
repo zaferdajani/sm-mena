@@ -1,7 +1,10 @@
+import { changesFor } from "@/components/contracts/changes-view";
 import { CheckCircle2, Printer } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ContractDocument } from "@/components/contracts/contract-document";
+import { ChangeRequests, UpdateForm } from "@/components/contracts/change-requests";
+import { ContractCommitments, UpdatesList } from "@/components/contracts/commitments";
 import { ContractSummary, ContractTimeline } from "@/components/contracts/contract-summary";
 import { MilestoneList } from "@/components/contracts/milestone-list";
 import { PrintButton } from "@/components/contracts/print-button";
@@ -31,10 +34,14 @@ export default async function StudioContract({ params, searchParams }: PageProps
       <ContractSummary v={v} locale={locale} />
       {["sent", "active", "disputed"].includes(c.status) && <ShareLink path={`/${locale}/c/${clientToken(c)}`} phone={c.clientPhone} name={c.clientName} title={c.title} />}
       {c.status === "disputed" && <p className="rounded-xl bg-destructive/10 p-3 text-sm">{t("dispute.active")}</p>}
+      <ContractCommitments v={v} locale={locale} />
+      {c.status !== "sent" && <ChangeRequests perspective="agency" hidden={hidden} changes={changesFor(v, locale)} active={c.status === "active"} />}
       <section className="space-y-2">
         <h2 className="font-semibold">{t("view.milestones")}</h2>
         <MilestoneList perspective="agency" milestones={v.milestones} mode={c.paymentMode} active={c.status === "active"} fundableId={null} hidden={hidden} />
       </section>
+      {["active", "disputed"].includes(c.status) && <UpdateForm hidden={hidden} />}
+      <UpdatesList v={v} locale={locale} />
       <ProblemForms perspective="agency" hidden={hidden} canCancel={["sent", "active"].includes(c.status) && v.money.held === 0} canDispute={c.status === "active"} />
       <details className="rounded-2xl border p-4">
         <summary className="cursor-pointer font-semibold">{t("view.readFull")}</summary>

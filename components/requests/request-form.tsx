@@ -25,11 +25,13 @@ export type RequestDefaults = {
 export function RequestForm({
   services,
   cities,
+  platforms,
   defaults = {},
   source = "form",
 }: {
   services: Option[];
   cities: Option[];
+  platforms?: Option[];
   defaults?: RequestDefaults;
   source?: "form" | "ai";
 }) {
@@ -61,9 +63,24 @@ export function RequestForm({
     <form action={action} className="grid gap-4" data-testid="request-form">
       <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
       <input type="hidden" name="source" value={source} />
-      {defaults.platforms?.map((p) => <input key={p} type="hidden" name="platforms" value={p} />)}
+      {!platforms && defaults.platforms?.map((p) => <input key={p} type="hidden" name="platforms" value={p} />)}
       <Field label={t("services")}>
         <ChipGroup name="services" options={services} defaultValues={defaults.services} />
+      </Field>
+      {platforms && (
+        <Field label={t("platforms")}>
+          <ChipGroup name="platforms" options={platforms} defaultValues={defaults.platforms} />
+        </Field>
+      )}
+      <label className="flex items-start gap-2 rounded-xl border p-3 text-sm">
+        <input type="checkbox" name="fullService" className="mt-0.5 size-4 accent-[var(--brand)]" data-testid="request-full-service" />
+        <span>
+          <span className="font-medium">{t("fullService")}</span>
+          <span className="block text-xs text-muted-foreground">{t("fullServiceHint")}</span>
+        </span>
+      </label>
+      <Field label={t("brands")} htmlFor="req-brands">
+        <Input id="req-brands" name="brands" maxLength={300} placeholder={t("brandsPlaceholder")} dir="auto" />
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label={t("city")} htmlFor="req-city">

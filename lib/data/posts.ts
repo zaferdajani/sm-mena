@@ -1,4 +1,5 @@
-import { and, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
+import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
+import { agencyConditions } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, postImages, posts, type Agency } from "@/lib/db/schema";
 import { newImageKeys, processImage, type ProcessedImage } from "@/lib/images";
@@ -17,9 +18,14 @@ export type FeedFilters = {
   q?: string;
   service?: string;
   city?: string;
-  platform?: string;
+  /** Any of these platforms. */
+  platforms?: string[];
   industry?: string;
+  /** Monthly budget range in JOD. */
+  minPrice?: number;
   maxPrice?: number;
+  /** Agencies that cover content, paid media and branding. */
+  fullService?: boolean;
   verified?: boolean;
   agencyId?: string;
 };
@@ -164,13 +170,11 @@ function filterConditions(filters: FeedFilters): SQL[] {
   const c: SQL[] = [eq(posts.status, "published"), eq(agencies.status, "active")];
   if (filters.agencyId) c.push(eq(posts.agencyId, filters.agencyId));
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
-  if (filters.platform) c.push(sql`${filters.platform} = any(${posts.platforms})`);
+  if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));
   if (filters.city) c.push(eq(agencies.city, filters.city));
   if (filters.verified) c.push(eq(agencies.isVerified, true));
-  if (filters.maxPrice !== undefined) {
-    c.push(sql`(${agencies.startingPriceJod} is null or ${agencies.startingPriceJod} <= ${filters.maxPrice})`);
-  }
+  c.push(...agencyConditions(filters, { platformsOnAgency: false }));
   if (filters.q) {
     const like = `%${normalizeForSearch(filters.q)}%`;
     c.push(or(sql`${posts.searchText} like ${like}`, sql`${agencies.searchText} like ${like}`)!);
@@ -239,7 +243,7 @@ export async function getFeed(
   const conditions = filterConditions(filters);
   // On an agency's own grid, pinned posts come first (page one only) and are
   // excluded from the chronological pages so they never repeat.
-  const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platform);
+  const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platforms?.length);
   if (onProfile) conditions.push(sql`${posts.pinnedAt} is null`);
   const c = decodeCursor(cursor);
   if (c) {
