@@ -60,3 +60,4 @@ Calls to action link to the platform: `/ar/match`, `/ar/explore`, `/ar/join` on 
 - **Type:** Readex Pro for headings (Arabic and Latin), IBM Plex Sans Arabic for body, IBM Plex Mono for amounts.
 - **Logo:** the green tile with the white "سوّق" mark (`public/brand/`, app icons and manifest).
 - **AI matchmaker call to action:** the chat-bubble style (sharp bottom-start corner, green glow, typing dots on hover, reduced-motion safe).
+- **Update (business variety and RTL):** the landing site now has a "Who we help" section with eight business types (restaurant, dental clinic, boutique, online store, real estate office, gym, school, Aqaba hotel), each linking to the matching service on the explore page. The cover shows a café owner, a dentist, a boutique owner and a real estate agent. Arabic pages are right to left at the root, with logical CSS, mirrored arrows, isolated Latin text and numbers, and a readable panel behind the hero text. Still unlisted.
