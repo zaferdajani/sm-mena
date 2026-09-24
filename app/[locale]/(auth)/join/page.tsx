@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CITIES } from "@/lib/labels";
@@ -7,7 +8,7 @@ import { JoinForm } from "./join-form";
 export async function generateMetadata({ params }: PageProps<"/[locale]/join">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Auth" });
-  return { title: t("joinTitle"), description: t("joinSubtitle") };
+  return pageMeta({ locale, path: "/join", title: t("joinTitle"), description: t("joinSubtitle") });
 }
 
 export default async function JoinPage({ params }: PageProps<"/[locale]/join">) {

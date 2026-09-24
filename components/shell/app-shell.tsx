@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { isStaffRole } from "@/lib/auth/permissions";
 import { getSessionUser } from "@/lib/auth/session";
 import { BottomNav, SideNav, type NavItem } from "./nav-links";
+import { SiteFooter } from "./site-footer";
 
 /** Instagram-like shell: side navigation on desktop, top bar + bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -61,7 +62,10 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="min-w-0 flex-1 pb-20 md:pb-10">{children}</main>
+      <main className="min-w-0 flex-1 pb-20 md:pb-10">
+        {children}
+        <SiteFooter />
+      </main>
 
       <nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <BottomNav items={items} />

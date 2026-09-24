@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RequestForm } from "@/components/requests/request-form";
 import { serviceAndCityOptions } from "@/lib/form-options";
@@ -8,7 +9,7 @@ import { isServiceKey } from "@/lib/taxonomy";
 export async function generateMetadata({ params }: PageProps<"/[locale]/request/new">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Requests" });
-  return { title: t("formTitle"), description: t("formSubtitle") };
+  return pageMeta({ locale, path: "/request/new", title: t("formTitle"), description: t("formSubtitle") });
 }
 
 export default async function NewRequestPage({ params, searchParams }: PageProps<"/[locale]/request/new">) {

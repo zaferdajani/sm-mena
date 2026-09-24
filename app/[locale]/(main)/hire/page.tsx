@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { serviceCounts } from "@/lib/data/hire";
+import { serviceLinkText } from "@/lib/hire-content";
 import { serviceOptions } from "@/lib/labels";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/hire">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Hire" });
-  return { title: t("indexTitle"), description: t("indexSubtitle"), alternates: { canonical: `/${locale}/hire`, languages: { ar: "/ar/hire", en: "/en/hire" } } };
+  return pageMeta({ locale, path: "/hire", title: t("indexTitle"), description: t("indexSubtitle") });
 }
 
 export default async function HireIndex({ params }: PageProps<"/[locale]/hire">) {
@@ -28,7 +30,7 @@ export default async function HireIndex({ params }: PageProps<"/[locale]/hire">)
             {group.services.map((s) => (
               <li key={s.key}>
                 <Link href={`/hire/${s.key}`} className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-muted" data-testid="hire-service-link">
-                  <span className="font-medium">{s.label}</span>
+                  <span className="font-medium">{serviceLinkText(s.key, locale)}</span>
                   <span className="text-xs text-muted-foreground">
                     {services.get(s.key) ?? 0} {t("agencies", { count: services.get(s.key) ?? 0 })}
                   </span>

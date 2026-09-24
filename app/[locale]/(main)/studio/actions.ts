@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
+import { pingIndexNow } from "@/lib/indexnow";
 import { requireAgency } from "@/lib/auth/guards";
 import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
@@ -56,6 +57,7 @@ export async function createPostAction(_: StudioState, formData: FormData): Prom
   } catch (error) {
     return { error: error instanceof ImageError ? error.code : "generic" };
   }
+  if (!agency.isDemo) pingIndexNow([`/a/${agency.handle}`, `/p/${postId}`]);
   const locale = await getLocale();
   return redirect({ href: `/p/${postId}`, locale });
 }
@@ -146,6 +148,7 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   });
   if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   await audit(user.id, "agency.update", "agency", agency.id);
+  if (!agency.isDemo) pingIndexNow([`/a/${d.handle}`]);
   revalidatePath("/[locale]", "layout");
   return { ok: true };
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
 import { ExploreFilters, type FilterOptions } from "@/components/explore/explore-filters";
@@ -17,10 +18,15 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[lo
   const t = await getTranslations({ locale, namespace: "Explore" });
   const tCity = await getTranslations({ locale, namespace: "Cities" });
   const parts = [p.service && serviceLabel(p.service, locale), p.city && tCity(p.city)].filter(Boolean);
-  return {
+  // One indexable explore page: filtered views are for people, and a service's
+  // landing page for search is /hire/{service}.
+  return pageMeta({
+    locale,
+    path: "/explore",
     title: parts.length ? parts.join(" · ") : t("title"),
-    alternates: { canonical: `/${locale}/explore${p.service ? `?service=${p.service}` : ""}` },
-  };
+    description: t("metaDescription"),
+    noindex: hasActiveFilters(p),
+  });
 }
 
 export default async function ExplorePage({ params, searchParams }: PageProps<"/[locale]/explore">) {

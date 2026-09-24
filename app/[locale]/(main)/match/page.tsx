@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MatchChat } from "@/components/match/chat";
 import { serviceAndCityOptions } from "@/lib/form-options";
@@ -6,7 +7,7 @@ import { serviceAndCityOptions } from "@/lib/form-options";
 export async function generateMetadata({ params }: PageProps<"/[locale]/match">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Match" });
-  return { title: t("title"), description: t("subtitle"), alternates: { canonical: `/${locale}/match` } };
+  return pageMeta({ locale, path: "/match", title: t("title"), description: t("subtitle") });
 }
 
 export default async function MatchPage({ params }: PageProps<"/[locale]/match">) {

@@ -13,6 +13,10 @@ export const routing = defineRouting({
   // and a one-line offer suggests another language when the device or its
   // time zone point to it (components/language-offer.tsx).
   localeDetection: false,
+  // hreflang is declared per page in the HTML (lib/seo.ts). next-intl's Link
+  // header would add a conflicting set whose x-default is an unprefixed URL
+  // that redirects.
+  alternateLinks: false,
 });
 
 export function directionOf(locale: string): "rtl" | "ltr" {

@@ -46,6 +46,7 @@ export type PostView = {
     city: string;
     avatarUrl: string | null;
     isVerified: boolean;
+    isDemo: boolean;
     whatsapp: string | null;
   };
   sponsored?: { promotionId: string };
@@ -185,6 +186,7 @@ function agencyView(a: Agency): PostView["agency"] {
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,
+    isDemo: a.isDemo,
     whatsapp: a.whatsapp,
   };
 }

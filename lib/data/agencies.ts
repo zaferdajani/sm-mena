@@ -96,6 +96,7 @@ export type AgencySummary = {
   city: string;
   avatarUrl: string | null;
   isVerified: boolean;
+  isDemo: boolean;
   plan: Agency["plan"];
   postCount: number;
   followerCount: number;
@@ -116,6 +117,7 @@ export function toSummary(a: Agency): AgencySummary {
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,
+    isDemo: a.isDemo,
     plan: a.plan,
     postCount: a.postCount,
     followerCount: a.followerCount,

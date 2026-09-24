@@ -7,36 +7,45 @@ import { ContactLink } from "@/components/post/contact-link";
 import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
-import { citiesForService, hireCards, priceGuide } from "@/lib/data/hire";
+import { JsonLd } from "@/components/seo/json-ld";
+import { citiesForService, hireCards, packageFacts, priceGuide } from "@/lib/data/hire";
 import { formatJod } from "@/lib/format";
+import { capitalize, hireContent, isOnSite, searchPhrase, serviceLinkText } from "@/lib/hire-content";
 import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
+import { breadcrumbLd, faqLd, hireServiceLd } from "@/lib/structured-data";
 import { taxonomy } from "@/lib/taxonomy";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
-
-function JsonLd({ data }: { data: unknown }) {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
-}
 
 export async function hireCopy(locale: string, service: string, city?: string) {
   const t = await getTranslations({ locale, namespace: "Hire" });
   const tCity = await getTranslations({ locale, namespace: "Cities" });
   const place = city ? tCity(city) : t("jordan");
-  return { t, place, serviceName: serviceLabel(service, locale) };
+  // Titles and headings use the phrase people search; the catalogue name stays in the chips.
+  return { t, place, serviceName: serviceLabel(service, locale), search: searchPhrase(service, locale), content: hireContent(service, locale) };
 }
 
 export async function HirePage({ locale, service, city }: { locale: string; service: string; city?: string }) {
-  const { t, place, serviceName } = await hireCopy(locale, service, city);
+  const { t, place, search, content } = await hireCopy(locale, service, city);
   const tc = await getTranslations("Common");
   const tp = await getTranslations("Post");
   const tr = await getTranslations("Requests");
   const tCity = await getTranslations("Cities");
-  const [cards, price, cities] = await Promise.all([hireCards(service, city), priceGuide(service, city), citiesForService(service)]);
+  const [cards, price, cities, facts] = await Promise.all([hireCards(service, city), priceGuide(service, city), citiesForService(service), packageFacts(service, city)]);
   const category = taxonomy.categories.find((c) => c.services.some((s) => s.key === service));
   const related = category?.services.filter((s) => s.key !== service) ?? [];
-  const faqs = [1, 2, 3, 4].map((n) => ({ q: t(`faq${n}q`, { service: serviceName }), a: t(`faq${n}a`) }));
+  // Two questions written for this service, then the two about Sawwiq itself
+  // (the same answers on every page would be a duplicate-content smell).
+  const shared = [2, 3, ...(city && isOnSite(service) ? [4] : [])];
+  const faqs = [
+    ...(content?.faq ?? [{ q: t("faq1q", { service: search }), a: t("faq1a") }]),
+    ...shared.map((n) => ({ q: t(`faq${n}q`, { service: search }), a: t(`faq${n}a`) })),
+  ];
+  const title = capitalize(t("title", { service: search, place }));
   const pageUrl = `${SITE_URL}/${locale}/hire/${service}${city ? `/${city}` : ""}`;
+  const real = cards.filter((a) => !a.isDemo);
+  const allReal = cards.length > 0 && real.length === cards.length;
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-10 px-4 py-6 sm:py-10">
@@ -45,24 +54,37 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
           {
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: t("title", { service: serviceName, place }),
+            name: title,
             url: pageUrl,
-            itemListElement: cards.map((a, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}/${locale}/a/${a.handle}`, name: a.name })),
+            numberOfItems: real.length,
+            itemListElement: real.map((a, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}/${locale}/a/${a.handle}`, name: a.name })),
           },
-          {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-          },
+          hireServiceLd({
+            locale,
+            url: pageUrl,
+            name: title,
+            serviceName: search,
+            place,
+            city: Boolean(city),
+            // Prices only from real agencies' published prices.
+            offers: allReal && price.min !== null && price.max !== null ? { min: price.min, max: price.max, count: price.n } : null,
+          }),
+          breadcrumbLd([
+            { name: t("indexTitle"), path: `/${locale}/hire` },
+            { name: capitalize(search), path: `/${locale}/hire/${service}` },
+            ...(city ? [{ name: place, path: `/${locale}/hire/${service}/${city}` }] : []),
+          ]),
+          faqLd(faqs),
         ]}
       />
 
       <header className="space-y-3">
         <nav className="text-xs text-muted-foreground">
           <Link href="/hire" className="hover:underline">{t("indexTitle")}</Link>
-          {city && <> · <Link href={`/hire/${service}`} className="hover:underline">{serviceName}</Link></>}
+          {city && <> · <Link href={`/hire/${service}`} className="hover:underline">{capitalize(search)}</Link></>}
         </nav>
-        <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{t("title", { service: serviceName, place })}</h1>
+        <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{title}</h1>
+        {content && <p className="max-w-2xl leading-relaxed text-muted-foreground">{content.intro}</p>}
         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
           <BadgeCheck className="size-4 text-sky-500" />
           {t("summary", { count: price.agencies, verified: price.verified })}
@@ -145,8 +167,28 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
         )}
       </section>
 
+      {content && (
+        <section className="grid gap-5 sm:grid-cols-[3fr_2fr]" data-testid="hire-included">
+          <div>
+            <h2 className="mb-3 text-lg font-bold">{t("includedTitle", { service: search })}</h2>
+            <ul className="grid gap-2 text-sm">
+              {content.includes.map((item) => (
+                <li key={item} className="flex gap-2">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <aside className="rounded-xl border p-4 text-sm">
+            <h3 className="mb-1 font-semibold">{t("notForTitle")}</h3>
+            <p className="leading-relaxed text-muted-foreground">{content.notFor}</p>
+          </aside>
+        </section>
+      )}
+
       <section className="rounded-xl bg-muted p-5">
-        <h2 className="text-lg font-bold">{t("priceTitle", { service: serviceName, place })}</h2>
+        <h2 className="text-lg font-bold">{t("priceTitle", { service: search, place })}</h2>
         {price.min !== null && price.max !== null && price.median !== null ? (
           <>
             <p className="mt-2 text-sm leading-relaxed">{t("priceBody", { count: price.n, min: price.min, max: price.max, median: price.median })}</p>
@@ -162,6 +204,14 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
         ) : (
           <p className="mt-2 text-sm">{t("priceNone")}</p>
         )}
+        {facts && (
+          <p className="mt-4 text-sm leading-relaxed" data-testid="package-facts">
+            {facts.monthly && t("packagesMonthly", { count: facts.count, min: facts.monthly.min, median: facts.monthly.median, max: facts.monthly.max })}{" "}
+            {facts.oneOff && t("packagesOneOff", { min: facts.oneOff.min, max: facts.oneOff.max })}{" "}
+            {facts.deliveryDays && t("packagesDelivery", { days: facts.deliveryDays })}
+          </p>
+        )}
+        {content && <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{content.priceDrivers}</p>}
       </section>
 
       <section>
@@ -191,7 +241,7 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
       <section className="grid gap-6 sm:grid-cols-2">
         {cities.length > 0 && (
           <div>
-            <h2 className="mb-2 text-sm font-semibold">{t("relatedCities", { service: serviceName })}</h2>
+            <h2 className="mb-2 text-sm font-semibold">{t("relatedCities", { service: search })}</h2>
             <ul className="flex flex-wrap gap-2">
               {cities.filter((c) => c.city !== city).map((c) => (
                 <li key={c.city}>
@@ -210,7 +260,7 @@ export async function HirePage({ locale, service, city }: { locale: string; serv
               {related.map((s) => (
                 <li key={s.key}>
                   <Link href={`/hire/${s.key}${city ? `/${city}` : ""}`} className="inline-block rounded-full border px-3 py-1 text-sm hover:bg-muted">
-                    {serviceLabel(s.key, locale)}
+                    {serviceLinkText(s.key, locale)}
                   </Link>
                 </li>
               ))}

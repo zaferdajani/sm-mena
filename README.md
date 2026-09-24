@@ -75,6 +75,7 @@ Every demo agency logs in as `<handle with dots replaced by dashes>@sawwiq.test`
 | `npm run db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations and seed |
 | `npm run i18n:translate -- --to <code>` | Draft a new interface language (see docs/15) |
 | `npm run ai:eval` | Score AI providers on the test conversations (mock and rules when no key is set) |
+| `npm run seo:check -- <url>` | Check canonical, hreflang, robots, H1 and structured data on a running site (docs/18) |
 
 First time running browser tests: `npx playwright install chromium`, or point to an existing Chromium with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome`.
 
@@ -128,6 +129,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/13-admin-console.md` | Admin console, two-factor sign-in, payments, bugs, statistics |
 | `docs/15-languages.md` | Language offer, location concept, RTL, translation pipeline |
 | `docs/14-contracts-and-milestones.md` | Deliverables catalogue, contracts and NDA, milestones, protected and direct payments |
+| `docs/18-seo.md` | SEO: the OneClickConvert playbook, what's in place, owner to-do, keyword map |
 | `docs/17-team-access.md` | Staff roles, owner protections, GitHub/Fly.io access for the team, break-glass, sites directory |
 | `CLAUDE.md` | Build rules for Claude Code |
 

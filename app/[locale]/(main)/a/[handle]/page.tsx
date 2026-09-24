@@ -8,15 +8,20 @@ import { PackageList } from "@/components/profile/package-list";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ReviewList, ReviewSummary } from "@/components/reviews/review-list";
 import { WriteReviewDialog } from "@/components/reviews/write-review-dialog";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { getAgencyByHandle } from "@/lib/data/agencies";
 import { isFollowing, recordView } from "@/lib/data/interactions";
 import { listPackages } from "@/lib/data/packages";
 import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/lib/data/reviews";
+import { getFeed } from "@/lib/data/posts";
 import { feedPage } from "@/lib/feed";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
+import { isCrawlerRequest } from "@/lib/request";
+import { pageMeta } from "@/lib/seo";
 import { mediaUrl } from "@/lib/storage";
+import { agencyLd, breadcrumbLd } from "@/lib/structured-data";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
 
@@ -24,14 +29,21 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
   const { locale, handle } = await params;
   const agency = await getAgencyByHandle(handle);
   if (!agency) return {};
+  const t = await getTranslations({ locale, namespace: "Seo" });
+  const city = (await getTranslations({ locale, namespace: "Cities" }))(agency.city);
+  const services = agency.services.map((s) => serviceLabel(s, locale));
+  const cover = (await getFeed({ agencyId: agency.id }, null, 1)).items[0]?.images[0];
   const avatar = mediaUrl(agency.avatarKey);
-  const description = agency.bio || agency.services.map((s) => serviceLabel(s, locale)).join(" · ");
-  return {
-    title: `${agency.name} (@${agency.handle})`,
-    description,
-    alternates: { canonical: `/${locale}/a/${agency.handle}`, languages: { ar: `/ar/a/${agency.handle}`, en: `/en/a/${agency.handle}` } },
-    openGraph: { title: agency.name, description, images: avatar ? [avatar] : undefined, type: "profile" },
-  };
+  return pageMeta({
+    locale,
+    path: `/a/${agency.handle}`,
+    title: services.length ? t("agencyTitle", { name: agency.name, service: services[0], city }) : agency.name,
+    description: agency.bio || t("agencyDescription", { name: agency.name, services: services.slice(0, 3).join("، "), city }),
+    images: cover ? [{ url: cover.url, width: cover.width, height: cover.height, alt: agency.name }] : avatar ? [{ url: avatar, alt: agency.name }] : undefined,
+    type: "profile",
+    // Demo agencies are for trying the site, not for search results.
+    noindex: agency.isDemo || agency.status !== "active",
+  });
 }
 
 export default async function AgencyPage({ params, searchParams }: PageProps<"/[locale]/a/[handle]">) {
@@ -54,10 +66,15 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
     tab === "reviews" ? listReviews(agency.id) : null,
     tab === "reviews" ? subScores(agency.id) : null,
     tab === "reviews" ? canReviewAfterInquiry(visitorId, agency.id) : false,
-    tab === "about" ? listPackages(agency.id) : null,
-    recordView("profile_view", agency.id, null, visitorId),
+    listPackages(agency.id),
+    (await isCrawlerRequest()) ? null : recordView("profile_view", agency.id, null, visitorId),
   ]);
+  // Always rendered (every tab), so search engines see reviews and prices on the canonical URL.
+  const latestReviews = await listReviews(agency.id, { limit: 3 });
+  const [tSeo, tHire] = await Promise.all([getTranslations("Seo"), getTranslations("Hire")]);
   const rating = ratingSummary(agency);
+  const avatarUrl = mediaUrl(agency.avatarKey);
+  const primary = agency.services[0];
 
   const about: [string, string][] = [
     [t("city"), tCity(agency.city)],
@@ -72,6 +89,16 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
 
   return (
     <div className="mx-auto w-full max-w-4xl">
+      <JsonLd
+        data={[
+          agencyLd(agency, { locale, cityName: tCity(agency.city), image: avatarUrl, reviews: latestReviews, packages: pkgs ?? [] }),
+          breadcrumbLd([
+            { name: tHire("indexTitle"), path: `/${locale}/hire` },
+            ...(primary ? [{ name: serviceLabel(primary, locale), path: `/${locale}/hire/${primary}` }] : []),
+            { name: agency.name, path: `/${locale}/a/${agency.handle}` },
+          ]),
+        ]}
+      />
       <ProfileHeader
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}
@@ -104,6 +131,30 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           <ReviewList reviews={reviewRows} agencyName={agency.name} />
         </div>
       )}
+      {tab === "work" && (pkgs?.length || latestReviews.length) ? (
+        <div className="space-y-6 border-t px-4 py-6" data-testid="profile-overview">
+          {pkgs && pkgs.length > 0 && (
+            <section>
+              <h2 className="mb-3 font-semibold">{tSeo("packagesTitle", { name: agency.name })}</h2>
+              <PackageList packages={pkgs.slice(0, 3)} />
+              {pkgs.length > 3 && (
+                <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "about" } }} className="mt-2 inline-block text-sm font-medium text-brand">
+                  {tSeo("allPackages", { count: pkgs.length })}
+                </Link>
+              )}
+            </section>
+          )}
+          {latestReviews.length > 0 && (
+            <section>
+              <h2 className="mb-3 font-semibold">{tSeo("reviewsTitle", { name: agency.name })}</h2>
+              <ReviewList reviews={latestReviews} agencyName={agency.name} />
+              <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "reviews" } }} className="mt-2 inline-block text-sm font-medium text-brand">
+                {tSeo("allReviews", { count: rating.count })}
+              </Link>
+            </section>
+          )}
+        </div>
+      ) : null}
       {tab === "about" && pkgs && pkgs.length > 0 && (
         <div className="px-4 pt-4">
           <PackageList packages={pkgs} />

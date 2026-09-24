@@ -4,6 +4,16 @@ import { LANG_COOKIE, routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
 const VISITOR_COOKIE = "sw_vid";
+// The canonical host. Any other host serving the app (the fly.dev address
+// once a domain is live, previews) tells search engines not to index it, so
+// only one copy of each page competes in results.
+const CANONICAL_HOST = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "").host;
+  } catch {
+    return "";
+  }
+})();
 
 // Next.js 16 renamed middleware to proxy. This keeps the locale in the URL
 // ("/" opens Arabic) and gives every browser an anonymous visitor id used for
@@ -19,6 +29,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
   const response = intl(request);
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (process.env.NODE_ENV === "production" && CANONICAL_HOST && host && host !== CANONICAL_HOST) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
   if (!request.cookies.get(VISITOR_COOKIE)) {
     response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {
       httpOnly: true,

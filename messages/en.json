@@ -1,6 +1,6 @@
 {
   "Metadata": {
-    "title": "Sawwiq · Social media agencies in Jordan",
+    "title": "Sawwiq · Social media & marketing agencies in Jordan",
     "description": "Browse the work of social media and digital marketing agencies in Jordan, filter by service, city and budget, and contact them directly on WhatsApp."
   },
   "Home": {
@@ -18,7 +18,7 @@
     "step3Body": "Compare prices, reviews and portfolios, then start with the best fit.",
     "agenciesTitle": "Run a marketing agency?",
     "agenciesBody": "Join the first 40 founding agencies and get lifetime free Pro.",
-    "introTitle": "Find the right social media agency for your business",
+    "introTitle": "Find the right marketing and social media agency for your business in Jordan",
     "introBody": "Browse real work from Jordanian agencies, filter by service, city and budget, then contact them directly. No sign-up.",
     "introCta": "Start exploring",
     "introAgency": "Run an agency? Show your work for free",
@@ -30,11 +30,19 @@
     "rights": "© {year} Sawwiq. All rights reserved.",
     "legal": "Terms & privacy",
     "forAgencies": "For agencies",
-    "report": "Report a problem"
+    "report": "Report a problem",
+    "hireTitle": "Hire by service",
+    "aboutTitle": "Sawwiq",
+    "about": "About us",
+    "contact": "Contact",
+    "otherLanguage": "العربية"
   },
   "NotFound": {
     "title": "Page not found",
-    "home": "Back to home"
+    "home": "Back to home",
+    "body": "The link may have changed or the page was removed. Good places to start:",
+    "hire": "Hire an agency by service",
+    "explore": "Explore work"
   },
   "Auth": {
     "loginTitle": "Agency sign in",
@@ -220,7 +228,8 @@
     "anyIndustry": "All industries",
     "anyBudget": "Any budget",
     "upTo": "Up to {price} JOD",
-    "results": "{count, plural, =0 {No results} one {1 result} other {# results}}"
+    "results": "{count, plural, =0 {No results} one {1 result} other {# results}}",
+    "metaDescription": "Explore work by marketing and social media agencies in Jordan: filter by service, city, platform, industry and budget, and contact them directly."
   },
   "Saved": {
     "title": "Saved",
@@ -283,7 +292,8 @@
     "s4t": "Your rights",
     "s4": "Under Jordan's Personal Data Protection Law No. 24 of 2023 you can ask to access, correct or delete your data, or withdraw consent. Write to privacy@sawwiq.jo.",
     "s5t": "Pricing",
-    "s5": "The platform is currently free for everyone. Any paid plans will be announced in advance and never charged without agreement."
+    "s5": "The platform is currently free for everyone. Any paid plans will be announced in advance and never charged without agreement.",
+    "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for."
   },
   "Studio": {
     "title": "Studio",
@@ -522,10 +532,10 @@
     }
   },
   "Hire": {
-    "indexTitle": "Hire a social media agency in Jordan",
-    "indexSubtitle": "Pick the service you need to see the best specialised agencies, their work and starting prices.",
-    "title": "Best {service} agencies in {place}",
-    "metaDescription": "Compare {count} {service} agencies in {place}: real work, prices from {min} JOD per month, and direct contact on WhatsApp.",
+    "indexTitle": "Marketing and social media agencies in Jordan by service",
+    "indexSubtitle": "Pick the service you need to see the agencies that specialise in it, their work and package prices, then compare and contact them directly.",
+    "title": "{service} agencies in {place}: work and prices",
+    "metaDescription": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work, packages from {min} JOD, verified client reviews and direct contact on WhatsApp.",
     "jordan": "Jordan",
     "summary": "{count, plural, =0 {No agencies yet} one {1 agency} other {# agencies}} · {verified} verified",
     "browseWork": "Browse the work",
@@ -556,7 +566,13 @@
     "faq4a": "Yes. Most social media services are delivered remotely, though photo and video production is easier with an agency near you.",
     "relatedCities": "{service} in other cities",
     "relatedServices": "Related services",
-    "forAgencies": "Offer this service? Show your work for free"
+    "forAgencies": "Offer this service? Show your work for free",
+    "metaDescriptionNoPrice": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work and verified client reviews, and ask for a free quote on Sawwiq.",
+    "includedTitle": "What {service} usually includes",
+    "notForTitle": "When this isn't the right service",
+    "packagesMonthly": "From {count, plural, one {# package} other {# packages}} published on Sawwiq: monthly packages run from {min} to {max} JOD, with a median of {median} JOD.",
+    "packagesOneOff": "One-off work runs from {min} to {max} JOD.",
+    "packagesDelivery": "Typical delivery is {days} days."
   },
   "Reviews": {
     "tab": "Reviews",
@@ -1479,5 +1495,66 @@
     "text": "Sawwiq is available in English.",
     "switch": "Show it in English",
     "dismiss": "Keep this language"
+  },
+  "Seo": {
+    "homeTitle": "Social media & digital marketing agencies in Jordan | Sawwiq",
+    "homeDescription": "Compare digital marketing and social media management agencies in Amman and across Jordan: real work, package prices in JOD and verified client reviews. Contacting them is free.",
+    "popularServices": "Most requested services",
+    "agencyTitle": "{name}: {service} in {city}",
+    "agencyDescription": "{name} is an agency in {city} offering {services}. See its work, package prices and client reviews, and contact it directly on Sawwiq.",
+    "packagesTitle": "{name} packages and prices",
+    "allPackages": "All packages ({count})",
+    "reviewsTitle": "What {name}'s clients say",
+    "allReviews": "{count, plural, one {See the review} other {See all # reviews}}",
+    "postTitle": "{service} by {agency}",
+    "postDescription": "Work by {agency} in {service}. See more of the agency's work and contact it on Sawwiq."
+  },
+  "About": {
+    "title": "About Sawwiq",
+    "description": "Sawwiq is a Jordanian platform to find, compare and hire marketing and social media agencies: how we verify agencies and reviews, and how protected payments work.",
+    "intro": "Sawwiq is one place where business owners see the real work of marketing and social media agencies in Jordan, compare their prices and client reviews, then contact them directly or contract through the platform with protected payments.",
+    "what": {
+      "title": "What we offer",
+      "body": "A page for every agency with its work and priced packages, hire pages for every service and city, an AI assistant that asks about your project and suggests the best-suited agencies with a realistic budget, and project requests where several agencies send you quotes."
+    },
+    "verify": {
+      "title": "What \"Verified\" means",
+      "body": "We check an agency's commercial registration before giving it the badge. It confirms the agency is registered; it does not guarantee the quality of its work, which is why we show the work and the reviews so you can judge."
+    },
+    "reviews": {
+      "title": "How we keep reviews real",
+      "body": "Only a client the agency invited with a single-use link, or a client who contacted the agency through Sawwiq, can write a review. Reviews can't be bought and negative ones aren't removed; the agency can reply publicly."
+    },
+    "payments": {
+      "title": "Protected payments",
+      "body": "When you contract through Sawwiq, the work is split into milestones with dates, amounts and a checklist of deliverables. The client pays each milestone into Sawwiq, and it is released to the agency only after the client confirms every item. If the two sides disagree, our team reviews the case and decides."
+    },
+    "demo": {
+      "title": "Demo accounts",
+      "body": "During the pilot some agencies carry a \"Demo\" label. They are examples for trying the platform, not real agencies; they are removed as real agencies join and are kept out of search results."
+    },
+    "money": {
+      "title": "How Sawwiq makes money",
+      "body": "Browsing and contacting agencies is free for everyone, and we take no commission on direct deals. Later we may offer agencies subscriptions that give them priority placement; these are always clearly labelled and never change how reviews rank."
+    },
+    "ctaHire": "Start looking for an agency",
+    "ctaContact": "Contact us"
+  },
+  "Contact": {
+    "title": "Contact Sawwiq",
+    "description": "Get in touch with the Sawwiq team: report a problem or ask a question, list your agency, or make a privacy and personal data request.",
+    "intro": "Pick what fits your request. We usually reply within one working day.",
+    "support": {
+      "title": "A question or a problem on the site",
+      "body": "Tell us what happened and we'll follow up, whether you're a business or an agency."
+    },
+    "agencies": {
+      "title": "You're an agency and want to join",
+      "body": "Create your agency page for free and show your work and packages in minutes."
+    },
+    "privacy": {
+      "title": "Privacy and your personal data",
+      "body": "To access, correct or delete your data under the Personal Data Protection Law."
+    }
   }
 }

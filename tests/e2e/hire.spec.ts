@@ -4,19 +4,23 @@ test("hire index links to service pages with agency cards, price guide and FAQ",
   await page.goto("/en/hire");
   await page.getByTestId("hire-service-link").filter({ hasText: "Facebook and Instagram ads" }).click();
   await expect(page).toHaveURL(/\/en\/hire\/ads_meta$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Best Facebook and Instagram ads agencies in Jordan");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Facebook and Instagram ads agencies in Jordan: work and prices");
+  await expect(page.getByTestId("hire-included")).toBeVisible(); // written copy for this service
   await expect(page.getByTestId("hire-cards").locator("li").first()).toBeVisible();
   await expect(page.getByText("How much does Facebook and Instagram ads cost in Jordan?")).toBeVisible();
-  const jsonLd = await page.locator('script[type="application/ld+json"]').first().textContent();
-  expect(jsonLd).toContain('"FAQPage"');
+  const jsonLd = (await page.locator('script[type="application/ld+json"]').allTextContents()).join("\n");
+  for (const type of ["ItemList", "Service", "BreadcrumbList", "FAQPage"]) expect(jsonLd).toContain(`"${type}"`);
 });
 
 test("city hire pages and sitemap", async ({ page, request }) => {
   await page.goto("/ar/hire/ads_meta/amman");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("عمّان");
   const sitemap = await (await request.get("/sitemap.xml")).text();
-  expect(sitemap).toContain("/ar/hire/ads_meta");
-  expect(sitemap).toContain("/ar/a/nakhla.studio");
+  // Both languages are listed; demo agencies (and hire pages only they fill) are not.
+  expect(sitemap).toContain("/ar/hire</loc>");
+  expect(sitemap).toContain("/en/hire</loc>");
+  expect(sitemap).not.toContain("/a/nakhla.studio");
+  expect(sitemap).not.toContain("/hire/ads_meta");
   const robots = await (await request.get("/robots.txt")).text();
   expect(robots).toContain("Disallow: /ar/studio");
 });

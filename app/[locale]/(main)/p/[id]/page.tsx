@@ -9,20 +9,30 @@ import { recordView } from "@/lib/data/interactions";
 import { getFeed, getPost } from "@/lib/data/posts";
 import { withState } from "@/lib/feed";
 import { serviceLabel } from "@/lib/labels";
+import { isCrawlerRequest } from "@/lib/request";
+import { pageMeta, postIndexable } from "@/lib/seo";
 import { getVisitorId } from "@/lib/visitor";
+
+const captionFits = (caption: string, locale: string) => (/[\u0600-\u06FF]/.test(caption) ? locale === "ar" : locale !== "ar");
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">): Promise<Metadata> {
   const { locale, id } = await params;
   const post = await getPost(id);
   if (!post) return {};
-  const services = post.services.map((s) => serviceLabel(s, locale)).join(" · ");
+  const t = await getTranslations({ locale, namespace: "Seo" });
+  const service = post.services[0] ? serviceLabel(post.services[0], locale) : "";
   const image = post.images[0];
-  return {
-    title: `${post.agency.name}: ${services}`,
-    description: post.caption.slice(0, 160),
-    alternates: { canonical: `/${locale}/p/${post.id}`, languages: { ar: `/ar/p/${post.id}`, en: `/en/p/${post.id}` } },
-    openGraph: { title: post.agency.name, description: post.caption.slice(0, 160), images: image ? [{ url: image.url, width: image.width, height: image.height }] : undefined },
-  };
+  // The caption is the agency's own words; on the other language's page a short localized line is used instead.
+  const description = captionFits(post.caption, locale) && post.caption.trim() ? post.caption : t("postDescription", { agency: post.agency.name, service });
+  return pageMeta({
+    locale,
+    path: `/p/${post.id}`,
+    title: t("postTitle", { agency: post.agency.name, service }),
+    description,
+    images: image ? [{ url: image.url, width: image.width, height: image.height, alt: t("postTitle", { agency: post.agency.name, service }) }] : undefined,
+    type: "article",
+    noindex: post.agency.isDemo || !postIndexable(post.caption),
+  });
 }
 
 export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">) {
@@ -31,16 +41,18 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const post = await getPost(id);
   if (!post) notFound();
   const t = await getTranslations("Post");
+  const tSeo = await getTranslations("Seo");
   const visitorId = await getVisitorId();
   const [{ items: [item] }, more] = await Promise.all([
     withState([post], visitorId),
     getFeed({ agencyId: post.agency.id }, null, 7),
-    recordView("post_view", post.agency.id, post.id, visitorId),
+    (await isCrawlerRequest()) ? null : recordView("post_view", post.agency.id, post.id, visitorId),
   ]);
   const others = more.items.filter((p) => p.id !== post.id).slice(0, 6);
 
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
+      <h1 className="sr-only">{tSeo("postTitle", { agency: post.agency.name, service: post.services[0] ? serviceLabel(post.services[0], locale) : "" })}</h1>
       <PostCard post={item} priority linkToPost={false} />
       <div className="flex justify-end px-3 py-2">
         <ReportDialog postId={post.id} />

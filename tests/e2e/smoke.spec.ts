@@ -17,14 +17,14 @@ test("Arabic home renders right-to-left with the feed", async ({ page }) => {
   await page.goto("/ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("اعثر على وكالة السوشيال ميديا المناسبة لنشاطك");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("اعثر على شركة التسويق والسوشيال ميديا المناسبة لنشاطك في الأردن");
   await expect(page.getByTestId("post-card").first()).toBeVisible();
 });
 
 test("English home renders left-to-right", async ({ page }) => {
   await page.goto("/en");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Find the right social media agency for your business");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Find the right marketing and social media agency for your business in Jordan");
 });
 
 test("locale switcher keeps the page and flips direction", async ({ page }) => {

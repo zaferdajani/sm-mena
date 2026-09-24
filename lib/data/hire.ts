@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, postImages, posts } from "@/lib/db/schema";
+import { agencies, packages, postImages, posts } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/storage";
 import { toSummary, type AgencySummary } from "./agencies";
 
@@ -65,13 +65,17 @@ export async function citiesForService(service: string) {
     .orderBy(desc(sql`count(*)`));
 }
 
-/** Services with at least one active agency, for the hire index and sitemap. */
-export async function serviceCounts() {
+/**
+ * Active agencies per service and per service+city, for the hire index and
+ * sitemap. With realOnly, demo agencies don't count: search engines only see
+ * pages that real agencies fill (lib/seo.ts INDEX_MIN_*).
+ */
+export async function serviceCounts({ realOnly = false } = {}) {
   const db = await getDb();
   const rows = await db
     .select({ service: sql<string>`unnest(${agencies.services})`, city: agencies.city })
     .from(agencies)
-    .where(eq(agencies.status, "active"));
+    .where(realOnly ? and(eq(agencies.status, "active"), eq(agencies.isDemo, false)) : eq(agencies.status, "active"));
   const services = new Map<string, number>();
   const pairs = new Map<string, number>();
   for (const r of rows) {
@@ -79,4 +83,38 @@ export async function serviceCounts() {
     pairs.set(`${r.service}|${r.city}`, (pairs.get(`${r.service}|${r.city}`) ?? 0) + 1);
   }
   return { services, pairs };
+}
+
+/** Real (non-demo) active agencies offering a service, optionally in a city. */
+export async function realAgencyCount(service: string, city?: string) {
+  const db = await getDb();
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(agencies)
+    .where(and(where(service, city), eq(agencies.isDemo, false)));
+  return row.n;
+}
+
+/** What agencies charge in their packages for a service: price spread and typical delivery time. */
+export async function packageFacts(service: string, city?: string) {
+  const db = await getDb();
+  const rows = await db
+    .select({ price: packages.priceJod, billing: packages.billing, days: packages.deliveryDays })
+    .from(packages)
+    .innerJoin(agencies, eq(packages.agencyId, agencies.id))
+    .where(and(where(service, city), eq(packages.service, service)));
+  if (!rows.length) return null;
+  const median = (xs: number[]) => {
+    const v = [...xs].sort((a, b) => a - b);
+    return v.length ? v[Math.floor((v.length - 1) / 2)] : null;
+  };
+  const monthly = rows.filter((r) => r.billing === "monthly").map((r) => r.price);
+  const oneOff = rows.filter((r) => r.billing !== "monthly").map((r) => r.price);
+  const days = rows.map((r) => r.days).filter((d): d is number => typeof d === "number" && d > 0);
+  return {
+    count: rows.length,
+    monthly: monthly.length ? { min: Math.min(...monthly), median: median(monthly)!, max: Math.max(...monthly) } : null,
+    oneOff: oneOff.length ? { min: Math.min(...oneOff), median: median(oneOff)!, max: Math.max(...oneOff) } : null,
+    deliveryDays: median(days),
+  };
 }

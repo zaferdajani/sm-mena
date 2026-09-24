@@ -68,11 +68,12 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
       </div>
 
       <div className="space-y-1">
-        <h1 className="flex items-center gap-1.5 text-base font-bold">
-          {agency.name}
+        <div className="flex items-center gap-1.5">
+          {/* The heading is the agency's name only: badges sit beside it. */}
+          <h1 className="text-base font-bold">{agency.name}</h1>
           {agency.isVerified && <VerifiedBadge label={tc("verified")} className="size-5" />}
           {agency.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">{tc("demo")}</span>}
-        </h1>
+        </div>
         <p className="text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)}
           {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale) })}` : ""}
@@ -95,9 +96,9 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
         {agency.services.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pt-1">
             {agency.services.map((s) => (
-              <span key={s} className="rounded-full bg-accent px-2.5 py-0.5 text-xs text-accent-foreground">
+              <Link key={s} href={`/hire/${s}`} className="rounded-full bg-accent px-2.5 py-0.5 text-xs text-accent-foreground hover:underline">
                 {serviceLabel(s, locale)}
-              </span>
+              </Link>
             ))}
           </div>
         )}

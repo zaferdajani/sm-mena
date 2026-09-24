@@ -9,6 +9,7 @@ import { ErrorReporter } from "@/components/error-reporter";
 import { LanguageOffer } from "@/components/language-offer";
 import { PageTracker } from "@/components/page-tracker";
 import { directionOf, routing } from "@/i18n/routing";
+import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
 
@@ -25,6 +26,9 @@ const readex = Readex_Pro({
   subsets: ["arabic", "latin"],
   weight: ["500", "600", "700"],
   display: "swap",
+  // Headings swap in when ready; only the body face is preloaded, so fewer
+  // font files compete with the first paint on phones.
+  preload: false,
 });
 
 // Amounts, dates and handles.
@@ -33,6 +37,7 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["500"],
   display: "swap",
+  preload: false,
 });
 
 export function generateStaticParams() {
@@ -47,11 +52,17 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "Metadata" });
   return {
     metadataBase: new URL(SITE_URL),
-    title: { default: t("title"), template: `%s · ${locale === "ar" ? "سوّق" : "Sawwiq"}` },
+    title: { default: t("title"), template: `%s · ${brandOf(locale)}` },
     description: t("description"),
-    openGraph: { siteName: locale === "ar" ? "سوّق" : "Sawwiq", locale: locale === "ar" ? "ar_JO" : "en_JO", type: "website" },
-    alternates: {
-      languages: { ...Object.fromEntries(routing.locales.map((l) => [l, `/${l}`])), "x-default": `/${routing.defaultLocale}` },
+    // No site-wide canonical or hreflang here: each public page declares its
+    // own through pageMeta() (lib/seo.ts), and private pages must not inherit
+    // the home page's language pairs.
+    openGraph: { siteName: brandOf(locale), locale: locale === "ar" ? "ar_JO" : "en_JO", type: "website", images: [defaultOgImage(locale)] },
+    twitter: { card: "summary_large_image" },
+    ...(siteIndexable() ? {} : { robots: { index: false, follow: false } }),
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+      other: process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : undefined,
     },
   };
 }

@@ -1,0 +1,1412 @@
+{
+  "smm_management": {
+    "onSite": false,
+    "ar": {
+      "search": "إدارة حسابات السوشيال ميديا",
+      "intro": "تتولى الوكالة في هذه الخدمة حسابات نشاطك على فيسبوك وإنستغرام وتيك توك وغيرها: تضع خطة نشر شهرية، وتجهّز المنشورات والتصاميم والنصوص، وتنشرها في مواعيدها، ثم تتابع الأداء وترفع لك تقريراً في نهاية كل شهر. تناسب المتاجر والعيادات والمطاعم والشركات الخدمية التي تريد حضوراً منتظماً على المنصات دون تعيين موظف متفرغ، وتُتفق عليها عادةً كباقة شهرية بعدد محدد من المنشورات والريلز.",
+      "includes": [
+        "خطة محتوى شهرية بتقويم نشر واضح",
+        "تصميم المنشورات والستوريز بهوية نشاطك",
+        "كتابة النصوص المرافقة بالعربية أو الإنجليزية",
+        "جدولة النشر على المنصات المتفق عليها",
+        "تقرير شهري بالوصول والتفاعل ونمو المتابعين"
+      ],
+      "priceDrivers": "يرتفع السعر مع عدد المنصات وعدد المنشورات والريلز في الشهر، ومع إضافة الرد على الرسائل أو جلسات التصوير. أما إدارة الإعلانات الممولة فتُسعَّر غالباً بشكل منفصل، وميزانية الإعلان نفسها تُدفع للمنصة لا للوكالة.",
+      "notFor": "لا تشمل هذه الخدمة عادةً ميزانية الإعلانات ولا التصوير الميداني، فإن كان هدفك مبيعات سريعة من حملة ممولة فابدأ بخدمة الإعلانات المدفوعة.",
+      "faq": [
+        {
+          "q": "هل أبقى مالكاً لحسابات نشاطي بعد التعاقد مع وكالة؟",
+          "a": "يجب أن تبقى الصفحات والحسابات مسجلة باسمك أو باسم شركتك، وأن تمنح الوكالة صلاحية مسؤول أو محرر عبر Meta Business Suite بدلاً من إعطائها كلمة المرور. بهذه الطريقة تستطيع سحب الصلاحية متى انتهى التعاقد، وتحتفظ بالمتابعين والمحتوى والرسائل السابقة كاملة دون الحاجة إلى موافقة أحد."
+        },
+        {
+          "q": "كم منشوراً في الشهر يكفي لنشاط صغير؟",
+          "a": "يختلف ذلك حسب القطاع والمنصة، لكن كثيراً من الأنشطة الصغيرة تبدأ بثلاثة أو أربعة منشورات أسبوعياً مع عدد من الستوريز والريلز. الانتظام أهم من الكثرة، فالنشر المكثف ثم التوقف أسابيع يضعف الوصول. اتفق مع الوكالة على خطة لثلاثة أشهر، ثم راجع الأرقام قبل أن تزيد العدد."
+        }
+      ]
+    },
+    "en": {
+      "search": "social media management",
+      "intro": "The agency runs your business accounts on Facebook, Instagram, TikTok and similar platforms: it plans a monthly calendar, prepares posts, designs and captions, publishes on schedule and reports on performance at the end of each month. It suits shops, clinics, restaurants and service companies that want a steady presence without hiring a full-time person. It is usually agreed as a monthly package with a set number of posts and Reels.",
+      "includes": [
+        "Monthly content calendar",
+        "Post and story designs in your brand style",
+        "Captions in Arabic and/or English",
+        "Scheduling and publishing on the agreed platforms",
+        "Monthly report on reach, engagement and follower growth"
+      ],
+      "priceDrivers": "Price rises with the number of platforms and the number of posts and Reels per month, and with add-ons such as message handling or photo shoots. Paid ad management is usually quoted separately, and the ad budget itself goes to the platform, not the agency.",
+      "notFor": "It usually excludes ad spend and on-location shoots, so if you need quick sales from a paid campaign, start with a paid advertising service instead.",
+      "faq": [
+        {
+          "q": "Do I keep ownership of my accounts when I hire an agency?",
+          "a": "Your pages and accounts should stay registered to you or your company. Give the agency admin or editor access through Meta Business Suite rather than handing over passwords. That way you can remove their access when the contract ends and keep your followers, content and message history without needing anyone's permission."
+        },
+        {
+          "q": "How many posts a month is enough for a small business?",
+          "a": "It depends on the sector and platform, but many small businesses start with three or four feed posts a week plus some stories and Reels. Consistency matters more than volume: posting heavily and then going quiet for weeks hurts reach. Agree a three-month plan with the agency and review the numbers before increasing output."
+        }
+      ]
+    }
+  },
+  "smm_content": {
+    "onSite": false,
+    "ar": {
+      "search": "صناعة محتوى وتصاميم سوشيال ميديا",
+      "intro": "تنتج الوكالة هنا المادة نفسها دون أن تدير حساباتك: تصاميم منشورات وكاروسيل، وقوالب ستوري، ومونتاج ريلز قصيرة من المقاطع التي تصورها أنت أو فريقها، وكتابة أفكار ونصوص للفيديو. تناسب الأنشطة التي لديها شخص ينشر ويرد لكنه يحتاج مادة جاهزة بجودة ثابتة، وكذلك العلامات التي تحتاج دفعة محتوى لموسم محدد مثل رمضان أو العودة إلى المدارس أو إطلاق منتج جديد، وتُسعَّر بالقطعة أو كباقة شهرية.",
+      "includes": [
+        "تصاميم منشورات ثابتة وكاروسيل",
+        "قوالب ستوري قابلة لإعادة الاستخدام",
+        "مونتاج ريلز قصيرة من مواد العميل",
+        "أفكار ونصوص للفيديوهات القصيرة",
+        "ملفات مصدرية قابلة للتعديل عند الاتفاق"
+      ],
+      "priceDrivers": "يتحدد السعر بعدد القطع ونوعها، فالتصميم الثابت أقل كلفة من ريلز يحتاج مونتاجاً وموسيقى ونصوصاً على الشاشة. ويرتفع إذا احتاج العمل تصويراً جديداً أو جولات تعديل كثيرة أو نسختين بلغتين.",
+      "notFor": "لا تشمل النشر ولا الرد على الجمهور ولا متابعة الأداء، فإن أردت من يدير الحساب بالكامل فاختر خدمة إدارة حسابات التواصل الاجتماعي.",
+      "faq": [
+        {
+          "q": "هل أحصل على الملفات المصدرية للتصاميم والفيديوهات؟",
+          "a": "ليس تلقائياً. كثير من الوكالات تسلّم الملفات الجاهزة للنشر فقط، وتعتبر ملفات فوتوشوب أو فيغما أو مشاريع المونتاج جزءاً من أدواتها، وبعضها يسلّمها مقابل رسوم إضافية. إن كنت تنوي تعديل المحتوى داخلياً لاحقاً، فاكتب هذا الشرط في العرض قبل البدء، وحدد الصيغ التي تريد استلامها."
+        },
+        {
+          "q": "هل يمكن العمل بصور منتجاتي التي صورتها بالجوال؟",
+          "a": "يمكن ذلك إذا كانت الصور واضحة وملتقطة في إضاءة جيدة، وهي كافية غالباً للستوريز والمحتوى اليومي. لكن التصاميم الإعلانية والصفحة الرئيسية تحتاج صوراً متناسقة في الخلفية والإضاءة، لذلك تقترح بعض الوكالات جلسة تصوير واحدة في بداية التعاقد تنتج مكتبة صور تكفي لعدة أشهر."
+        }
+      ]
+    },
+    "en": {
+      "search": "social media content creation",
+      "intro": "Here the agency produces the material without running your accounts: static and carousel post designs, story templates, short Reels edited from footage you or their team shoot, and ideas and scripts for video. It suits businesses that already have someone posting and replying but need ready-made content at a consistent standard, and brands that need a batch of content for a specific season such as Ramadan, back to school or a product launch.",
+      "includes": [
+        "Static and carousel post designs",
+        "Reusable story templates",
+        "Short Reels edited from your footage",
+        "Ideas and scripts for short videos",
+        "Editable source files, if agreed"
+      ],
+      "priceDrivers": "Price depends on the number and type of pieces: a static design costs less than a Reel that needs editing, music and on-screen text. It rises when new footage has to be shot, when there are many revision rounds, or when every piece is needed in two languages.",
+      "notFor": "It does not cover publishing, replying to your audience or tracking results, so if you want the whole account handled, choose social media account management.",
+      "faq": [
+        {
+          "q": "Will I receive the source files for designs and videos?",
+          "a": "Not automatically. Many agencies deliver only the final, ready-to-post files and treat Photoshop, Figma or editing project files as their working tools; some hand them over for an extra fee. If you plan to edit content in-house later, write this into the quote before work starts and list the formats you expect."
+        },
+        {
+          "q": "Can the agency work with product photos I took on my phone?",
+          "a": "Yes, if they are sharp and shot in good light; that is often enough for stories and everyday posts. Ads and your main feed look better with photos that share the same background and lighting, which is why some agencies suggest one product shoot at the start of the contract to build a library that lasts several months."
+        }
+      ]
+    }
+  },
+  "smm_community": {
+    "onSite": false,
+    "ar": {
+      "search": "إدارة رسائل وتعليقات السوشيال ميديا",
+      "intro": "يتابع فريق الوكالة رسائل ماسنجر وإنستغرام وتعليقات المنشورات، وأحياناً واتساب، ويرد عليها وفق دليل ردود تعتمده أنت: أسئلة الأسعار والتوافر ومواعيد الدوام وطريقة الطلب. ويحوّل الطلبات والشكاوى إلى الشخص المسؤول لديك، ويخفي التعليقات المسيئة والرسائل المزعجة، ويرصد الأسئلة المتكررة لتحديث الدليل. تناسب الأنشطة التي تصلها رسائل كثيرة يومياً، كالمتاجر الإلكترونية والمطاعم التي توصل الطلبات والعيادات التي تستقبل الحجوزات، خاصة في فترات الحملات والمواسم.",
+      "includes": [
+        "الرد على الرسائل الخاصة ضمن ساعات متفق عليها",
+        "الرد على التعليقات وإخفاء المسيء والمزعج منها",
+        "دليل ردود جاهزة يُعتمد معك ويُحدَّث",
+        "تحويل الطلبات والشكاوى إلى الشخص المسؤول",
+        "تقرير بعدد المحادثات وأكثر الأسئلة تكراراً"
+      ],
+      "priceDrivers": "العامل الأكبر هو ساعات التغطية: الرد في ساعات الدوام أقل كلفة من تغطية المساء وأيام العطل. ويؤثر أيضاً حجم الرسائل اليومي وعدد المنصات، وما إذا كان المطلوب إدخال الطلبات في نظامك.",
+      "notFor": "ليست بديلاً عن خدمة العملاء أو فريق المبيعات، فالوكالة لا تستطيع حل مشاكل التوصيل أو الاسترجاع ولا متابعة العميل المهتم حتى الشراء ما لم تُمنح المعلومات والصلاحيات لذلك.",
+      "faq": [
+        {
+          "q": "كيف يعرف فريق الوكالة الإجابة عن أسئلة الأسعار والتوافر؟",
+          "a": "تزوّد الوكالة بقائمة أسعار محدثة وملف بالأسئلة المتكررة وإجاباتها، وتلتزم بتحديثهما عند تغيّر العروض أو نفاد منتج. واتفقا مسبقاً على قاعدة واضحة: أي سؤال خارج الدليل يُحوَّل إليك خلال مدة محددة بدل أن يجتهد الفريق في الإجابة، حتى لا يحصل العميل على معلومة خاطئة باسم نشاطك."
+        },
+        {
+          "q": "هل يمكن تغطية الرسائل في المساء وأيام الجمعة؟",
+          "a": "نعم، بتكلفة إضافية غالباً. كثير من العملاء في الأردن يراسلون بعد انتهاء دوامهم، وتزداد الرسائل في رمضان بعد الإفطار وفي أيام العطل. حدد مع الوكالة وقت الاستجابة المطلوب لكل فترة، مثلاً خلال ساعة في الدوام وخلال ثلاث ساعات مساءً، وما الذي يحدث في الأعياد."
+        }
+      ]
+    },
+    "en": {
+      "search": "community management",
+      "intro": "The agency's team monitors Messenger and Instagram DMs, post comments and sometimes WhatsApp, replying from a response guide you approve: prices, availability, opening hours and how to order. It forwards orders and complaints to the right person on your side and hides abusive comments and spam. It suits businesses that get many messages a day, such as online shops, restaurants that deliver and clinics taking bookings, especially during campaigns and busy seasons.",
+      "includes": [
+        "Replies to direct messages within agreed hours",
+        "Comment replies and hiding abusive or spam comments",
+        "An approved, regularly updated reply guide",
+        "Forwarding orders and complaints to your team",
+        "Report on conversation volume and top questions"
+      ],
+      "priceDrivers": "Coverage hours matter most: replying during office hours costs less than covering evenings and weekends. Daily message volume, the number of platforms and whether orders must be entered into your own system also move the price.",
+      "notFor": "It is not a replacement for customer service or a sales team: the agency cannot solve delivery or refund problems, or follow a lead through to purchase, unless you give it the information and access to do so.",
+      "faq": [
+        {
+          "q": "How does the agency's team know the answers about prices and stock?",
+          "a": "You give them an up-to-date price list and a file of frequent questions and answers, and you commit to updating both when offers change or items sell out. Agree a clear rule up front: anything outside the guide is passed to you within a set time instead of being guessed, so customers never get wrong information in your name."
+        },
+        {
+          "q": "Can messages be covered in the evening and on Fridays?",
+          "a": "Yes, usually at extra cost. Many customers in Jordan message after work, and volume jumps after iftar in Ramadan and on holidays. Agree a response time for each shift with the agency, for example within an hour during office hours and within three hours in the evening, and decide what happens over Eid."
+        }
+      ]
+    }
+  },
+  "smm_strategy": {
+    "onSite": false,
+    "ar": {
+      "search": "استراتيجية تسويق عبر السوشيال ميديا",
+      "intro": "استراتيجية السوشيال ميديا مشروع تخطيطي محدد المدة وليست إدارة يومية: تراجع الوكالة حساباتك الحالية وأداءها، وتدرس حسابات منافسيك المباشرين، ثم تحدد جمهورك والمنصات التي تستحق جهدك، ومحاور المحتوى ونبرة الخطاب، ووتيرة النشر ومؤشرات قياس النجاح. تُسلَّم عادةً في وثيقة وجلسة عرض مع فريقك. تناسب العلامات الجديدة قبل إطلاق حساباتها، والأنشطة التي تنشر باستمرار دون اتجاه واضح، والشركات التي لديها فريق داخلي يحتاج خطة يعمل عليها.",
+      "includes": [
+        "مراجعة الحسابات الحالية وأدائها",
+        "تحليل حسابات المنافسين المباشرين",
+        "تحديد الجمهور المستهدف والمنصات المناسبة",
+        "محاور المحتوى ونبرة الخطاب",
+        "مؤشرات أداء وخطة عمل ربع سنوية",
+        "جلسة عرض ومناقشة مع فريقك"
+      ],
+      "priceDrivers": "تزيد التكلفة مع عدد العلامات أو الفروع المشمولة، وعمق البحث كإجراء مقابلات أو استبيانات مع العملاء، وعدد الأسواق إذا كنت تستهدف الخليج إلى جانب الأردن، وإضافة خطة إعلانية مفصلة.",
+      "notFor": "الاستراتيجية وحدها لا تنتج منشورات ولا تنشر شيئاً، فإن لم يكن لديك من ينفذها فالأجدى التعاقد على إدارة الحسابات مع مرحلة تخطيط في بدايتها.",
+      "faq": [
+        {
+          "q": "ما الفرق بين الاستراتيجية وخطة المحتوى الشهرية؟",
+          "a": "الاستراتيجية تجيب عن أسئلة ثابتة لعام أو أكثر: لمن تتحدث، وعلى أي منصات، وبأي نبرة، وكيف تقيس النجاح. أما خطة المحتوى الشهرية فهي تطبيق عملي لها: منشورات بعينها في تواريخ بعينها. من دون استراتيجية تتحول الخطط الشهرية إلى أفكار متفرقة يصعب الحكم على جدواها."
+        },
+        {
+          "q": "ماذا أجهّز قبل أن تبدأ الوكالة العمل؟",
+          "a": "امنح الوكالة صلاحية الاطلاع على إحصاءات حساباتك ونتائج إعلاناتك السابقة، وجهّز ملخصاً لأرقام المبيعات ومصادر العملاء إن توفرت، وقائمة بالمنافسين الذين تقارن نفسك بهم، والأسئلة التي يكررها عملاؤك. والأهم أن تحدد هدفاً عملياً للسنة، كزيادة الحجوزات أو دخول مدينة جديدة، لا مجرد زيادة المتابعين."
+        }
+      ]
+    },
+    "en": {
+      "search": "social media strategy",
+      "intro": "This is a fixed-term planning project, not day-to-day management. The agency reviews your current accounts and their performance, studies your direct competitors, then defines your audience, the platforms worth your effort, content pillars, tone of voice, posting frequency and the measures of success. It is usually delivered as a document plus a presentation to your team. It suits new brands before launch, businesses that post constantly without a clear direction, and in-house teams that need a plan to work from.",
+      "includes": [
+        "Audit of your current accounts",
+        "Review of direct competitors' accounts",
+        "Target audience and platform choice",
+        "Content pillars and tone of voice",
+        "KPIs and a quarterly action plan",
+        "Presentation and discussion session with your team"
+      ],
+      "priceDrivers": "Cost grows with the number of brands or branches covered, the depth of research such as customer interviews or surveys, the number of markets if you target the Gulf as well as Jordan, and whether a detailed paid media plan is included.",
+      "notFor": "A strategy on its own produces no posts, so if nobody will carry it out, you are better served by account management that starts with a planning phase.",
+      "faq": [
+        {
+          "q": "How is a strategy different from a monthly content plan?",
+          "a": "A strategy answers questions that hold for a year or more: who you are talking to, on which platforms, in what tone, and how you measure success. A monthly content plan puts that into practice with specific posts on specific dates. Without the strategy, monthly plans become a string of unrelated ideas whose value is hard to judge."
+        },
+        {
+          "q": "What should I prepare before the agency starts?",
+          "a": "Give the agency access to your account insights and past ad results, and prepare a summary of sales figures and where customers come from if you have it, a list of competitors you compare yourself with, and the questions customers ask most. Above all, set a practical goal for the year, such as more bookings or entering a new city, not just more followers."
+        }
+      ]
+    }
+  },
+  "smm_influencer": {
+    "onSite": false,
+    "ar": {
+      "search": "التسويق عبر المؤثرين",
+      "intro": "ترشّح الوكالة صنّاع محتوى ومؤثرين في الأردن يتابعهم جمهورك فعلاً، وتتفاوض معهم على الأجر وعدد المنشورات ومواعيدها، وتكتب لهم موجز الحملة وتراجع المحتوى قبل نشره، ثم تجمع الإحصاءات من كل مؤثر في تقرير واحد. قد تعتمد الحملة على اسم واحد معروف أو على عدد من المؤثرين الأصغر في مدن مختلفة. تناسب افتتاح المطاعم والمحلات، والمنتجات الاستهلاكية، والتطبيقات، والفعاليات التي تحتاج انتشاراً سريعاً بين فئة محددة.",
+      "includes": [
+        "ترشيح مؤثرين حسب الجمهور والمدينة والمجال",
+        "التفاوض على الأجور وشروط النشر",
+        "كتابة موجز الحملة ومراجعة المحتوى قبل نشره",
+        "متابعة مواعيد النشر والتزام المؤثرين بها",
+        "تقرير يجمع الوصول والتفاعل من كل مؤثر"
+      ],
+      "priceDrivers": "أجور المؤثرين أنفسهم هي الجزء الأكبر من التكلفة، وتتحدد بعددهم وحجم جمهورهم ونوع المحتوى، ثم تأتي رسوم الوكالة على الإدارة. ويرتفع السعر إذا طلبت حقوق استخدام المحتوى في إعلاناتك أو شرط الحصرية.",
+      "notFor": "لا تناسب المنتجات التي تحتاج شرحاً تقنياً طويلاً أو الخدمات الموجهة للشركات، ولا يمكن لأي وكالة ضمان مبيعات محددة من منشور مؤثر.",
+      "faq": [
+        {
+          "q": "هل المؤثر الأكثر متابعين هو الخيار الأنسب؟",
+          "a": "ليس بالضرورة. انظر إلى نسبة التفاعل الحقيقي، وإلى مكان جمهوره، فبعض الحسابات الكبيرة معظم متابعيها خارج الأردن. اطلب من الوكالة لقطات من إحصاءات الحساب نفسه، وراجع إعلاناته السابقة وتعليقاتها. كثيراً ما تحقق مجموعة من المؤثرين الأصغر في مجالك أثراً أوضح من اسم واحد كبير بالميزانية نفسها."
+        },
+        {
+          "q": "هل يحق لي استخدام فيديو المؤثر في إعلاناتي الممولة؟",
+          "a": "فقط إذا نص الاتفاق على ذلك. الأجر المعتاد يغطي النشر على حساب المؤثر، أما استخدام المقطع في إعلانات ممولة أو على موقعك فيحتاج إذناً مكتوباً يحدد المدة والمنصات، وغالباً مقابل أجر إضافي. ويشترط تشغيل المنشور كإعلان من حسابه موافقة المؤثر عبر أدوات الشراكة في المنصة."
+        }
+      ]
+    },
+    "en": {
+      "search": "influencer marketing",
+      "intro": "The agency shortlists Jordanian creators and influencers whose followers match your customers, negotiates fees, number of posts and timing, writes the campaign brief and reviews content before it goes live, then gathers each influencer's statistics into one report. A campaign may rely on one well-known name or on several smaller creators across different cities. It suits restaurant and shop openings, consumer products, apps and events that need to reach a specific group quickly.",
+      "includes": [
+        "Influencer shortlist by audience, city and niche",
+        "Fee and posting-terms negotiation",
+        "Campaign brief and content review before posting",
+        "Tracking that posts go out on schedule",
+        "Report combining reach and engagement per influencer"
+      ],
+      "priceDrivers": "Influencer fees are the biggest part of the cost and depend on how many you book, their audience size and the content type; the agency's management fee comes on top. Price rises if you want rights to reuse the content in your ads or an exclusivity clause.",
+      "notFor": "It does not suit products that need lengthy technical explanation or services sold to businesses, and no agency can guarantee a set level of sales from an influencer post.",
+      "faq": [
+        {
+          "q": "Is the influencer with the most followers the best choice?",
+          "a": "Not necessarily. Look at genuine engagement and where the audience lives; some large accounts have most of their followers outside Jordan. Ask the agency for screenshots of the account's own insights and check its past sponsored posts and their comments. A group of smaller creators in your niche often has a clearer effect than one big name for the same budget."
+        },
+        {
+          "q": "Can I use the influencer's video in my paid ads?",
+          "a": "Only if the agreement says so. The usual fee covers posting on the influencer's account; using the clip in paid ads or on your website needs written permission stating the period and platforms, often for an extra fee. Running the post as an ad from their account also requires the creator's approval through the platform's partnership tools."
+        }
+      ]
+    }
+  },
+  "ads_meta": {
+    "onSite": false,
+    "ar": {
+      "search": "إعلانات فيسبوك وإنستغرام الممولة",
+      "intro": "تدير الوكالة حملاتك على فيسبوك وإنستغرام من مدير الإعلانات لا من زر الترويج: تجهّز حساب الأعمال والبكسل، وتبني الحملة حسب الهدف سواء كان رسائل واتساب أو نماذج تسجيل أو مبيعات من المتجر، وتستهدف المدن والفئات المناسبة داخل الأردن، وتكتب النصوص وتختبر أكثر من تصميم، ثم تراقب النتائج وتعدّل الميزانيات. تناسب معظم الأنشطة التي تبيع للأفراد، خاصة من يستقبل طلباته عبر الرسائل.",
+      "includes": [
+        "إعداد حساب الأعمال والبكسل وربط الموقع أو واتساب",
+        "بناء الحملات حسب الهدف (رسائل، عملاء محتملون، مبيعات)",
+        "جماهير مخصصة ومشابهة وإعادة استهداف الزوار",
+        "نصوص إعلانية واختبار أكثر من تصميم",
+        "مراقبة مستمرة وتعديل توزيع الميزانية",
+        "تقرير بتكلفة النتيجة لا بعدد الإعجابات فقط"
+      ],
+      "priceDrivers": "ترتبط رسوم الإدارة غالباً بحجم الميزانية الإعلانية الشهرية أو بعدد الحملات، وتزيد إذا كانت الوكالة مسؤولة عن تصميم الإعلانات وإنتاج الفيديو. أما ميزانية الإعلان فتُدفع لشركة Meta مباشرة ولا تدخل في رسوم الوكالة.",
+      "notFor": "الإعلانات لا تعوّض عن سعر غير منافس أو بطء في الرد على الرسائل، وإذا كانت ميزانيتك الإعلانية صغيرة جداً فقد تتجاوز رسوم الإدارة قيمة الإنفاق نفسه.",
+      "faq": [
+        {
+          "q": "هل أدفع ميزانية الإعلان للوكالة أم لفيسبوك مباشرة؟",
+          "a": "الأفضل أن يكون الحساب الإعلاني باسمك وأن تضيف إليه بطاقتك، فتدفع لـMeta مباشرة وتبقى بيانات الحملات لك، وتدفع للوكالة رسوم الإدارة وحدها. إن فضّلت أن تدفع الوكالة من حسابها، فاطلب فواتير المنصة أو لقطات الإنفاق شهرياً. وانتبه إلى أن بعض البنوك تضيف رسوماً على الدفع بالعملة الأجنبية."
+        },
+        {
+          "q": "ما الفرق بين زر «ترويج المنشور» والحملة التي تديرها الوكالة؟",
+          "a": "زر الترويج يعرض منشوراً قائماً لجمهور عام بخيارات محدودة، وغالباً يجلب تفاعلاً أكثر مما يجلب طلبات. الحملة في مدير الإعلانات تتيح اختيار هدف محدد، وتقسيم الميزانية، واختبار عدة نسخ، وإعادة استهداف من زار موقعك أو راسلك، واستبعاد عملائك الحاليين، وهذه أدوات تحتاج متابعة يومية."
+        }
+      ]
+    },
+    "en": {
+      "search": "Facebook and Instagram ads",
+      "intro": "The agency runs your Facebook and Instagram campaigns from Ads Manager rather than the boost button. It sets up your business account and pixel, builds each campaign around an objective such as WhatsApp messages, lead forms or store sales, targets the right cities and groups within Jordan, writes copy and tests several creatives, then monitors results and moves budget. It suits most businesses selling to consumers, especially those that take orders through messages.",
+      "includes": [
+        "Business account and pixel setup, linked to your site or WhatsApp",
+        "Campaigns built by objective (messages, leads, sales)",
+        "Custom and lookalike audiences, visitor retargeting",
+        "Ad copy and testing of several creatives",
+        "Ongoing monitoring and budget reallocation",
+        "Reporting on cost per result, not just likes"
+      ],
+      "priceDrivers": "The management fee is usually tied to your monthly ad budget or the number of campaigns, and it rises if the agency also designs the ads or produces video. The ad budget itself is paid to Meta directly and is separate from the agency's fee.",
+      "notFor": "Ads cannot make up for an uncompetitive price or slow replies to messages, and with a very small ad budget the management fee may exceed what you actually spend on ads.",
+      "faq": [
+        {
+          "q": "Do I pay the ad budget to the agency or to Facebook?",
+          "a": "Ideally the ad account is in your name with your own card attached, so you pay Meta directly, keep the campaign data and pay the agency only its fee. If you prefer the agency to pay from its own account, ask for platform invoices or spend screenshots each month. Note that some banks add fees on foreign-currency card payments."
+        },
+        {
+          "q": "How is the Boost button different from an agency-run campaign?",
+          "a": "Boosting shows an existing post to a broad audience with few options and tends to bring engagement rather than orders. An Ads Manager campaign lets you choose a specific objective, split budget, test several versions, retarget people who visited your site or messaged you, and exclude existing customers. Those tools need daily attention to pay off."
+        }
+      ]
+    }
+  },
+  "ads_tiktok": {
+    "onSite": false,
+    "ar": {
+      "search": "إعلانات تيك توك",
+      "intro": "تجهّز الوكالة حساب الإعلانات على تيك توك وتطلق حملاتك وتتابعها، لكن الجزء الأهم من العمل هنا هو الفيديو نفسه: مقاطع عمودية قصيرة تبدو كمحتوى المنصة العادي، بافتتاحية تشد المشاهد في الثواني الأولى، وغالباً باللهجة الأردنية. وقد تشمل الحملة تمويل منشوراتك أو منشورات صناع محتوى عبر إعلانات «سبارك». تناسب العلامات التي يقل عمر جمهورها عن خمسة وثلاثين عاماً، كالمطاعم والأزياء ومستحضرات التجميل والتطبيقات.",
+      "includes": [
+        "إعداد حساب إعلانات تيك توك وبكسل الموقع",
+        "أفكار وسكربتات فيديو بأسلوب المنصة",
+        "حملات داخل الصفحة الرئيسية وإعلانات سبارك",
+        "اختبار عدة افتتاحيات للمقطع نفسه",
+        "تقرير بنسب المشاهدة الكاملة وتكلفة النتيجة"
+      ],
+      "priceDrivers": "العامل الأكبر هو عدد المقاطع الإعلانية المطلوب إنتاجها شهرياً، لأن الجمهور يمل من المقطع الواحد بسرعة ويحتاج تجديداً مستمراً. ثم يأتي حجم الميزانية الإعلانية ومدة الحملة ومشاركة صناع محتوى فيها.",
+      "notFor": "لا تناسبك إذا لم تستطع توفير فيديوهات جديدة باستمرار، أو كان جمهورك صناع قرار في الشركات، فالإعلان المصمم كصورة ثابتة نادراً ما ينجح على هذه المنصة.",
+      "faq": [
+        {
+          "q": "هل أستطيع استخدام إعلانات إنستغرام نفسها على تيك توك؟",
+          "a": "ممكن تقنياً، لكن الإعلانات المصقولة بأسلوب تلفزيوني تُتجاوز بسرعة على تيك توك. الأفضل إعادة مونتاج المادة نفسها: افتتاحية أقوى، ونصوص على الشاشة بأسلوب المنصة، وصوت من مكتبة الموسيقى التجارية المسموح بها للحسابات التجارية، لأن كثيراً من الأغاني الرائجة غير مرخصة للإعلانات."
+        },
+        {
+          "q": "متى يمكنني الحكم على نجاح حملة تيك توك؟",
+          "a": "تحتاج الحملة إلى فترة تعلّم قبل أن يستقر أداؤها، لذلك لا تحكم عليها من يومين أو ثلاثة. امنحها أسبوعاً إلى أسبوعين مع عدة مقاطع مختلفة، وراقب نسبة من شاهدوا المقطع كاملاً وتكلفة النتيجة. وعندما ترتفع التكلفة ويتكرر ظهور المقطع للأشخاص أنفسهم، فهذه إشارة إلى الحاجة لمقاطع جديدة."
+        }
+      ]
+    },
+    "en": {
+      "search": "TikTok ads",
+      "intro": "The agency sets up your TikTok ad account and launches and manages campaigns, but the most important part of the work is the video itself: short vertical clips that look like normal TikTok content, open with a hook in the first seconds and often speak in Jordanian dialect. Campaigns may also promote your own posts or creators' posts as Spark Ads. It suits brands whose audience is under 35, such as restaurants, fashion, beauty and apps.",
+      "includes": [
+        "TikTok ad account and website pixel setup",
+        "Video ideas and scripts in the platform's style",
+        "In-feed campaigns and Spark Ads",
+        "Testing several hooks for the same clip",
+        "Report on completion rate and cost per result"
+      ],
+      "priceDrivers": "The biggest factor is how many ad videos must be produced each month, because viewers tire of a single clip quickly and it needs constant refreshing. Ad budget, campaign length and whether creators are involved come next.",
+      "notFor": "It does not suit you if you cannot supply new videos regularly or if your buyers are business decision-makers; an ad designed as a static image rarely works on this platform.",
+      "faq": [
+        {
+          "q": "Can I reuse my Instagram ads on TikTok?",
+          "a": "Technically yes, but polished, TV-style ads get skipped quickly on TikTok. It is better to re-edit the same material with a stronger opening, on-screen text in the platform's style, and audio from the commercial music library cleared for business accounts, because many trending songs are not licensed for advertising."
+        },
+        {
+          "q": "When can I judge whether a TikTok campaign is working?",
+          "a": "A campaign needs a learning period before performance settles, so do not judge it after two or three days. Give it one to two weeks with several different clips, and watch completion rate and cost per result. When cost climbs and the same people keep seeing the clip, that is the signal to bring in fresh videos."
+        }
+      ]
+    }
+  },
+  "ads_snapchat": {
+    "onSite": false,
+    "ar": {
+      "search": "إعلانات سناب شات",
+      "intro": "تطلق الوكالة حملاتك من مدير إعلانات سناب شات: إعلانات فيديو عمودية بملء الشاشة بين القصص، وإعلانات مجموعات تعرض عدة منتجات، وفلاتر جغرافية لحدث أو افتتاح. يستخدم المنصة في الأردن جمهور أصغر سناً، وهي من أقوى القنوات إذا كنت تستهدف السعودية ودول الخليج، ولذلك تناسب منتجات الشباب والمطاعم والمتاجر الإلكترونية التي تشحن إلى الخليج، والفنادق والمنشآت السياحية التي تستقطب زواراً خليجيين إلى العقبة والبحر الميت.",
+      "includes": [
+        "إعداد حساب إعلانات سناب وبكسل سناب للموقع",
+        "إعلانات فيديو عمودية بملء الشاشة",
+        "إعلانات القصص ومجموعات المنتجات",
+        "فلاتر جغرافية لفعالية أو افتتاح",
+        "استهداف حسب الدولة والمدينة والعمر",
+        "تقرير بتكلفة المشاهدة والنقرة والتحويل"
+      ],
+      "priceDrivers": "السوق المستهدف يغيّر الكلفة كثيراً، فالاستهداف في السعودية ودول الخليج أعلى تكلفة عادةً من الأردن. ويؤثر أيضاً عدد الإعلانات المنتجة، وتصميم عدسات الواقع المعزز إن طُلبت، ومدة الحملة.",
+      "notFor": "إذا كان جمهورك فوق الأربعين أو من المهنيين داخل الأردن، فستصل إليه غالباً عبر فيسبوك أو لينكد إن بكلفة أقل.",
+      "faq": [
+        {
+          "q": "هل سناب شات مناسب لاستهداف الأردن أم للخليج فقط؟",
+          "a": "يمكن استهداف الأردن، والمنصة منتشرة بين الشباب والطلاب، لكن حجم الجمهور فيه أصغر من جمهور فيسبوك وإنستغرام. أما في السعودية والخليج فهو من المنصات الأساسية. اطلب من الوكالة أن تعرض لك تقدير حجم الجمهور من مدير الإعلانات قبل الإطلاق، لتعرف إن كانت الفئة التي تريدها كافية."
+        },
+        {
+          "q": "ما الفلتر الجغرافي ومتى أحتاج إليه؟",
+          "a": "هو إطار تصميمي يظهر لمستخدمي سناب داخل موقع محدد وفي وقت محدد، كقاعة معرض أو مطعم في يوم افتتاحه، فيضيفونه إلى صورهم ويرسلونها لأصدقائهم. يفيد في الفعاليات والافتتاحات لنشر اسمك بين أصدقاء الحضور. يجب تصميمه وفق إرشادات المنصة وتقديمه للمراجعة قبل الموعد بأيام."
+        }
+      ]
+    },
+    "en": {
+      "search": "Snapchat ads",
+      "intro": "The agency runs your campaigns from Snapchat Ads Manager: full-screen vertical video ads between stories, collection ads that show several products, and geofilters for an event or opening. In Jordan the platform skews younger, and it is one of the strongest channels if you are targeting Saudi Arabia and the Gulf. It suits youth-oriented products, restaurants, online stores that ship to the Gulf, and hotels and tourism businesses that attract Gulf visitors to Aqaba and the Dead Sea.",
+      "includes": [
+        "Snapchat ad account and Snap Pixel setup",
+        "Full-screen vertical video ads",
+        "Story ads and product collection ads",
+        "Geofilters for events or openings",
+        "Targeting by country, city and age",
+        "Report on cost per view, click and conversion"
+      ],
+      "priceDrivers": "The target market changes the cost a lot: reaching Saudi Arabia and the Gulf usually costs more than reaching Jordan. The number of ads produced, any custom AR lenses and the campaign length also affect the price.",
+      "notFor": "If your audience is over 40 or professionals inside Jordan, you will usually reach them more cheaply on Facebook or LinkedIn.",
+      "faq": [
+        {
+          "q": "Is Snapchat useful for targeting Jordan, or only the Gulf?",
+          "a": "You can target Jordan, where the app is popular with young people and students, but the audience is smaller than on Facebook and Instagram. In Saudi Arabia and the Gulf it is a core platform. Ask the agency to show you the audience size estimate from Ads Manager before launch so you know the group you want is large enough."
+        },
+        {
+          "q": "What is a geofilter and when do I need one?",
+          "a": "It is a designed overlay that Snapchat users can add to their snaps only within a set location and time window, such as an exhibition hall or a restaurant on opening day; they then send those snaps to friends. It works for events and openings to spread your name among attendees' friends. It must follow Snapchat's design guidelines and be submitted for review days in advance."
+        }
+      ]
+    }
+  },
+  "ads_google": {
+    "onSite": false,
+    "ar": {
+      "search": "إعلانات جوجل المدفوعة",
+      "intro": "تظهر إعلانات جوجل لمن يبحث عن خدمتك في اللحظة التي يحتاجها. تبحث الوكالة عن الكلمات التي يكتبها عملاؤك بالعربية والإنجليزية، وأحياناً بالأحرف اللاتينية، وتبني حملات البحث ويوتيوب أو حملات الأداء الأقصى، وتضيف الكلمات السلبية لتجنب النقرات غير المفيدة، وتربط تتبع التحويلات بموقعك أو باتصالات الهاتف، حتى تعرف أي كلمة جلبت طلباً فعلياً. تناسب العيادات وشركات الصيانة والمدارس ومكاتب المحاماة وتأجير السيارات والخدمات بين الشركات.",
+      "includes": [
+        "بحث الكلمات المفتاحية وتقدير تكلفة النقرة لكل منها",
+        "حملات البحث ويوتيوب والأداء الأقصى",
+        "إعداد تتبع التحويلات عبر GA4 أو Tag Manager",
+        "قائمة كلمات سلبية تُحدَّث باستمرار",
+        "نصوص الإعلانات والإضافات كرقم الهاتف والموقع",
+        "تقرير بتكلفة النقرة وتكلفة التحويل"
+      ],
+      "priceDrivers": "تتأثر الرسوم بعدد الحملات والكلمات المستهدفة، وتعدد اللغات أو الدول، وحجم الإنفاق، والحاجة إلى تصميم صفحات هبوط. وتختلف تكلفة النقرة نفسها كثيراً بين قطاع وآخر بحسب المنافسة.",
+      "notFor": "لا تفيد كثيراً إذا كان منتجك جديداً ولا أحد يبحث عنه بعد، فهنا تبدأ من صناعة الطلب على السوشيال ميديا، ولا تغني عن موقع أو صفحة هبوط سريعة وواضحة.",
+      "faq": [
+        {
+          "q": "ما الفرق بين إعلانات جوجل وتحسين محركات البحث؟",
+          "a": "في الإعلانات تدفع مقابل كل نقرة، وتظهر خلال أيام، وتتوقف الزيارات بمجرد توقف الميزانية. أما السيو فيحتاج شهوراً حتى يظهر أثره، لكنه لا يُحتسب بالنقرة ويستمر أثره بعد انتهاء العمل عليه. كثير من الأنشطة تعتمد على الإعلانات في البداية بينما يُبنى السيو تدريجياً، ثم تخفف الإنفاق على الكلمات التي صارت تظهر فيها مجاناً."
+        },
+        {
+          "q": "هل أحتاج موقعاً إلكترونياً لأعلن على جوجل؟",
+          "a": "إعلانات البحث تحتاج صفحة هبوط، ويكفي أحياناً أن تكون صفحة واحدة واضحة وسريعة على الجوال. ويمكن تشغيل إعلانات تهدف إلى الاتصال مباشرة، أو الاعتماد على ملف نشاطك في خرائط جوجل للبحث المحلي. لكن الصفحة البطيئة أو غير الواضحة ترفع تكلفة النقرة، لأن جوجل يقيّم جودة الصفحة عند تسعير الإعلان."
+        }
+      ]
+    },
+    "en": {
+      "search": "Google Ads",
+      "intro": "Google Ads show up for people searching for your service at the moment they need it. The agency researches the terms your customers type in Arabic and English, and sometimes in Latin-script Arabic, builds Search, YouTube or Performance Max campaigns, adds negative keywords to avoid useless clicks, and connects conversion tracking to your website or phone calls. It suits clinics, maintenance companies, schools, law firms, car rentals and business-to-business services.",
+      "includes": [
+        "Keyword research with cost-per-click estimates",
+        "Search, YouTube and Performance Max campaigns",
+        "Conversion tracking through GA4 or Tag Manager",
+        "A negative keyword list kept up to date",
+        "Ad copy and assets such as call and location extensions",
+        "Report on cost per click and cost per conversion"
+      ],
+      "priceDrivers": "Fees depend on the number of campaigns and keywords, multiple languages or countries, spend level and whether landing pages must be built. The cost per click itself varies widely between sectors depending on competition.",
+      "notFor": "It does little for a new product nobody searches for yet, where demand has to be created on social media first, and it cannot replace a fast, clear website or landing page.",
+      "faq": [
+        {
+          "q": "What is the difference between Google Ads and SEO?",
+          "a": "With ads you pay for every click, you appear within days, and traffic stops as soon as the budget does. SEO takes months to show an effect but is not charged per click and keeps working after the effort ends. Many businesses rely on ads at first while SEO builds, then cut spend on terms where they now rank for free."
+        },
+        {
+          "q": "Do I need a website to advertise on Google?",
+          "a": "Search ads need a landing page, and one clear, mobile-friendly page is sometimes enough. You can also run call-focused ads or rely on your Google Business Profile for local searches. A slow or confusing page, however, raises your cost per click, because Google weighs landing page quality when pricing the ad."
+        }
+      ]
+    }
+  },
+  "ads_linkedin": {
+    "onSite": false,
+    "ar": {
+      "search": "إعلانات لينكد إن",
+      "intro": "تتيح إعلانات لينكد إن الوصول إلى الأشخاص بحسب مسماهم الوظيفي وقطاعهم وحجم شركاتهم ومستواهم الإداري. تبني الوكالة الحملة في مدير الحملات، وتكتب محتوى مهنياً بالعربية أو الإنجليزية، وتجهّز نماذج تسجيل داخل المنصة يُملأ معظمها تلقائياً من ملف المستخدم، وتقيس تكلفة كل عميل محتمل وجودة البيانات التي تصل منه. تناسب الشركات التي تبيع لشركات أخرى، والتوظيف، ومراكز التدريب، وبرامج الدراسات العليا، وشركات البرمجيات والخدمات المالية.",
+      "includes": [
+        "استهداف بالمسمى الوظيفي والقطاع وحجم الشركة",
+        "نماذج تسجيل العملاء المحتملين داخل لينكد إن",
+        "محتوى إعلاني مهني بالعربية أو الإنجليزية",
+        "إعداد وسم لينكد إن على الموقع لتتبع التحويلات",
+        "استهداف قائمة شركات محددة بالاسم",
+        "تقرير بتكلفة العميل المحتمل"
+      ],
+      "priceDrivers": "تكلفة النقرة على لينكد إن أعلى بوضوح من المنصات الأخرى، فتكون الميزانية الإعلانية هي البند الأكبر. وتزيد رسوم الوكالة مع عدد الجماهير والعروض المختلفة، ومع ربط النماذج بنظام المبيعات لديك.",
+      "notFor": "لا تناسب المنتجات الاستهلاكية منخفضة السعر ولا المطاعم والمحلات، فتكلفة الوصول إلى الشخص الواحد فيها مرتفعة مقارنة بما يعود من كل عملية شراء.",
+      "faq": [
+        {
+          "q": "هل جمهور لينكد إن في الأردن كافٍ للإعلان؟",
+          "a": "يكفي للاستهداف المهني العام، كالعاملين في قطاع البنوك أو تقنية المعلومات. أما الاستهداف الضيق جداً، كالمديرين الماليين في عمّان فقط، فقد ينتج جمهوراً صغيراً، والمنصة تشترط حداً أدنى لحجم الجمهور لتشغيل الإعلان. الحل عادةً توسيع المسميات الوظيفية أو إضافة دول الخليج إلى الاستهداف."
+        },
+        {
+          "q": "ما نوع العرض الذي ينجح في إعلانات لينكد إن؟",
+          "a": "نادراً ما يستجيب المستخدم هناك لطلب «اشترِ الآن». ما ينجح غالباً هو عرض ذو قيمة مهنية: دليل أو دراسة قابلة للتحميل، أو ندوة إلكترونية، أو تقييم أو استشارة مجانية، أو إعلان عن وظائف. بعدها يتابع فريق مبيعاتك من سجّلوا، فالإعلان هنا بداية علاقة وليس عملية بيع مكتملة."
+        }
+      ]
+    },
+    "en": {
+      "search": "LinkedIn ads",
+      "intro": "LinkedIn Ads let you reach people by job title, industry, company size and seniority. The agency builds campaigns in Campaign Manager, writes professional copy in Arabic or English, sets up in-platform lead forms that are mostly pre-filled from the user's profile, and measures the cost of each lead. It suits companies selling to other businesses, recruitment, training centres, postgraduate programmes, and software and financial services firms.",
+      "includes": [
+        "Targeting by job title, industry and company size",
+        "In-platform lead generation forms",
+        "Professional ad copy in Arabic or English",
+        "LinkedIn Insight Tag setup for conversion tracking",
+        "Targeting a named list of companies",
+        "Report on cost per lead"
+      ],
+      "priceDrivers": "Cost per click on LinkedIn is clearly higher than on other platforms, so ad spend is the largest line. The agency's fee rises with the number of audiences and offers, and with connecting lead forms to your CRM.",
+      "notFor": "It does not suit low-priced consumer products, restaurants or shops, where the cost of reaching each person is high compared with what each purchase brings back.",
+      "faq": [
+        {
+          "q": "Is LinkedIn's audience in Jordan large enough to advertise to?",
+          "a": "It is enough for broad professional targeting, such as people working in banking or IT. Very narrow targeting, like finance directors in Amman only, can produce a small audience, and LinkedIn requires a minimum audience size before an ad can run. The usual fix is to widen job titles or add Gulf countries to the targeting."
+        },
+        {
+          "q": "What kind of offer works in LinkedIn ads?",
+          "a": "Users there rarely respond to \"buy now\". What usually works is something of professional value: a downloadable guide or report, a webinar, a free assessment or consultation, or job openings. Your sales team then follows up with those who signed up; the ad starts a relationship rather than closing a sale."
+        }
+      ]
+    }
+  },
+  "video_production": {
+    "onSite": true,
+    "ar": {
+      "search": "تصوير فيديو إعلاني وريلز",
+      "intro": "يمر إنتاج الفيديو بثلاث مراحل: التحضير، وفيه الفكرة والسيناريو وتقسيم اللقطات واختيار الموقع والممثلين؛ ثم يوم التصوير في مقر نشاطك أو في استوديو أو موقع خارجي بطاقم وإضاءة وصوت؛ ثم المونتاج وتصحيح الألوان والموسيقى والنصوص على الشاشة، مع نسخ بمقاسات ريلز وتيك توك ويوتيوب. ولأن الطاقم ينتقل إليك، فالقرب الجغرافي يهم. تناسب المطاعم والعقارات والعيادات وإطلاق المنتجات والفيديوهات التعريفية للشركات.",
+      "includes": [
+        "فكرة وسيناريو وتقسيم للقطات",
+        "يوم تصوير بطاقم وإضاءة وتسجيل صوت",
+        "مونتاج وتصحيح ألوان وموسيقى مرخصة",
+        "نصوص مكتوبة على الفيديو بالعربية أو الإنجليزية",
+        "نسخ بمقاسات ريلز وتيك توك ويوتيوب"
+      ],
+      "priceDrivers": "يرتفع السعر مع عدد أيام التصوير وحجم الطاقم والمعدات، والاستعانة بممثلين أو معلق صوتي، والتصوير الجوي بالدرون، والتنقل خارج المدينة. وعدد النسخ النهائية المطلوبة يضيف وقتاً في المونتاج.",
+      "notFor": "إذا كنت تحتاج عشرات المقاطع العفوية شهرياً بأسلوب يومي، فقد يكون مونتاج ريلز من مقاطع تصورها بنفسك أنسب وأقل كلفة من إنتاج احترافي كامل.",
+      "faq": [
+        {
+          "q": "كم يستغرق إنتاج فيديو إعلاني قصير؟",
+          "a": "في مشروع معتاد تحتاج مرحلة التحضير نحو أسبوع، ثم يوم تصوير واحد أو أكثر، ثم أسبوعاً إلى أسبوعين للمونتاج وجولات التعديل. الريلز البسيطة قد تُنجز خلال أيام. أكثر ما يؤخر التسليم عادةً هو تأخر موافقتك على السيناريو أو النسخة الأولى، لذلك حدد شخصاً واحداً لديك يملك قرار الاعتماد."
+        },
+        {
+          "q": "هل يحتاج التصوير بالدرون أو في الأماكن العامة إلى تصاريح؟",
+          "a": "نعم في حالات كثيرة. تشغيل الطائرات المسيّرة في الأردن يحتاج موافقات مسبقة من الجهات المختصة، والتصوير في المواقع الأثرية والسياحية ومراكز التسوق يحتاج إذناً من إدارتها. اسأل الوكالة من سيستخرج هذه التصاريح، وكم تستغرق، وهل هي داخلة في السعر، واحسب مدتها ضمن الجدول الزمني."
+        }
+      ]
+    },
+    "en": {
+      "search": "video production",
+      "intro": "Video production runs in three stages: pre-production, covering the idea, script, shot list, location and cast; the shoot day at your premises, a studio or an outdoor location with crew, lighting and sound; and post-production, covering editing, colour, music and on-screen text, with versions sized for Reels, TikTok and YouTube. Because the crew comes to you, location matters. It suits restaurants, real estate, clinics, product launches and company profile videos.",
+      "includes": [
+        "Concept, script and shot list",
+        "Shoot day with crew, lighting and sound",
+        "Editing, colour grading and licensed music",
+        "On-screen text in Arabic or English",
+        "Versions sized for Reels, TikTok and YouTube"
+      ],
+      "priceDrivers": "Price rises with the number of shoot days, crew size and equipment, actors or a voice-over artist, drone footage and travel outside the city. The number of final versions also adds editing time.",
+      "notFor": "If you need dozens of casual, everyday clips each month, editing Reels from footage you shoot yourself may suit you better and cost less than full professional production.",
+      "faq": [
+        {
+          "q": "How long does a short promotional video take to make?",
+          "a": "A typical project needs about a week of pre-production, one or more shoot days, then one to two weeks for editing and revisions. Simple Reels can be done within days. What most often delays delivery is slow approval of the script or first cut on the client's side, so name one person on your team who has the final say."
+        },
+        {
+          "q": "Do drone shots or filming in public places need permits?",
+          "a": "Often, yes. Flying drones in Jordan requires prior approval from the relevant authorities, and filming at archaeological and tourist sites or inside malls needs permission from their management. Ask the agency who will obtain these permits, how long they take and whether they are included in the price, and build that time into the schedule."
+        }
+      ]
+    }
+  },
+  "photography": {
+    "onSite": true,
+    "ar": {
+      "search": "تصوير منتجات وإعلانات",
+      "intro": "تشمل الخدمة جلسات تصوير في استوديو الوكالة أو في موقعك: صور منتجات على خلفية بيضاء للمتجر الإلكتروني، وصور منتجات في سياق استخدامها للسوشيال ميديا والإعلانات، وتصوير الأطباق للمنيو وتطبيقات التوصيل، وتصوير المكان والفريق للموقع والملفات التعريفية. وبعد الجلسة تُعدَّل الصور وتُسلَّم بالمقاسات التي يحتاجها الموقع والمنصات. تناسب المتاجر الإلكترونية والمطاعم والفنادق والعيادات ومكاتب العقارات، وكل نشاط تعتمد صوره الحالية على كاميرا الجوال.",
+      "includes": [
+        "جلسة تصوير في الاستوديو أو في موقعك",
+        "صور منتجات على خلفية بيضاء للمتجر",
+        "صور منتجات في سياق الاستخدام للإعلانات",
+        "تصوير أطباق ومنيو وتصوير المكان والفريق",
+        "تعديل وتنقيح الصور وتسليمها بالمقاسات المطلوبة"
+      ],
+      "priceDrivers": "يُحسب السعر غالباً بعدد الصور المعدّلة المسلَّمة لا بعدد اللقطات، ويرتفع مع التصوير خارج الاستوديو، والحاجة إلى منسق طعام أو عارضين، ومستوى التعديل المطلوب على كل صورة.",
+      "notFor": "لا تشمل الفيديو عادةً، وإذا كانت منتجاتك تتغير يومياً وبأعداد كبيرة فقد يكون تجهيز ركن تصوير بسيط داخل محلك أوفر من حجز جلسات متكررة.",
+      "faq": [
+        {
+          "q": "كم صورة أحصل عليها من جلسة تصوير واحدة؟",
+          "a": "يعتمد ذلك على الاتفاق، لذلك حدده بالأرقام: عدد المنتجات، وعدد الزوايا لكل منتج، وعدد الصور النهائية المعدّلة. المصور يلتقط مئات اللقطات، لكنه يسلّم المختار والمعدّل منها فقط، ولا يسلّم الملفات الخام عادةً إلا إذا اتُّفق على ذلك مسبقاً. واسأل أيضاً عن مدة التسليم بعد الجلسة."
+        },
+        {
+          "q": "من يملك حقوق الصور بعد التصوير؟",
+          "a": "كثير من المصورين يمنحون العميل حق استخدام الصور لأغراضه التسويقية، ويحتفظون بحق عرضها في أعمالهم. إن احتجت الصور لإعلانات طرق أو تغليف أو أردت منع استخدامها في أعمال المصور، فاكتب ذلك في العقد. وإن ظهر في الصور أشخاص، فتأكد من وجود موافقة مكتوبة منهم على استخدامها في الإعلانات."
+        }
+      ]
+    },
+    "en": {
+      "search": "product photography",
+      "intro": "The service covers shoots in the agency's studio or at your premises: white-background product photos for an online store, lifestyle product shots for social media and ads, food photography for menus and delivery apps, and photos of your space and team for your website and company profile. After the shoot, images are retouched and delivered in the sizes you need. It suits online stores, restaurants, hotels, clinics, real estate offices and any business still relying on phone photos.",
+      "includes": [
+        "Shoot in a studio or at your premises",
+        "White-background product photos for your store",
+        "Lifestyle product photos for ads",
+        "Food, menu, venue and team photography",
+        "Retouching and delivery in the required sizes"
+      ],
+      "priceDrivers": "Price is usually based on the number of edited images delivered rather than frames shot, and it rises for on-location shoots, a food stylist or models, and the level of retouching each image needs.",
+      "notFor": "It usually excludes video, and if your products change daily and in large numbers, a simple photo corner in your shop may be cheaper than booking repeated shoots.",
+      "faq": [
+        {
+          "q": "How many photos do I get from one shoot?",
+          "a": "It depends on the agreement, so put numbers on it: how many products, how many angles per product and how many final edited images. A photographer shoots hundreds of frames but delivers only the selected and edited ones, and raw files are not normally included unless agreed in advance. Ask about turnaround time after the shoot too."
+        },
+        {
+          "q": "Who owns the rights to the photos?",
+          "a": "Many photographers grant the client the right to use the images for its marketing and keep the right to show them in their portfolio. If you need the photos for billboards or packaging, or want to stop portfolio use, put it in the contract. If people appear in the images, make sure you have their written consent to use them in advertising."
+        }
+      ]
+    }
+  },
+  "graphic_design": {
+    "onSite": false,
+    "ar": {
+      "search": "التصميم الجرافيكي",
+      "intro": "المقصود هنا تصاميم حسب الطلب لنشاط لديه هوية بصرية قائمة: منشورات وإعلانات رقمية بمقاسات كل منصة، وعروض تقديمية، وإنفوجرافيك، وبنرات للموقع والمتجر، ودعوات فعاليات، وتعديل تصاميم سابقة. تُطلب بالقطعة لمهمة محددة أو ضمن باقة شهرية بعدد معين من التصاميم. تناسب الشركات والمتاجر التي تحتاج تدفقاً ثابتاً من التصاميم دون تعيين مصمم داخلي، والفرق التسويقية التي تريد مصمماً إضافياً في فترات الضغط.",
+      "includes": [
+        "تصاميم منشورات وإعلانات رقمية بمقاسات المنصات",
+        "عروض تقديمية للشركات والمبيعات",
+        "إنفوجرافيك لتبسيط الأرقام والمعلومات",
+        "بنرات للموقع الإلكتروني والمتجر",
+        "تعديل تصاميم قائمة وتحديثها",
+        "ملفات جاهزة للنشر وأخرى للطباعة"
+      ],
+      "priceDrivers": "يتأثر السعر بدرجة تعقيد التصميم وعدد القطع، والرسم اليدوي أو ثلاثي الأبعاد، وسرعة التسليم المطلوبة، وعدد جولات التعديل. والعمل على قالب ثابت أقل كلفة من ابتكار كل قطعة من الصفر.",
+      "notFor": "تصميم القطع المتفرقة لا يبني هوية بصرية، فإن لم يكن لديك شعار وألوان وخطوط معتمدة فابدأ بتصميم الهوية أولاً.",
+      "faq": [
+        {
+          "q": "أيهما أنسب: الدفع بالقطعة أم باقة شهرية؟",
+          "a": "الدفع بالقطعة أنسب إذا كانت حاجتك متقطعة، كعرض تقديمي هنا ودعوة هناك. أما إذا كنت تحتاج تصاميم كل أسبوع، فالباقة الشهرية أوفر غالباً وتضمن أولوية في جدول المصمم. انتبه في الباقة إلى ما يحدث للتصاميم غير المستخدمة في نهاية الشهر، وإلى عدد جولات التعديل المسموح بها لكل قطعة."
+        },
+        {
+          "q": "ما الملفات التي يجب أن أستلمها من المصمم؟",
+          "a": "للنشر الرقمي تكفي ملفات PNG أو JPG بالمقاسات الصحيحة، وللطباعة تحتاج ملف PDF بهوامش قص ودقة عالية. اطلب أيضاً الملفات المصدرية إن اتُّفق عليها، واسأل عن الخطوط المستخدمة، فبعض الخطوط العربية مدفوعة الترخيص، وقد تحتاج رخصة خاصة بك لاستخدامها في تصاميم لاحقة."
+        }
+      ]
+    },
+    "en": {
+      "search": "graphic design",
+      "intro": "This is on-demand design for a business that already has a visual identity: social posts and digital ads sized for each platform, presentations, infographics, website and store banners, event invitations and updates to existing designs. It is ordered per piece for a specific task or as a monthly package with a set number of designs. It suits companies and shops that need a steady flow of design without hiring in-house, and marketing teams that need extra design capacity at busy times.",
+      "includes": [
+        "Social posts and digital ads in platform sizes",
+        "Company and sales presentations",
+        "Infographics that simplify figures",
+        "Website and online store banners",
+        "Edits and updates to existing designs",
+        "Files ready for screen and for print"
+      ],
+      "priceDrivers": "Price depends on complexity and volume, hand illustration or 3D work, how fast you need delivery and the number of revision rounds. Working from a fixed template costs less than creating every piece from scratch.",
+      "notFor": "One-off designs do not build a visual identity; if you have no approved logo, colours and fonts, start with brand identity design.",
+      "faq": [
+        {
+          "q": "Should I pay per design or take a monthly package?",
+          "a": "Paying per piece suits occasional needs, such as a presentation one month and an invitation the next. If you need designs every week, a monthly package is usually cheaper and gets you priority in the designer's schedule. Check what happens to unused designs at month end and how many revision rounds each piece includes."
+        },
+        {
+          "q": "Which files should I receive from the designer?",
+          "a": "For digital use, PNG or JPG files in the right sizes are enough; for print you need a high-resolution PDF with bleed. Ask for source files if they were agreed, and ask which fonts were used: some Arabic fonts are paid licences, and you may need your own licence to use them in later designs."
+        }
+      ]
+    }
+  },
+  "copywriting": {
+    "onSite": false,
+    "ar": {
+      "search": "كتابة محتوى تسويقي",
+      "intro": "تكتب الوكالة النصوص التي يقرؤها عملاؤك: صفحات الموقع، وأوصاف المنتجات في المتجر، ونصوص الإعلانات بصيغ متعددة للاختبار، وتعليقات المنشورات، وسيناريوهات الفيديو، والملف التعريفي للشركة، والرسائل البريدية، أو تراجع نصوصاً قائمة وتعيد صياغتها. تكتب بالفصحى المبسطة أو باللهجة الأردنية حين يناسب ذلك، وبالإنجليزية، وتصوغ النص من لغة إلى أخرى بدل ترجمته حرفياً. تناسب الأنشطة التي تملك مصمماً لكنها تحتاج كلمات واضحة، والعلامات التي تخاطب جمهورها بلغتين.",
+      "includes": [
+        "نصوص صفحات الموقع (الرئيسية، من نحن، الخدمات)",
+        "أوصاف منتجات للمتجر الإلكتروني",
+        "نصوص إعلانية بعدة صيغ للاختبار",
+        "تعليقات منشورات وسيناريوهات فيديو قصيرة",
+        "ملف تعريفي للشركة",
+        "صياغة المحتوى بين العربية والإنجليزية دون ترجمة حرفية"
+      ],
+      "priceDrivers": "يتحدد السعر بعدد الكلمات أو الصفحات، والحاجة إلى بحث في مجال متخصص كالطب أو القانون أو التقنية، والكتابة بلغتين، ومراعاة الكلمات المفتاحية للسيو في النص.",
+      "notFor": "لا تشمل التصميم ولا النشر، وإن احتجت ترجمة قانونية معتمدة لعقود أو وثائق رسمية فهذه خدمة مكتب ترجمة لا كاتب محتوى تسويقي.",
+      "faq": [
+        {
+          "q": "هل أكتب محتواي بالفصحى أم باللهجة الأردنية؟",
+          "a": "يعتمد ذلك على القناة. صفحات الموقع والملف التعريفي والمحتوى الطبي أو القانوني تُكتب عادةً بفصحى بسيطة واضحة، أما تعليقات السوشيال ميديا وسيناريوهات الريلز فقد تكون اللهجة فيها أقرب إلى الجمهور. المهم أن يبقى الأسلوب ثابتاً داخل القناة الواحدة، وأن يُكتب ذلك في دليل نبرة يرجع إليه كل من يكتب لك."
+        },
+        {
+          "q": "هل يستخدم الكتّاب أدوات الذكاء الاصطناعي؟",
+          "a": "كثير منهم يستخدمها في المسودات الأولى، ولا مشكلة في ذلك ما دام النص النهائي محرَّراً ودقيقاً. اسأل الوكالة عن طريقتها صراحة، واطلب نماذج كُتبت لمجالك. قيمة الكاتب في فهم عملائك، والتحقق من صحة ما يُقال عن منتجك، وتجنب النصوص المكررة التي تشبه ما لدى منافسيك."
+        }
+      ]
+    },
+    "en": {
+      "search": "copywriting",
+      "intro": "The agency writes the words your customers read: website pages, product descriptions for your store, ad copy in several variants for testing, post captions, video scripts, company profiles and emails. It writes in plain Modern Standard Arabic or Jordanian dialect where that fits, and in English, adapting text from one language to the other rather than translating it word for word. It suits businesses that have a designer but need clear words, and brands that speak to customers in two languages.",
+      "includes": [
+        "Website page copy (home, about, services)",
+        "Product descriptions for an online store",
+        "Ad copy in several variants for testing",
+        "Post captions and short video scripts",
+        "Company profile",
+        "Adapting content between Arabic and English"
+      ],
+      "priceDrivers": "Price depends on word or page count, research needed in specialist fields such as medicine, law or technology, writing in two languages, and working SEO keywords into the text.",
+      "notFor": "It does not include design or publishing, and if you need a certified legal translation of contracts or official documents, that is a translation office's job, not a copywriter's.",
+      "faq": [
+        {
+          "q": "Should my Arabic copy be in formal Arabic or Jordanian dialect?",
+          "a": "It depends on the channel. Website pages, company profiles and medical or legal content are usually written in simple, clear Modern Standard Arabic, while social captions and Reel scripts can feel closer to the audience in dialect. What matters is keeping one style within each channel and recording it in a tone-of-voice guide for anyone who writes for you."
+        },
+        {
+          "q": "Do copywriters use AI tools?",
+          "a": "Many use them for first drafts, which is fine as long as the final text is edited and accurate. Ask the agency plainly how it works and request samples written for your sector. A writer's value lies in understanding your customers, checking that claims about your product are correct and avoiding generic text that reads like your competitors'."
+        }
+      ]
+    }
+  },
+  "motion_graphics": {
+    "onSite": false,
+    "ar": {
+      "search": "تصميم فيديو موشن جرافيك",
+      "intro": "الموشن جرافيك فيديو يُبنى بالرسم والتحريك بدل التصوير، ويمر بمراحل: كتابة السيناريو، ثم تسجيل التعليق الصوتي بالعربية أو الإنجليزية، ثم لوحة مشاهد ترسم تسلسل الفيديو، ثم رسم الشخصيات والعناصر وتحريكها وإضافة الموسيقى والمؤثرات. يُستخدم في الفيديوهات التعريفية التي تشرح خدمة أو تطبيقاً، والشعارات المتحركة، ومنشورات السوشيال المتحركة. يناسب التطبيقات والخدمات المالية والتقنية وحملات التوعية لدى المؤسسات والمنظمات، وكل فكرة يصعب تصويرها.",
+      "includes": [
+        "كتابة السيناريو ولوحة المشاهد",
+        "رسم الشخصيات والمشاهد بأسلوب متفق عليه",
+        "تعليق صوتي عربي أو إنجليزي",
+        "تحريك ثنائي الأبعاد مع موسيقى ومؤثرات مرخصة",
+        "شعار متحرك أو نسخ قصيرة للسوشيال ميديا"
+      ],
+      "priceDrivers": "العامل الأساسي هو مدة الفيديو بالثواني، ثم أسلوب الرسم بين البسيط والمخصص وثلاثي الأبعاد، والتعليق الصوتي الاحترافي، وعدد اللغات والنسخ المطلوبة.",
+      "notFor": "لا يناسب عرض منتج ملموس أو مكان يريد العميل أن يراه على حقيقته، كمطعم أو عقار، فالتصوير الحقيقي هنا أكثر إقناعاً.",
+      "faq": [
+        {
+          "q": "ما المدة المناسبة لفيديو موشن جرافيك تعريفي؟",
+          "a": "الفيديو التعريفي على الموقع يكفيه عادةً ستون إلى تسعين ثانية، أما إعلانات السوشيال ميديا فتعمل أفضل بين خمس عشرة وثلاثين ثانية. الفيديو الأطول يفقد المشاهدين، ويرفع التكلفة لأن السعر مرتبط بالثواني. لذلك اختصر السيناريو إلى رسالة واحدة واضحة قبل البدء بالرسم."
+        },
+        {
+          "q": "هل يمكن تعديل الفيديو بعد تسليمه؟",
+          "a": "التعديلات الصغيرة كتغيير رقم أو نص على الشاشة سهلة إذا احتفظت الوكالة بملفات المشروع. أما تغيير السيناريو بعد التحريك فمكلف لأنه يعني إعادة جزء كبير من العمل. لذلك اعتمد السيناريو ثم التعليق الصوتي ثم لوحة المشاهد كلاً في مرحلته، ولا تنتقل إلى التحريك قبل ذلك."
+        }
+      ]
+    },
+    "en": {
+      "search": "motion graphics",
+      "intro": "Motion graphics are videos built from illustration and animation instead of filming. The work moves through a script, a voice-over in Arabic or English, a storyboard that maps the sequence, and then illustration, animation, music and sound effects. It is used for explainer videos about a service or app, animated logos and animated social posts. It suits apps, fintech and technology services, awareness campaigns for institutions and NGOs, and any idea that is hard to film.",
+      "includes": [
+        "Script and storyboard",
+        "Characters and scenes in an agreed style",
+        "Arabic or English voice-over",
+        "2D animation with licensed music and sound effects",
+        "Animated logo or short social cut-downs"
+      ],
+      "priceDrivers": "The main factor is video length in seconds, followed by illustration style (simple, custom or 3D), professional voice-over, and the number of languages and versions.",
+      "notFor": "It does not suit showing a physical product or place that customers want to see as it really is, such as a restaurant or property; real footage is more convincing there.",
+      "faq": [
+        {
+          "q": "How long should an explainer animation be?",
+          "a": "An explainer on your website usually needs 60 to 90 seconds, while social media ads work better at 15 to 30 seconds. Longer videos lose viewers and cost more, since price is tied to length. Cut the script down to one clear message before any illustration begins."
+        },
+        {
+          "q": "Can the video be changed after delivery?",
+          "a": "Small edits, such as changing a number or on-screen text, are easy if the agency keeps the project files. Changing the script after animation is expensive because much of the work has to be redone. Approve the script, then the voice-over, then the storyboard, each at its own stage, before animation starts."
+        }
+      ]
+    }
+  },
+  "brand_identity": {
+    "onSite": false,
+    "ar": {
+      "search": "تصميم هوية بصرية وشعار",
+      "intro": "يبدأ مشروع الهوية البصرية بالشعار، لكنه لا يتوقف عنده: ألوان محددة، وخطوط عربية وإنجليزية متناسقة، وعناصر مساندة كالأنماط والأيقونات، ثم تطبيق ذلك كله على بطاقات العمل والأوراق الرسمية وقوالب السوشيال ميديا واللافتة، وجمعه في دليل استخدام يرجع إليه كل من يصمم لك لاحقاً. في الأردن يحتاج معظم الأنشطة شعاراً يعمل بالعربية والإنجليزية معاً. تناسب الأنشطة الجديدة قبل الافتتاح، والشركات التي تجدد صورتها.",
+      "includes": [
+        "شعار بنسختين عربية وإنجليزية أو شعار ثنائي اللغة",
+        "لوحة ألوان وخطوط معتمدة",
+        "عناصر بصرية مساندة كالأنماط والأيقونات",
+        "تطبيقات على القرطاسية وقوالب السوشيال ميديا",
+        "دليل استخدام الهوية",
+        "ملفات الشعار بصيغ متجهة وبكل الألوان"
+      ],
+      "priceDrivers": "يرتفع السعر مع عدد المقترحات الأولية وجولات التعديل، ورسم شعار عربي مخصص بدل الاعتماد على خط جاهز، وعدد التطبيقات المطلوبة، وعمق دليل الهوية.",
+      "notFor": "الهوية البصرية وحدها لا تحدد لمن تبيع ولماذا يختارك العميل، فإن كانت هذه الأسئلة غير محسومة فابدأ باستراتيجية العلامة التجارية.",
+      "faq": [
+        {
+          "q": "هل أحتاج شعاراً بالعربية والإنجليزية معاً؟",
+          "a": "في الأغلب نعم، فاللافتات والتغليف والفواتير في الأردن كثيراً ما تكون باللغتين، وقد تتوسع لاحقاً إلى أسواق أخرى. تصميم النسختين معاً من البداية يضمن توازنهما في الحجم والطابع، بدل إضافة نسخة عربية بخط جاهز لا يشبه الإنجليزية. والحروف العربية في الشعار تحتاج غالباً رسماً مخصصاً."
+        },
+        {
+          "q": "هل يمكنني تسجيل الشعار كعلامة تجارية؟",
+          "a": "نعم، ويتم التسجيل في الأردن لدى مديرية تسجيل العلامات التجارية في وزارة الصناعة والتجارة والتموين، وغالباً عبر محامٍ أو وكيل تسجيل لا عبر الوكالة. قبل اعتماد الشعار، ابحث عن علامات مشابهة في فئتك، وتأكد أن عقد التصميم ينص على انتقال ملكية الشعار إليك بالكامل وأنه عمل أصلي."
+        }
+      ]
+    },
+    "en": {
+      "search": "logo and brand identity design",
+      "intro": "A brand identity project starts with the logo but does not stop there: set colours, matching Arabic and English typefaces, supporting elements such as patterns and icons, and their application to business cards, letterheads, social media templates and signage, all gathered in a guidelines document that anyone designing for you later can follow. In Jordan most businesses need a logo that works in Arabic and English together. It suits new businesses before opening and companies refreshing their image.",
+      "includes": [
+        "Logo in Arabic and English versions, or bilingual",
+        "Approved colour palette and typefaces",
+        "Supporting elements such as patterns and icons",
+        "Stationery and social media templates",
+        "Brand guidelines document",
+        "Logo files in vector formats and all colourways"
+      ],
+      "priceDrivers": "Price rises with the number of initial concepts and revision rounds, custom-drawn Arabic lettering instead of an off-the-shelf font, the number of applications and the depth of the guidelines.",
+      "notFor": "An identity alone does not define who you sell to or why customers should choose you; if those questions are still open, start with brand strategy.",
+      "faq": [
+        {
+          "q": "Do I need both an Arabic and an English logo?",
+          "a": "Usually yes: signage, packaging and invoices in Jordan are often bilingual, and you may expand to other markets later. Designing both versions together from the start keeps them balanced in size and character, instead of adding an Arabic version in a stock font that looks nothing like the English. Arabic letterforms in a logo often need custom drawing."
+        },
+        {
+          "q": "Can I register my logo as a trademark?",
+          "a": "Yes. In Jordan registration is handled by the Trademarks Registration Directorate at the Ministry of Industry, Trade and Supply, usually through a lawyer or registration agent rather than the agency. Before approving the logo, check for similar marks in your class, and make sure the design contract confirms the work is original and that full ownership passes to you."
+        }
+      ]
+    }
+  },
+  "brand_strategy": {
+    "onSite": false,
+    "ar": {
+      "search": "بناء استراتيجية العلامة التجارية",
+      "intro": "تسبق هذه الخدمة التصميم وتوجّهه: تدرس الوكالة سوقك ومنافسيك، وتعقد ورش عمل مع الإدارة، وربما تقابل عدداً من العملاء، لتحدد موقعك في السوق، والشرائح التي تخدمها، والوعد الذي تقدمه، وشخصية العلامة ونبرة خطابها بالعربية والإنجليزية، وقد تقترح اسماً أو شعاراً لفظياً. تناسب المشاريع الجديدة قبل تصميم هويتها، والشركات التي تتوسع من الأردن إلى الخليج، والأنشطة العائلية التي تنتقل إدارتها إلى جيل جديد، وحالات الاندماج.",
+      "includes": [
+        "ورش عمل مع الإدارة وأصحاب القرار",
+        "تحليل السوق والمنافسين",
+        "تحديد التموضع وشرائح العملاء",
+        "رسائل العلامة ونبرة الخطاب باللغتين",
+        "اقتراح اسم أو شعار لفظي عند الحاجة",
+        "وثيقة استراتيجية مرجعية"
+      ],
+      "priceDrivers": "تزيد التكلفة مع البحث الميداني كالمقابلات والاستبيانات، وعدد الأسواق المستهدفة، والحاجة إلى تسمية منتج جديد والتحقق من توافر الاسم والنطاق الإلكتروني.",
+      "notFor": "لا تنتج تصاميم ولا منشورات، وإذا كان نشاطك صغيراً ورسالته واضحة فقد يكفيك ملخص تموضع قصير ضمن مشروع الهوية البصرية.",
+      "faq": [
+        {
+          "q": "ما الذي أستفيده عملياً من وثيقة الاستراتيجية؟",
+          "a": "تصبح مرجعاً لكل من يعمل على علامتك من مصممين وكتّاب ووكالات إعلان، فتختصر وقت شرح النشاط لكل منهم وتقلل التناقض بين رسائلك. وتساعدك في قرارات يومية، كأن تعرف هل يناسب علامتك تقديم خصومات كبيرة أم لا، وأي فرصة تعاون تنسجم مع صورتك."
+        },
+        {
+          "q": "كم من وقتي يحتاج هذا المشروع؟",
+          "a": "أكثر مما يتوقعه كثيرون، فلا يمكن تفويضه بالكامل. توقع ورشتين أو ثلاثاً لعدة ساعات، ومقابلات مع بعض موظفيك أو عملائك، وجولات مراجعة للمسودات. تستغرق المشاريع المعتادة بضعة أسابيع، ويطول المشروع عادةً عندما يتأخر أصحاب القرار في الاتفاق فيما بينهم على الاتجاه."
+        }
+      ]
+    },
+    "en": {
+      "search": "brand strategy",
+      "intro": "This work comes before design and steers it. The agency studies your market and competitors, runs workshops with management and may interview some customers, to define your position in the market, the segments you serve, your promise, and your brand's personality and tone of voice in Arabic and English; it may also propose a name or tagline. It suits new ventures before their identity is designed, companies expanding from Jordan to the Gulf, family businesses passing to a new generation, and mergers.",
+      "includes": [
+        "Workshops with management and decision-makers",
+        "Market and competitor analysis",
+        "Positioning and customer segments",
+        "Brand messages and tone of voice in both languages",
+        "Name or tagline proposals where needed",
+        "A reference strategy document"
+      ],
+      "priceDrivers": "Cost increases with field research such as interviews and surveys, the number of target markets, and naming a new product including checks that the name and domain are available.",
+      "notFor": "It produces no designs or posts, and if your business is small and its message is already clear, a short positioning summary within a brand identity project may be enough.",
+      "faq": [
+        {
+          "q": "What do I get out of a strategy document in practice?",
+          "a": "It becomes the reference for everyone who works on your brand, from designers and writers to ad agencies, so you spend less time explaining your business and your messages stop contradicting each other. It also guides everyday decisions, such as whether heavy discounting suits your brand or which partnership fits your image."
+        },
+        {
+          "q": "How much of my time will this project need?",
+          "a": "More than most people expect, since it cannot be fully delegated. Plan for two or three workshops of several hours, interviews with some staff or customers, and rounds of draft reviews. Typical projects take a few weeks, and they usually run long when decision-makers are slow to agree among themselves on the direction."
+        }
+      ]
+    }
+  },
+  "packaging_design": {
+    "onSite": false,
+    "ar": {
+      "search": "تصميم تغليف وعلب منتجات",
+      "intro": "يشمل تصميم التغليف العلب والملصقات والأكياس والعبوات، ويبدأ من مخطط القص الذي تحدده المطبعة أو مورد العبوات، ثم ترتيب اسم المنتج والبيانات الإلزامية والباركود، وتقديم نماذج ثلاثية الأبعاد للمعاينة، وتجهيز ملفات الطباعة بالألوان والهوامش الصحيحة ومتابعة البروفة مع المطبعة. تناسب منتجي الأغذية والحلويات ومحامص القهوة ومستحضرات التجميل، والمشاريع المنزلية التي بدأت تبيع في المحلات وتحتاج عبوة تنافس على الرف إلى جانب منتجات معروفة.",
+      "includes": [
+        "تصميم العلبة أو الملصق على مخطط القص",
+        "ترتيب البيانات الإلزامية والباركود",
+        "نماذج ثلاثية الأبعاد للمعاينة قبل الطباعة",
+        "نسخ للأحجام أو النكهات المختلفة",
+        "ملفات طباعة جاهزة ومتابعة البروفة مع المطبعة"
+      ],
+      "priceDrivers": "يرتفع السعر مع عدد المنتجات والأحجام المختلفة، وشكل العبوة المخصص، والرسوم التوضيحية، والتشطيبات الخاصة كالطباعة البارزة أو الورنيش الجزئي أو البصمة الذهبية، وتنفيذ نموذج مطبوع قبل الإنتاج.",
+      "notFor": "تكلفة الطباعة وتصنيع العبوات ليست جزءاً من التصميم عادةً، ولا تغني الخدمة عن مراجعة متطلبات بطاقة البيان مع الجهة الرقابية المختصة بمنتجك.",
+      "faq": [
+        {
+          "q": "هل أختار المطبعة قبل التصميم أم بعده؟",
+          "a": "قبله أو في بدايته على الأقل. نوع الخامة وطريقة الطباعة والحد الأدنى للكمية ومخطط القص كلها تفرضها المطبعة، وتؤثر مباشرة على التصميم وعدد الألوان الممكنة والتشطيبات. التصميم الذي يُنجز دون معرفة هذه القيود قد يحتاج إعادة عمل مكلفة، أو يُطبع بنتيجة تختلف عما رأيته على الشاشة."
+        },
+        {
+          "q": "ما البيانات التي يجب أن تظهر على عبوة منتج غذائي؟",
+          "a": "عادةً: اسم المنتج، والمكونات، والوزن الصافي، وتاريخا الإنتاج والانتهاء، واسم المصنّع وبلد المنشأ، وطريقة الحفظ، والباركود، مع كتابة البيانات بالعربية. تحقق من المتطلبات الدقيقة لمنتجك لدى المؤسسة العامة للغذاء والدواء والمواصفات المعتمدة. المصمم يرتّب هذه البيانات، لكن مسؤولية صحتها تبقى عليك."
+        }
+      ]
+    },
+    "en": {
+      "search": "packaging design",
+      "intro": "Packaging design covers boxes, labels, bags and containers. It starts from the dieline set by your printer or packaging supplier, then lays out the product name, mandatory information and barcode, presents 3D mock-ups for review, prepares print files with the correct colours and bleed, and follows the proof with the printer. It suits food and sweets producers, coffee roasters, cosmetics brands, and home-based businesses that have started selling in shops and need packaging that competes on the shelf.",
+      "includes": [
+        "Box or label design on the printer's dieline",
+        "Layout of mandatory information and barcode",
+        "3D mock-ups for review before printing",
+        "Variants for different sizes or flavours",
+        "Print-ready files and proof follow-up with the printer"
+      ],
+      "priceDrivers": "Price rises with the number of products and sizes, custom container shapes, illustration, special finishes such as embossing, spot varnish or foil, and producing a printed prototype before the run.",
+      "notFor": "Printing and packaging manufacture are usually not part of the design fee, and the service does not replace checking labelling requirements with the regulator responsible for your product.",
+      "faq": [
+        {
+          "q": "Should I choose the printer before or after design?",
+          "a": "Before, or at least at the start. Material, printing method, minimum order quantity and the dieline all come from the printer and directly shape the design, the number of colours and the finishes that are possible. A design done without knowing these limits may need costly rework or print differently from what you saw on screen."
+        },
+        {
+          "q": "What information must appear on food packaging?",
+          "a": "Typically the product name, ingredients, net weight, production and expiry dates, manufacturer and country of origin, storage instructions and barcode, with the information in Arabic. Confirm the exact requirements for your product with the Jordan Food and Drug Administration and the applicable standards. The designer lays out the information, but you remain responsible for its accuracy."
+        }
+      ]
+    }
+  },
+  "seo": {
+    "onSite": false,
+    "ar": {
+      "search": "السيو وتحسين محركات البحث",
+      "intro": "تعمل الوكالة على أن يظهر موقعك في نتائج جوجل المجانية عندما يبحث الناس عن خدمتك. يبدأ العمل عادةً بتدقيق تقني للسرعة والفهرسة والأخطاء، ثم بحث الكلمات التي يكتبها عملاؤك بالعربية والإنجليزية، وتحسين عناوين الصفحات وبنيتها، وكتابة صفحات ومقالات جديدة، وتحسين ملف نشاطك على خرائط جوجل للبحث المحلي. يُتفق عليه غالباً كعقد شهري لعدة أشهر. يناسب العيادات والمدارس ومكاتب المحاماة والعقارات والمتاجر الإلكترونية التي يبحث عملاؤها قبل الشراء.",
+      "includes": [
+        "تدقيق تقني للموقع (السرعة، الفهرسة، الأخطاء)",
+        "بحث الكلمات المفتاحية بالعربية والإنجليزية",
+        "تحسين العناوين والوصف وبنية الصفحات",
+        "كتابة صفحات ومقالات جديدة",
+        "تحسين ملف النشاط على خرائط جوجل",
+        "تقرير شهري من Google Search Console"
+      ],
+      "priceDrivers": "يتأثر السعر بحجم الموقع وعدد صفحاته، وشدة المنافسة على الكلمات المستهدفة، وعدد المقالات المطلوبة شهرياً، والعمل بلغتين أو لأكثر من دولة، والحاجة إلى تعديلات برمجية لا يستطيع فريقك تنفيذها.",
+      "notFor": "السيو لا يجلب زيارات خلال أسابيع، فإن كنت تحتاج طلبات فورية لموسم أو افتتاح فإعلانات جوجل أنسب في البداية، ولا يستطيع أحد أن يضمن لك المركز الأول.",
+      "faq": [
+        {
+          "q": "متى تظهر نتائج السيو؟",
+          "a": "تحتاج عادةً عدة أشهر، وتختلف المدة بحسب عمر الموقع وقوة المنافسين وحجم العمل المنجز. أول الإشارات تظهر في Search Console على شكل زيادة في مرات الظهور قبل النقرات، ثم تتحسن المراكز تدريجياً. تعامل بحذر مع أي جهة تعدك بالصفحة الأولى خلال أسابيع، فمحركات البحث لا تبيع هذه المراكز."
+        },
+        {
+          "q": "هل يحتاج المحتوى العربي عملاً منفصلاً عن الإنجليزي؟",
+          "a": "نعم. الناس في الأردن يبحثون باللغتين، لكن بعبارات مختلفة ولأغراض مختلفة أحياناً، والمنافسة على العبارات العربية أقل في قطاعات كثيرة. الترجمة الآلية لصفحاتك الإنجليزية لا تكفي؛ الأفضل صفحات عربية مكتوبة لعبارات البحث العربية، بعناوين روابط مستقلة، ومربوطة بنسختها الإنجليزية تقنياً."
+        }
+      ]
+    },
+    "en": {
+      "search": "SEO",
+      "intro": "The agency works on getting your website into Google's free results when people search for what you offer. Work usually starts with a technical audit of speed, indexing and errors, then research into the terms your customers type in Arabic and English, improvements to page titles and structure, new pages and articles, and optimisation of your Google Business Profile for local search. It is usually agreed as a monthly contract over several months. It suits clinics, schools, law firms, real estate and online stores whose customers search before buying.",
+      "includes": [
+        "Technical audit (speed, indexing, errors)",
+        "Keyword research in Arabic and English",
+        "Title, description and page structure improvements",
+        "New pages and articles",
+        "Google Business Profile optimisation",
+        "Monthly report from Google Search Console"
+      ],
+      "priceDrivers": "Price depends on the size of the site, competition for the target terms, the number of articles per month, working in two languages or for more than one country, and any development work your team cannot do itself.",
+      "notFor": "SEO does not bring traffic within weeks, so if you need orders now for a season or opening, Google Ads suit the start better, and nobody can guarantee you the top position.",
+      "faq": [
+        {
+          "q": "When will I see SEO results?",
+          "a": "Usually after several months, depending on the site's age, the strength of competitors and how much work is done. The first signs appear in Search Console as rising impressions before clicks, then rankings improve gradually. Be wary of anyone promising page one within weeks; search engines do not sell those positions."
+        },
+        {
+          "q": "Does Arabic content need separate work from English?",
+          "a": "Yes. People in Jordan search in both languages, but with different phrases and sometimes different intent, and competition for Arabic phrases is lower in many sectors. Machine-translating your English pages is not enough; you need Arabic pages written for Arabic searches, with their own URLs and technically linked to their English versions."
+        }
+      ]
+    }
+  },
+  "email_marketing": {
+    "onSite": false,
+    "ar": {
+      "search": "التسويق عبر الواتساب والبريد الإلكتروني",
+      "intro": "تستثمر هذه الخدمة قائمة عملائك الحاليين بدل البحث عن عملاء جدد. على واتساب تجهّز الوكالة حساب الأعمال أو الواجهة البرمجية عبر مزود معتمد، وتكتب قوالب الرسائل وترسلها لاعتماد Meta، وتطلق حملات للمشتركين، وتبني ردوداً تلقائية وتذكيرات. وعلى البريد الإلكتروني تصمم النشرات وتقسّم القوائم وتبني رسائل تلقائية كالترحيب والسلة المتروكة. تناسب المتاجر الإلكترونية والعيادات التي ترسل تذكيرات المواعيد والمطاعم وبرامج الولاء والشركات التي تراسل عملاء أعمال.",
+      "includes": [
+        "إعداد واتساب للأعمال أو الواجهة البرمجية (API)",
+        "قوالب رسائل تُرسل لاعتماد Meta",
+        "تقسيم قوائم العملاء حسب الاهتمام أو الشراء",
+        "رسائل تلقائية (ترحيب، تذكير موعد، سلة متروكة)",
+        "تصميم نشرات بريدية",
+        "تقرير بمعدلات الفتح والنقر والردود"
+      ],
+      "priceDrivers": "يتحدد السعر بعدد جهات الاتصال والحملات الشهرية، وبناء روبوت محادثة أو ربط المتجر. وتُضاف رسوم المحادثات التي تفرضها Meta على الواجهة البرمجية ورسوم مزود الخدمة، وهي غالباً منفصلة عن رسوم الوكالة.",
+      "notFor": "لا تصلح لمراسلة أرقام مشتراة أو أشخاص لم يوافقوا على استقبال رسائلك، فهذا يعرّض رقمك للحظر، والخدمة تبني على قائمة عملائك ولا تصنعها لك.",
+      "faq": [
+        {
+          "q": "ما الفرق بين تطبيق واتساب للأعمال والواجهة البرمجية؟",
+          "a": "التطبيق مجاني ويعمل من هاتف واحد وعدد محدود من الأجهزة، وقوائم البث فيه لا تصل إلا لمن حفظ رقمك. الواجهة البرمجية تُفعَّل عبر مزود خدمة، وتتيح لعدة موظفين الرد من الرقم نفسه، وإرسال قوالب معتمدة لعدد كبير، وربط الرسائل بالمتجر أو نظام الحجز، مقابل رسوم على المحادثات."
+        },
+        {
+          "q": "هل ما زال البريد الإلكتروني مفيداً للتسويق في الأردن؟",
+          "a": "للمستهلكين يقرأ الناس رسائل واتساب أكثر من البريد عادةً، لكن البريد يبقى مفيداً في التعامل بين الشركات، وفي تأكيدات الطلبات والفواتير، ومع العملاء خارج الأردن، وتكلفة الرسالة فيه منخفضة جداً. لكي تصل رسائلك إلى صندوق الوارد لا إلى البريد المزعج، يجب توثيق نطاقك بإعدادات SPF وDKIM."
+        }
+      ]
+    },
+    "en": {
+      "search": "WhatsApp and email marketing",
+      "intro": "This service works your existing customer list instead of hunting for new customers. On WhatsApp, the agency sets up the Business app or the Business API through an approved provider, writes message templates and submits them to Meta for approval, runs campaigns to opted-in contacts, and builds automatic replies and reminders. On email, it designs newsletters, segments lists and builds automated flows such as welcome and abandoned-cart messages. It suits online stores, clinics sending appointment reminders, restaurants, loyalty programmes and B2B companies.",
+      "includes": [
+        "WhatsApp Business app or API setup",
+        "Message templates submitted for Meta approval",
+        "Customer list segmentation by interest or purchase",
+        "Automated messages (welcome, appointment reminder, abandoned cart)",
+        "Email newsletter design",
+        "Report on open, click and reply rates"
+      ],
+      "priceDrivers": "Price depends on the number of contacts and monthly campaigns, and on building a chatbot or store integration. Meta's per-conversation charges on the API and the provider's fees come on top and are usually separate from the agency's fee.",
+      "notFor": "It is not for messaging bought number lists or people who have not agreed to hear from you, which can get your number banned; the service builds on your customer list rather than creating one.",
+      "faq": [
+        {
+          "q": "What is the difference between the WhatsApp Business app and the API?",
+          "a": "The app is free and runs from one phone plus a few linked devices, and its broadcast lists only reach people who saved your number. The API is activated through a provider and lets several staff reply from one number, send approved templates at scale and connect messages to your store or booking system, in exchange for per-conversation fees."
+        },
+        {
+          "q": "Is email still worth it for marketing in Jordan?",
+          "a": "Consumers usually read WhatsApp more than email, but email remains useful for business-to-business contact, order confirmations and invoices, and customers outside Jordan, and each message costs very little. To land in the inbox rather than spam, your sending domain must be authenticated with SPF and DKIM records."
+        }
+      ]
+    }
+  },
+  "web_design": {
+    "onSite": false,
+    "ar": {
+      "search": "تصميم مواقع إلكترونية",
+      "intro": "تصمم الوكالة موقع شركتك وتبنيه من الصفر: هيكل الصفحات، والتصميم، ودعم العربية من اليمين إلى اليسار إلى جانب الإنجليزية، والتوافق مع الجوال، ولوحة تحكم تعدّل منها المحتوى بنفسك، ونماذج التواصل وزر واتساب وخريطة الموقع، مع إعداد أساسي للسيو وربط أدوات التحليل قبل الإطلاق. قد يُبنى الموقع على ووردبريس أو منصة جاهزة أو ببرمجة خاصة. يناسب الشركات التي تحتاج موقعاً يعزز ثقة العملاء، أو يستقبل الحجوزات والاستفسارات، أو يعرض خدماتها ومشاريعها.",
+      "includes": [
+        "هيكل الصفحات وتصميم الواجهات",
+        "دعم العربية والإنجليزية والتوافق مع الجوال",
+        "لوحة تحكم لتعديل المحتوى بنفسك",
+        "نماذج تواصل وزر واتساب وربط الخرائط",
+        "إعداد أساسي للسيو وربط Google Analytics",
+        "تدريب قصير على إدارة الموقع بعد الإطلاق"
+      ],
+      "priceDrivers": "يتأثر السعر بعدد الصفحات واللغات، والتصميم المخصص مقابل القوالب الجاهزة، والمزايا الخاصة كالحجوزات أو بوابة العملاء أو الربط مع أنظمة أخرى، وما إذا كانت كتابة المحتوى والتصوير ضمن المشروع.",
+      "notFor": "الموقع وحده لا يجلب الزوار ويحتاج إلى سيو أو إعلانات أو حضور على السوشيال ميديا، وإذا كان هدفك بيع عدد كبير من المنتجات مباشرة فخدمة إنشاء المتجر الإلكتروني أدق.",
+      "faq": [
+        {
+          "q": "هل أختار ووردبريس أم منصة جاهزة أم برمجة خاصة؟",
+          "a": "ووردبريس مناسب لمعظم مواقع الشركات، وتعديله سهل، ويسهل أن تجد من يصونه لاحقاً. المنصات الجاهزة أسرع في الإطلاق مقابل اشتراك شهري ومرونة أقل. البرمجة الخاصة تستحق كلفتها عندما تحتاج مزايا لا توفرها الأنظمة الجاهزة. اسأل في كل حالة: من يستطيع تعديل الموقع إن انتهى تعاملك مع هذه الوكالة؟"
+        },
+        {
+          "q": "من يملك النطاق والاستضافة؟",
+          "a": "يجب أن يُسجَّل النطاق باسمك أو باسم شركتك، وأن تحتفظ ببيانات الدخول إلى حساب التسجيل والاستضافة ولوحة تحكم الموقع، حتى لو كانت الوكالة هي من تدير الاستضافة. وتسجيل نطاق ينتهي بـ .jo يتطلب وثائق رسمية للشركة. كثير من الخلافات تبدأ حين يكون النطاق مسجلاً باسم الوكالة ويصعب نقله."
+        }
+      ]
+    },
+    "en": {
+      "search": "website design",
+      "intro": "The agency designs and builds your company website from scratch: page structure, visual design, right-to-left Arabic alongside English, mobile compatibility, a dashboard for editing content yourself, contact forms, a WhatsApp button and map, plus basic SEO setup and analytics before launch. The site may be built on WordPress, a hosted platform or custom code. It suits companies that need a website to build customer trust, take bookings and enquiries, or present their services and projects.",
+      "includes": [
+        "Page structure and interface design",
+        "Arabic and English support, mobile-friendly",
+        "Dashboard for editing content yourself",
+        "Contact forms, WhatsApp button and map",
+        "Basic SEO setup and Google Analytics",
+        "Short training on managing the site after launch"
+      ],
+      "priceDrivers": "Price depends on the number of pages and languages, custom design versus templates, special features such as bookings, client portals or integrations with other systems, and whether copywriting and photography are part of the project.",
+      "notFor": "A website alone brings no visitors; it needs SEO, ads or a social media presence, and if your goal is selling many products directly, online store setup is the better fit.",
+      "faq": [
+        {
+          "q": "Should I choose WordPress, a hosted platform or custom code?",
+          "a": "WordPress suits most company websites; it is easy to edit and easy to find someone to maintain later. Hosted platforms launch faster in exchange for a monthly subscription and less flexibility. Custom code is worth its cost when you need features ready-made systems do not offer. In every case ask: who can change the site if you stop working with this agency?"
+        },
+        {
+          "q": "Who owns the domain and hosting?",
+          "a": "The domain should be registered to you or your company, and you should hold the logins for the registrar, the hosting and the site dashboard, even if the agency manages hosting. Registering a .jo domain requires official company documents. Many disputes start when the domain is registered in the agency's name and is hard to transfer."
+        }
+      ]
+    }
+  },
+  "analytics": {
+    "onSite": false,
+    "ar": {
+      "search": "تحليل بيانات التسويق والتقارير",
+      "intro": "تجيب هذه الخدمة عن سؤال: أي قنواتك التسويقية يجلب عملاء فعلاً؟ تجهّز الوكالة Google Analytics 4 وTag Manager، وتعرّف أحداث التحويل التي تهمك كالشراء وإرسال النموذج والنقر على واتساب والاتصال، وتربط بكسلات المنصات الإعلانية، وتضع قواعد موحدة لروابط الحملات، ثم تبني لوحة بيانات تجمع الإعلانات والسوشيال والموقع في مكان واحد، وتقدم تحليلاً شهرياً بتوصيات. تناسب الأنشطة التي تنفق على أكثر من قناة ولا تعرف أيها يعمل، والمتاجر الإلكترونية.",
+      "includes": [
+        "إعداد Google Analytics 4 وGoogle Tag Manager",
+        "تعريف أحداث التحويل (شراء، نموذج، واتساب، اتصال)",
+        "ربط بكسلات المنصات الإعلانية",
+        "قواعد موحدة لروابط الحملات (UTM)",
+        "لوحة بيانات تجمع القنوات في مكان واحد",
+        "تقرير تحليلي شهري بتوصيات عملية"
+      ],
+      "priceDrivers": "يتأثر السعر بعدد المصادر المطلوب ربطها، وتعقيد الموقع أو المتجر، والربط مع نظام المبيعات أو إدارة العملاء، وعمق التحليل الدوري ووتيرته.",
+      "notFor": "التحليلات تكشف ما يحدث ولا تصنع حملات، وإذا لم يكن لديك بعد إنفاق أو زيارات كافية فالأولوية لبناء القنوات قبل لوحات البيانات.",
+      "faq": [
+        {
+          "q": "لماذا تختلف أرقام فيسبوك عن أرقام Google Analytics؟",
+          "a": "لأن كل منصة تحسب بطريقتها. فيسبوك ينسب لنفسه أحياناً عملية شراء لمن شاهد الإعلان دون أن ينقر عليه، بينما يعتمد Analytics على الزيارة الفعلية، وتتأثر الأرقام أيضاً بمانعات الإعلانات وإعدادات الخصوصية في الهواتف. لا تحاول مطابقة الرقمين، بل اتفق مع الوكالة على مصدر واحد تُتخذ على أساسه القرارات."
+        },
+        {
+          "q": "كيف أقيس الطلبات التي تصل عبر واتساب أو الهاتف؟",
+          "a": "يمكن تسجيل كل نقرة على زر واتساب أو رقم الهاتف في الموقع كحدث في Analytics. وتساعد أيضاً رسالة افتتاحية مختلفة لكل حملة، أو رقم مخصص لحملة بعينها، أو رمز خصم خاص بكل قناة. والطريقة الأبسط أن يسأل موظفك كل عميل «كيف عرفت عنا؟» ويسجل الإجابة في جدول."
+        }
+      ]
+    },
+    "en": {
+      "search": "marketing analytics and reporting",
+      "intro": "This service answers one question: which of your marketing channels actually brings customers? The agency sets up Google Analytics 4 and Tag Manager, defines the conversions you care about such as purchases, form submissions, WhatsApp clicks and calls, connects ad platform pixels and sets consistent campaign link rules, then builds a dashboard bringing ads, social and website data together, with a monthly analysis and recommendations. It suits businesses spending on several channels without knowing which works, and online stores.",
+      "includes": [
+        "Google Analytics 4 and Google Tag Manager setup",
+        "Conversion events (purchase, form, WhatsApp, call)",
+        "Ad platform pixel connections",
+        "Consistent UTM rules for campaign links",
+        "A dashboard combining all channels",
+        "Monthly analysis with practical recommendations"
+      ],
+      "priceDrivers": "Price depends on how many data sources must be connected, the complexity of your site or store, integration with your sales or CRM system, and the depth and frequency of the ongoing analysis.",
+      "notFor": "Analytics shows what is happening but does not run campaigns, and if you do not yet have meaningful spend or traffic, building channels comes before dashboards.",
+      "faq": [
+        {
+          "q": "Why don't Facebook's numbers match Google Analytics?",
+          "a": "Each platform counts its own way. Facebook may credit itself with a purchase by someone who saw an ad without clicking, while Analytics relies on actual visits, and ad blockers and phone privacy settings affect both. Do not try to reconcile the two exactly; agree with the agency on one source of truth for decisions."
+        },
+        {
+          "q": "How do I measure orders that arrive by WhatsApp or phone?",
+          "a": "Every click on a WhatsApp button or phone number on your site can be recorded as an event in Analytics. A different opening message per campaign, a dedicated number for a specific campaign, or a discount code per channel also help. The simplest method is having staff ask every customer \"How did you hear about us?\" and logging the answer in a sheet."
+        }
+      ]
+    }
+  },
+  "web_maintenance": {
+    "onSite": false,
+    "ar": {
+      "search": "صيانة واستضافة المواقع",
+      "intro": "بعد إطلاق الموقع يحتاج إلى من يعتني به باستمرار: استضافة مناسبة وشهادة أمان SSL، ونسخ احتياطية دورية، وتحديث النظام والإضافات دون أن يتعطل شيء، ومراقبة الأمان وتوفر الموقع، وتنظيفه إن تعرض للاختراق، وتعديلات محتوى بسيطة ضمن ساعات شهرية، ومتابعة تجديد النطاق قبل انتهائه. تُقدَّم كاشتراك شهري أو سنوي. تناسب الأنشطة التي لديها موقع قائم دون مطور داخلي، والمواقع التي بناها مستقل لم يعد متاحاً.",
+      "includes": [
+        "استضافة وشهادة أمان SSL",
+        "نسخ احتياطية دورية قابلة للاسترجاع",
+        "تحديث النظام والإضافات بعد اختبارها",
+        "مراقبة الأمان وتوفر الموقع",
+        "ساعات شهرية لتعديلات المحتوى البسيطة",
+        "متابعة تجديد النطاق والشهادات"
+      ],
+      "priceDrivers": "يتأثر السعر بنوع الاستضافة وحجم الزيارات، وعدد ساعات التعديل الشهرية، وسرعة الاستجابة المطلوبة عند الأعطال. وإصلاح موقع قديم أو مخترق في بداية التعاقد يُسعَّر غالباً كمهمة منفصلة.",
+      "notFor": "لا تشمل إعادة التصميم أو بناء مزايا جديدة، وإن كان الموقع قديماً جداً فقد تكون إعادة بنائه أوفر على المدى البعيد من إصلاحه المتكرر.",
+      "faq": [
+        {
+          "q": "ماذا يحدث إذا أردت نقل الموقع إلى شركة أخرى؟",
+          "a": "إذا كانت بيانات الدخول إلى مسجل النطاق والاستضافة ولوحة التحكم لديك، ولديك نسخة احتياطية حديثة، فالنقل عملية روتينية تستغرق أياماً. لذلك اطلب هذه البيانات من البداية، وأضف إلى العقد بنداً يلزم الوكالة بتسليم نسخة كاملة من الموقع وقاعدة البيانات عند انتهاء التعاقد."
+        },
+        {
+          "q": "أليست التحديثات التلقائية كافية؟",
+          "a": "التحديث التلقائي قد يعطّل الموقع إذا تعارضت إضافة جديدة مع أخرى أو مع القالب، وقد لا تكتشف ذلك إلا عندما يخبرك عميل. الصيانة الجيدة تأخذ نسخة احتياطية قبل كل تحديث، وتختبر التحديثات الكبيرة على نسخة تجريبية أولاً، مع تطبيق التحديثات الأمنية العاجلة بسرعة."
+        }
+      ]
+    },
+    "en": {
+      "search": "website maintenance and hosting",
+      "intro": "After launch, a website needs ongoing care: suitable hosting and an SSL certificate, regular backups, updates to the core system and plugins without breaking anything, security and uptime monitoring, clean-up if it is hacked, small content edits within monthly hours, and tracking the domain renewal before it lapses. It is offered as a monthly or annual subscription. It suits businesses with an existing site and no in-house developer, and sites built by a freelancer who is no longer available.",
+      "includes": [
+        "Hosting and SSL certificate",
+        "Regular, restorable backups",
+        "Core and plugin updates after testing",
+        "Security and uptime monitoring",
+        "Monthly hours for small content edits",
+        "Domain and certificate renewal tracking"
+      ],
+      "priceDrivers": "Price depends on hosting type and traffic, monthly editing hours and the response time you need when something breaks. Fixing an old or hacked site at the start of the contract is usually quoted as a separate job.",
+      "notFor": "It does not cover redesign or building new features, and if the site is very old, rebuilding it may cost less over time than repeated fixes.",
+      "faq": [
+        {
+          "q": "What happens if I want to move my site to another company?",
+          "a": "If you hold the logins for the domain registrar, hosting and dashboard, and have a recent backup, moving is routine and takes a few days. So ask for these credentials from the start, and add a clause requiring the agency to hand over a complete copy of the site and its database when the contract ends."
+        },
+        {
+          "q": "Aren't automatic updates enough?",
+          "a": "An automatic update can break the site if a new plugin version conflicts with another plugin or the theme, and you may only find out when a customer tells you. Good maintenance takes a backup before every update and tests major updates on a staging copy first, while applying urgent security patches quickly."
+        }
+      ]
+    }
+  },
+  "ecommerce_setup": {
+    "onSite": false,
+    "ar": {
+      "search": "إنشاء متجر إلكتروني",
+      "intro": "تنشئ الوكالة متجرك على منصة مثل Shopify أو WooCommerce أو غيرهما، وترفع المنتجات بتصنيفاتها وخياراتها كالمقاسات والألوان، وتضبط العملة بالدينار، وتربط بوابة الدفع الإلكتروني إلى جانب الدفع عند الاستلام الشائع في الأردن، وتحدد مناطق التوصيل وأسعاره حسب المحافظة، وتكتب صفحات سياسات الشحن والاسترجاع والخصوصية، ثم تدرب فريقك على إدارة الطلبات. تناسب المحلات التي تريد البيع أونلاين، والمشاريع التي تبيع الآن عبر إنستغرام وتريد طلبات منظمة.",
+      "includes": [
+        "إعداد المتجر على المنصة المختارة",
+        "رفع المنتجات والتصنيفات والخيارات",
+        "ربط بوابة دفع إلكتروني وخيار الدفع عند الاستلام",
+        "مناطق وأسعار التوصيل حسب المحافظة",
+        "صفحات سياسات الشحن والاسترجاع والخصوصية",
+        "ربط البكسلات والتحليلات وتدريب فريقك"
+      ],
+      "priceDrivers": "يتأثر السعر بعدد المنتجات المطلوب رفعها، والمنصة واشتراكها وإضافاتها المدفوعة، والتصميم المخصص، والربط مع أنظمة المخزون أو المحاسبة أو شركات التوصيل.",
+      "notFor": "إنشاء المتجر لا يشمل عادةً التسويق له بعد الإطلاق ولا تصوير المنتجات، ولا يحل محل ترتيبات التوصيل والتحصيل التي تبقى مسؤوليتك.",
+      "faq": [
+        {
+          "q": "ما وسائل الدفع التي يحتاجها متجر في الأردن؟",
+          "a": "ما زال الدفع عند الاستلام خياراً أساسياً لكثير من المتسوقين، فلا تلغِه. للدفع بالبطاقات تحتاج حساب تاجر لدى بنك أو مزود بوابة دفع، ويتطلب ذلك عادةً سجلاً تجارياً ووثائق للنشاط. يمكن أيضاً قبول التحويل الفوري عبر كليك (CliQ). ابدأ بالدفع عند الاستلام ووسيلة دفع إلكترونية واحدة، ثم أضف غيرهما حسب طلب عملائك."
+        },
+        {
+          "q": "ماذا أجهّز قبل أن تبدأ الوكالة ببناء المتجر؟",
+          "a": "جهّز قائمة المنتجات بأسعارها وأوصافها وخياراتها في جدول واحد، وصوراً واضحة لكل منتج، واتفاقاً مع شركة توصيل وأسعارها لكل منطقة، وسياسة الاسترجاع والاستبدال، والسجل التجاري إن أردت الدفع الإلكتروني، واسم النطاق. تأخر هذه المواد هو السبب الأكثر شيوعاً لتأخر إطلاق المتاجر."
+        }
+      ]
+    },
+    "en": {
+      "search": "online store setup",
+      "intro": "The agency builds your store on a platform such as Shopify, WooCommerce or similar, uploads products with categories and options like size and colour, sets pricing in Jordanian dinars, connects an online payment gateway alongside cash on delivery, which is common in Jordan, defines delivery zones and fees by governorate, writes shipping, returns and privacy pages, and trains your team to manage orders. It suits shops that want to sell online and businesses currently selling through Instagram that want organised orders.",
+      "includes": [
+        "Store setup on the chosen platform",
+        "Product, category and option upload",
+        "Online payment gateway plus cash on delivery",
+        "Delivery zones and fees by governorate",
+        "Shipping, returns and privacy policy pages",
+        "Pixel and analytics setup, plus team training"
+      ],
+      "priceDrivers": "Price depends on the number of products to upload, the platform with its subscription and paid apps, custom design, and integration with inventory, accounting or delivery company systems.",
+      "notFor": "Store setup usually excludes marketing after launch and product photography, and it does not replace the delivery and cash collection arrangements that remain your responsibility.",
+      "faq": [
+        {
+          "q": "Which payment methods does a store in Jordan need?",
+          "a": "Cash on delivery is still essential for many shoppers, so keep it. To accept cards you need a merchant account with a bank or payment gateway provider, which usually requires a commercial registration and business documents. You can also accept instant transfers through CliQ. Start with cash on delivery plus one online method, then add more as customers ask."
+        },
+        {
+          "q": "What should I prepare before the agency starts building?",
+          "a": "Prepare a single spreadsheet of products with prices, descriptions and options, clear photos of each product, an agreement with a delivery company and its fees per area, your returns and exchange policy, your commercial registration if you want online payment, and a domain name. Late materials are the most common reason store launches slip."
+        }
+      ]
+    }
+  },
+  "event_coverage": {
+    "onSite": true,
+    "ar": {
+      "search": "تصوير وتغطية الفعاليات",
+      "intro": "يحضر فريق من المصورين الفوتوغرافيين ومصوري الفيديو إلى فعاليتك، سواء كانت مؤتمراً أو افتتاحاً أو معرضاً أو حفل تخريج أو حدثاً داخلياً للشركة. ينشر الفريق ستوريز ومنشورات أثناء الحدث، ويجري مقابلات قصيرة مع المتحدثين والضيوف، ثم يسلّم مقطعاً ملخصاً قصيراً ومعرض صور معدّلة كاملاً، وقد يشمل العمل بثاً مباشراً. ولأن الفريق يعمل في مكان الحدث، يهم أن يكون قريباً من مدينتك. تناسب الشركات والجامعات والمنظمات ومنظمي الفعاليات.",
+      "includes": [
+        "مصورون فوتوغرافيون ومصورو فيديو في موقع الفعالية",
+        "ستوريز ومنشورات مباشرة أثناء الحدث",
+        "مقطع ملخص قصير بعد الفعالية",
+        "معرض صور معدّلة كامل",
+        "مقابلات قصيرة مع المتحدثين أو الضيوف",
+        "بث مباشر عند الطلب"
+      ],
+      "priceDrivers": "يرتفع السعر مع مدة الفعالية بالساعات، وعدد المصورين والكاميرات، والتسليم في اليوم نفسه، والبث المباشر متعدد الكاميرات، والتنقل خارج المدينة أو المبيت إذا امتدت الفعالية لأكثر من يوم.",
+      "notFor": "لا تشمل تنظيم الفعالية نفسها أو تجهيز المسرح والصوت، فإن أردت من يخطط الحدث وينفذه فاطلب خدمة الفعاليات والتفعيلات التسويقية.",
+      "faq": [
+        {
+          "q": "متى أستلم الصور والفيديو بعد الفعالية؟",
+          "a": "اتفق على تسليم على مراحل: بضع صور وستوريز أثناء الحدث للنشر الفوري، ثم مجموعة مختارة من الصور خلال يوم أو يومين للإعلام والشركاء، ثم المعرض الكامل والمقطع الملخص خلال أسبوع تقريباً. التسليم في اليوم نفسه ممكن لكنه يحتاج شخصاً إضافياً يعدّل الصور في الموقع، وهذا يرفع التكلفة."
+        },
+        {
+          "q": "ماذا أجهّز للفريق قبل يوم الفعالية؟",
+          "a": "أرسل للوكالة جدول البرنامج بالدقيقة، وقائمة بالشخصيات والمتحدثين الذين يجب تصويرهم، ولقطات لا يجب أن تفوت كشعارات الرعاة أو لحظة التكريم. وجهّز بطاقات دخول للفريق، ونقطة كهرباء وإنترنت مستقر إن كان هناك بث مباشر، وشخصاً من طرفك يرافق الفريق للتعريف بالضيوف."
+        }
+      ]
+    },
+    "en": {
+      "search": "event photography and videography",
+      "intro": "A team of photographers and videographers attends your event, whether it is a conference, opening, exhibition, graduation or internal company event. The team posts stories and updates during the event, records short interviews with speakers and guests, then delivers a short highlight video and a full gallery of edited photos; live streaming can be added. Because the team works at the venue, it helps to hire one close to your city. It suits companies, universities, NGOs and event organisers.",
+      "includes": [
+        "Photographers and videographers at the venue",
+        "Live stories and posts during the event",
+        "Short highlight video after the event",
+        "Full gallery of edited photos",
+        "Short interviews with speakers or guests",
+        "Live streaming on request"
+      ],
+      "priceDrivers": "Price rises with event length in hours, the number of photographers and cameras, same-day delivery, multi-camera live streaming, and travel or overnight stays when the event is outside the city or runs over several days.",
+      "notFor": "It does not include organising the event itself or setting up the stage and sound; if you need someone to plan and run the event, look at brand activations and events.",
+      "faq": [
+        {
+          "q": "When will I receive photos and video after the event?",
+          "a": "Agree on staged delivery: a few photos and stories during the event for immediate posting, a selected set within a day or two for press and partners, then the full gallery and highlight video within about a week. Same-day delivery is possible but needs an extra person editing on site, which raises the cost."
+        },
+        {
+          "q": "What should I prepare for the team before the event?",
+          "a": "Send the agency a minute-by-minute programme, a list of key people and speakers who must be photographed, and moments that cannot be missed, such as sponsor logos or an award presentation. Arrange access badges, power and stable internet if there is live streaming, and a person from your side to accompany the team and identify guests."
+        }
+      ]
+    }
+  },
+  "print_design": {
+    "onSite": false,
+    "ar": {
+      "search": "تصميم وطباعة المطبوعات",
+      "intro": "تصمم الوكالة المواد المطبوعة التي يستخدمها نشاطك: بطاقات العمل والقرطاسية، والبروشورات والنشرات، وقوائم الطعام، والكتالوجات والملفات التعريفية المطبوعة، ولافتات الرول أب للمعارض، والدعوات. وتجهّز ملفات جاهزة للطباعة بنظام الألوان الصحيح وهوامش القص والدقة المطلوبة، وتنصحك بنوع الورق والتشطيب، وتتابع البروفة مع المطبعة، وبعضها يسلّمك المطبوعات جاهزة. تناسب المطاعم والعيادات والمدارس والشركات التي تشارك في المعارض، وكل نشاط يوزع مواد ورقية على عملائه.",
+      "includes": [
+        "بروشورات ونشرات وقوائم طعام",
+        "بطاقات أعمال وقرطاسية رسمية",
+        "رول أب وبنرات للمعارض",
+        "كتالوج أو ملف تعريفي مطبوع",
+        "ملفات جاهزة للطباعة بهوامش القص",
+        "متابعة البروفة مع المطبعة وتسليم المطبوعات عند الاتفاق"
+      ],
+      "priceDrivers": "يتأثر سعر التصميم بعدد القطع والصفحات، أما إذا كانت الطباعة ضمن العرض فيتحدد السعر أيضاً بالكمية ونوع الورق ووزنه والتشطيبات كالسلوفان والقص الخاص.",
+      "notFor": "إذا كانت المادة تتغير كثيراً، كأسعار أو عروض أسبوعية، فالنسخة الرقمية أو رمز QR لصفحة قابلة للتحديث أوفر من إعادة الطباعة في كل مرة.",
+      "faq": [
+        {
+          "q": "لماذا تبدو الألوان المطبوعة مختلفة عما أراه على الشاشة؟",
+          "a": "الشاشة تعرض الألوان بالضوء، والطباعة تبنيها بالحبر على الورق، وبعض الألوان الزاهية على الشاشة لا يمكن طباعتها كما هي. ويؤثر نوع الورق أيضاً، فالورق المطلي يُظهر الألوان أوضح من غير المطلي. لذلك اطلب بروفة مطبوعة قبل تنفيذ الكمية كاملة، خاصة في المطبوعات الكبيرة أو التي تحمل ألوان هويتك."
+        },
+        {
+          "q": "هل أطلب الطباعة من الوكالة أم مباشرة من المطبعة؟",
+          "a": "الطباعة عبر الوكالة توفر عليك المتابعة وتضع مسؤولية جودة التنفيذ عليها، لكنها قد تضيف هامشاً على سعر المطبعة. الطلب المباشر أقل كلفة غالباً، لكنك ستراجع البروفة بنفسك. في الحالتين اطلب عرض سعر يحدد الكمية ومقاس الورق ووزنه بالغرام والتشطيب ومدة التسليم، حتى تقارن العروض بدقة."
+        }
+      ]
+    },
+    "en": {
+      "search": "print design and printing",
+      "intro": "The agency designs the printed materials your business uses: business cards and stationery, brochures and flyers, menus, printed catalogues and company profiles, roll-up banners for exhibitions, and invitations. It prepares print-ready files with the correct colour mode, bleed and resolution, advises on paper and finishes, follows the proof with the printer, and some agencies deliver the finished prints. It suits restaurants, clinics, schools, companies exhibiting at trade shows and any business that hands out printed material.",
+      "includes": [
+        "Brochures, flyers and menus",
+        "Business cards and corporate stationery",
+        "Roll-ups and exhibition banners",
+        "Printed catalogue or company profile",
+        "Print-ready files with bleed",
+        "Proof follow-up with the printer and delivery of prints, if agreed"
+      ],
+      "priceDrivers": "Design price depends on the number of pieces and pages; when printing is included, quantity, paper type and weight, and finishes such as lamination or custom die-cutting also set the price.",
+      "notFor": "If the content changes often, such as prices or weekly offers, a digital version or a QR code to an updatable page costs less than reprinting every time.",
+      "faq": [
+        {
+          "q": "Why do printed colours look different from the screen?",
+          "a": "Screens create colour with light, while print builds it with ink on paper, and some bright screen colours cannot be printed exactly. Paper matters too: coated paper shows colours more vividly than uncoated. Ask for a printed proof before the full run, especially for large pieces or anything carrying your brand colours."
+        },
+        {
+          "q": "Should I order printing through the agency or directly from the printer?",
+          "a": "Printing through the agency saves you the follow-up and makes it responsible for print quality, but it may add a margin to the printer's price. Ordering directly is usually cheaper, but you check the proof yourself. Either way, get a quote stating quantity, paper size and weight in grams, finish and delivery time so you can compare offers properly."
+        }
+      ]
+    }
+  },
+  "outdoor_ads": {
+    "onSite": true,
+    "ar": {
+      "search": "إعلانات الطرق واللوحات الإعلانية",
+      "intro": "تخطط الوكالة حملتك على الطرق: تقترح مواقع اللوحات حسب حركة السير والجمهور الذي يمر بها، وتحجزها لدى الشركات المالكة للمواقع للفترة المطلوبة، وتصمم إعلاناً يُقرأ في ثوانٍ ومن مسافة، ثم تتابع طباعته وتركيبه أو تجهيز المحتوى للشاشات الرقمية. وقد تشمل الخدمة تغليف المركبات بالإعلانات والشاشات داخل المجمعات التجارية. تناسب المشاريع العقارية وافتتاح الفروع وإطلاق المنتجات والفعاليات الكبيرة، والعلامات التي تريد حضوراً واضحاً في مدينة بعينها.",
+      "includes": [
+        "اقتراح مواقع لوحات حسب حركة السير والجمهور",
+        "حجز المواقع لفترات محددة",
+        "تصميم يُقرأ بسرعة ومن مسافة",
+        "طباعة وتركيب الإعلان أو تجهيزه للشاشات الرقمية",
+        "تغليف المركبات بالإعلانات",
+        "صور توثيق مؤرخة بعد التركيب"
+      ],
+      "priceDrivers": "يتحدد السعر بالموقع ومدة الحجز، وحجم اللوحة ونوعها بين تقليدية ورقمية وأثاث شوارع، وعدد الوجوه، وتكاليف الطباعة والتركيب. وتزداد الأسعار في المواسم كرمضان والأعياد لارتفاع الطلب على المواقع.",
+      "notFor": "لا تتيح استهدافاً دقيقاً ولا قياساً مباشراً للنتائج كالنقرات، فإن كانت ميزانيتك محدودة وجمهورك فئة ضيقة فالإعلانات الرقمية أسهل قياساً وتعديلاً.",
+      "faq": [
+        {
+          "q": "كيف أتأكد أن الإعلان رُكّب فعلاً وبقي طوال المدة؟",
+          "a": "اطلب صوراً مؤرخة لكل لوحة بعد التركيب مباشرة، وصوراً دورية خلال مدة الحملة، وفي الشاشات الرقمية اطلب تقرير مرات العرض. ومن المفيد أن تزور بعض المواقع بنفسك في أيام وأوقات مختلفة. وحدد في الاتفاق ما يحدث إذا تلفت اللوحة أو تعطلت الشاشة، هل يُعوَّض الوقت أم يُخصم من المبلغ."
+        },
+        {
+          "q": "هل تحتاج إعلانات الطرق إلى موافقات رسمية؟",
+          "a": "نعم. الإعلانات الخارجية في الأردن تنظمها البلديات، وفي عمّان أمانة عمّان الكبرى، والمواقع التي تحجزها الوكالة تكون عادةً مرخصة لدى الشركة المالكة لها، وقد يخضع محتوى الإعلان للمراجعة. وإن كنت تريد لافتة على واجهة محلك أو مبناك فهذه تحتاج ترخيصاً ورسوماً منفصلة، فاسأل الوكالة من سيتولى إجراءاتها."
+        }
+      ]
+    },
+    "en": {
+      "search": "billboard and outdoor advertising",
+      "intro": "The agency plans your outdoor campaign: it proposes billboard locations based on traffic and the audience passing by, books them with the site owners for the period you need, designs an ad that can be read in seconds from a distance, then oversees printing and installation or prepares content for digital screens. The service can also cover vehicle wraps and screens inside malls. It suits real estate projects, branch openings, product launches, large events and brands wanting a visible presence in a specific city.",
+      "includes": [
+        "Billboard site proposals based on traffic and audience",
+        "Booking sites for set periods",
+        "Design that reads quickly from a distance",
+        "Printing and installation, or content for digital screens",
+        "Vehicle wraps",
+        "Dated photos of installation as proof"
+      ],
+      "priceDrivers": "Price is set by location and booking length, size and format (classic board, digital screen or street furniture), number of faces, and printing and installation costs. Rates rise in peak seasons such as Ramadan and Eid when demand for sites is high.",
+      "notFor": "It offers no precise targeting or direct measurement such as clicks, so with a limited budget and a narrow audience, digital ads are easier to measure and adjust.",
+      "faq": [
+        {
+          "q": "How do I know the ad was installed and stayed up for the whole period?",
+          "a": "Ask for dated photos of every site right after installation and periodic photos during the campaign, and for digital screens ask for a play report. It also helps to visit some sites yourself on different days and times. State in the agreement what happens if a board is damaged or a screen goes down: is the time made up or deducted?"
+        },
+        {
+          "q": "Does outdoor advertising need official approval?",
+          "a": "Yes. Outdoor advertising in Jordan is regulated by municipalities, in Amman by the Greater Amman Municipality, and sites booked through an agency are normally licensed to the company that owns them; ad content may also be reviewed. A sign on your own shopfront or building needs its own licence and fees, so ask the agency who will handle that paperwork."
+        }
+      ]
+    }
+  },
+  "activations": {
+    "onSite": true,
+    "ar": {
+      "search": "تنظيم فعاليات وتفعيلات تسويقية",
+      "intro": "التفعيل التسويقي تجربة مباشرة للعلامة أمام الناس: جناح في مجمع تجاري، أو توزيع عينات وتذوق، أو متجر مؤقت، أو حدث لإطلاق منتج، أو جولة في الجامعات، أو مسابقة في مكان عام. تتولى الوكالة الفكرة وتصميم التجربة، وتصنيع الجناح، وتوظيف المروجين وتدريبهم، والتنسيق مع إدارة المكان، وتجهيز الهدايا، وجمع بيانات الزوار، وتغطية الحدث على السوشيال ميديا. تناسب شركات المنتجات الاستهلاكية والاتصالات والبنوك والتطبيقات والمطاعم الجديدة.",
+      "includes": [
+        "فكرة التفعيل وتصميم تجربة الزائر",
+        "تصميم الجناح أو الركن وتصنيعه",
+        "توظيف مروجين وتدريبهم على المنتج",
+        "التنسيق مع إدارة المول أو الجامعة أو المكان",
+        "هدايا وعينات ومواد ترويجية",
+        "جمع بيانات الزوار وتغطية الحدث على السوشيال"
+      ],
+      "priceDrivers": "تتحدد التكلفة برسوم المكان، وحجم الجناح وتعقيد تصنيعه، وعدد أيام التفعيل وعدد المروجين، والمدن المشمولة، وكمية الهدايا والعينات الموزعة.",
+      "notFor": "التفعيل الميداني مكلف قياساً بعدد من يصل إليهم، فإن لم تكن تجربة المنتج مباشرة، كالتذوق أو التجريب، مهمة في قرار الشراء فقد تصل الحملات الرقمية إلى عدد أكبر بالميزانية نفسها.",
+      "faq": [
+        {
+          "q": "كم من الوقت أحتاج لتحضير تفعيل في مجمع تجاري؟",
+          "a": "احسب عادةً من أربعة إلى ثمانية أسابيع. حجز المساحة في المجمعات يحتاج وقتاً، خاصة قبل رمضان والأعياد والعودة إلى المدارس حين تكثر الطلبات، وتصنيع الجناح يستغرق أسبوعاً إلى ثلاثة، ثم يأتي توظيف المروجين وتدريبهم. التفعيل المستعجل ممكن، لكنه يقلل خيارات المواقع ويرفع التكلفة غالباً."
+        },
+        {
+          "q": "كيف أقيس نتيجة التفعيل؟",
+          "a": "حدد قبل البدء ما الذي ستقيسه: عدد العينات الموزعة، أو عدد من سجلوا بياناتهم، أو تحميلات التطبيق عبر رمز QR خاص بالحدث، أو قسائم خصم تُستخدم لاحقاً في الفروع. وقارن مبيعات المنطقة خلال أيام التفعيل وبعدها بفترة مماثلة سابقة، واطلب من الوكالة تقريراً يجمع هذه الأرقام."
+        }
+      ]
+    },
+    "en": {
+      "search": "brand activation",
+      "intro": "A brand activation is a live experience of your brand in front of people: a mall booth, sampling or tasting, a pop-up shop, a product launch event, a university tour or a competition in a public space. The agency handles the concept and visitor experience, builds the booth, hires and trains promoters, coordinates with venue management, prepares giveaways, captures visitor data and covers the event on social media. It suits consumer goods companies, telecoms, banks, apps and new restaurants.",
+      "includes": [
+        "Activation concept and visitor experience",
+        "Booth or corner design and fabrication",
+        "Hiring and training promoters on the product",
+        "Coordination with mall, university or venue management",
+        "Giveaways, samples and promotional materials",
+        "Visitor data capture and social media coverage"
+      ],
+      "priceDrivers": "Cost is driven by venue fees, booth size and fabrication complexity, the number of activation days and promoters, the cities covered, and the quantity of giveaways and samples.",
+      "notFor": "Field activations are expensive per person reached, so if trying the product first-hand, such as tasting or testing, does not matter to the buying decision, digital campaigns may reach more people for the same budget.",
+      "faq": [
+        {
+          "q": "How much lead time does a mall activation need?",
+          "a": "Plan on four to eight weeks. Booking mall space takes time, especially before Ramadan, Eid and back to school when demand is high; booth fabrication takes one to three weeks, then promoters need hiring and training. A rushed activation is possible, but it usually narrows your location options and raises the cost."
+        },
+        {
+          "q": "How do I measure the results of an activation?",
+          "a": "Decide before you start what you will count: samples handed out, sign-ups, app downloads through an event-specific QR code, or discount vouchers redeemed later in stores. Compare sales in the area during and after the activation with a similar earlier period, and ask the agency for a report bringing these figures together."
+        }
+      ]
+    }
+  }
+}
