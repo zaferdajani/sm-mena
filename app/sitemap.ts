@@ -13,7 +13,7 @@ function entry(path: string, lastModified?: Date, priority = 0.6): MetadataRoute
     url: `${SITE_URL}/ar${path}`,
     lastModified,
     priority,
-    alternates: { languages: Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}${path}`])) },
+    alternates: { languages: { ...Object.fromEntries(routing.locales.map((l) => [l, `${SITE_URL}/${l}${path}`])), "x-default": `${SITE_URL}/${routing.defaultLocale}${path}` } },
   };
 }
 

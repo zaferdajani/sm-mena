@@ -90,7 +90,7 @@ export async function trafficStats(days: number, now = new Date()) {
       .limit(12),
     db.select({ key: pageViews.device, n: sql<number>`count(distinct ${pageViews.sessionId})::int` }).from(pageViews).where(inRange).groupBy(pageViews.device).orderBy(desc(sql`count(distinct ${pageViews.sessionId})`)),
     db.select({ key: sql<string>`coalesce(${pageViews.locale}, '?')`, n: sql<number>`count(distinct ${pageViews.sessionId})::int` }).from(pageViews).where(inRange).groupBy(sql`1`).orderBy(desc(sql`2`)),
-    db.select({ key: sql<string>`coalesce(${pageViews.timezone}, '?')`, n: sql<number>`count(distinct ${pageViews.sessionId})::int` }).from(pageViews).where(inRange).groupBy(sql`1`).orderBy(desc(sql`2`)).limit(8),
+    db.select({ key: sql<string>`coalesce(${pageViews.timezone}, '?')`, n: sql<number>`count(distinct ${pageViews.sessionId})::int` }).from(pageViews).where(inRange).groupBy(sql`1`).orderBy(desc(sql`2`)).limit(60),
   ]);
 
   // Fill days without traffic so the chart has no gaps.

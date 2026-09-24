@@ -949,7 +949,9 @@
     "timezones": "Time zones",
     "aiByProvider": "AI answers by provider",
     "direct": "Direct / unknown",
-    "noData": "No data yet for this period."
+    "noData": "No data yet for this period.",
+    "countries": "Countries (from device time zone)",
+    "unknownCountry": "Unknown"
   },
   "Billing": {
     "current": "Your plan",
@@ -1374,5 +1376,10 @@
       "counts": "Contracts by payment mode and status"
     },
     "fromPackage": "Create a contract from this package"
+  },
+  "LangOffer": {
+    "text": "Sawwiq is available in English.",
+    "switch": "Show it in English",
+    "dismiss": "Keep this language"
   }
 }

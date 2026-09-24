@@ -20,6 +20,10 @@ Arabic first (RTL), English second. **Free for everyone at launch.** Paid plans,
 
 Agencies build packages from a catalogue (posts, reels, stories, accounts handled per platform, ads, websites and maintenance, branding, on-site shoots and events, reports), then turn a package or a won quote into a contract: milestones with dates, amounts and checklists, the client's special requests pinned to milestones, an optional NDA, and a choice of **protected payment** (the client pays each milestone into Sawwiq; it's released when the client confirms every checklist item; disputes go to admin) or **direct payment** (no guarantees). Both sides sign online; the client needs only a private link. See `docs/14-contracts-and-milestones.md`.
 
+### Languages
+
+Arabic first (right to left), English second. The site never switches language by itself: it offers the likely language in one line (from the device language and the time zone's country, no IP lookups) and remembers the choice. `npm run i18n:translate -- --to <code>` drafts new languages with Claude or OpenAI, with placeholder and brand-name validation. See `docs/15-languages.md`.
+
 ### Admin console
 
 Platform overview and system status, statistics (traffic sources, how visitors arrived, funnel, activity), payments (plans, CliQ/bank/cash recording, refunds, CSV export), bugs (automatic error journal and user reports), agencies, reports, reviews, promotions, users, audit log. Admins sign in with an authenticator app (two-factor, required in production and checked on the server). See `docs/13-admin-console.md`.
@@ -65,6 +69,7 @@ Every demo agency logs in as `<handle with dots replaced by dashes>@sawwiq.test`
 | `npm test` | Unit tests (Vitest, in-memory PGlite) |
 | `npm run build && npm run e2e` | Production build, then browser tests (Playwright, mobile and desktop) on a freshly seeded database |
 | `npm run db:generate` / `db:migrate` / `db:seed` / `db:reset` | Migrations and seed |
+| `npm run i18n:translate -- --to <code>` | Draft a new interface language (see docs/15) |
 | `npm run ai:eval` | Score AI providers on the test conversations (mock and rules when no key is set) |
 
 First time running browser tests: `npx playwright install chromium`, or point to an existing Chromium with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome`.
@@ -117,6 +122,7 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/11-build-stages.md` | What was built, stage by stage |
 | `docs/12-ai-matchmaker.md` | Matching score, AI agent design, requests and quotes, safety |
 | `docs/13-admin-console.md` | Admin console, two-factor sign-in, payments, bugs, statistics |
+| `docs/15-languages.md` | Language offer, location concept, RTL, translation pipeline |
 | `docs/14-contracts-and-milestones.md` | Deliverables catalogue, contracts and NDA, milestones, protected and direct payments |
 | `CLAUDE.md` | Build rules for Claude Code |
 

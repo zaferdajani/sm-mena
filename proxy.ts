@@ -1,6 +1,6 @@
 import createMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
-import { routing } from "./i18n/routing";
+import { NextResponse, type NextRequest } from "next/server";
+import { LANG_COOKIE, routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
 const VISITOR_COOKIE = "sw_vid";
@@ -9,6 +9,15 @@ const VISITOR_COOKIE = "sw_vid";
 // ("/" opens Arabic) and gives every browser an anonymous visitor id used for
 // likes, saves and follows without an account.
 export function proxy(request: NextRequest) {
+  // "/" opens the language the visitor chose before (switcher or offer), else
+  // Arabic. Only a saved choice redirects; bots have no cookie and always get
+  // the default, and explicit /ar or /en URLs are never changed.
+  const saved = request.cookies.get(LANG_COOKIE)?.value;
+  if (request.nextUrl.pathname === "/" && saved && saved !== routing.defaultLocale && (routing.locales as readonly string[]).includes(saved)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${saved}`;
+    return NextResponse.redirect(url);
+  }
   const response = intl(request);
   if (!request.cookies.get(VISITOR_COOKIE)) {
     response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {

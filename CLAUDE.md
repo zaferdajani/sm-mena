@@ -22,7 +22,7 @@ The product is an Instagram-style showcase for agencies plus an AI matchmaker wi
 - Middleware is called **proxy** in Next.js 16 (`proxy.ts`). Do not create `middleware.ts`.
 - `params` and `searchParams` are Promises. Use `await params` in async components or `use(params)` in sync ones; type props with the global `PageProps<"/[locale]">` / `LayoutProps<"/[locale]">` helpers.
 - Read `node_modules/next/dist/docs/` before using an unfamiliar Next.js API.
-- i18n: `i18n/routing.ts` (locales, `directionOf`), `i18n/request.ts`, `i18n/navigation.ts` (use its `Link`, not `next/link`). Locale detection is off: `/` always opens Arabic.
+- i18n: `i18n/languages.ts` (registry, RTL), `i18n/routing.ts` (locales, `directionOf`, never auto-switch; see docs/15-languages.md), `i18n/request.ts`, `i18n/navigation.ts` (use its `Link`, not `next/link`). Locale detection is off: `/` always opens Arabic.
 - UI: shadcn/ui (Base UI primitives) with `rtl: true`; `DirectionProvider` is set in the locale layout. Add components with `npx shadcn@latest add <name>`.
 - Theme tokens live in `app/globals.css` using shadcn names; brand green is `primary`. Dark mode follows the OS.
 - Taxonomy: edit `data/service-taxonomy.json`, then mirror it in `lib/taxonomy.ts`; a unit test fails if they differ.

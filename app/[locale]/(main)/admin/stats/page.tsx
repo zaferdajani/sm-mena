@@ -4,6 +4,7 @@ import { FilterChips } from "@/components/admin/filter-chips";
 import { StatTiles } from "@/components/admin/stat-tiles";
 import { requireAdmin } from "@/lib/auth/guards";
 import { marketplaceStats, RANGES, trafficStats } from "@/lib/data/stats";
+import { countryName, countryOfZone } from "@/lib/i18n/country";
 
 export default async function AdminStats({ params, searchParams }: PageProps<"/[locale]/admin/stats">) {
   const { locale } = await params;
@@ -28,6 +29,13 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
     : traffic.series.map((d) => ({ label: label(d.day), tip: label(d.day), value: d.views }));
 
   const { totals } = traffic;
+  // Countries from device time zones (no IP addresses are used).
+  const countries = new Map<string, number>();
+  for (const z of traffic.zones) {
+    const code = countryOfZone(z.key);
+    const label = code ? countryName(code, locale) : t("unknownCountry");
+    countries.set(label, (countries.get(label) ?? 0) + z.n);
+  }
   return (
     <div className="space-y-6" data-testid="admin-stats-page">
       <FilterChips param="days" current={String(days)} options={RANGES.map((r) => ({ value: String(r), label: t("range", { days: r }) }))} />
@@ -70,7 +78,7 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
         <section className="space-y-5 rounded-xl border p-4">
           <BarList title={t("devices")} fmt={fmt} empty={t("noData")} rows={traffic.devices.map((d) => ({ label: t(`deviceNames.${d.key}` as "deviceNames.mobile"), value: d.n }))} />
           <BarList title={t("languages")} fmt={fmt} empty={t("noData")} rows={traffic.languages.map((d) => ({ label: d.key === "ar" ? "العربية" : d.key === "en" ? "English" : d.key, value: d.n }))} />
-          <BarList title={t("timezones")} fmt={fmt} empty={t("noData")} rows={traffic.zones.map((d) => ({ label: d.key, value: d.n }))} />
+          <BarList title={t("countries")} fmt={fmt} empty={t("noData")} rows={[...countries].sort((a, b) => b[1] - a[1]).map(([label, n]) => ({ label, value: n }))} />
           <BarList title={t("aiByProvider")} fmt={fmt} empty={t("noData")} rows={market.aiByProvider.map((d) => ({ label: d.key, value: d.n }))} />
         </section>
       </div>
