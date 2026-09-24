@@ -1,6 +1,6 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans_Arabic, Readex_Pro } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -16,6 +16,22 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-plex-arabic",
   subsets: ["arabic", "latin"],
   weight: ["400", "500", "700"],
+  display: "swap",
+});
+
+// Display face for headings, from the landing site's identity.
+const readex = Readex_Pro({
+  variable: "--font-readex",
+  subsets: ["arabic", "latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
+
+// Amounts, dates and handles.
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["500"],
   display: "swap",
 });
 
@@ -57,7 +73,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={directionOf(locale)}
-      className={`${plexArabic.variable} h-full antialiased`}
+      className={`${plexArabic.variable} ${readex.variable} ${plexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         {/* Tells shadcn/Base UI components (menus, sliders, tabs) which way to read. */}

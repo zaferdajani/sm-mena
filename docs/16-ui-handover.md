@@ -52,3 +52,11 @@ Social media management, content, community, strategy, influencers · Meta, TikT
 7. Cities (Amman, Irbid, Zarqa, Aqaba, Salt, Madaba…) and a final call to action.
 
 Calls to action link to the platform: `/ar/match`, `/ar/explore`, `/ar/join` on the live app domain.
+
+## Result: landing site and the matching app restyle
+
+- **Landing site:** https://sawwiq-jordan.higgsfield.app (Arabic at `/`, English at `/en`), built with the Higgsfield website builder. Concept "the deal desk": a single overhead scroll film across a limestone desk, from real work to feed to quotes to contract to lockbox, followed by an interactive milestone ledger, services index, trust grid, agencies band and cities. Calls to action link to `/ar/match`, `/ar/explore` and `/ar/join` on the app. The site is deployed but not listed on the Higgsfield feed; Higgsfield only serves unlisted sites to signed-in owners, so publishing it (or moving it elsewhere) is what makes it public.
+- **Tokens now in the app (`app/globals.css`):** limestone background `#F2F2ED`, raised surface `#FBFBF8`, sunk `#E8E9E2`, hairline `#D5D8CF`, text `#10231A` / `#4C5C53`, brand `#0E6B46`, deep green `#0A4531`, mint `#DCEDE2`, warning `#9A6200`, danger `#B3261E`; card and lift shadows; easing `cubic-bezier(.2,.7,.2,1)`. Dark mode keeps the green family.
+- **Type:** Readex Pro for headings (Arabic and Latin), IBM Plex Sans Arabic for body, IBM Plex Mono for amounts.
+- **Logo:** the green tile with the white "سوّق" mark (`public/brand/`, app icons and manifest).
+- **AI matchmaker call to action:** the chat-bubble style (sharp bottom-start corner, green glow, typing dots on hover, reduced-motion safe).

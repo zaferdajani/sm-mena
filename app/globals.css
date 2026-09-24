@@ -9,31 +9,38 @@
    Brand green is the primary colour; brand-soft/tint/line are extras
    for highlighted panels. */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.21 0.02 160);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.02 160);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 160);
-  --primary: oklch(0.5 0.11 157);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.97 0.006 160);
-  --secondary-foreground: oklch(0.25 0.02 160);
-  --muted: oklch(0.975 0.005 160);
-  --muted-foreground: oklch(0.48 0.02 160);
-  --accent: oklch(0.96 0.03 157);
-  --accent-foreground: oklch(0.3 0.06 157);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.01 160);
-  --input: oklch(0.92 0.01 160);
-  --ring: oklch(0.6 0.1 157);
-  --brand: oklch(0.5 0.11 157);
-  --brand-soft: oklch(0.97 0.02 157);
-  --brand-tint: oklch(0.93 0.05 157);
-  --brand-line: oklch(0.85 0.08 157);
+  /* "Deal desk" palette from the Sawwiq landing site (docs/16-ui-handover.md):
+     Amman limestone surfaces, deep ink-green text, one brand green, mint tints. */
+  --radius: 0.625rem; /* 10px chips; rounded-xl = 14px cards */
+  --background: #f2f2ed;
+  --foreground: #10231a;
+  --card: #fbfbf8;
+  --card-foreground: #10231a;
+  --popover: #fbfbf8;
+  --popover-foreground: #10231a;
+  --primary: #0e6b46;
+  --primary-foreground: #fbfbf8;
+  --secondary: #e8e9e2;
+  --secondary-foreground: #10231a;
+  --muted: #e8e9e2;
+  --muted-foreground: #4c5c53;
+  --accent: #dcede2;
+  --accent-foreground: #0a4531;
+  --destructive: #b3261e;
+  --warning: #9a6200;
+  --border: #d5d8cf;
+  --input: #d5d8cf;
+  --ring: #0e6b46;
+  --brand: #0e6b46;
+  --brand-deep: #0a4531;
+  --brand-soft: #eef5f0;
+  --brand-tint: #dcede2;
+  --brand-line: #a9cdb8;
   /* Chart series colour, validated for contrast on the light surface */
-  --chart-1: oklch(0.5 0.11 157);
+  --chart-1: #0e6b46;
+  --shadow-card: 0 1px 0 rgb(16 35 26 / 0.04), 0 18px 40px -18px rgb(16 35 26 / 0.22);
+  --shadow-lift: 0 1px 0 rgb(16 35 26 / 0.04), 0 26px 50px -20px rgb(16 35 26 / 0.3);
+  --ease-desk: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -57,6 +64,8 @@
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.6 0.1 157);
     --brand: oklch(0.78 0.14 157);
+    --brand-deep: oklch(0.62 0.12 157);
+    --warning: oklch(0.8 0.14 75);
     --brand-soft: oklch(0.22 0.03 157);
     --brand-tint: oklch(0.3 0.05 157);
     --brand-line: oklch(0.38 0.07 157);
@@ -67,7 +76,13 @@
 
 @theme inline {
   --font-sans: var(--font-plex-arabic), system-ui, sans-serif;
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-readex), var(--font-plex-arabic), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --color-brand-deep: var(--brand-deep);
+  --color-warning: var(--warning);
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+  --ease-desk: var(--ease-desk);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -107,5 +122,79 @@
   }
   html {
     @apply font-sans;
+  }
+  /* Display face for headings (Readex Pro, Arabic + Latin); no tracking on Arabic. */
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+  :lang(en) h1 {
+    letter-spacing: -0.02em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+/* The AI matchmaker's call to action is a chat bubble (landing site "Ask the
+   matchmaker" garment): sharp bottom-start corner, green glow, typing dots on hover. */
+@layer components {
+  .cta-bubble {
+    border-radius: 18px;
+    border-end-start-radius: 4px;
+    box-shadow: 0 10px 24px -10px rgb(14 107 70 / 0.55);
+    transition: transform 180ms var(--ease-desk), box-shadow 180ms var(--ease-desk);
+  }
+  .cta-bubble:hover {
+    box-shadow: 0 14px 30px -10px rgb(14 107 70 / 0.65);
+  }
+  .cta-bubble:active {
+    transform: scale(0.97);
+  }
+  .cta-bubble .typing {
+    display: inline-flex;
+    gap: 2px;
+    width: 0;
+    overflow: hidden;
+    transition: width 180ms var(--ease-desk);
+  }
+  .cta-bubble:hover .typing {
+    width: 1rem;
+  }
+  .cta-bubble .typing i {
+    width: 3px;
+    height: 3px;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: typing-dot 900ms infinite var(--ease-desk);
+  }
+  .cta-bubble .typing i:nth-child(2) {
+    animation-delay: 120ms;
+  }
+  .cta-bubble .typing i:nth-child(3) {
+    animation-delay: 240ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-bubble,
+    .cta-bubble .typing {
+      transition: none;
+    }
+    .cta-bubble .typing i {
+      animation: none;
+    }
+  }
+}
+
+@keyframes typing-dot {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-3px);
+    opacity: 1;
   }
 }

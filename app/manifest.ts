@@ -8,10 +8,13 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "وكالات السوشيال ميديا في الأردن · Social media agencies in Jordan",
     start_url: "/ar",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#13784a",
+    background_color: "#f2f2ed",
+    theme_color: "#0e6b46",
     lang: "ar",
     dir: "rtl",
-    icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
+    icons: [
+      { src: "/brand/mark-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/brand/mark-512.png", sizes: "512x512", type: "image/png" },
+    ],
   };
 }

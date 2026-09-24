@@ -21,13 +21,18 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
       <AgenciesStrip agencies={strip} showJoin={!user} />
 
-      <section className="border-b bg-accent/60 px-4 py-4 sm:my-6 sm:rounded-xl sm:border">
-        <h1 className="text-lg font-bold leading-snug">{t("introTitle")}</h1>
+      <section className="border-b bg-card px-4 py-5 sm:my-6 sm:rounded-xl sm:border sm:shadow-card">
+        <h1 className="text-xl leading-snug">{t("introTitle")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("introBody")}</p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <Link href="/match" className={buttonVariants({ className: "h-9 gap-2 px-4" })} data-testid="home-ai">
+          <Link href="/match" className={buttonVariants({ className: "cta-bubble h-10 gap-2 px-4" })} data-testid="home-ai">
             <Sparkles className="size-4" />
             {tn("match")}
+            <span className="typing" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
           </Link>
           <Link href="/explore" className={buttonVariants({ variant: "outline", className: "h-9 gap-2 px-4" })}>
             <Compass className="size-4" />
