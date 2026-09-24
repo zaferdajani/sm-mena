@@ -34,17 +34,17 @@ export async function ContractSummary({ v, locale }: { v: ContractView; locale: 
       <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
         <div className="rounded-xl bg-muted/50 p-2.5">
           <dt className="text-xs text-muted-foreground">{t("view.total")}</dt>
-          <dd className="font-bold tabular-nums">{formatFils(c.totalFils, locale)}</dd>
+          <dd className="font-bold tabular-nums">{formatFils(c.totalFils, locale, c.currency)}</dd>
         </div>
         {c.paymentMode === "protected" && (
           <>
             <div className="rounded-xl bg-muted/50 p-2.5">
               <dt className="text-xs text-muted-foreground">{t("view.held")}</dt>
-              <dd className="font-bold tabular-nums" data-testid="money-held">{formatFils(v.money.held, locale)}</dd>
+              <dd className="font-bold tabular-nums" data-testid="money-held">{formatFils(v.money.held, locale, c.currency)}</dd>
             </div>
             <div className="rounded-xl bg-muted/50 p-2.5">
               <dt className="text-xs text-muted-foreground">{t("view.released")}</dt>
-              <dd className="font-bold tabular-nums">{formatFils(v.money.released, locale)}</dd>
+              <dd className="font-bold tabular-nums">{formatFils(v.money.released, locale, c.currency)}</dd>
             </div>
           </>
         )}

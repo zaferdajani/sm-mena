@@ -6,19 +6,23 @@ import { toSummary, type AgencySummary } from "./agencies";
 
 export type HireCard = AgencySummary & { thumbs: { postId: string; url: string; color: string }[] };
 
-function where(service: string, city?: string) {
+/** A hire page's place: a city, a whole country, or (neither) every country. */
+export type Place = { city?: string; country?: string };
+
+function where(service: string, place: Place = {}) {
   const c = [eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`];
-  if (city) c.push(eq(agencies.city, city));
+  if (place.city) c.push(eq(agencies.city, place.city));
+  if (place.country) c.push(eq(agencies.country, place.country));
   return and(...c);
 }
 
 /** Agencies offering a service (optionally in a city) with three recent work thumbnails each. */
-export async function hireCards(service: string, city?: string, limit = 24): Promise<HireCard[]> {
+export async function hireCards(service: string, place: Place = {}, limit = 24): Promise<HireCard[]> {
   const db = await getDb();
   const rows = await db
     .select()
     .from(agencies)
-    .where(where(service, city))
+    .where(where(service, place))
     .orderBy(desc(agencies.isVerified), desc(sql`${agencies.postCount} > 0`), desc(agencies.followerCount))
     .limit(limit);
   if (!rows.length) return [];
@@ -38,7 +42,7 @@ export async function hireCards(service: string, city?: string, limit = 24): Pro
 }
 
 /** Starting-price guide from agencies' own "from" prices. */
-export async function priceGuide(service: string, city?: string) {
+export async function priceGuide(service: string, place: Place = {}) {
   const db = await getDb();
   const [row] = await db
     .select({
@@ -50,17 +54,17 @@ export async function priceGuide(service: string, city?: string) {
       verified: sql<number>`count(*) filter (where ${agencies.isVerified})::int`,
     })
     .from(agencies)
-    .where(where(service, city));
+    .where(where(service, place));
   return { ...row, median: row.median === null ? null : Math.round(Number(row.median)) };
 }
 
-/** Cities with at least one agency for a service, most first. */
-export async function citiesForService(service: string) {
+/** Cities with at least one agency for a service (in a country, if given), most first. */
+export async function citiesForService(service: string, country?: string) {
   const db = await getDb();
   return db
     .select({ city: agencies.city, n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(where(service))
+    .where(where(service, { country }))
     .groupBy(agencies.city)
     .orderBy(desc(sql`count(*)`));
 }
@@ -73,36 +77,49 @@ export async function citiesForService(service: string) {
 export async function serviceCounts({ realOnly = false } = {}) {
   const db = await getDb();
   const rows = await db
-    .select({ service: sql<string>`unnest(${agencies.services})`, city: agencies.city })
+    .select({ service: sql<string>`unnest(${agencies.services})`, city: agencies.city, country: agencies.country })
     .from(agencies)
     .where(realOnly ? and(eq(agencies.status, "active"), eq(agencies.isDemo, false)) : eq(agencies.status, "active"));
   const services = new Map<string, number>();
   const pairs = new Map<string, number>();
+  const countries = new Map<string, number>();
+  const bump = (m: Map<string, number>, k: string) => m.set(k, (m.get(k) ?? 0) + 1);
   for (const r of rows) {
-    services.set(r.service, (services.get(r.service) ?? 0) + 1);
-    pairs.set(`${r.service}|${r.city}`, (pairs.get(`${r.service}|${r.city}`) ?? 0) + 1);
+    bump(services, r.service);
+    bump(pairs, `${r.service}|${r.city}`);
+    bump(countries, `${r.service}|${r.country}`);
   }
-  return { services, pairs };
+  return { services, pairs, countries };
+}
+
+/** Active agencies per country for a service (the region-wide hire page). */
+export async function countriesForService(service: string) {
+  const db = await getDb();
+  return db
+    .select({ country: agencies.country, n: sql<number>`count(*)::int` })
+    .from(agencies)
+    .where(where(service))
+    .groupBy(agencies.country);
 }
 
 /** Real (non-demo) active agencies offering a service, optionally in a city. */
-export async function realAgencyCount(service: string, city?: string) {
+export async function realAgencyCount(service: string, place: Place = {}) {
   const db = await getDb();
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(and(where(service, city), eq(agencies.isDemo, false)));
+    .where(and(where(service, place), eq(agencies.isDemo, false)));
   return row.n;
 }
 
 /** What agencies charge in their packages for a service: price spread and typical delivery time. */
-export async function packageFacts(service: string, city?: string) {
+export async function packageFacts(service: string, place: Place = {}) {
   const db = await getDb();
   const rows = await db
     .select({ price: packages.priceJod, billing: packages.billing, days: packages.deliveryDays })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(where(service, city), eq(packages.service, service)));
+    .where(and(where(service, place), eq(packages.service, service)));
   if (!rows.length) return null;
   const median = (xs: number[]) => {
     const v = [...xs].sort((a, b) => a - b);

@@ -17,7 +17,7 @@ export async function ContractDocument({ v, locale }: { v: ContractView; locale:
   const tp = await getTranslations("Platforms");
   const tc = await getTranslations("Contracts.commit");
   const c = v.contract;
-  const money = (f: number) => formatFils(f, locale);
+  const money = (f: number) => formatFils(f, locale, c.currency);
   const specials = v.milestones.flatMap((m) => m.checks.filter((k) => k.source === "special_request").map((k) => ({ text: k.text, milestone: m.title })));
 
   return (

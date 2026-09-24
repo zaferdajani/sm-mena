@@ -11,11 +11,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[se
   const { locale, service } = await params;
   if (!isServiceKey(service)) return {};
   const [{ t, place, search }, price, real] = await Promise.all([hireCopy(locale, service), priceGuide(service), realAgencyCount(service)]);
+  // Region-wide page: several currencies, so no "from" price in the description.
   return pageMeta({
     locale,
     path: `/hire/${service}`,
     title: capitalize(t("title", { service: search, place })),
-    description: price.min !== null ? t("metaDescription", { count: price.agencies, service: search, place, min: price.min }) : t("metaDescriptionNoPrice", { count: price.agencies, service: search, place }),
+    description: t("metaDescriptionNoPrice", { count: price.agencies, service: search, place }),
     // Indexed once real agencies offer the service (lib/seo.ts).
     noindex: real < INDEX_MIN_SERVICE,
   });

@@ -49,7 +49,7 @@ export async function ContractCommitments({ v, locale }: { v: ContractView; loca
           <p className="flex items-start gap-2 rounded-lg bg-muted/50 p-2.5">
             <Megaphone className="mt-0.5 size-4 shrink-0 text-brand" />
             <span>
-              {t("media", { amount: formatFils(c.mediaBudgetJod * 1000, locale) })}
+              {t("media", { amount: formatFils(c.mediaBudgetJod * 1000, locale, c.currency) })}
               <span className="block text-xs text-muted-foreground">{t("mediaNote")}</span>
             </span>
           </p>

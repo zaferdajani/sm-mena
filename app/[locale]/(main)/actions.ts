@@ -25,6 +25,7 @@ const filtersSchema = z
   .object({
     q: z.string().max(80).optional(),
     service: z.string().max(40).optional(),
+    country: z.string().max(2).optional(),
     city: z.string().max(40).optional(),
     platforms: z.array(z.string().max(40)).max(20).optional(),
     industry: z.string().max(40).optional(),

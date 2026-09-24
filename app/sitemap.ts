@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!siteIndexable()) return [];
   const db = await getDb();
   const real = and(eq(agencies.status, "active"), eq(agencies.isDemo, false));
-  const [agencyRows, postRows, [{ latest }], { services, pairs }] = await Promise.all([
+  const [agencyRows, postRows, [{ latest }], { services, pairs, countries }] = await Promise.all([
     db.select({ handle: agencies.handle, updatedAt: agencies.updatedAt }).from(agencies).where(real),
     db
       .select({ id: posts.id, caption: posts.caption, createdAt: posts.createdAt })
@@ -49,6 +49,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries("/feed", newestPost, 0.8),
     ...entries("/hire", latest, 0.9),
     ...[...services].filter(([, n]) => n >= INDEX_MIN_SERVICE).flatMap(([s]) => entries(`/hire/${s}`, latest, 0.9)),
+    ...[...countries].filter(([, n]) => n >= INDEX_MIN_SERVICE).flatMap(([k]) => {
+      const [s, c] = k.split("|");
+      return entries(`/hire/${s}/${c}`, latest, 0.85);
+    }),
     ...[...pairs].filter(([, n]) => n >= INDEX_MIN_CITY).flatMap(([k]) => {
       const [s, c] = k.split("|");
       return entries(`/hire/${s}/${c}`, latest, 0.8);

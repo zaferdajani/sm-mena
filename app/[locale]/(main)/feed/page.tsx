@@ -14,6 +14,8 @@ import { serviceLabel } from "@/lib/labels";
 import { serviceLinkText } from "@/lib/hire-content";
 import { pageMeta } from "@/lib/seo";
 import { stripAgencies } from "@/lib/strip";
+import { currentCountry } from "@/lib/country-choice";
+import { countryName } from "@/lib/countries";
 import { getVisitorId } from "@/lib/visitor";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/feed">): Promise<Metadata> {
@@ -31,7 +33,8 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
   const tCity = await getTranslations("Cities");
   const tn = await getTranslations("Nav");
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
-  const [strip, page] = await Promise.all([stripAgencies(), feedPage({}, null, visitorId, { placement: "feed" })]);
+  const country = await currentCountry();
+  const [strip, page] = await Promise.all([stripAgencies(country), feedPage({ country }, null, visitorId, { placement: "feed" })]);
 
   const suggested = strip.filter((a) => !a.sponsored).slice(0, 5);
   // Phones: one column (stories, intro, feed). Desktop: the feed with a sticky
@@ -44,7 +47,7 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
 
       <aside className="flex min-w-0 flex-col lg:sticky lg:top-8 lg:gap-6 lg:self-start lg:[grid-area:aside]">
         <section className="border-b bg-card px-4 py-5 sm:my-6 sm:rounded-xl sm:border sm:shadow-card lg:my-0">
-          <h1 className="text-xl leading-snug">{t("introTitle")}</h1>
+          <h1 className="text-xl leading-snug">{t("introTitleIn", { country: countryName(country, locale) })}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("introBody")}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <Link href="/match" className={buttonVariants({ className: "cta-bubble h-10 gap-2 px-4" })} data-testid="home-ai">
@@ -119,7 +122,7 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
 
       <div className="min-w-0 lg:[grid-area:feed] lg:pt-6">
         {page.items.length ? (
-          <FeedList initial={page} placement="feed" />
+          <FeedList initial={page} filters={{ country }} placement="feed" />
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("emptyFeed")}</p>
         )}

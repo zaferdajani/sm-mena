@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { CountryCityField, type CountryOption } from "@/components/country-city-field";
 import { useActionState, useState } from "react";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
 import { join } from "../actions";
 
-export function JoinForm({ cities }: { cities: { key: string; label: string }[] }) {
+export function JoinForm({ countries, defaultCountry }: { countries: CountryOption[]; defaultCountry: string }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
@@ -38,16 +39,16 @@ export function JoinForm({ cities }: { cities: { key: string; label: string }[] 
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <div className="grid gap-1.5">
-          <Label htmlFor="city">{t("city")}</Label>
-          <select id="city" name="city" required defaultValue={f.city || "amman"} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm">
-            {cities.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CountryCityField
+          countries={countries}
+          defaultCountry={defaultCountry}
+          defaultCity={f.city || undefined}
+          countryLabel={t("country")}
+          cityLabel={t("city")}
+          className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
           <Input id="whatsapp" name="whatsapp" type="tel" required dir="ltr" placeholder="07X XXX XXXX" defaultValue={f.whatsapp} />

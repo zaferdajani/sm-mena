@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { currencyOf } from "@/lib/countries";
 import { getLocale, getTranslations } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { RatingBadge } from "@/components/reviews/stars";
@@ -65,7 +66,7 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
                   <p className="text-xs text-muted-foreground">{timeAgo(p.createdAt.toISOString(), locale)} · {t(`proposalStatus.${p.status}`)}</p>
                 </div>
                 <div className="text-end">
-                  <p className="text-lg font-bold">{formatJod(p.priceJod, locale)}</p>
+                  <p className="text-lg font-bold">{formatJod(p.priceJod, locale, currencyOf(p.agency.country))}</p>
                   <p className="text-xs text-muted-foreground">{p.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
                 </div>
               </div>

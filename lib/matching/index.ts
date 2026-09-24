@@ -1,4 +1,6 @@
 import "server-only";
+import { countryOfCity } from "@/lib/countries";
+import { scopedCountry } from "./scope";
 import { and, arrayOverlaps, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, packages, posts } from "@/lib/db/schema";
@@ -20,11 +22,12 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const db = await getDb();
   const valid = need.services.filter(isServiceKey);
   const services = valid.length ? valid : null;
-  need = { ...need, services: valid };
+  const country = need.country ?? countryOfCity(need.city) ?? scopedCountry() ?? null;
+  need = { ...need, services: valid, country };
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined));
+    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? eq(agencies.country, country) : undefined));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 
@@ -91,7 +94,15 @@ export async function marketPrices(service: string, city?: string | null) {
   const starting = await db
     .select({ p: agencies.startingPriceJod })
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`, city ? eq(agencies.city, city) : undefined));
+    .where(
+      and(
+        eq(agencies.status, "active"),
+        sql`${service} = any(${agencies.services})`,
+        city ? eq(agencies.city, city) : undefined,
+        // Prices are per currency, so always within one country.
+        eq(agencies.country, countryOfCity(city) ?? scopedCountry() ?? "jo"),
+      ),
+    );
   const pkgs = await db
     .select({ p: packages.priceJod })
     .from(packages)

@@ -38,7 +38,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
       {c.status !== "sent" && <ChangeRequests perspective="agency" hidden={hidden} changes={changesFor(v, locale)} active={c.status === "active"} />}
       <section className="space-y-2">
         <h2 className="font-semibold">{t("view.milestones")}</h2>
-        <MilestoneList perspective="agency" milestones={v.milestones} mode={c.paymentMode} active={c.status === "active"} fundableId={null} hidden={hidden} />
+        <MilestoneList perspective="agency" milestones={v.milestones} mode={c.paymentMode} currency={c.currency} active={c.status === "active"} fundableId={null} hidden={hidden} />
       </section>
       {["active", "disputed"].includes(c.status) && <UpdateForm hidden={hidden} />}
       <UpdatesList v={v} locale={locale} />

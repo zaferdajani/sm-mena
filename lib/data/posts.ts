@@ -18,6 +18,8 @@ export type FeedFilters = {
   q?: string;
   service?: string;
   city?: string;
+  /** Agencies based in this country (lib/countries.ts). */
+  country?: string;
   /** Any of these platforms. */
   platforms?: string[];
   industry?: string;
@@ -172,6 +174,7 @@ function filterConditions(filters: FeedFilters): SQL[] {
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
   if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));
+  if (filters.country) c.push(eq(agencies.country, filters.country));
   if (filters.city) c.push(eq(agencies.city, filters.city));
   if (filters.verified) c.push(eq(agencies.isVerified, true));
   c.push(...agencyConditions(filters, { platformsOnAgency: false }));

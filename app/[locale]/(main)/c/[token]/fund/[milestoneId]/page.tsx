@@ -31,7 +31,7 @@ export default async function FundMilestone({ params }: PageProps<"/[locale]/c/[
         <p className="text-sm text-muted-foreground" dir="auto">
           {v.contract.title} · {m.title}
         </p>
-        <p className="text-3xl font-bold tabular-nums" data-testid="fund-amount">{formatFils(m.amountFils, locale)}</p>
+        <p className="text-3xl font-bold tabular-nums" data-testid="fund-amount">{formatFils(m.amountFils, locale, v.contract.currency)}</p>
         <p className="text-xs text-muted-foreground">{t("ms.fundHint")}</p>
       </div>
       <form action={clientMockPayAction} className="grid">

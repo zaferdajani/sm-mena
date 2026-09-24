@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { currentCountry } from "@/lib/country-choice";
 import { runMatchmaker } from "@/lib/ai/agent";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "rate_limited" }, { status: 429 });
   }
   try {
-    const result = await runMatchmaker(parsed.data.messages, parsed.data.locale, visitorId);
+    const result = await runMatchmaker(parsed.data.messages, parsed.data.locale, visitorId, await currentCountry());
     return Response.json(result);
   } catch (error) {
     console.error("[api/match]", error);

@@ -129,7 +129,9 @@ export function hireServiceLd(o: {
   serviceName: string;
   place: string;
   city: boolean;
-  offers: { min: number; max: number; count: number } | null;
+  /** English country name when the page is about one country (or a city in it). */
+  country?: string | null;
+  offers: { min: number; max: number; count: number; currency: string } | null;
 }) {
   return {
     "@context": "https://schema.org",
@@ -137,10 +139,14 @@ export function hireServiceLd(o: {
     name: o.name,
     serviceType: o.serviceName,
     url: o.url,
-    areaServed: o.city ? { "@type": "City", name: o.place } : { "@type": "Country", name: "Jordan" },
+    areaServed: o.city
+      ? { "@type": "City", name: o.place, ...(o.country ? { containedInPlace: { "@type": "Country", name: o.country } } : {}) }
+      : o.country
+        ? { "@type": "Country", name: o.country }
+        : ["Jordan", "Saudi Arabia", "United Arab Emirates", "Kuwait", "Qatar", "Bahrain", "Oman", "Egypt"].map((name) => ({ "@type": "Country", name })),
     provider: { "@id": ORG_ID },
     ...(o.offers
-      ? { offers: { "@type": "AggregateOffer", priceCurrency: "JOD", lowPrice: o.offers.min, highPrice: o.offers.max, offerCount: o.offers.count } }
+      ? { offers: { "@type": "AggregateOffer", priceCurrency: o.offers.currency, lowPrice: o.offers.min, highPrice: o.offers.max, offerCount: o.offers.count } }
       : {}),
   };
 }

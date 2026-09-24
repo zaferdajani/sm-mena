@@ -43,6 +43,13 @@
       "when": 1790263660318,
       "tag": "0005_client_protections",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790264956179,
+      "tag": "0006_multi_country",
+      "breakpoints": true
     }
   ]
 }

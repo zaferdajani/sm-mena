@@ -19,6 +19,7 @@ export type RequestInput = {
   services: string[];
   platforms: string[];
   city?: string | null;
+  country?: string;
   budgetMinJod?: number | null;
   budgetMaxJod?: number | null;
   timeline?: string | null;

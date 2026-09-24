@@ -53,7 +53,7 @@ function Select({ name, label, anyLabel, value, options, groups, onChange }: {
   );
 }
 
-export function ExploreFilters({ options, resultLabel }: { options: FilterOptions; resultLabel: string }) {
+export function ExploreFilters({ options, resultLabel, currency }: { options: FilterOptions; resultLabel: string; currency: string }) {
   const t = useTranslations("Explore");
   const tc = useTranslations("Common");
   const router = useRouter();
@@ -105,7 +105,7 @@ export function ExploreFilters({ options, resultLabel }: { options: FilterOption
     chips.push({ key: `platform-${p}`, label: platformLabels.get(p)!, next: { ...current, platforms: activePlatforms.filter((x) => x !== p).join(",") } });
   }
   if (current.min || current.max) {
-    const label = current.min && current.max ? t("budgetRange", { min: current.min, max: current.max }) : current.min ? t("budgetFrom", { min: current.min }) : t("upTo", { price: current.max });
+    const label = current.min && current.max ? t("budgetRange", { min: current.min, max: current.max, currency }) : current.min ? t("budgetFrom", { min: current.min, currency }) : t("upToIn", { price: current.max, currency });
     chips.push({ key: "budget", label, next: { ...current, min: "", max: "" } });
   }
   if (current.full) chips.push({ key: "full", label: t("fullService"), next: { ...current, full: "" } });
@@ -156,7 +156,7 @@ export function ExploreFilters({ options, resultLabel }: { options: FilterOption
                 </div>
               </div>
               <div role="group" aria-labelledby="filter-budget" className="grid gap-2 text-sm">
-                <p id="filter-budget" className="font-medium">{t("budgetMonthly")}</p>
+                <p id="filter-budget" className="font-medium">{t("budgetMonthly", { currency })}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <label className="grid gap-1 text-xs text-muted-foreground">
                     {t("budgetMin")}

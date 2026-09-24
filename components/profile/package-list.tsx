@@ -5,7 +5,7 @@ import { formatJod } from "@/lib/format";
 import { deliverable, lineLabel } from "@/lib/deliverables";
 import { serviceLabel } from "@/lib/labels";
 
-export async function PackageList({ packages }: { packages: Package[] }) {
+export async function PackageList({ packages, currency = "JOD" }: { packages: Package[]; currency?: string }) {
   const t = await getTranslations("Packages");
   const locale = await getLocale();
   const td = await getTranslations("Deliverables");
@@ -19,7 +19,7 @@ export async function PackageList({ packages }: { packages: Package[] }) {
             <p className="text-xs text-muted-foreground">{serviceLabel(p.service, locale)}</p>
             <h3 className="font-semibold">{p.title}</h3>
             <p className="mt-1 text-xl font-bold">
-              {formatJod(p.priceJod, locale)}{" "}
+              {formatJod(p.priceJod, locale, currency)}{" "}
               <span className="text-xs font-normal text-muted-foreground">{p.billing === "monthly" ? t("perMonth") : t("oneOff")}</span>
             </p>
             {p.description && <p className="mt-1 text-sm text-muted-foreground">{p.description}</p>}

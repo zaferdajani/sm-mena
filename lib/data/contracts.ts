@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { currencyOf } from "@/lib/countries";
 import { getDb } from "@/lib/db";
 import {
   agencies,
@@ -171,6 +172,7 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   const specialRequests = input.specialRequests;
   const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee });
   const totalFils = input.milestones.reduce((s, m) => s + m.amountFils, 0);
+  const [{ country } = { country: "jo" }] = await db.select({ country: agencies.country }).from(agencies).where(eq(agencies.id, agencyId));
 
   const contract = await db.transaction(async (tx) => {
     const [row] = await tx
@@ -193,6 +195,7 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
         paymentMode: input.paymentMode,
         nda: input.nda,
         ndaExtra: input.ndaExtra,
+        currency: currencyOf(country),
         termsVersion: TERMS_VERSION,
         kpis: input.kpis ?? [],
         reportingCadence: input.reportingCadence ?? null,

@@ -1,6 +1,7 @@
 "use client";
 
 import { Camera, Globe, Mail, MessageCircle, Phone } from "lucide-react";
+import { currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -22,6 +23,7 @@ export type ProfileData = {
   name: string;
   bio: string;
   city: string;
+  country: string;
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
@@ -76,7 +78,7 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
         </div>
         <p className="text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)}
-          {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale) })}` : ""}
+          {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}` : ""}
         </p>
         {(agency.ratingAverage !== null || agency.googleRating !== null) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">

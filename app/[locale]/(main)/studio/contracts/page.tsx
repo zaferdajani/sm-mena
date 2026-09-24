@@ -42,7 +42,7 @@ export default async function StudioContracts({ params }: PageProps<"/[locale]/s
                   </span>
                 </span>
                 <span className="text-end">
-                  <span className="block text-sm font-semibold tabular-nums">{formatFils(c.totalFils, locale)}</span>
+                  <span className="block text-sm font-semibold tabular-nums">{formatFils(c.totalFils, locale, c.currency)}</span>
                   <span className={cn("mt-0.5 inline-block rounded-full px-2 py-0.5 text-[11px]", CONTRACT_STATUS_STYLE[c.status])}>{t(`status.${c.status}`)}</span>
                 </span>
               </Link>

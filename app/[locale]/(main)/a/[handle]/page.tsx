@@ -1,4 +1,5 @@
 import { Grid3x3, Info, Star } from "lucide-react";
+import { currencyOf } from "@/lib/countries";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -78,7 +79,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
 
   const about: [string, string][] = [
     [t("city"), tCity(agency.city)],
-    [t("startingPrice"), agency.startingPriceJod ? formatJod(agency.startingPriceJod, locale) : t("notSet")],
+    [t("startingPrice"), agency.startingPriceJod ? formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) : t("notSet")],
     [t("services"), agency.services.map((s) => serviceLabel(s, locale)).join("، ") || t("notSet")],
     [t("platforms"), agency.platforms.map((p) => tPlat(p)).join("، ") || t("notSet")],
     [t("industries"), agency.industries.map((i) => tInd(i)).join("، ") || t("notSet")],
@@ -136,7 +137,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           {pkgs && pkgs.length > 0 && (
             <section>
               <h2 className="mb-3 font-semibold">{tSeo("packagesTitle", { name: agency.name })}</h2>
-              <PackageList packages={pkgs.slice(0, 3)} />
+              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} />
               {pkgs.length > 3 && (
                 <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "about" } }} className="mt-2 inline-block text-sm font-medium text-brand">
                   {tSeo("allPackages", { count: pkgs.length })}
@@ -157,7 +158,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       ) : null}
       {tab === "about" && pkgs && pkgs.length > 0 && (
         <div className="px-4 pt-4">
-          <PackageList packages={pkgs} />
+          <PackageList packages={pkgs} currency={currencyOf(agency.country)} />
         </div>
       )}
       {tab === "about" && (

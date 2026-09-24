@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { currencyOf } from "@/lib/countries";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { RatingBadge } from "@/components/reviews/stars";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -26,7 +27,7 @@ export async function AgencyRow({ agency }: { agency: AgencySummary }) {
         {agency.ratingAverage !== null && <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} />}
         <p className="truncate text-xs text-muted-foreground">
           {agency.services.slice(0, 3).map((s) => serviceLabel(s, locale)).join(" · ")}
-          {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale) })}` : ""}
+          {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}` : ""}
         </p>
       </div>
     </Link>

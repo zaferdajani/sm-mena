@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle, Sparkles } from "lucide-react";
+import { currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { ContactLink } from "@/components/post/contact-link";
@@ -59,9 +60,9 @@ export function RecommendationCard({ agency, rank }: { agency: Match; rank: numb
           </div>
           <p className="mt-1 text-sm">
             {agency.cheapestPackage
-              ? <><bdi>{agency.cheapestPackage.title}</bdi>: {formatJod(agency.cheapestPackage.priceJod, locale)}</>
+              ? <><bdi>{agency.cheapestPackage.title}</bdi>: {formatJod(agency.cheapestPackage.priceJod, locale, currencyOf(agency.country))}</>
               : agency.startingPriceJod
-                ? tc("from", { price: formatJod(agency.startingPriceJod, locale) })
+                ? tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })
                 : agency.services.slice(0, 2).map((s) => serviceLabel(s, locale)).join(" · ")}
           </p>
           {reasons.length > 0 && (

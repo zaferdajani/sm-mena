@@ -28,6 +28,7 @@ type Props = {
   active: boolean;
   fundableId: string | null;
   hidden: Record<string, string>; // contractId (agency) or token (client)
+  currency?: string;
 };
 
 const STATUS_STYLE: Record<string, string> = {
@@ -130,12 +131,12 @@ function AgencyActions({ m, mode, hidden }: { m: Ms; mode: Props["mode"]; hidden
   );
 }
 
-function ClientActions({ m, mode, fundable, hidden }: { m: Ms; mode: Props["mode"]; fundable: boolean; hidden: Record<string, string> }) {
+function ClientActions({ m, mode, fundable, hidden, currency }: { m: Ms; mode: Props["mode"]; fundable: boolean; hidden: Record<string, string>; currency?: string }) {
   const t = useTranslations("Contracts.ms");
   const locale = useLocale();
   const [approveState, approve] = useActionState(clientApproveAction, undefined);
   const [changesState, changes] = useActionState(clientChangesAction, undefined);
-  const amount = formatFils(m.amountFils, locale);
+  const amount = formatFils(m.amountFils, locale, currency);
   return (
     <div className="space-y-2">
       {fundable && (
@@ -174,7 +175,7 @@ function ClientActions({ m, mode, fundable, hidden }: { m: Ms; mode: Props["mode
   );
 }
 
-export function MilestoneList({ perspective, milestones, mode, active, fundableId, hidden }: Props) {
+export function MilestoneList({ perspective, milestones, mode, active, fundableId, hidden, currency }: Props) {
   const t = useTranslations("Contracts.ms");
   const locale = useLocale();
   const date = (d: string) => new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-GB", { day: "numeric", month: "short" }).format(new Date(`${d}T12:00:00Z`));
@@ -192,7 +193,7 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
                 {i + 1}. {m.title}
               </span>
               <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_STYLE[m.status])}>{t(`status.${m.status}`)}</span>
-              <span className="ms-auto text-sm font-semibold tabular-nums">{formatFils(m.amountFils, locale)}</span>
+              <span className="ms-auto text-sm font-semibold tabular-nums">{formatFils(m.amountFils, locale, currency)}</span>
             </div>
             <p className="text-xs text-muted-foreground">
               {t("due", { date: date(m.dueDate) })}
@@ -206,7 +207,7 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
               (perspective === "agency" ? (
                 <AgencyActions m={m} mode={mode} hidden={hidden} />
               ) : (
-                <ClientActions m={m} mode={mode} fundable={fundableId === m.id} hidden={hidden} />
+                <ClientActions m={m} mode={mode} fundable={fundableId === m.id} hidden={hidden} currency={currency} />
               ))}
           </li>
         );

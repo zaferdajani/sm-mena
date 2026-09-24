@@ -1,3 +1,4 @@
+import { COUNTRIES } from "@/lib/countries";
 /** "3 days ago" style relative time in Arabic or English. */
 export function timeAgo(iso: string, locale: string, now = Date.now()): string {
   const seconds = Math.round((new Date(iso).getTime() - now) / 1000);
@@ -16,10 +17,11 @@ export function timeAgo(iso: string, locale: string, now = Date.now()): string {
   return rtf.format(0, "second");
 }
 
-export function formatJod(value: number, locale: string): string {
+/** Whole amounts in a currency (default JOD): agency prices, packages, budgets. */
+export function formatJod(value: number, locale: string, currency = "JOD"): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-JO", {
     style: "currency",
-    currency: "JOD",
+    currency,
     maximumFractionDigits: 0,
   }).format(value);
 }
@@ -29,6 +31,8 @@ export function formatDate(date: Date, locale: string): string {
 }
 
 /** Money stored in fils (1 JOD = 1000 fils), shown in dinars. */
-export function formatFils(fils: number, locale: string): string {
-  return `${(fils / 1000).toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { minimumFractionDigits: 0, maximumFractionDigits: 3 })} ${locale === "ar" ? "د.أ" : "JOD"}`;
+/** Thousandths of a currency (contracts, payments): "150 د.أ", "1,200.5 SAR". */
+export function formatFils(fils: number, locale: string, currency = "JOD"): string {
+  const symbol = locale === "ar" ? (COUNTRIES.find((c) => c.currency === currency)?.currencyAr ?? currency) : currency;
+  return `${(fils / 1000).toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { minimumFractionDigits: 0, maximumFractionDigits: 3 })} ${symbol}`;
 }

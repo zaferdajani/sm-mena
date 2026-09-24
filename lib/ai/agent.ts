@@ -1,4 +1,5 @@
 import "server-only";
+import { scopedCountry, withCountry } from "@/lib/matching/scope";
 import { getDb } from "@/lib/db";
 import { events } from "@/lib/db/schema";
 import { recordRecommendations } from "@/lib/matching";
@@ -45,7 +46,8 @@ export async function runProvider(provider: ProviderId, history: ChatMessage[], 
  * Runs the matchmaker for one user turn. History is plain text (the page keeps
  * the transcript); the model re-runs tools as needed each turn.
  */
-export async function runMatchmaker(history: ChatMessage[], locale: string, visitorId: string | null): Promise<MatchResponse> {
+export async function runMatchmaker(history: ChatMessage[], locale: string, visitorId: string | null, country?: string): Promise<MatchResponse> {
+  if (country && !scopedCountry()) return withCountry(country, () => runMatchmaker(history, locale, visitorId, country));
   let result: MatchResponse | null = null;
   for (const provider of providerChain()) {
     try {

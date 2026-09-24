@@ -1,4 +1,5 @@
 import { and, desc, eq, sql } from "drizzle-orm";
+import { countryOfCity } from "@/lib/countries";
 import { agencyConditions } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
@@ -35,6 +36,7 @@ export async function createAgency(ownerUserId: string, input: AgencyInput, extr
     .insert(agencies)
     .values({
       ...input,
+      country: countryOfCity(input.city) ?? "jo",
       ...extra,
       handle: input.handle.toLowerCase(),
       ownerUserId,
@@ -53,6 +55,7 @@ export async function updateAgency(agencyId: string, input: Partial<AgencyInput>
     .update(agencies)
     .set({
       ...input,
+      ...(input.city ? { country: countryOfCity(input.city) ?? current.country } : {}),
       ...(input.handle ? { handle: input.handle.toLowerCase() } : {}),
       searchText: agencySearchText(merged),
       updatedAt: new Date(),
@@ -98,6 +101,7 @@ export type AgencySummary = {
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
+  country: string;
   plan: Agency["plan"];
   postCount: number;
   followerCount: number;
@@ -119,6 +123,7 @@ export function toSummary(a: Agency): AgencySummary {
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,
     isDemo: a.isDemo,
+    country: a.country,
     plan: a.plan,
     postCount: a.postCount,
     followerCount: a.followerCount,
@@ -133,12 +138,12 @@ export function toSummary(a: Agency): AgencySummary {
 }
 
 /** Agencies for the stories-style strip: those that posted most recently. */
-export async function listStripAgencies(limit = 20): Promise<AgencySummary[]> {
+export async function listStripAgencies(limit = 20, country?: string): Promise<AgencySummary[]> {
   const db = await getDb();
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`))
+    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`, country ? eq(agencies.country, country) : undefined))
     .orderBy(
       desc(sql`(select max(p.created_at) from posts p where p.agency_id = ${agencies.id} and p.status = 'published')`),
     )
@@ -149,6 +154,7 @@ export async function listStripAgencies(limit = 20): Promise<AgencySummary[]> {
 export async function listAgencies(filters: {
   q?: string;
   service?: string;
+  country?: string;
   city?: string;
   verified?: boolean;
   platforms?: string[];
@@ -160,6 +166,7 @@ export async function listAgencies(filters: {
   const db = await getDb();
   const conditions = [eq(agencies.status, "active")];
   if (filters.service) conditions.push(sql`${filters.service} = any(${agencies.services})`);
+  if (filters.country) conditions.push(eq(agencies.country, filters.country));
   if (filters.city) conditions.push(eq(agencies.city, filters.city));
   if (filters.verified) conditions.push(eq(agencies.isVerified, true));
   conditions.push(...agencyConditions(filters));

@@ -1,10 +1,13 @@
 import { LifeBuoy } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { CountryPicker } from "@/components/country-picker";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Link } from "@/i18n/navigation";
 import { isStaffRole } from "@/lib/auth/permissions";
 import { getSessionUser } from "@/lib/auth/session";
+import { chosenCountry, currentCountry } from "@/lib/country-choice";
+import { COUNTRIES } from "@/lib/countries";
 import { BottomNav, SideNav, type NavItem } from "./nav-links";
 import { SiteFooter } from "./site-footer";
 
@@ -14,6 +17,17 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const th = await getTranslations("Header");
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
+  const locale = await getLocale();
+  const [country, chosen] = await Promise.all([currentCountry(), chosenCountry()]);
+  const picker = (
+    <CountryPicker
+      current={country}
+      chosen={chosen !== null}
+      options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))}
+      label={th("country")}
+      locateLabel={th("useLocation")}
+    />
+  );
 
   const items: NavItem[] = [
     { href: "/feed", label: t("home"), icon: "home" },
@@ -38,6 +52,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <SideNav items={[...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3)]} />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
+          {picker}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
           <Link href="/support" className="hover:underline" data-testid="report-problem">
             {tf("report")}
@@ -55,6 +70,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {th("brand")}
         </Link>
         <div className="flex items-center gap-1">
+          {picker}
           <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
             <LifeBuoy className="size-5" />
           </Link>

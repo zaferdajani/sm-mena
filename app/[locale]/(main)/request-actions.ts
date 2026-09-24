@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { countryOfCity } from "@/lib/countries";
+import { currentCountry } from "@/lib/country-choice";
 import { z } from "zod";
 import { closeRequest, createProjectRequest, getRequestByToken, getRequestForVisitor, INVITED, setProposalStatus } from "@/lib/data/requests";
 import { CITIES, PLATFORMS } from "@/lib/labels";
@@ -44,7 +46,8 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
   const city = d.city || null;
   const budgetMax = d.budgetMax && d.budgetMin && d.budgetMax < d.budgetMin ? d.budgetMin : d.budgetMax;
   const fullService = formData.get("fullService") === "on";
-  const matches = await findMatches({ services, city, budgetMaxJod: budgetMax, platforms, fullService }, 8);
+  const country = countryOfCity(city) ?? (await currentCountry());
+  const matches = await findMatches({ services, city, budgetMaxJod: budgetMax, platforms, fullService, country }, 8);
   const { token, request } = await createProjectRequest(
     {
       clientName: d.name,
@@ -53,6 +56,7 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
       services,
       platforms,
       city,
+      country,
       budgetMinJod: d.budgetMin,
       budgetMaxJod: budgetMax,
       timeline: d.timeline || null,

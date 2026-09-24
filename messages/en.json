@@ -26,7 +26,8 @@
     "agenciesStrip": "Agencies",
     "joinStrip": "Join",
     "suggestedTitle": "Suggested agencies",
-    "suggestedAll": "All services"
+    "suggestedAll": "All services",
+    "introTitleIn": "Find the right marketing and social media agency for your business in {country}"
   },
   "Footer": {
     "rights": "© {year} Sawwiq. All rights reserved.",
@@ -80,7 +81,8 @@
       "invalidEmail": "Enter a valid email address.",
       "invalidPhone": "Enter a valid phone number.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "country": "Country"
   },
   "Cities": {
     "amman": "Amman",
@@ -94,7 +96,75 @@
     "jerash": "Jerash",
     "ajloun": "Ajloun",
     "tafilah": "Tafilah",
-    "maan": "Ma'an"
+    "maan": "Ma'an",
+    "riyadh": "Riyadh",
+    "jeddah": "Jeddah",
+    "makkah": "Makkah",
+    "madinah": "Madinah",
+    "dammam": "Dammam",
+    "khobar": "Khobar",
+    "dhahran": "Dhahran",
+    "al_ahsa": "Al Ahsa",
+    "taif": "Taif",
+    "abha": "Abha",
+    "tabuk": "Tabuk",
+    "buraidah": "Buraidah",
+    "hail": "Hail",
+    "jazan": "Jazan",
+    "najran": "Najran",
+    "jubail": "Jubail",
+    "yanbu": "Yanbu",
+    "dubai": "Dubai",
+    "abu_dhabi": "Abu Dhabi",
+    "sharjah": "Sharjah",
+    "ajman": "Ajman",
+    "ras_al_khaimah": "Ras Al Khaimah",
+    "fujairah": "Fujairah",
+    "umm_al_quwain": "Umm Al Quwain",
+    "al_ain": "Al Ain",
+    "kuwait_city": "Kuwait City",
+    "hawalli": "Hawalli",
+    "salmiya": "Salmiya",
+    "farwaniya": "Farwaniya",
+    "ahmadi": "Ahmadi",
+    "jahra": "Jahra",
+    "mubarak_al_kabeer": "Mubarak Al-Kabeer",
+    "doha": "Doha",
+    "al_rayyan": "Al Rayyan",
+    "lusail": "Lusail",
+    "al_wakrah": "Al Wakrah",
+    "al_khor": "Al Khor",
+    "umm_salal": "Umm Salal",
+    "manama": "Manama",
+    "muharraq": "Muharraq",
+    "riffa": "Riffa",
+    "isa_town": "Isa Town",
+    "hamad_town": "Hamad Town",
+    "sitra": "Sitra",
+    "muscat": "Muscat",
+    "salalah": "Salalah",
+    "sohar": "Sohar",
+    "nizwa": "Nizwa",
+    "sur": "Sur",
+    "ibri": "Ibri",
+    "barka": "Barka",
+    "cairo": "Cairo",
+    "giza": "Giza",
+    "alexandria": "Alexandria",
+    "new_cairo": "New Cairo",
+    "sheikh_zayed": "Sheikh Zayed",
+    "october": "6th of October",
+    "mansoura": "Mansoura",
+    "tanta": "Tanta",
+    "zagazig": "Zagazig",
+    "ismailia": "Ismailia",
+    "port_said": "Port Said",
+    "suez": "Suez",
+    "luxor": "Luxor",
+    "aswan": "Aswan",
+    "hurghada": "Hurghada",
+    "sharm_el_sheikh": "Sharm El Sheikh",
+    "asyut": "Asyut"
   },
   "Platforms": {
     "instagram": "Instagram",
@@ -234,13 +304,14 @@
     "metaDescription": "Explore work by marketing and social media agencies in Jordan: filter by service, city, platform, industry and budget, and contact them directly.",
     "platforms": "Platforms",
     "platformsHint": "(pick one or more)",
-    "budgetMonthly": "Monthly budget (JOD)",
+    "budgetMonthly": "Monthly budget ({currency})",
     "budgetMin": "From",
     "budgetMax": "To",
-    "budgetRange": "{min}–{max} JOD",
-    "budgetFrom": "From {min} JOD",
+    "budgetRange": "{min}–{max} {currency}",
+    "budgetFrom": "From {min} {currency}",
     "fullService": "Full service, A to Z",
-    "fullServiceHint": "Agencies that do content, ads and branding together"
+    "fullServiceHint": "Agencies that do content, ads and branding together",
+    "upToIn": "Up to {price} {currency}"
   },
   "Saved": {
     "title": "Saved",
@@ -253,7 +324,9 @@
   "Header": {
     "brand": "Sawwiq",
     "switchLocale": "العربية",
-    "switchLocaleLabel": "Switch to Arabic"
+    "switchLocaleLabel": "Switch to Arabic",
+    "country": "Country",
+    "useLocation": "Use my location"
   },
   "Inquiry": {
     "open": "Message",
@@ -418,7 +491,8 @@
         "email": "Invalid email.",
         "avatar": "Could not upload the picture.",
         "generic": "Could not save."
-      }
+      },
+      "country": "Country"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -546,7 +620,7 @@
     "indexTitle": "Marketing and social media agencies in Jordan by service",
     "indexSubtitle": "Pick the service you need to see the agencies that specialise in it, their work and package prices, then compare and contact them directly.",
     "title": "{service} agencies in {place}: work and prices",
-    "metaDescription": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work, packages from {min} JOD, verified client reviews and direct contact on WhatsApp.",
+    "metaDescription": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work, packages from {min} {currency}, verified client reviews and direct contact on WhatsApp.",
     "jordan": "Jordan",
     "summary": "{count, plural, =0 {No agencies yet} one {1 agency} other {# agencies}} · {verified} verified",
     "browseWork": "Browse the work",
@@ -560,7 +634,7 @@
     "how2": "Compare starting prices, verification and followers, and save what you like.",
     "how3": "Contact them directly on WhatsApp or send a message. No commission, no sign-up.",
     "priceTitle": "How much does {service} cost in {place}?",
-    "priceBody": "Based on starting prices published by {count} agencies on Sawwiq, monthly packages start from {min} JOD and go up to {max} JOD, with a median of {median} JOD. The final price depends on the number of posts, platforms and paid ads.",
+    "priceBody": "Based on starting prices published by {count} agencies on Sawwiq, monthly packages start from {min} {currency} and go up to {max} {currency}, with a median of {median} {currency}. The final price depends on the number of posts, platforms and paid ads.",
     "priceNone": "Agencies haven't published prices for this service yet. Contact them directly for a quote.",
     "priceMin": "Lowest starting price",
     "priceMedian": "Median",
@@ -581,9 +655,11 @@
     "metaDescriptionNoPrice": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work and verified client reviews, and ask for a free quote on Sawwiq.",
     "includedTitle": "What {service} usually includes",
     "notForTitle": "When this isn't the right service",
-    "packagesMonthly": "From {count, plural, one {# package} other {# packages}} published on Sawwiq: monthly packages run from {min} to {max} JOD, with a median of {median} JOD.",
-    "packagesOneOff": "One-off work runs from {min} to {max} JOD.",
-    "packagesDelivery": "Typical delivery is {days} days."
+    "packagesMonthly": "From {count, plural, one {# package} other {# packages}} published on Sawwiq: monthly packages run from {min} to {max} {currency}, with a median of {median} {currency}.",
+    "packagesOneOff": "One-off work runs from {min} to {max} {currency}.",
+    "packagesDelivery": "Typical delivery is {days} days.",
+    "region": "Jordan, the Gulf and Egypt",
+    "pickCountry": "{service}: pick a country"
   },
   "Reviews": {
     "tab": "Reviews",
@@ -1669,5 +1745,15 @@
       "title": "Privacy and your personal data",
       "body": "To access, correct or delete your data under the Personal Data Protection Law."
     }
+  },
+  "Countries": {
+    "jo": "Jordan",
+    "sa": "Saudi Arabia",
+    "ae": "United Arab Emirates",
+    "kw": "Kuwait",
+    "qa": "Qatar",
+    "bh": "Bahrain",
+    "om": "Oman",
+    "eg": "Egypt"
   }
 }

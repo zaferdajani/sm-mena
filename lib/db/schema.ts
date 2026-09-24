@@ -152,7 +152,8 @@ export const agencies = pgTable(
     name: text("name").notNull(),
     bio: text("bio").notNull().default(""),
     avatarKey: text("avatar_key"),
-    country: text("country").notNull().default("JO"),
+    // Country code (lib/countries.ts); prices are in this country's currency.
+    country: text("country").notNull().default("jo"),
     city: text("city").notNull(),
     services: text("services").array().notNull().default(sql`'{}'::text[]`),
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
@@ -476,6 +477,7 @@ export const projectRequests = pgTable(
     businessType: text("business_type"),
     services: text("services").array().notNull().default(sql`'{}'::text[]`),
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
+    country: text("country").notNull().default("jo"),
     city: text("city"),
     budgetMinJod: integer("budget_min_jod"),
     budgetMaxJod: integer("budget_max_jod"),
@@ -611,7 +613,8 @@ export const contracts = pgTable(
     specialRequests: jsonb("special_requests").$type<string[]>().notNull().default([]),
     startDate: text("start_date").notNull(), // YYYY-MM-DD
     endDate: text("end_date").notNull(),
-    totalFils: integer("total_fils").notNull(),
+    totalFils: integer("total_fils").notNull(), // thousandths of `currency`
+    currency: text("currency").notNull().default("JOD"),
     feePercent: real("fee_percent").notNull().default(0),
     paymentMode: paymentMode("payment_mode").notNull(),
     nda: boolean("nda").notNull().default(false),

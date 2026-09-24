@@ -1,4 +1,5 @@
 import { FileSignature, Phone } from "lucide-react";
+import { currencyOf } from "@/lib/countries";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { ProposalForm } from "@/components/studio/proposal-form";
@@ -56,7 +57,7 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
       </div>
       {o.myProposal ? (
         <div className="rounded-xl border p-4 text-sm" data-testid="my-proposal">
-          <p className="font-semibold">{t("yourProposal")}: {formatJod(o.myProposal.priceJod, lang)} {o.myProposal.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
+          <p className="font-semibold">{t("yourProposal")}: {formatJod(o.myProposal.priceJod, lang, currencyOf(agency.country))} {o.myProposal.billing === "monthly" ? tpk("perMonth") : tpk("oneOff")}</p>
           <p className="text-muted-foreground">{t("status")}: {tr(`proposalStatus.${o.myProposal.status}`)}</p>
           <p className="mt-2 whitespace-pre-line" dir="auto">{o.myProposal.message}</p>
           {o.myProposal.status === "accepted" && (

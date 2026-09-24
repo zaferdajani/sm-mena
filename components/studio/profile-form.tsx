@@ -1,6 +1,7 @@
 "use client";
 
 import { Camera } from "lucide-react";
+import { CountryCityField, type CountryOption } from "@/components/country-city-field";
 import { useTranslations } from "next-intl";
 import { useActionState, useRef, useState } from "react";
 import { updateProfileAction } from "@/app/[locale]/(main)/studio/actions";
@@ -18,7 +19,7 @@ export type ProfileFormProps = {
     name: string; handle: string; bio: string; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
     startingPriceJod: number | null; whatsapp: string | null; phone: string | null; email: string | null; website: string | null; instagram: string | null; foundedYear: number | null; teamSize: string | null;
   };
-  options: { serviceGroups: { key: string; label: string; services: Option[] }[]; cities: Option[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
+  options: { serviceGroups: { key: string; label: string; services: Option[] }[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
 };
 
 export function ProfileForm({ agency, options }: ProfileFormProps) {
@@ -66,11 +67,7 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
       </div>
       <Field label={t("bio")} htmlFor="bio"><Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={agency.bio} placeholder={t("bioPlaceholder")} /></Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("city")} htmlFor="city">
-          <select id="city" name="city" defaultValue={agency.city} className={select}>
-            {options.cities.map((o) => <option key={o.key} value={o.key}>{o.label}</option>)}
-          </select>
-        </Field>
+        <CountryCityField countries={options.countries} defaultCountry="jo" defaultCity={agency.city} countryLabel={t("country")} cityLabel={t("city")} className={select} />
         <Field label={t("startingPrice")} hint={t("startingPriceHint")} htmlFor="startingPriceJod">
           <Input id="startingPriceJod" name="startingPriceJod" type="number" inputMode="numeric" min={0} dir="ltr" defaultValue={agency.startingPriceJod ?? ""} />
         </Field>

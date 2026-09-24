@@ -8,7 +8,9 @@ import { Link } from "@/i18n/navigation";
 import { listAgencies } from "@/lib/data/agencies";
 import { hasActiveFilters, parseExploreParams } from "@/lib/explore-params";
 import { feedPage } from "@/lib/feed";
-import { CITIES, INDUSTRIES, PLATFORMS, serviceLabel, serviceOptions } from "@/lib/labels";
+import { INDUSTRIES, PLATFORMS, serviceLabel, serviceOptions } from "@/lib/labels";
+import { citiesOf, COUNTRIES, countryName, countryOfCity, currencyOf } from "@/lib/countries";
+import { currentCountry } from "@/lib/country-choice";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
 
@@ -34,7 +36,11 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   setRequestLocale(locale);
   const sp = await searchParams;
   const p = parseExploreParams(sp);
-  const { tab, ...filters } = p;
+  // A city in the link decides the country (e.g. ?city=riyadh from the landing page); otherwise the visitor's country.
+  const country = countryOfCity(p.city) ?? (await currentCountry());
+  const { tab, ...rest } = p;
+  const filters = { ...rest, country };
+  const currency = currencyOf(country);
   const t = await getTranslations("Explore");
   const tc = await getTranslations("Common");
   const th = await getTranslations("Hire");
@@ -43,7 +49,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
 
   const options: FilterOptions = {
     services: serviceOptions(locale),
-    cities: CITIES.map((key) => ({ key, label: tCity(key) })),
+    cities: citiesOf(country).map((c) => ({ key: c.key, label: tCity(c.key) })),
     platforms: PLATFORMS.map((key) => ({ key, label: tPlat(key) })),
     industries: INDUSTRIES.map((key) => ({ key, label: tInd(key) })),
   };
@@ -58,14 +64,14 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
     <div className="mx-auto w-full max-w-4xl">
       <div className="space-y-3 px-3 pt-3 sm:px-4 sm:pt-6">
         <h1 className="sr-only">{t("title")}</h1>
-        <ExploreFilters options={options} resultLabel={resultLabel} />
+        <ExploreFilters options={options} resultLabel={resultLabel} currency={locale === "ar" ? (COUNTRIES.find((c) => c.currency === currency)?.currencyAr ?? currency) : currency} />
         {filters.service && (
           <Link
-            href={`/hire/${filters.service}${filters.city ? `/${filters.city}` : ""}`}
+            href={`/hire/${filters.service}/${filters.city ?? country}`}
             className="flex items-center justify-between rounded-xl border bg-accent/60 px-4 py-2.5 text-sm font-medium"
             data-testid="hire-link"
           >
-            {th("title", { service: serviceLabel(filters.service, locale), place: filters.city ? tCity(filters.city) : th("jordan") })}
+            {th("title", { service: serviceLabel(filters.service, locale), place: filters.city ? tCity(filters.city) : countryName(country, locale) })}
             <span aria-hidden className="rtl:rotate-180">→</span>
           </Link>
         )}

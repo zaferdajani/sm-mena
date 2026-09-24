@@ -22,6 +22,8 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         lte(promotions.startsAt, now),
         gt(promotions.endsAt, now),
         eq(agencies.status, "active"),
+        // Sponsored slots stay in the visitor's country.
+        filters.country ? eq(agencies.country, filters.country) : undefined,
       ),
     );
   return rows

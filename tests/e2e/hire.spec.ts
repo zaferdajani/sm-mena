@@ -4,6 +4,10 @@ test("hire index links to service pages with agency cards, price guide and FAQ",
   await page.goto("/en/hire");
   await page.getByTestId("hire-service-link").filter({ hasText: "Facebook and Instagram ads" }).click();
   await expect(page).toHaveURL(/\/en\/hire\/ads_meta$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Facebook and Instagram ads agencies in Jordan, the Gulf and Egypt: work and prices");
+  // Prices are per country (one currency), so the region page leads to a country.
+  await page.getByTestId("hire-countries").getByRole("link", { name: /Jordan/ }).click();
+  await expect(page).toHaveURL(/\/en\/hire\/ads_meta\/jo$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Facebook and Instagram ads agencies in Jordan: work and prices");
   await expect(page.getByTestId("hire-included")).toBeVisible(); // written copy for this service
   await expect(page.getByTestId("hire-cards").locator("li").first()).toBeVisible();

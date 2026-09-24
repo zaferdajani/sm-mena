@@ -14,6 +14,8 @@ export type Need = {
   industry?: string | null;
   /** The client wants one team for content, ads and branding ("A to Z"). */
   fullService?: boolean;
+  /** Agencies based in this country only (lib/countries.ts). */
+  country?: string | null;
 };
 
 export type AgencyFeatures = {

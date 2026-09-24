@@ -58,7 +58,7 @@ export default async function ClientContract({ params, searchParams }: PageProps
           <ChangeRequests perspective="client" hidden={hidden} changes={changesFor(v, locale)} active={c.status === "active"} />
           <section className="space-y-2">
             <h2 className="font-semibold">{t("view.milestones")}</h2>
-            <MilestoneList perspective="client" milestones={v.milestones} mode={c.paymentMode} active={c.status === "active"} fundableId={fundable?.id ?? null} hidden={hidden} />
+            <MilestoneList perspective="client" milestones={v.milestones} mode={c.paymentMode} currency={c.currency} active={c.status === "active"} fundableId={fundable?.id ?? null} hidden={hidden} />
           </section>
           <UpdatesList v={v} locale={locale} />
           <ProblemForms perspective="client" hidden={hidden} canCancel={false} canDispute={c.status === "active"} />
