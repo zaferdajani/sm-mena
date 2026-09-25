@@ -86,7 +86,12 @@ async function setDomains(project) {
   if (!have.has(`www.${DOMAIN}`)) {
     await api(`/v10/projects/${project.id}/domains`, { method: "POST", body: JSON.stringify({ name: `www.${DOMAIN}`, redirect: DOMAIN, redirectStatusCode: 308 }) });
   }
-  console.log(`  ${DOMAIN} and www.${DOMAIN} are on the project.`);
+  // The app's canonical address is the bare domain (NEXT_PUBLIC_SITE_URL), and
+  // it redirects www itself, so Vercel must serve the bare domain directly and
+  // send www there, never the other way round (that loops).
+  await api(`/v9/projects/${project.id}/domains/${DOMAIN}`, { method: "PATCH", body: JSON.stringify({ redirect: null, gitBranch: null }) });
+  await api(`/v9/projects/${project.id}/domains/www.${DOMAIN}`, { method: "PATCH", body: JSON.stringify({ redirect: DOMAIN, redirectStatusCode: 308 }) });
+  console.log(`  ${DOMAIN} serves the site; www.${DOMAIN} redirects to it.`);
 }
 
 async function dnsReport() {
