@@ -77,7 +77,7 @@ describe("terms v2", () => {
     if ("error" in created) throw new Error(created.error);
     expect(await clientSign(created.token, "Omar Khalil", "1.1.1.1", SIGNATURE_PNG)).toEqual({ ok: true });
     const v = (await getContractByToken(created.token))!;
-    expect(v.contract).toMatchObject({ termsVersion: 3, reportingCadence: "weekly", mediaBudgetJod: 1500, status: "active" });
+    expect(v.contract).toMatchObject({ termsVersion: 4, reportingCadence: "weekly", mediaBudgetJod: 1500, status: "active" });
     expect(v.contract.kpis).toHaveLength(2);
   });
 });

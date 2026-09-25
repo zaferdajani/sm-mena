@@ -34,5 +34,31 @@ export function pollDelay(sinceActivityMs: number) {
   return POLL_AWAY_MS;
 }
 
-export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry", "partner_request", "partner_accepted"] as const;
+/** Contract and milestone events (docs/14), for the agency, a buying agency or the client's device. */
+export const CONTRACT_NOTIFICATION_KINDS = [
+  "contract_signed",
+  "contract_funded",
+  "milestone_submitted",
+  "milestone_changes",
+  "milestone_approved",
+  "milestone_auto_approved",
+  "review_reminder",
+  "extra_round_asked",
+  "extra_round_granted",
+  "dispute_opened",
+  "dispute_evidence",
+  "dispute_decided",
+  "dispute_appealed",
+  "dispute_final",
+  "cancel_proposed",
+  "cancel_accepted",
+  "cancel_declined",
+  "contract_request",
+  "contract_received",
+  "contract_completed",
+  "review_invite",
+] as const;
+export type ContractNotificationKind = (typeof CONTRACT_NOTIFICATION_KINDS)[number];
+
+export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry", "partner_request", "partner_accepted", ...CONTRACT_NOTIFICATION_KINDS] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];

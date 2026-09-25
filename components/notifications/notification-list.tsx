@@ -1,9 +1,9 @@
-import { BadgeCheck, BellRing, FileText, Handshake, Inbox, MessagesSquare, XCircle, type LucideIcon } from "lucide-react";
+import { AlarmClock, BadgeCheck, BellRing, FileSignature, FileText, Gavel, Handshake, Inbox, MessagesSquare, PackageCheck, RotateCcw, ShieldCheck, Star, XCircle, type LucideIcon } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { NOTIFICATION_KINDS, type NotificationKind } from "@/lib/chat";
 import type { Notification } from "@/lib/db/schema";
-import { timeAgo } from "@/lib/format";
+import { formatDate, timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,27 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   inquiry: Inbox,
   partner_request: Handshake,
   partner_accepted: Handshake,
+  contract_signed: FileSignature,
+  contract_funded: ShieldCheck,
+  milestone_submitted: PackageCheck,
+  milestone_changes: RotateCcw,
+  milestone_approved: BadgeCheck,
+  milestone_auto_approved: BadgeCheck,
+  review_reminder: AlarmClock,
+  extra_round_asked: RotateCcw,
+  extra_round_granted: RotateCcw,
+  dispute_opened: Gavel,
+  dispute_evidence: Gavel,
+  dispute_decided: Gavel,
+  dispute_appealed: Gavel,
+  dispute_final: Gavel,
+  cancel_proposed: XCircle,
+  cancel_accepted: XCircle,
+  cancel_declined: XCircle,
+  contract_request: FileText,
+  contract_received: FileSignature,
+  contract_completed: BadgeCheck,
+  review_invite: Star,
 };
 
 const isKind = (kind: string): kind is NotificationKind => (NOTIFICATION_KINDS as readonly string[]).includes(kind);
@@ -34,6 +55,10 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
         const params = n.params ?? {};
         const values = {
           name: String(params.name ?? ""),
+          title: String(params.title ?? ""),
+          milestone: String(params.milestone ?? ""),
+          date: params.date ? formatDate(new Date(String(params.date)), locale) : "",
+          days: Number(params.days ?? 0),
           count: Number(params.count ?? 1),
           services: String(params.services ?? "")
             .split(",")

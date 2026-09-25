@@ -2,6 +2,7 @@ import { LifeBuoy, LogIn } from "lucide-react";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
+import { DemoBanner } from "@/components/demo/demo-banner";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeaderBell } from "@/components/notifications/header-bell";
@@ -101,6 +102,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       </header>
 
       <main className="min-w-0 flex-1 pb-20 md:pb-10">
+        <DemoBanner />
         {children}
         <SiteFooter />
       </main>

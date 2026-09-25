@@ -46,7 +46,8 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
         <p className="whitespace-pre-line" dir="auto">{r.description}</p>
         <div className="border-t pt-2">
           <p className="text-xs font-medium">{t("client")}</p>
-          {o.myProposal ? (
+          {/* Contact details only once the buyer chose this agency (shortlisted or accepted its quote). */}
+          {o.myProposal && (o.myProposal.status === "shortlisted" || o.myProposal.status === "accepted") ? (
             <p className="flex flex-wrap items-center gap-2">
               {r.clientName}{r.businessName ? ` · ${r.businessName}` : ""} ·{" "}
               <a href={whatsappLink(r.phone)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand" dir="ltr" data-testid="client-phone">
@@ -54,7 +55,7 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
               </a>
             </p>
           ) : (
-            <p className="text-xs text-muted-foreground">{t("clientHidden")}</p>
+            <p className="text-xs text-muted-foreground" data-testid="client-hidden">{o.myProposal ? t("clientAfterShortlist") : t("clientHidden")}</p>
           )}
         </div>
       </div>

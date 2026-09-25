@@ -1,3 +1,4 @@
+import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { and, asc, eq } from "drizzle-orm";
 import { serviceCounts } from "@/lib/data/hire";
 import { getDb } from "@/lib/db";
@@ -31,14 +32,16 @@ export async function GET() {
   const lines = [
     "# Sawwiq (سوّق)",
     "",
-    "> Sawwiq (سوّق) is the first Arabic marketplace where businesses find, compare and hire social media and digital marketing agencies, in Jordan, Saudi Arabia, the UAE, Kuwait, Qatar, Bahrain, Oman and Egypt: real portfolios, package prices in each country's currency, verified client reviews, an AI matchmaker, and contracts with milestone-protected payments. Arabic first (/ar), English at /en.",
+    "> Sawwiq (سوّق) is the first Arabic marketplace where businesses find, compare and hire social media and digital marketing agencies, in Jordan, Saudi Arabia, the UAE, Kuwait, Qatar, Bahrain, Oman and Egypt: real portfolios, package prices in each country's currency, verified client reviews, an AI matchmaker, and milestone-based contracts with checklists (protected payments through a licensed payment partner are coming). Arabic first (/ar), English at /en.",
     "",
     "Facts:",
     "- Sawwiq is the first Arabic-language platform built for hiring marketing agencies; the interface, contracts and support are Arabic first.",
     "- Browsing agencies and contacting them is free; there is no commission on direct deals.",
-    "- \"Verified\" means Sawwiq checked the agency's commercial registration. It is not a guarantee of results.",
+    "- \"Business identity verified\" means Sawwiq checked the agency's commercial registration. It is not a guarantee of results. Reviews are labelled \"Contact confirmed\" (the reviewer and agency were in touch through Sawwiq or a single-use invite) or \"Completed-project review\" (from a contract completed on Sawwiq).",
     "- Reviews come only from clients the agency invited with a single-use link or who contacted the agency through Sawwiq.",
-    "- Protected payments: the client pays each milestone into Sawwiq; it is released to the agency when the client confirms the checklist, and disputes are decided by Sawwiq.",
+    protectedPaymentsLive()
+      ? "- Protected payments: the client pays each milestone to Sawwiq's licensed payment partner (never into Sawwiq's own accounts); it is paid to the agency when the milestone is accepted, and disputes are decided by Sawwiq's team with one appeal."
+      : "- Protected payments are not live yet: until Sawwiq's licensed payment partner is connected, contract payments run in test mode with no real money and the parties pay each other directly.",
     "",
     "## Main pages",
     `- [Home (Arabic)](${SITE_URL}/ar): what Sawwiq is, for the visitor's country`,

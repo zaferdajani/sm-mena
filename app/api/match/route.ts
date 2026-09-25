@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { currentCountry } from "@/lib/country-choice";
+import { demoMode } from "@/lib/demo-mode";
 import { runMatchmaker } from "@/lib/ai/agent";
 import { wizardNeedSchema } from "@/lib/match-wizard-schema";
 import { rateLimit } from "@/lib/rate-limit";
@@ -29,7 +30,7 @@ export async function POST(request: Request) {
   }
   try {
     const { messages, locale, need, picked } = parsed.data;
-    const result = await runMatchmaker(messages, locale, visitorId, await currentCountry(), { need, picked });
+    const result = await runMatchmaker(messages, locale, visitorId, await currentCountry(), { need, picked, includeDemo: await demoMode() });
     return Response.json(result);
   } catch (error) {
     console.error("[api/match]", error);

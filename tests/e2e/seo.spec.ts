@@ -21,18 +21,20 @@ test("the home page carries the site's identity and links to the hire hubs", asy
   await expect(page.getByTestId("home-service-link")).toHaveCount(8);
   const footer = page.getByTestId("site-footer");
   await expect(footer.getByRole("link", { name: "Social media management" })).toHaveAttribute("href", "/en/hire/smm_management");
-  await expect(footer.getByRole("link", { name: "العربية" })).toHaveAttribute("href", "/ar");
+  // The language link opens this same page in Arabic.
+  await expect(footer.getByRole("link", { name: "العربية" })).toHaveAttribute("href", "/ar/feed");
   await footer.getByRole("link", { name: "About us" }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("About Sawwiq");
 });
 
-test("demo agencies stay out of search results but keep their structured data honest", async ({ page }) => {
+test("demo agencies stay out of search results and carry no structured data", async ({ page }) => {
   await page.goto("/en/a/nakhla.studio");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^[^·]+$/); // the name only, no badge text
+  await expect(page.getByTestId("demo-notice")).toBeVisible();
   const ld = (await page.locator('script[type="application/ld+json"]').allTextContents()).join("\n");
-  expect(ld).toContain('"ProfessionalService"');
-  expect(ld).not.toContain('"aggregateRating"'); // demo reviews never become rating markup
+  expect(ld).not.toContain('"ProfessionalService"'); // search engines only hear about real businesses
+  expect(ld).not.toContain('"aggregateRating"');
   await expect(page.getByTestId("profile-overview")).toBeVisible(); // packages and reviews on the canonical URL
 });
 

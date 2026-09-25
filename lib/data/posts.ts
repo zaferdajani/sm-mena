@@ -32,6 +32,8 @@ export type FeedFilters = {
   fullService?: boolean;
   verified?: boolean;
   agencyId?: string;
+  /** The visitor chose the demo view (lib/demo-mode.ts); set on the server only. */
+  includeDemo?: boolean;
 };
 
 export type ImageView = { url: string; thumbUrl: string; width: number; height: number; color: string; alt: string };
@@ -177,6 +179,8 @@ export function decodeCursor(value: string | undefined | null): Cursor | null {
 function filterConditions(filters: FeedFilters): SQL[] {
   const c: SQL[] = [eq(posts.status, "published"), eq(agencies.status, "active")];
   if (filters.agencyId) c.push(eq(posts.agencyId, filters.agencyId));
+  // Demo work only in the demo view (an agency's own page always shows its posts).
+  else if (!filters.includeDemo) c.push(eq(agencies.isDemo, false));
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
   if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));

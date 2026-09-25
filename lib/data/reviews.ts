@@ -1,11 +1,13 @@
 import { createHash, randomBytes } from "node:crypto";
 import { and, desc, eq, gt, isNull, lte, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, inquiries, reviewRequests, reviews, type Review } from "@/lib/db/schema";
+import { agencies, contracts, escrowLedger, inquiries, reviewRequests, reviews, type Review } from "@/lib/db/schema";
 import { CONSENT_VERSION } from "./users";
 
+export { reviewProvenance, type ReviewProvenance } from "@/lib/reviews/provenance";
+
 const DAY = 24 * 3600 * 1000;
-const INVITE_DAYS = 30;
+export const INVITE_DAYS = 30;
 /** Days after contacting an agency before a visitor may review it (anti-fake). */
 export const REVIEW_AFTER_INQUIRY_DAYS = Number(process.env.REVIEW_MIN_DAYS ?? 3);
 
@@ -31,6 +33,18 @@ export async function createReviewInvite(agencyId: string, clientName: string) {
 export async function listReviewInvites(agencyId: string) {
   const db = await getDb();
   return db.select().from(reviewRequests).where(eq(reviewRequests.agencyId, agencyId)).orderBy(desc(reviewRequests.createdAt)).limit(50);
+}
+
+/** A completed contract with live protected payments and money paid out to the agency. */
+export async function isPaidCompletedContract(contractId: string) {
+  const db = await getDb();
+  const [c] = await db.select({ status: contracts.status, live: contracts.paymentsLive, mode: contracts.paymentMode }).from(contracts).where(eq(contracts.id, contractId));
+  if (!c || c.status !== "completed" || c.mode !== "protected" || !c.live) return false;
+  const [paid] = await db
+    .select({ n: sql<number>`coalesce(sum(${escrowLedger.amountFils}), 0)::int` })
+    .from(escrowLedger)
+    .where(and(eq(escrowLedger.contractId, contractId), eq(escrowLedger.type, "release"), eq(escrowLedger.status, "succeeded")));
+  return (paid?.n ?? 0) > 0;
 }
 
 /** Resolves an invite token to its agency if unused and unexpired. */
@@ -73,7 +87,7 @@ export type ReviewInput = {
   visitorId: string | null;
 };
 
-async function insertReview(agencyId: string, source: "invite" | "inquiry", input: ReviewInput, requestId: string | null) {
+async function insertReview(agencyId: string, source: Review["source"], input: ReviewInput, requestId: string | null, contractId: string | null = null) {
   const db = await getDb();
   return db.transaction(async (tx) => {
     if (requestId) {
@@ -86,7 +100,7 @@ async function insertReview(agencyId: string, source: "invite" | "inquiry", inpu
     }
     const [review] = await tx
       .insert(reviews)
-      .values({ agencyId, requestId, source, ...input, consentVersion: CONSENT_VERSION })
+      .values({ agencyId, requestId, source, contractId, ...input, consentVersion: CONSENT_VERSION })
       .onConflictDoNothing()
       .returning();
     if (!review) return null;
@@ -101,6 +115,9 @@ async function insertReview(agencyId: string, source: "invite" | "inquiry", inpu
 export async function submitInviteReview(token: string, input: ReviewInput) {
   const invite = await resolveInvite(token);
   if (!invite) return null;
+  const contractId = invite.request.contractId;
+  // "Completed project (via Sawwiq)" only when backed by a completed, paid contract.
+  if (contractId && (await isPaidCompletedContract(contractId))) return insertReview(invite.agency.id, "contract", input, invite.request.id, contractId);
   return insertReview(invite.agency.id, "invite", input, invite.request.id);
 }
 

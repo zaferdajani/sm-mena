@@ -4,6 +4,7 @@
 // agencies that are already a good fit, and boosted results are labelled
 // "Featured" in the UI (docs/10-monetization.md).
 
+import { summarizePrices } from "@/lib/price-stats";
 import { isFullService } from "@/lib/full-service";
 
 export type Need = {
@@ -157,10 +158,12 @@ export function rank(need: Need, agencies: AgencyFeatures[], limit = 8): Scored[
     .slice(0, limit);
 }
 
-/** Budget range suggestion from real prices (starting prices and packages). */
-export function suggestBudget(prices: number[]): { min: number; max: number; median: number } | null {
-  const sorted = prices.filter((p) => p > 0).sort((a, b) => a - b);
-  if (!sorted.length) return null;
-  const q = (p: number) => sorted[Math.min(sorted.length - 1, Math.max(0, Math.round(p * (sorted.length - 1))))];
-  return { min: q(0.25), median: q(0.5), max: q(0.75) };
+/**
+ * Budget range suggestion from real prices (starting prices and packages):
+ * the middle half (quartiles) and median, from the shared lib/price-stats.ts,
+ * plus how many prices it rests on.
+ */
+export function suggestBudget(prices: number[]): { min: number; max: number; median: number; n: number } | null {
+  const s = summarizePrices(prices);
+  return s ? { min: s.p25, median: s.median, max: s.p75, n: s.n } : null;
 }

@@ -1,11 +1,12 @@
-import { Handshake, Mail, MessageCircle } from "lucide-react";
+import { FileSignature, Handshake, Mail, MessageCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
+import { PartnerContractRequest } from "@/components/contracts/partner-contract-request";
 import { PartnerAnswerButtons, PartnerRequestButton } from "@/components/studio/partner-widgets";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
-import { countryOf } from "@/lib/countries";
+import { countryOf, currencyOf } from "@/lib/countries";
 import { listPartnerRequests, suggestPartners } from "@/lib/data/partners";
 import { roleLabel, ROLES } from "@/lib/services/catalog";
 import { whatsappLink } from "@/lib/text";
@@ -20,6 +21,7 @@ export default async function StudioPartnersPage({ params, searchParams }: PageP
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const t = await getTranslations("Partners");
+  const tc = await getTranslations("PartnerContracts");
   const tCity = await getTranslations("Cities");
   const role = (await searchParams).role;
   const wanted = typeof role === "string" && ROLES.some((r) => r.key === role) ? [role] : agency.seeksRoles;
@@ -96,6 +98,11 @@ export default async function StudioPartnersPage({ params, searchParams }: PageP
                   <Mail className="size-4" /> {t("email")}
                 </a>
               )}
+              {/* Partner contracts (docs/14): whoever does the work writes the contract. */}
+              <Link href={`/studio/contracts/new?partner=${r.other.id}`} className="flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm" data-testid="partner-create-contract">
+                <FileSignature className="size-4" /> {tc("createFor")}
+              </Link>
+              <PartnerContractRequest toAgencyId={r.other.id} currency={currencyOf(agency.country)} />
             </div>
           ))}
           <p className="text-xs text-muted-foreground">{t("contractHint")}</p>

@@ -1,4 +1,6 @@
+import { EmptySupply } from "@/components/demo/empty-supply";
 import { Compass, Sparkles, Star } from "lucide-react";
+import { demoMode } from "@/lib/demo-mode";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -33,8 +35,8 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
   const tCity = await getTranslations("Cities");
   const tn = await getTranslations("Nav");
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
-  const country = await currentCountry();
-  const [strip, page] = await Promise.all([stripAgencies(country), feedPage({ country }, null, visitorId, { placement: "feed" })]);
+  const [country, includeDemo] = await Promise.all([currentCountry(), demoMode()]);
+  const [strip, page] = await Promise.all([stripAgencies(country, includeDemo), feedPage({ country, includeDemo }, null, visitorId, { placement: "feed" })]);
 
   const suggested = strip.filter((a) => !a.sponsored).slice(0, 5);
   // Phones: one column (stories, intro, feed). Desktop: the feed with a sticky
@@ -124,7 +126,7 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
         {page.items.length ? (
           <FeedList initial={page} filters={{ country }} placement="feed" />
         ) : (
-          <p className="px-4 py-16 text-center text-muted-foreground">{t("emptyFeed")}</p>
+          <EmptySupply />
         )}
       </div>
     </div>

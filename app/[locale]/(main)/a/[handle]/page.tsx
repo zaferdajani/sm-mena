@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo/demo-banner";
 import { Briefcase, Check, Grid3x3, Info, Star } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { currentCountry } from "@/lib/country-choice";
@@ -104,7 +105,13 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <JsonLd
+      {agency.isDemo && (
+        <div className="px-4 pt-4">
+          <DemoNotice kind="agency" />
+        </div>
+      )}
+      {/* No structured data for sample agencies: search engines only hear about real ones. */}
+      {!agency.isDemo && <JsonLd
         data={[
           agencyLd(agency, { locale, cityName: tCity(agency.city), image: avatarUrl, reviews: latestReviews, packages: pkgs ?? [] }),
           breadcrumbLd([
@@ -113,7 +120,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
             { name: agency.name, path: `/${locale}/a/${agency.handle}` },
           ]),
         ]}
-      />
+      />}
       <ProfileHeader
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}

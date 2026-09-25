@@ -30,10 +30,13 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/legal/[kind]
     if (!user) return new NextResponse("Not found", { status: 404 });
     found = kind === "contract" ? await getContractById(ref) : await getNdaById(ref);
     const ownerId = found ? ("contract" in found ? found.contract.agencyId : found.nda.agencyId) : null;
+    // Partner contracts: the agency buying the work reads the same copy.
+    const buyerId = found && "contract" in found ? found.contract.clientAgencyId : null;
     const agency = await getCurrentAgency();
+    const party = Boolean(agency && (agency.id === ownerId || agency.id === buyerId));
     const staff = can(user.role, "escrow.resolve");
-    if (!found || (agency?.id !== ownerId && !staff)) return new NextResponse("Not found", { status: 404 });
-    if (staff && agency?.id !== ownerId) await audit(user.id, `${kind}.pdf_view`, kind, ref);
+    if (!found || (!party && !staff)) return new NextResponse("Not found", { status: 404 });
+    if (staff && !party) await audit(user.id, `${kind}.pdf_view`, kind, ref);
   } else {
     found = kind === "contract" ? await getContractByToken(ref) : await getNdaByToken(ref);
     if (!found) return new NextResponse("Not found", { status: 404 });

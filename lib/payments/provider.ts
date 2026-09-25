@@ -1,14 +1,26 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { z } from "zod";
 
 // Payment provider adapter. The platform runs on "mock" (a built-in test
 // checkout, no real money) until a Jordanian gateway is connected. A real
 // provider (HyperPay, PayTabs, Tap, …) implements the same three functions;
 // for protected milestone payments it must support holding funds and paying
-// out to agencies (marketplace / split payouts). See docs/13-payments-and-contracts.md.
+// out to agencies (marketplace / split payouts). See docs/14-contracts-and-milestones.md;
+// protected payments go live only through lib/payments/readiness.ts.
 
-export type CheckoutInput = { paymentRef: string; amountFils: number; description: string; returnPath: string };
-export type ProviderEvent = { id: string; type: "payment.succeeded" | "payment.failed"; paymentRef: string; providerRef: string; amountFils: number };
+export type CheckoutInput = { paymentRef: string; amountFils: number; currency?: string; description: string; returnPath: string };
+export type ProviderEvent = { id: string; type: "payment.succeeded" | "payment.failed"; paymentRef: string; providerRef: string; amountFils: number; currency?: string };
+
+/** The shape every provider notification must have once its signature is verified. */
+export const providerEventSchema = z.object({
+  id: z.string().min(1).max(200),
+  type: z.enum(["payment.succeeded", "payment.failed"]),
+  paymentRef: z.string().min(1).max(100),
+  providerRef: z.string().max(200),
+  amountFils: z.number().int().positive().max(1_000_000_000_000),
+  currency: z.string().regex(/^[A-Z]{3}$/).optional(),
+});
 
 export interface PaymentProvider {
   id: string;
@@ -37,7 +49,8 @@ const mock: PaymentProvider = {
     if (!secret || given.length !== 64) return null;
     if (!timingSafeEqual(Buffer.from(signWebhook(rawBody)), Buffer.from(given))) return null;
     try {
-      return JSON.parse(rawBody) as ProviderEvent;
+      const parsed = providerEventSchema.safeParse(JSON.parse(rawBody));
+      return parsed.success ? parsed.data : null;
     } catch {
       return null;
     }

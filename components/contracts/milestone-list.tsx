@@ -1,13 +1,15 @@
 "use client";
 
-import { CheckCircle2, Circle, CircleDashed, Lock, Star } from "lucide-react";
+import { AlarmClock, CheckCircle2, Circle, CircleDashed, Lock, RotateCcw, Star } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useOptimistic, useTransition } from "react";
 import {
+  agencyGrantRoundAction,
   agencyReceivedAction,
   agencySubmitAction,
   agencyTickAction,
   clientApproveAction,
+  clientAskRoundAction,
   clientChangesAction,
   clientFundAction,
   clientPaidDirectAction,
@@ -21,7 +23,10 @@ import { formatFils } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type Ms = Milestone & { checks: MilestoneCheck[] };
+/** Per milestone, worked out on the server (components/contracts/milestone-info.ts). */
+export type MilestoneInfo = { reviewBy?: string; daysLeft?: number; rounds?: { left: number; total: number }; roundAsked?: boolean; autoApproved?: boolean };
 type Props = {
+  info?: Record<string, MilestoneInfo>;
   perspective: "agency" | "client";
   milestones: Ms[];
   mode: "protected" | "direct";
@@ -40,6 +45,7 @@ const STATUS_STYLE: Record<string, string> = {
   released: "bg-brand/10 text-brand",
   refunded: "bg-muted text-muted-foreground",
   cancelled: "bg-muted text-muted-foreground",
+  split: "bg-muted text-foreground",
 };
 
 function Hidden({ values }: { values: Record<string, string> }) {
@@ -102,12 +108,45 @@ function Checklist({ m, perspective, editable, hidden }: { m: Ms; perspective: "
   );
 }
 
-function AgencyActions({ m, mode, hidden }: { m: Ms; mode: Props["mode"]; hidden: Record<string, string> }) {
+function Deadline({ info, perspective }: { info?: MilestoneInfo; perspective: "agency" | "client" }) {
+  const t = useTranslations("Contracts.ms");
+  if (!info?.reviewBy) return null;
+  return (
+    <div className="space-y-0.5 rounded-lg bg-amber-500/10 p-2 text-xs" data-testid="review-deadline">
+      <p className="flex items-center gap-1.5 font-medium">
+        <AlarmClock className="size-3.5 text-amber-600" /> {t("reviewBy", { date: info.reviewBy })} · {t("daysLeft", { days: info.daysLeft ?? 0 })}
+      </p>
+      <p className="text-muted-foreground">{perspective === "client" ? t("deemedClient") : t("deemedAgency", { date: info.reviewBy })}</p>
+    </div>
+  );
+}
+
+function Rounds({ info }: { info?: MilestoneInfo }) {
+  const t = useTranslations("Contracts.ms");
+  if (!info?.rounds) return null;
+  return (
+    <p className="flex items-center gap-1.5 text-xs text-muted-foreground" data-testid="rounds-left" data-left={info.rounds.left}>
+      <RotateCcw className="size-3.5" /> {t("rounds", { left: info.rounds.left, total: info.rounds.total })}
+    </p>
+  );
+}
+
+function AgencyActions({ m, mode, hidden, info }: { m: Ms; mode: Props["mode"]; hidden: Record<string, string>; info?: MilestoneInfo }) {
   const t = useTranslations("Contracts.ms");
   const [state, action] = useActionState(agencySubmitAction, undefined);
   const canSubmit = mode === "protected" ? ["funded", "changes_requested"].includes(m.status) : ["pending", "changes_requested"].includes(m.status);
   return (
     <div className="space-y-2">
+      {m.status === "submitted" && <Deadline info={info} perspective="agency" />}
+      {info?.roundAsked && (
+        <div className="space-y-2 rounded-lg border border-amber-500/40 p-2 text-xs" data-testid="round-asked">
+          <p>{t("clientAskedRound")}</p>
+          <form action={agencyGrantRoundAction}>
+            <Hidden values={{ ...hidden, milestoneId: m.id }} />
+            <SubmitButton variant="outline" className="h-8">{t("grantRound")}</SubmitButton>
+          </form>
+        </div>
+      )}
       {mode === "protected" && m.status === "pending" && (
         <p className="flex items-center gap-2 text-xs text-muted-foreground">
           <Lock className="size-3.5" /> {t("needsFunding")}
@@ -131,7 +170,7 @@ function AgencyActions({ m, mode, hidden }: { m: Ms; mode: Props["mode"]; hidden
   );
 }
 
-function ClientActions({ m, mode, fundable, hidden, currency }: { m: Ms; mode: Props["mode"]; fundable: boolean; hidden: Record<string, string>; currency?: string }) {
+function ClientActions({ m, mode, fundable, hidden, currency, info }: { m: Ms; mode: Props["mode"]; fundable: boolean; hidden: Record<string, string>; currency?: string; info?: MilestoneInfo }) {
   const t = useTranslations("Contracts.ms");
   const locale = useLocale();
   const [approveState, approve] = useActionState(clientApproveAction, undefined);
@@ -148,21 +187,36 @@ function ClientActions({ m, mode, fundable, hidden, currency }: { m: Ms; mode: P
       )}
       {m.status === "submitted" && (
         <>
+          <Deadline info={info} perspective="client" />
           <p className="text-xs text-muted-foreground">{t("confirmAll")}</p>
           <form action={approve}>
             <Hidden values={{ ...hidden, milestoneId: m.id }} />
             <FormError message={approveState?.error ? t(`errors.${approveState.error}` as "errors.locked") : undefined} />
             <SubmitButton className="h-10">{mode === "protected" ? t("approveRelease", { amount }) : t("approve")}</SubmitButton>
           </form>
-          <details>
-            <summary className="cursor-pointer text-sm text-muted-foreground">{t("requestChanges")}</summary>
-            <form action={changes} className="mt-2 space-y-2">
-              <Hidden values={{ ...hidden, milestoneId: m.id }} />
-              <Textarea name="note" required minLength={3} placeholder={t("changesPh")} rows={2} dir="auto" />
-              <FormError message={changesState?.error ? t(`errors.${changesState.error}` as "errors.locked") : undefined} />
-              <SubmitButton variant="outline" className="h-9">{t("requestChanges")}</SubmitButton>
-            </form>
-          </details>
+          {info?.rounds && info.rounds.left === 0 ? (
+            <div className="space-y-2 rounded-lg border p-2 text-xs" data-testid="no-rounds">
+              <p>{t("noRounds")}</p>
+              {info.roundAsked ? (
+                <p className="text-muted-foreground">{t("roundAsked")}</p>
+              ) : (
+                <form action={clientAskRoundAction}>
+                  <Hidden values={{ ...hidden, milestoneId: m.id }} />
+                  <SubmitButton variant="outline" className="h-8">{t("askRound")}</SubmitButton>
+                </form>
+              )}
+            </div>
+          ) : (
+            <details>
+              <summary className="cursor-pointer text-sm text-muted-foreground">{t("requestChanges")}</summary>
+              <form action={changes} className="mt-2 space-y-2">
+                <Hidden values={{ ...hidden, milestoneId: m.id }} />
+                <Textarea name="note" required minLength={3} placeholder={t("changesPh")} rows={2} dir="auto" />
+                <FormError message={changesState?.error ? t(`errors.${changesState.error}` as "errors.locked") : undefined} />
+                <SubmitButton variant="outline" className="h-9">{t("requestChanges")}</SubmitButton>
+              </form>
+            </details>
+          )}
         </>
       )}
       {mode === "direct" && !m.clientPaidDirect && !["cancelled", "pending"].includes(m.status) && (
@@ -175,7 +229,7 @@ function ClientActions({ m, mode, fundable, hidden, currency }: { m: Ms; mode: P
   );
 }
 
-export function MilestoneList({ perspective, milestones, mode, active, fundableId, hidden, currency }: Props) {
+export function MilestoneList({ perspective, milestones, mode, active, fundableId, hidden, currency, info = {} }: Props) {
   const t = useTranslations("Contracts.ms");
   const locale = useLocale();
   const date = (d: string) => new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-GB", { day: "numeric", month: "short" }).format(new Date(`${d}T12:00:00Z`));
@@ -201,13 +255,15 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
               {m.agencyConfirmedPaid && ` · ${t("receivedDone")}`}
             </p>
             {m.status === "changes_requested" && m.changesNote && <p className="rounded-lg bg-destructive/10 p-2 text-sm" dir="auto">{t("changes", { note: m.changesNote })}</p>}
+            {!["released", "approved", "refunded", "cancelled", "split"].includes(m.status) && <Rounds info={info[m.id]} />}
+            {info[m.id]?.autoApproved && <p className="text-xs text-muted-foreground" data-testid="auto-approved">{t("autoApproved")}</p>}
             {m.submissionNote && ["submitted", "approved", "released"].includes(m.status) && <p className="rounded-lg bg-muted p-2 text-sm whitespace-pre-line" dir="auto">{t("delivered", { note: m.submissionNote })}</p>}
             <Checklist m={m} perspective={perspective} editable={editable} hidden={hidden} />
             {active &&
               (perspective === "agency" ? (
-                <AgencyActions m={m} mode={mode} hidden={hidden} />
+                <AgencyActions m={m} mode={mode} hidden={hidden} info={info[m.id]} />
               ) : (
-                <ClientActions m={m} mode={mode} fundable={fundableId === m.id} hidden={hidden} currency={currency} />
+                <ClientActions m={m} mode={mode} fundable={fundableId === m.id} hidden={hidden} currency={currency} info={info[m.id]} />
               ))}
           </li>
         );

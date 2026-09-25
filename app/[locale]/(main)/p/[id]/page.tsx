@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo/demo-banner";
 import { clientNames } from "@/lib/data/portfolio-clients";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -56,6 +57,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
       <h1 className="sr-only">{tSeo("postTitle", { agency: post.agency.name, service: post.services[0] ? serviceLabel(post.services[0], locale) : "" })}</h1>
+      {post.agency.isDemo && (
+        <div className="px-3 pb-3 pt-3 sm:pt-0">
+          <DemoNotice kind="post" />
+        </div>
+      )}
       <PostCard post={item} priority linkToPost={false} />
       <div className="flex items-center justify-between gap-2 px-3 py-2">
         {clientName ? (

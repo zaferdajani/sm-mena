@@ -1,13 +1,14 @@
 import "server-only";
 import { countryOfCity } from "@/lib/countries";
-import { scopedCountry } from "./scope";
+import { scopedCountry, scopedIncludeDemo } from "./scope";
 import { and, arrayOverlaps, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, packages, posts } from "@/lib/db/schema";
 import { toSummary, type AgencySummary } from "@/lib/data/agencies";
-import { inCountry } from "@/lib/data/agency-filters";
+import { inCountry, realUnless } from "@/lib/data/agency-filters";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isServiceKey } from "@/lib/taxonomy";
+import { MIN_PRICE_SAMPLE } from "@/lib/price-stats";
 import { rank, suggestBudget, type Need, type Reason } from "./score";
 
 export type Match = AgencySummary & {
@@ -31,7 +32,7 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined));
+    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, realUnless(scopedIncludeDemo())));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 
@@ -111,20 +112,25 @@ export async function marketPrices(service: string, city?: string | null) {
         sql`${service} = any(${agencies.services})`,
         city ? eq(agencies.city, city) : undefined,
         eq(agencies.country, country),
+        eq(agencies.isDemo, false),
       ),
     );
   const pkgs = await db
     .select({ p: packages.priceJod })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country)));
+    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), eq(agencies.isDemo, false)));
   const startingPrices = starting.map((r) => r.p).filter((p): p is number => p !== null);
   const packagePrices = pkgs.map((r) => r.p);
+  // Real agencies only, and no range from fewer than MIN_PRICE_SAMPLE prices.
+  const enough = (xs: number[]) => (xs.length >= MIN_PRICE_SAMPLE ? suggestBudget(xs) : null);
   return {
     agencies: starting.length,
-    startingPrices: suggestBudget(startingPrices),
-    packagePrices: suggestBudget(packagePrices),
-    suggested: suggestBudget([...startingPrices, ...packagePrices]),
+    country,
+    note: "Agency service fees only; advertising spend excluded. Real (non-demo) agencies only.",
+    startingPrices: enough(startingPrices),
+    packagePrices: enough(packagePrices),
+    suggested: enough([...startingPrices, ...packagePrices]),
   };
 }
 

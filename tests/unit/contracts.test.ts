@@ -179,7 +179,7 @@ describe("every contract is protected", () => {
   it("ignores a request for direct payment and applies the 10% guarantee fee", async () => {
     const created = await createContract(agencyId, draft({ paymentMode: "direct" }));
     if (!("token" in created)) throw new Error(created.error);
-    expect(created.contract).toMatchObject({ paymentMode: "protected", feePercent: 10, termsVersion: 3, jurisdiction: "jo", jurisdictionCity: "amman" });
+    expect(created.contract).toMatchObject({ paymentMode: "protected", feePercent: 10, termsVersion: 4, jurisdiction: "jo", jurisdictionCity: "amman", reviewDays: 7, revisionRounds: 2, paymentsLive: false });
     expect(created.contract.agencySignature).toBeTruthy();
   });
 

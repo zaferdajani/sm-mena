@@ -20,7 +20,7 @@ import "./site.css";
  * choice, else the country of their IP address, else Jordan). `chosen` tells
  * the header's country picker whether the visitor saved a choice yet.
  */
-export function SawwiqPage({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
+export function SawwiqPage({ lang, country, chosen, account, paymentsLive = false }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string }; paymentsLive?: boolean }) {
   return (
     <>
       {/* Outside .sw so the landing styles don't restyle the dialog. */}
@@ -30,7 +30,7 @@ export function SawwiqPage({ lang, country, chosen, account }: { lang: Lang; cou
         <main>
           <ScrollScrub scenes={scrollScrubScenes(lang, country)} theme={scrollScrubTheme} />
           <WhoSection country={country} lang={lang} />
-          <PaymentsSection country={country} lang={lang} />
+          <PaymentsSection country={country} lang={lang} live={paymentsLive} />
           <ServicesSection lang={lang} />
           <TrustSection country={country} lang={lang} />
           <AgenciesSection country={country} lang={lang} />

@@ -23,6 +23,7 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         lte(promotions.startsAt, now),
         gt(promotions.endsAt, now),
         eq(agencies.status, "active"),
+        filters.includeDemo ? undefined : eq(agencies.isDemo, false),
         // Sponsored slots stay in the visitor's country.
         filters.country ? inCountry(filters.country) : undefined,
       ),

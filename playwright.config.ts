@@ -33,7 +33,12 @@ export default defineConfig({
     baseURL,
     // The front page asks first-time visitors "who are you?"; tests start as returning visitors
     // (tests/e2e/welcome.spec.ts clears this to test the question itself).
-    storageState: { cookies: [], origins: [{ origin: baseURL, localStorage: [{ name: "sw_role", value: "browse" }] }] },
+    // The seeded agencies are demo ones, so tests browse in the labelled demo view
+    // (tests/e2e/demo-isolation.spec.ts clears it to check what real visitors see).
+    storageState: {
+      cookies: [{ name: "sw_demo", value: "1", domain: "localhost", path: "/", expires: -1, httpOnly: true, secure: false, sameSite: "Lax" }],
+      origins: [{ origin: baseURL, localStorage: [{ name: "sw_role", value: "browse" }] }],
+    },
     trace: "on-first-retry",
     launchOptions: { executablePath },
   },

@@ -5,9 +5,10 @@ import { lineLabel } from "@/lib/deliverables";
 import { formatDate, formatFils } from "@/lib/format";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
-import { COMMON_CLAUSES, DISCLAIMER, fill, LAW_CLAUSE, NDA_CLAUSES, SERVICE_CLAUSES, type Bi, type Clause } from "./clauses";
+import { COMMON_CLAUSES, daysText, DISCLAIMER, fill, LAW_CLAUSE, NDA_CLAUSES, roundsText, serviceClausesFor, type Bi, type Clause } from "./clauses";
 import type { DocBlock, DocSignature, LegalDocument } from "./document-types";
 import { jurisdictionOf, LEGAL_VERSION } from "./jurisdictions";
+import { HOLDER_LINE, PAYMENT_SECTION, paymentStateOf } from "./payment-holder";
 
 /**
  * Builds the text of a contract or NDA once, for the page and the PDF alike,
@@ -40,6 +41,11 @@ const L = {
   period: { ar: "المدة", en: "Term" },
   periodBody: { ar: "يبدأ العمل في {start} وينتهي في {end}.", en: "Work runs from {start} to {end}." },
   milestones: { ar: "المراحل والتسليمات والمبالغ", en: "Milestones, deliverables and amounts" },
+  reviewAndRounds: {
+    ar: "مدة مراجعة كل تسليم: {days}. جولات التعديل المشمولة في كل مرحلة: {rounds}.",
+    en: "Review period for each delivery: {days}. Revision rounds included in each milestone: {rounds}.",
+  },
+  paymentV4: { ar: "الدفع المحمي ومن يحفظ المبالغ", en: "Protected payments and who holds the money" },
   total: { ar: "إجمالي قيمة العقد: {amount}", en: "Total contract value: {amount}" },
   payment: { ar: "الدفع المضمون", en: "Guaranteed payment" },
   paymentBody: {
@@ -164,6 +170,8 @@ function partyLines(o: { name: string; legalName?: string | null; reg?: string |
 export type ContractForDoc = {
   contract: Contract;
   agency: { name: string; handle: string };
+  /** Partner contracts: the agency buying the work, when it has a Sawwiq page. */
+  clientAgency?: { name: string; handle: string } | null;
   milestones: { id: string; title: string; dueDate: string; amountFils: number; checks: { text: string; source: string }[] }[];
   /** Milestones added later by accepted change requests (shown, but not part of the signed terms). */
   addedMilestoneIds?: Set<string>;
@@ -184,10 +192,19 @@ export function contractDocument(v: ContractForDoc, locale: string): LegalDocume
   if (!v3) return legacyContract(v, l);
 
   const basis = { jurisdiction: c.jurisdiction!, jurisdictionCity: c.jurisdictionCity ?? "", legalVersion: c.legalVersion };
-  const vars = lawVars(basis, l, { fee: c.feePercent, years: yearsText(c.ndaYears ?? 2, l) });
+  const state = paymentStateOf(c.paymentsLive);
+  const vars = lawVars(basis, l, {
+    fee: c.feePercent,
+    years: yearsText(c.ndaYears ?? 2, l),
+    holder: HOLDER_LINE[state][l],
+    reviewDays: daysText(c.reviewDays, l),
+    rounds: roundsText(c.revisionRounds, l),
+    appealDays: daysText(7, l),
+  });
+  const v4 = c.termsVersion >= 4;
   const agencySeat = `${cityName(c.jurisdictionCity, c.jurisdiction, l)}، ${countryName(c.jurisdiction!, l)}`.replace("، ", l === "ar" ? "، " : ", ");
   const agencyP = partyLines({ name: v.agency.name, legalName: c.agencyLegalName, reg: c.agencyRegNumber, seat: agencySeat, handle: v.agency.handle }, l);
-  const clientP = partyLines({ name: c.clientName, reg: c.clientRegNumber, phone: c.clientPhone, email: c.clientEmail }, l);
+  const clientP = partyLines({ name: c.clientName, reg: c.clientRegNumber, phone: c.clientPhone, email: c.clientEmail, handle: v.clientAgency?.handle ?? null }, l);
 
   blocks.push({
     heading: `1. ${L.parties[l]}`,
@@ -210,9 +227,12 @@ export function contractDocument(v: ContractForDoc, locale: string): LegalDocume
       detail: `${money(m.amountFils)} · ${day(m.dueDate, l)}`,
       lines: m.checks.map((k) => `${k.source === "special_request" ? "★ " : ""}${k.text}`),
     })),
-    paragraphs: [fill(L.total[l], { amount: money(signedMs.reduce((s, m) => s + m.amountFils, 0)) })],
+    paragraphs: [
+      fill(L.total[l], { amount: money(signedMs.reduce((s, m) => s + m.amountFils, 0)) }),
+      ...(v4 ? [fill(L.reviewAndRounds[l], { days: daysText(c.reviewDays, l), rounds: roundsText(c.revisionRounds, l) })] : []),
+    ],
   });
-  blocks.push({ heading: `5. ${L.payment[l]}`, paragraphs: [fill(L.paymentBody[l], { fee: c.feePercent })] });
+  blocks.push({ heading: `5. ${(v4 ? L.paymentV4 : L.payment)[l]}`, paragraphs: [fill(v4 ? PAYMENT_SECTION[state][l] : L.paymentBody[l], { fee: c.feePercent })] });
 
   let n = 6;
   const results: string[] = [];
@@ -235,7 +255,7 @@ export function contractDocument(v: ContractForDoc, locale: string): LegalDocume
   if (c.agencyTerms) blocks.push({ heading: `${n++}. ${L.agencySpecial[l]}`, paragraphs: [c.agencyTerms] });
 
   blocks.push({ heading: `${n++}. ${L.general[l]}`, paragraphs: [] });
-  const general = clauseBlocks(SERVICE_CLAUSES, l, vars, 1);
+  const general = clauseBlocks(serviceClausesFor(c.legalVersion), l, vars, 1);
   if (c.nda) {
     general.push({
       heading: `${general.length + 1}. ${L.confidentiality[l]}`,

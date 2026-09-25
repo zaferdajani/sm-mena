@@ -1,3 +1,4 @@
+import { REVIEW_LABEL } from "@/components/reviews/review-list";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ReviewStatusButton } from "@/components/admin/admin-buttons";
 import { Stars } from "@/components/reviews/stars";
@@ -20,7 +21,7 @@ export default async function AdminReviews({ params }: PageProps<"/[locale]/admi
           <div className="min-w-0 flex-1 space-y-1">
             <p>
               <Link href={`/a/${handle}?tab=reviews`} className="font-semibold">{name}</Link> · {r.reviewerName}
-              {r.reviewerBusiness ? ` (${r.reviewerBusiness})` : ""} · <span className="text-muted-foreground">{r.source === "invite" ? t("verifiedClient") : t("viaSawwiq")}</span>
+              {r.reviewerBusiness ? ` (${r.reviewerBusiness})` : ""} · <span className="text-muted-foreground">{t(REVIEW_LABEL[r.source])}</span>
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Stars value={r.rating} size="size-3" /> {timeAgo(r.createdAt.toISOString(), locale)}

@@ -46,6 +46,7 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 - Phase 2 (lead fees, subscriptions): ordinary merchant account with a CBJ-licensed PSP (MEPS, HyperPay, PayTabs). No licence needed to charge for your own services.
 - Phase 3 (escrow): holding client money for third-party services may constitute a payment service under Central Bank of Jordan regulation. Options: (a) use a PSP's marketplace/split-payment product where the PSP holds funds, (b) partner with a licensed payment institution, (c) obtain a licence. Get a written opinion before building. Design the code so the platform never holds funds in its own bank account.
 - Invoicing: agencies invoice buyers; Sawwiq invoices agencies for fees and commission with sales tax as applicable.
+- Built today (docs/14): protected payments stay in **test mode** until a licensed payment partner is connected and `PROTECTED_PAYMENTS_LIVE=true` (`lib/payments/readiness.ts`); every screen and the contract terms say so, and no copy says Sawwiq holds money. Contract conditions 2026-10 (deemed acceptance, revision rounds, split decisions with one appeal, mutual cancellation, chargebacks with recovery from future payouts only after notice, IP per milestone, limits of protection) must be reviewed by counsel in each country before real money.
 
 ## 7. Content and advertising
 
@@ -77,6 +78,20 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 | Client's change request / decline note on an NDA | Negotiation before signing | May contain personal data | Same as the document |
 
 Consent: each signer ticks an explicit declaration (legal age, authority, agreement to sign electronically) before signing; the declaration text is versioned with `LEGAL_VERSION`. Staff downloads of contract/NDA PDFs are written to the audit log.
+
+## Data added with the milestone system (2026-10)
+
+See `docs/14-contracts-and-milestones.md`.
+
+| Data | Why | Personal? | Retention |
+|---|---|---|---|
+| Client's visitor cookie id on a contract (`contracts.client_visitor_id`, set when the client signs through the private link) | Send contract notifications (deadlines, decisions) to the device that signed; the `/c/<contract id>` link opens only on that device | Pseudonymous | Same as the signed record |
+| Dispute statements and evidence (text and links) from each side, admin decisions and reasons, appeal notes | Settle milestone disputes; evidence of what was decided and why | Yes (whatever people write) | Same as the signed record (at least 10 years after the contract ends); append-only |
+| Mutual cancellation proposals (who proposed, per-milestone split, note) | Record of an agreed early end | May contain personal data in the note | Same as the signed record |
+| Partner contract requests (title, brief, budget, the two agencies) | Ask a partner for a contract | Business data | Same as the contract, or 24 months if no contract follows |
+| Receipts (built from the ledger; no new data) | Proof of deposits, payouts and refunds | Party names as in the contract | Same as the ledger |
+
+Contract emails (deadline reminders, decisions) go only to an address the party gave in the contract; notifications never carry a phone number or email. Staff downloads of receipts are written to the audit log (`receipt.pdf_view`). Deemed acceptance after the review period is logged as a system decision (`escrow.auto_release`).
 
 ## Data added with chat and notifications (2026-09)
 

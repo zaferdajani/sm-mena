@@ -43,12 +43,12 @@ export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; cou
   );
 }
 
-export function PaymentsSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+export function PaymentsSection({ lang, country, live }: { lang: Lang; country: CountryCode; live: boolean }) {
   const p = landingCopy(lang, country).payments;
   return (
     <section aria-labelledby="payments-title" className="sw-pay" id="payments">
       <div className="sw-pay__text">
-        <p className="sw-eyebrow">{p.eyebrow}</p>
+        <p className="sw-eyebrow">{live ? p.eyebrow : p.eyebrowSoon}</p>
         <h2 className="sw-h2" id="payments-title">
           {p.title}
         </h2>
@@ -65,6 +65,8 @@ export function PaymentsSection({ lang, country }: { lang: Lang; country: Countr
           ))}
         </ul>
         <p className="sw-pay__direct">{p.direct}</p>
+        {/* Nothing is promised as live until lib/payments/readiness.ts says so. */}
+        {!live && <p className="sw-pay__direct" data-testid="payments-soon">{p.soon}</p>}
       </div>
       <div className="sw-pay__panel">
         <MilestoneLedger country={country} lang={lang} />

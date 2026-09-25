@@ -3,6 +3,7 @@ import { getSessionUser } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Lang } from "@/components/landing/copy";
+import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { SawwiqPage } from "@/components/landing/sawwiq-page";
 import { JsonLd } from "@/components/seo/json-ld";
 import { chosenCountry, currentCountry } from "@/lib/country-choice";
@@ -36,7 +37,7 @@ export default async function LandingPage({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <JsonLd data={[organizationLd(), websiteLd(locale)]} />
-      <SawwiqPage account={account} chosen={chosen !== null} country={country} lang={(locale === "en" ? "en" : "ar") as Lang} />
+      <SawwiqPage account={account} chosen={chosen !== null} country={country} lang={(locale === "en" ? "en" : "ar") as Lang} paymentsLive={protectedPaymentsLive()} />
     </>
   );
 }

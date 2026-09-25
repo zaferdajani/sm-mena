@@ -143,4 +143,4 @@ export const JURISDICTIONS = COUNTRY_CODES.map((c) => J[c]);
  * signed terms, so a contract always renders with the words that were signed:
  * change the wording → add a new version, keep the old one.
  */
-export const LEGAL_VERSION = "2026-09";
+export const LEGAL_VERSION = "2026-10";

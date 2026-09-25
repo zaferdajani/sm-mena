@@ -11,7 +11,10 @@ const nextConfig: NextConfig = {
   // route reads the Arabic font from public/fonts at run time.
   outputFileTracingIncludes: {
     "/api/legal/[kind]/[ref]": ["./public/fonts/**/*"],
+    "/api/receipts/[ref]/[entry]": ["./public/fonts/**/*"],
   },
+  // A second local server (e.g. an isolated test server) can build into its own folder.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   experimental: {
     // Post uploads carry up to 10 images of 10 MB.
     serverActions: { bodySizeLimit: "60mb" },

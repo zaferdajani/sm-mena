@@ -3,7 +3,8 @@ import { getDb } from "@/lib/db";
 import { agencies, packages, postImages, posts } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/storage";
 import { toSummary, type AgencySummary } from "./agencies";
-import { inCountry } from "./agency-filters";
+import { summarizePrices, median, MIN_PRICE_SAMPLE } from "@/lib/price-stats";
+import { inCountry, realUnless } from "./agency-filters";
 
 export type HireCard = AgencySummary & { thumbs: { postId: string; url: string; color: string }[] };
 
@@ -17,13 +18,16 @@ function where(service: string, place: Place = {}) {
   return and(...c);
 }
 
-/** Agencies offering a service (optionally in a city) with three recent work thumbnails each. */
-export async function hireCards(service: string, place: Place = {}, limit = 24): Promise<HireCard[]> {
+/**
+ * Agencies offering a service (optionally in a city) with three recent work
+ * thumbnails each. Demo agencies only in the labelled demo view (docs/31).
+ */
+export async function hireCards(service: string, place: Place = {}, { limit = 24, includeDemo = false } = {}): Promise<HireCard[]> {
   const db = await getDb();
   const rows = await db
     .select()
     .from(agencies)
-    .where(where(service, place))
+    .where(and(where(service, place), realUnless(includeDemo)))
     .orderBy(desc(agencies.isVerified), desc(sql`${agencies.postCount} > 0`), desc(agencies.followerCount))
     .limit(limit);
   if (!rows.length) return [];
@@ -42,30 +46,39 @@ export async function hireCards(service: string, place: Place = {}, limit = 24):
   return rows.map((a) => ({ ...toSummary(a), thumbs: byAgency.get(a.id) ?? [] }));
 }
 
-/** Starting-price guide from agencies' own "from" prices. */
+/**
+ * Starting-price guide from real agencies' own "from" prices (never demo
+ * ones), summarised the same way everywhere (lib/price-stats.ts). `range` is
+ * null below MIN_PRICE_SAMPLE prices: too few to present as market data.
+ */
 export async function priceGuide(service: string, place: Place = {}) {
   const db = await getDb();
-  const [row] = await db
-    .select({
-      n: sql<number>`count(${agencies.startingPriceJod})::int`,
-      min: sql<number | null>`min(${agencies.startingPriceJod})`,
-      max: sql<number | null>`max(${agencies.startingPriceJod})`,
-      median: sql<number | null>`percentile_cont(0.5) within group (order by ${agencies.startingPriceJod})`,
-      agencies: sql<number>`count(*)::int`,
-      verified: sql<number>`count(*) filter (where ${agencies.isVerified})::int`,
-    })
+  const rows = await db
+    .select({ price: agencies.startingPriceJod, verified: agencies.isVerified, updatedAt: agencies.updatedAt })
     .from(agencies)
-    .where(where(service, place));
-  return { ...row, median: row.median === null ? null : Math.round(Number(row.median)) };
+    .where(and(where(service, place), eq(agencies.isDemo, false)));
+  const priced = rows.filter((r) => r.price !== null && r.price > 0);
+  const summary = summarizePrices(priced.map((r) => r.price!));
+  const updatedAt = priced.reduce<Date | null>((d, r) => (!d || r.updatedAt > d ? r.updatedAt : d), null);
+  return {
+    agencies: rows.length,
+    verified: rows.filter((r) => r.verified).length,
+    n: summary?.n ?? 0,
+    min: summary?.min ?? null,
+    max: summary?.max ?? null,
+    median: summary?.median ?? null,
+    range: summary && summary.n >= MIN_PRICE_SAMPLE ? summary : null,
+    updatedAt,
+  };
 }
 
-/** Cities with at least one agency for a service (in a country, if given), most first. */
+/** Cities with at least one real agency for a service (in a country, if given), most first. */
 export async function citiesForService(service: string, country?: string) {
   const db = await getDb();
   return db
     .select({ city: agencies.city, n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(where(service, { country }))
+    .where(and(where(service, { country }), eq(agencies.isDemo, false)))
     .groupBy(agencies.city)
     .orderBy(desc(sql`count(*)`));
 }
@@ -93,13 +106,13 @@ export async function serviceCounts({ realOnly = false } = {}) {
   return { services, pairs, countries };
 }
 
-/** Active agencies per country for a service (the region-wide hire page). */
+/** Real active agencies per country for a service (the region-wide hire page). */
 export async function countriesForService(service: string) {
   const db = await getDb();
   return db
     .select({ country: agencies.country, n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(where(service))
+    .where(and(where(service), eq(agencies.isDemo, false)))
     .groupBy(agencies.country);
 }
 
@@ -113,26 +126,24 @@ export async function realAgencyCount(service: string, place: Place = {}) {
   return row.n;
 }
 
-/** What agencies charge in their packages for a service: price spread and typical delivery time. */
+/** What real agencies charge in their packages for a service: price spread and typical delivery time. */
 export async function packageFacts(service: string, place: Place = {}) {
   const db = await getDb();
   const rows = await db
     .select({ price: packages.priceJod, billing: packages.billing, days: packages.deliveryDays })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(where(service, place), eq(packages.service, service)));
-  if (!rows.length) return null;
-  const median = (xs: number[]) => {
-    const v = [...xs].sort((a, b) => a - b);
-    return v.length ? v[Math.floor((v.length - 1) / 2)] : null;
+    .where(and(where(service, place), eq(agencies.isDemo, false), eq(packages.service, service)));
+  if (rows.length < MIN_PRICE_SAMPLE) return null;
+  const range = (xs: number[]) => {
+    const s = summarizePrices(xs);
+    return s && s.n >= MIN_PRICE_SAMPLE ? { min: s.min, median: s.median, max: s.max } : null;
   };
-  const monthly = rows.filter((r) => r.billing === "monthly").map((r) => r.price);
-  const oneOff = rows.filter((r) => r.billing !== "monthly").map((r) => r.price);
   const days = rows.map((r) => r.days).filter((d): d is number => typeof d === "number" && d > 0);
   return {
     count: rows.length,
-    monthly: monthly.length ? { min: Math.min(...monthly), median: median(monthly)!, max: Math.max(...monthly) } : null,
-    oneOff: oneOff.length ? { min: Math.min(...oneOff), median: median(oneOff)!, max: Math.max(...oneOff) } : null,
+    monthly: range(rows.filter((r) => r.billing === "monthly").map((r) => r.price)),
+    oneOff: range(rows.filter((r) => r.billing !== "monthly").map((r) => r.price)),
     deliveryDays: median(days),
   };
 }

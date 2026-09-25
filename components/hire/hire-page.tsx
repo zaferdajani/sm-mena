@@ -1,3 +1,4 @@
+import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { BadgeCheck, Compass, MessageCircle, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
@@ -8,6 +9,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import { JsonLd } from "@/components/seo/json-ld";
+import { EmptySupply } from "@/components/demo/empty-supply";
+import { demoMode } from "@/lib/demo-mode";
 import { COUNTRIES, countryName, countryOf, countryOfCity, currencyLabel, currencyOf } from "@/lib/countries";
 import { citiesForService, countriesForService, hireCards, packageFacts, priceGuide, type Place } from "@/lib/data/hire";
 import { formatJod } from "@/lib/format";
@@ -41,8 +44,10 @@ export async function HirePage({ locale, service, city, country: countryParam }:
   const tp = await getTranslations("Post");
   const tr = await getTranslations("Requests");
   const tCity = await getTranslations("Cities");
+  const td = await getTranslations("Demo");
+  const includeDemo = await demoMode();
   const [cards, price, cities, facts, byCountry] = await Promise.all([
-    hireCards(service, where),
+    hireCards(service, where, { includeDemo }),
     priceGuide(service, where),
     country ? citiesForService(service, country) : Promise.resolve([]),
     country ? packageFacts(service, where) : Promise.resolve(null),
@@ -55,13 +60,16 @@ export async function HirePage({ locale, service, city, country: countryParam }:
   const shared = [2, 3, ...(city && isOnSite(service) ? [4] : [])];
   const faqs = [
     ...(content?.faq ?? [{ q: t("faq1q", { service: search }), a: t("faq1a") }]),
-    ...shared.map((n) => ({ q: t(`faq${n}q`, { service: search }), a: t(`faq${n}a`) })),
+    // The payments answer follows the readiness switch (lib/payments/readiness.ts).
+    ...shared.map((n) => ({ q: t(`faq${n}q`, { service: search }), a: t(n === 3 && !protectedPaymentsLive() ? "faq3aTest" : `faq${n}a`) })),
   ];
   const title = capitalize(t("title", { service: search, place }));
   const placePath = city ?? countryParam;
   const pageUrl = `${SITE_URL}/${locale}/hire/${service}${placePath ? `/${placePath}` : ""}`;
+  // Structured data, counts and prices only ever describe real agencies (docs/31).
   const real = cards.filter((a) => !a.isDemo);
-  const allReal = cards.length > 0 && real.length === cards.length;
+  const range = country ? price.range : null;
+  const priceDate = price.updatedAt ? new Intl.DateTimeFormat(locale === "ar" ? "ar" : "en", { month: "long", year: "numeric" }).format(price.updatedAt) : "";
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-10 px-4 py-6 sm:py-10">
@@ -83,8 +91,8 @@ export async function HirePage({ locale, service, city, country: countryParam }:
             place,
             city: Boolean(city),
             country: country ? countryOf(country).en : null,
-            // Prices only from real agencies' published prices.
-            offers: country && allReal && price.min !== null && price.max !== null ? { min: price.min, max: price.max, count: price.n, currency } : null,
+            // Prices only from real agencies' published prices, and only with enough of them.
+            offers: range ? { min: range.min, max: range.max, count: range.n, currency } : null,
           }),
           breadcrumbLd([
             { name: t("indexTitle"), path: `/${locale}/hire` },
@@ -104,11 +112,13 @@ export async function HirePage({ locale, service, city, country: countryParam }:
         </nav>
         <h1 className="text-2xl font-bold leading-tight sm:text-3xl">{title}</h1>
         {content && <p className="max-w-2xl leading-relaxed text-muted-foreground">{content.intro}</p>}
-        <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <BadgeCheck className="size-4 text-sky-500" />
-          {t("summary", { count: price.agencies, verified: price.verified })}
-          {country && price.min !== null && ` · ${tc("from", { price: formatJod(price.min, locale, currency) })}`}
-        </p>
+        {price.agencies > 0 && (
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <BadgeCheck className="size-4 text-sky-500" />
+            {t("summary", { count: price.agencies, verified: price.verified })}
+            {range && ` · ${tc("from", { price: formatJod(range.min, locale, currency) })}`}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           <Link href={{ pathname: "/request/new", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ className: "h-10 gap-2" })} data-testid="hire-get-quotes">
             <Sparkles className="size-4" />
@@ -132,6 +142,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
                     <Link href={`/a/${a.handle}`} className="flex items-center gap-1 font-semibold">
                       <span className="truncate">{a.name}</span>
                       {a.isVerified && <VerifiedBadge label={tc("verified")} />}
+                      {a.isDemo && <span className="rounded bg-amber-100 px-1.5 text-[10px] font-medium text-amber-900 dark:bg-amber-900 dark:text-amber-100" data-testid="demo-badge">{td("badge")}</span>}
                     </Link>
                     <p className="text-xs text-muted-foreground">
                       <span dir="ltr">@{a.handle}</span> · {countryOf(a.country).flag} {tCity(a.city)} · {t("posts", { count: a.postCount })}
@@ -179,9 +190,14 @@ export async function HirePage({ locale, service, city, country: countryParam }:
             ))}
           </ul>
         ) : (
-          <div className="rounded-xl border p-6 text-center text-sm text-muted-foreground">
-            <p>{t("noAgencies")}</p>
-            {city && <Link href={`/hire/${service}`} className="mt-2 inline-block font-medium text-brand">{t("seeAllJordan")}</Link>}
+          <div className="rounded-xl border">
+            <EmptySupply text={t("noAgencies")}>
+              {city && country && (
+                <Link href={`/hire/${service}/${country}`} className="mt-3 inline-block text-sm font-medium text-brand">
+                  {countryName(country, locale)}
+                </Link>
+              )}
+            </EmptySupply>
           </div>
         )}
       </section>
@@ -229,20 +245,21 @@ export async function HirePage({ locale, service, city, country: countryParam }:
       {country && (
       <section className="rounded-xl bg-muted p-5">
         <h2 className="text-lg font-bold">{t("priceTitle", { service: search, place })}</h2>
-        {price.min !== null && price.max !== null && price.median !== null ? (
+        {range ? (
           <>
-            <p className="mt-2 text-sm leading-relaxed">{t("priceBody", { count: price.n, min: price.min, max: price.max, median: price.median, currency: currencyLabel(currency, locale) })}</p>
+            <p className="mt-2 text-sm leading-relaxed">{t("priceBody", { count: range.n, min: range.min, max: range.max, median: range.median, currency: currencyLabel(currency, locale) })}</p>
             <dl className="mt-4 grid grid-cols-3 gap-3 text-center">
-              {([["priceMin", price.min], ["priceMedian", price.median], ["priceMax", price.max]] as const).map(([k, v]) => (
+              {([["priceMin", range.min], ["priceMedian", range.median], ["priceMax", range.max]] as const).map(([k, v]) => (
                 <div key={k} className="flex flex-col-reverse rounded-lg bg-background p-3">
                   <dt className="text-xs text-muted-foreground">{t(k)}</dt>
                   <dd className="text-lg font-bold">{formatJod(v, locale, currency)}</dd>
                 </div>
               ))}
             </dl>
+            <p className="mt-3 text-xs text-muted-foreground" data-testid="price-label">{t("priceLabel", { count: range.n, date: priceDate })}</p>
           </>
         ) : (
-          <p className="mt-2 text-sm">{t("priceNone")}</p>
+          <p className="mt-2 text-sm" data-testid="price-none">{price.n ? t("priceTooFew") : t("priceNone")}</p>
         )}
         {facts && (
           <p className="mt-4 text-sm leading-relaxed" data-testid="package-facts">

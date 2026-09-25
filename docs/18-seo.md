@@ -35,7 +35,7 @@ The same path we took on OneClickConvert: first make every page honest and index
 
 ## Owner to-do (things code can't do)
 
-1. **The final domain is `sawwiq.org`** (`NEXT_PUBLIC_SITE_URL`, set by Actions → Vercel → setup). Any other host answers with `noindex`. The legal copy still says `sawwiq.jo`: update it to the sawwiq.org addresses.
+1. **The final domain is `sawwiq.org`** (`NEXT_PUBLIC_SITE_URL`, set by Actions → Vercel → setup). Any other host answers with `noindex`.
 2. **Google Search Console and Bing Webmaster Tools:** verify the domain (DNS TXT is simplest, or set `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`), submit `/sitemap.xml`, and request indexing for `/ar`, `/ar/hire` and the top hire pages.
 3. **IndexNow:** add a secret `INDEXNOW_KEY` (32 hex characters, e.g. `openssl rand -hex 16`).
 4. **Remove the demo agencies once real ones join** (Admin → Agencies). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.

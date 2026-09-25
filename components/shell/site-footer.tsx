@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { OtherLanguageLink } from "@/components/other-language-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Link } from "@/i18n/navigation";
 import { serviceLinkText } from "@/lib/hire-content";
@@ -9,14 +10,13 @@ export const FOOTER_SERVICES = ["smm_management", "ads_meta", "smm_content", "se
 /**
  * Every page links to the hire hubs and the trust pages, so no page is an
  * orphan and the anchor text is the phrase people search (the OneClickConvert
- * footer rule). Also carries a plain link to the other language's home page.
+ * footer rule). Also carries a plain link to this page in the other language.
  */
 export async function SiteFooter() {
   const locale = await getLocale();
   const t = await getTranslations("Footer");
   const th = await getTranslations("Hire");
   const tHead = await getTranslations("Header");
-  const other = locale === "ar" ? "en" : "ar";
   return (
     <footer className="mx-auto mt-10 w-full max-w-4xl border-t px-4 py-8 text-sm" data-testid="site-footer">
       <div className="grid gap-8 sm:grid-cols-[2fr_1fr]">
@@ -46,9 +46,7 @@ export async function SiteFooter() {
             <li><Link href="/legal" className="hover:text-foreground hover:underline">{t("legal")}</Link></li>
             <li><Link href="/support" className="hover:text-foreground hover:underline">{t("report")}</Link></li>
             <li>
-              <Link href="/" locale={other} hrefLang={other} className="hover:text-foreground hover:underline">
-                {t("otherLanguage")}
-              </Link>
+              <OtherLanguageLink label={t("otherLanguage")} className="hover:text-foreground hover:underline" />
             </li>
             {/* Phones: the header has no room, so the light/dark switch lives here (the desktop sidebar has its own). */}
             <li className="md:hidden">

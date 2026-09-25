@@ -11,7 +11,10 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   await page.getByTestId("chat-send").click();
   await expect(page.getByTestId("recommendation")).toBeVisible({ timeout: 20_000 });
   await expect(page.getByTestId("recommendation-card").first()).toBeVisible();
-  await expect(page.getByTestId("budget-card")).toContainText("Suggested budget");
+  // Budgets come from real agencies' prices only (docs/31), so the seeded demo
+  // agencies alone don't produce one; when real prices exist it is labelled.
+  const budget = page.getByTestId("budget-card");
+  if (await budget.count()) await expect(budget).toContainText("Suggested budget");
   const top = (await page.getByTestId("recommendation-card").first().innerText()).match(/@([a-z0-9._]+)/)![1];
 
   await page.getByTestId("send-project").click();
@@ -31,8 +34,9 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   await agency.fill("#p-message", "We have done this for similar businesses.");
   await agency.getByTestId("proposal-form").getByRole("button").click();
   await expect(agency.getByTestId("my-proposal")).toBeVisible();
-  await expect(agency.getByTestId("client-phone")).toBeVisible();
-  await agency.close();
+  // The buyer's contact details stay private until they pick this agency.
+  await expect(agency.getByTestId("client-hidden")).toBeVisible();
+  await expect(agency.getByTestId("client-phone")).toHaveCount(0);
 
   // The client accepts it on the private page.
   await page.goto(link);
@@ -40,6 +44,11 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   page.on("dialog", (d) => d.accept());
   await page.getByTestId("accept").click();
   await expect(page.getByText("Closed")).toBeVisible();
+
+  // Now the chosen agency can see how to reach the client.
+  await agency.reload();
+  await expect(agency.getByTestId("client-phone")).toBeVisible();
+  await agency.close();
 });
 
 test("a client reviews an agency through a single-use invite link", async ({ page, browser }, info) => {
@@ -63,7 +72,7 @@ test("a client reviews an agency through a single-use invite link", async ({ pag
   await expect(client.getByTestId("review-invalid")).toBeVisible(); // single use
   await client.goto(`/en/a/${handle}?tab=reviews`);
   await expect(client.getByTestId("review-list").locator("> li").first()).toContainText("Rami");
-  await expect(client.getByTestId("review-list").locator("> li").first()).toContainText("Verified client");
+  await expect(client.getByTestId("review-list").locator("> li").first()).toContainText("Contact confirmed");
   await client.close();
 });
 
