@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { AgencyAdminButtons, RemoveDemoButton } from "@/components/admin/admin-buttons";
+import { AgencyAdminButtons, ReactivateButton, RemoveDemoButton } from "@/components/admin/admin-buttons";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
   const tc = await getTranslations("Common");
   const tp = await getTranslations("Studio.plan");
   const rows = await adminListAgencies(q || undefined);
-  const hasDemo = rows.some((r) => r.isDemo);
+  const hasDemo = rows.some((r) => r.isDemo && r.status !== "deactivated");
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -41,12 +41,14 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
                   {a.isVerified && <VerifiedBadge label={tc("verified")} />}
                   {a.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] text-muted-foreground">{tc("demo")}</span>}
                   {a.status === "suspended" && <span className="rounded bg-destructive/10 px-1.5 text-[10px] text-destructive">{t("suspended")}</span>}
+                  {a.status === "deactivated" && <span className="rounded bg-muted px-1.5 text-[10px] text-muted-foreground" data-testid="deactivated-badge">{t("deactivated")}</span>}
                 </Link>
                 <p className="truncate text-xs text-muted-foreground" dir="ltr">@{a.handle} · {a.ownerEmail} · {a.postCount} posts</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {moderate && <AgencyAdminButtons id={a.id} verified={a.isVerified} status={a.status} />}
+              {moderate && a.status !== "deactivated" && <AgencyAdminButtons id={a.id} verified={a.isVerified} status={a.status} />}
+              {moderate && a.status === "deactivated" && !a.isDemo && <ReactivateButton id={a.id} />}
               {plans && (
                 <form action={setPlanAction} className="flex items-center gap-1">
                   <input type="hidden" name="agencyId" value={a.id} />

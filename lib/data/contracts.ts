@@ -623,7 +623,7 @@ export async function startMilestoneFunding(ref: string | ContractView, mileston
   return { redirectPath: checkout.redirectPath, milestone: m, contract: v.contract };
 }
 
-export type DepositResult = "ok" | "duplicate" | "unknown_payment" | "amount_mismatch" | "currency_mismatch" | "wrong_mode";
+export type DepositResult = "ok" | "duplicate" | "unknown_payment" | "amount_mismatch" | "currency_mismatch" | "wrong_mode" | "refunded_late";
 
 /**
  * A verified deposit for a milestone (from the payment provider's signed
@@ -642,6 +642,8 @@ export async function recordDeposit(milestoneId: string, amountFils: number, pro
   const provider = opts.provider ?? paymentProvider().id;
   // Test contracts take only test money; live contracts only the real provider's.
   if (c.paymentMode !== "protected" || (c.paymentsLive ? provider === "mock" : provider !== "mock")) return "wrong_mode";
+  // Money that arrives after the milestone or contract was cancelled goes straight back (docs/32).
+  if ((c.status === "cancelled" || m.status === "cancelled") && m.status !== "funded") return refundLateDeposit(m, amountFils, providerRef, provider);
   if (m.status !== "pending" || c.status !== "active") return "duplicate";
   try {
     const applied = await db.transaction(async (tx) => {
@@ -662,6 +664,29 @@ export async function recordDeposit(milestoneId: string, amountFils: number, pro
   await logEvent(m.contractId, "client", "funded", m.title);
   await notifyContract(c, "contract_funded", "agency", { milestone: m.title });
   return "ok";
+}
+
+/**
+ * A real payment that lands after cancellation: recorded (the partner holds
+ * it) and refunded in full straight away, once. Same keys as any deposit and
+ * refund, so a replayed notification changes nothing.
+ */
+async function refundLateDeposit(m: Milestone, amountFils: number, providerRef: string, provider: string): Promise<DepositResult> {
+  const db = await getDb();
+  try {
+    await db.transaction(async (tx) => {
+      const note = "arrived after cancellation; refunded in full";
+      await tx.insert(escrowLedger).values({ contractId: m.contractId, milestoneId: m.id, type: "deposit", amountFils, provider, providerRef, note, idemKey: ledgerKey("dep", m.id) });
+      await tx.insert(escrowLedger).values({ contractId: m.contractId, milestoneId: m.id, type: "refund", amountFils, provider, status: provider === "mock" ? "succeeded" : "pending", note, idemKey: ledgerKey("ref", m.id) });
+    });
+  } catch (e) {
+    if (isUniqueViolation(e)) return "duplicate";
+    throw e;
+  }
+  await logEvent(m.contractId, "system", "refunded", `${m.title}: payment arrived after cancellation and was refunded in full`);
+  const { dispatchMoneyOut } = await import("./money-out");
+  await dispatchMoneyOut({ milestoneId: m.id }).catch((e) => console.error("[money-out]", e));
+  return "refunded_late";
 }
 
 async function milestoneOf(contractId: string, milestoneId: string) {
@@ -937,11 +962,12 @@ export async function closeDispute(contractId: string, note: string) {
 /** Protected-payment totals and open disputes for Admin → Payments. */
 export async function escrowOverview() {
   const db = await getDb();
-  const [totals, disputed, active] = await Promise.all([
+  const [totals, disputed, active, stuck] = await Promise.all([
+    // Real money only: test-mode entries are listed separately (docs/32).
     db
       .select({ type: escrowLedger.type, n: sql<number>`coalesce(sum(${escrowLedger.amountFils}), 0)::int` })
       .from(escrowLedger)
-      .where(eq(escrowLedger.status, "succeeded"))
+      .where(and(eq(escrowLedger.status, "succeeded"), eq(escrowLedger.test, false)))
       .groupBy(escrowLedger.type),
     db
       .select()
@@ -952,6 +978,19 @@ export async function escrowOverview() {
       .select({ mode: contracts.paymentMode, status: contracts.status, n: sql<number>`count(*)::int` })
       .from(contracts)
       .groupBy(contracts.paymentMode, contracts.status),
+    // Payouts and refunds the partner hasn't completed: failed, or pending for more than 3 days.
+    db
+      .select({ id: escrowLedger.id, type: escrowLedger.type, status: escrowLedger.status, amountFils: escrowLedger.amountFils, note: escrowLedger.note, createdAt: escrowLedger.createdAt, number: contracts.number, currency: contracts.currency })
+      .from(escrowLedger)
+      .innerJoin(contracts, eq(contracts.id, escrowLedger.contractId))
+      .where(
+        and(
+          inArray(escrowLedger.type, ["release", "refund"]),
+          or(eq(escrowLedger.status, "failed"), and(eq(escrowLedger.status, "pending"), sql`${escrowLedger.createdAt} < now() - interval '3 days'`)),
+        ),
+      )
+      .orderBy(desc(escrowLedger.id))
+      .limit(100),
   ]);
   const sum = (t: string) => totals.find((x) => x.type === t)?.n ?? 0;
   const disputeViews = await Promise.all(disputed.map((c) => view(c)));
@@ -963,6 +1002,7 @@ export async function escrowOverview() {
     held: sum("deposit") - sum("release") - sum("refund") - sum("fee"),
     disputes: disputeViews,
     counts: active,
+    stuck,
   };
 }
 

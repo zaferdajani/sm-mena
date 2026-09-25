@@ -424,6 +424,10 @@ describe("completed-project reviews", () => {
     await submitMilestone((await getContractByToken(created.token))!, m.id, "");
     for (const c of m.checks) await setCheck(lv.contract.id, m.id, c.id, "client", true);
     await approveMilestone((await getContractByToken(created.token))!, m.id);
+    // A real partner confirms the payout by webhook (docs/32); only then was money paid out.
+    const [rel] = await db.select().from(escrowLedger).where(eq(escrowLedger.idemKey, `rel:${m.id}`));
+    expect(rel.status).toBe("pending");
+    expect(await applyProviderEvent("hyperpay", { id: "po_live_1", type: "payout.succeeded", paymentRef: `rel:${m.id}`, providerRef: "po_1", amountFils: rel.amountFils, currency: "JOD" })).toBe("ok");
     lv = (await getContractByToken(created.token))!;
     const r2 = await submitInviteReview(lv.reviewToken!, { ...review, visitorId: "22222222-2222-4333-8444-555555555555" });
     expect(r2).toMatchObject({ source: "contract", contractId: created.contract.id });

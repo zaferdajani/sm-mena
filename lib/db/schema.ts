@@ -26,7 +26,9 @@ import {
 // owner (the platform owner; cannot be removed by anyone else), admin, and
 // scoped team roles for engineering (backbone), maintenance and support.
 export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support"]);
-export const agencyStatus = pgEnum("agency_status", ["active", "suspended"]);
+// deactivated: the account holder closed it (or the demo cleanup did); hidden
+// everywhere and sign-in is off, but its contracts and ledger stay (docs/32).
+export const agencyStatus = pgEnum("agency_status", ["active", "suspended", "deactivated"]);
 export const planId = pgEnum("plan_id", ["free", "pro", "business"]);
 // agency: a company or team; freelancer: one person (photographer, videographer, designer, creator…).
 export const agencyKind = pgEnum("agency_kind", ["agency", "freelancer"]);
@@ -193,6 +195,8 @@ export const agencies = pgTable(
     isVerified: boolean("is_verified").notNull().default(false),
     isDemo: boolean("is_demo").notNull().default(false),
     status: agencyStatus("status").notNull().default("active"),
+    deactivatedAt: timestamp("deactivated_at", { withTimezone: true }),
+    deactivationReason: text("deactivation_reason"), // self | admin | demo_cleanup
     plan: planId("plan").notNull().default("free"),
     planExpiresAt: timestamp("plan_expires_at", { withTimezone: true }),
     followerCount: integer("follower_count").notNull().default(0),
@@ -804,6 +808,9 @@ export const escrowLedger = pgTable(
     // ("dep:<milestone>", "rel:…", "fee:…", "ref:…"): a replayed event or a
     // double click can't move money twice. Rows are append-only (trigger).
     idemKey: text("idem_key").unique(),
+    // Test-mode money (the built-in test checkout): kept forever as a record
+    // that the flow ran, never counted as real money. Derived, so it can't drift.
+    test: boolean("test").generatedAlwaysAs(sql`provider = 'mock'`).notNull(),
     createdAt: createdAt(),
   },
   (t) => [index("escrow_contract_idx").on(t.contractId), index("escrow_type_idx").on(t.type, t.createdAt)],

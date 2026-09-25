@@ -30,7 +30,7 @@ describe("demo seed", () => {
 
     // Once an admin removes demo data, the seed never brings it back.
     const removed = await removeDemoData();
-    expect(removed).toBe(DEMO_AGENCIES.length);
+    expect(removed).toEqual({ deleted: DEMO_AGENCIES.length, deactivated: 0 });
     await seed({ quiet: true });
     expect(await count()).toBe(0);
   }, 600_000);

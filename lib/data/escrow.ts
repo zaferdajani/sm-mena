@@ -43,8 +43,9 @@ export async function settleMilestone(
   const db = await getDb();
   const kind = splitKind(s);
   const now = new Date();
+  let result: SettleResult;
   try {
-    return await db.transaction(async (tx) => {
+    result = await db.transaction(async (tx) => {
       const [m] = await tx
         .update(milestones)
         .set({
@@ -57,15 +58,19 @@ export async function settleMilestone(
       if (!m) return "already" as const;
       const held = await heldFor(milestoneId, tx);
       if (checkSplit(s, held)) throw new MismatchError();
-      const provider = paymentProvider().id;
+      // Money goes back out through the partner that took it in.
+      const [dep] = await tx.select({ provider: escrowLedger.provider }).from(escrowLedger).where(eq(escrowLedger.idemKey, ledgerKey("dep", milestoneId)));
+      const provider = dep?.provider ?? paymentProvider().id;
+      // Test money moves at once; a real partner confirms each payout and refund (lib/data/money-out.ts).
+      const status = provider === "mock" ? "succeeded" : "pending";
       const note = opts.note?.slice(0, 500) ?? null;
       const { fee, net } = payout(s.releaseFils, contract.feePercent);
       const rows: (typeof escrowLedger.$inferInsert)[] = [];
       if (s.releaseFils > 0) {
-        rows.push({ contractId: contract.id, milestoneId, type: "release", amountFils: net, provider, note, idemKey: ledgerKey("rel", milestoneId) });
-        if (fee > 0) rows.push({ contractId: contract.id, milestoneId, type: "fee", amountFils: fee, provider, note, idemKey: ledgerKey("fee", milestoneId) });
+        rows.push({ contractId: contract.id, milestoneId, type: "release", amountFils: net, provider, status, note, idemKey: ledgerKey("rel", milestoneId) });
+        if (fee > 0) rows.push({ contractId: contract.id, milestoneId, type: "fee", amountFils: fee, provider, status, note, idemKey: ledgerKey("fee", milestoneId) });
       }
-      if (s.refundFils > 0) rows.push({ contractId: contract.id, milestoneId, type: "refund", amountFils: s.refundFils, provider, note, idemKey: ledgerKey("ref", milestoneId) });
+      if (s.refundFils > 0) rows.push({ contractId: contract.id, milestoneId, type: "refund", amountFils: s.refundFils, provider, status, note, idemKey: ledgerKey("ref", milestoneId) });
       if (rows.length) await tx.insert(escrowLedger).values(rows);
       return "ok" as const;
     });
@@ -75,6 +80,12 @@ export async function settleMilestone(
     if (isUniqueViolation(e)) return "already";
     throw e;
   }
+  // After commit: ask the partner to move the money (a failure is retried by the daily job).
+  if (result === "ok") {
+    const { dispatchMoneyOut } = await import("./money-out");
+    await dispatchMoneyOut({ milestoneId }).catch((e) => console.error("[money-out]", e));
+  }
+  return result;
 }
 
 class MismatchError extends Error {}

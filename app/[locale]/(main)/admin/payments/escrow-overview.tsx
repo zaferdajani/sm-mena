@@ -12,6 +12,7 @@ import { closeDisputeAction, resolveMilestoneAction } from "../contract-actions"
 // and the decision (release, refund or split; one appeal, then final).
 export async function EscrowOverview({ locale }: { locale: string }) {
   const t = await getTranslations("Contracts");
+  const ta = await getTranslations("AdminPayments");
   const o = await escrowOverview();
   const money = (f: number, currency?: string) => formatFils(f, locale, currency);
   return (
@@ -26,6 +27,23 @@ export async function EscrowOverview({ locale }: { locale: string }) {
           { label: t("admin.tiles.fees"), value: money(o.fees) },
         ]}
       />
+      {o.stuck.length > 0 && (
+        <section className="space-y-2 rounded-xl border border-destructive/40 p-4" data-testid="money-out-stuck">
+          <h2 className="font-semibold">{ta("stuckTitle")}</h2>
+          <p className="text-xs text-muted-foreground">{ta("stuckBody")}</p>
+          <ul className="divide-y text-sm">
+            {o.stuck.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center gap-2 py-2">
+                <span dir="ltr" className="text-xs text-muted-foreground">{r.number}</span>
+                <span>{ta(`stuckType.${r.type === "release" ? "payout" : "refund"}`)}</span>
+                <span className="tabular-nums">{money(r.amountFils, r.currency)}</span>
+                <span className="rounded bg-destructive/10 px-1.5 text-[11px] text-destructive">{ta(`stuckStatus.${r.status === "failed" ? "failed" : "pending"}`)}</span>
+                {r.note && <span className="w-full text-xs text-muted-foreground" dir="auto">{r.note}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <section className="space-y-3">
         <h2 className="font-semibold">{t("admin.disputes")}</h2>
         {!o.disputes.length && <p className="text-sm text-muted-foreground">{t("admin.noDisputes")}</p>}

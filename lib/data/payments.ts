@@ -69,6 +69,11 @@ export async function applyProviderEvent(provider: string, event: ProviderEvent)
     .onConflictDoNothing()
     .returning({ id: paymentEvents.id });
   if (!inserted.length) return "duplicate" as const;
+  // Payouts, refunds and chargebacks of protected milestone payments (docs/32).
+  if (event.type.startsWith("payout.") || event.type.startsWith("refund.") || event.type === "chargeback.opened") {
+    const { applyMoneyOutEvent } = await import("./money-out");
+    return applyMoneyOutEvent(provider, event);
+  }
   // Milestone deposits for protected contracts use "ms_<milestone id>".
   if (event.paymentRef.startsWith("ms_")) {
     if (event.type !== "payment.succeeded") return "ok" as const;

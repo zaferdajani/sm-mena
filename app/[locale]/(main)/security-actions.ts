@@ -1,7 +1,11 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { requireUser } from "@/lib/auth/guards";
+import { getLocale } from "next-intl/server";
+import { redirect } from "@/i18n/navigation";
+import { requireAgency, requireUser } from "@/lib/auth/guards";
+import { destroySession } from "@/lib/auth/session";
+import { deactivateAgency } from "@/lib/data/deactivation";
 import { adminMfaRequired, confirmEnrollment, disableMfa, mfaKeyConfigured, regenerateBackupCodes, startEnrollment, verifySecondFactor } from "@/lib/auth/mfa";
 import { verifyPassword } from "@/lib/auth/password";
 import { isStaffRole } from "@/lib/auth/permissions";
@@ -47,4 +51,25 @@ export async function disableMfaAction(_: MfaResult | undefined, formData: FormD
   if (!(await verifySecondFactor(user.id, codeOf(formData)))) return { error: "badCode" };
   await disableMfa(user.id);
   return { done: true };
+}
+
+export type DeactivateResult = { error?: "badPassword" | "confirm" | "openContracts" | "rateLimited"; contracts?: string[] };
+
+/**
+ * Agency: close my account (docs/32). Needs the password and the handle typed
+ * as confirmation. Refused while a real contract is running or real money is
+ * held for it; test contracts never block and stay on record as test.
+ */
+export async function deactivateAccountAction(_: DeactivateResult | undefined, formData: FormData): Promise<DeactivateResult> {
+  const { user, agency } = await requireAgency();
+  if (!rateLimit(`deactivate:${user.id}`, 5, 10 * 60 * 1000)) return { error: "rateLimited" };
+  if (String(formData.get("handle") ?? "").trim().toLowerCase().replace(/^@/, "") !== agency.handle) return { error: "confirm" };
+  const db = await getDb();
+  const [row] = await db.select({ hash: users.passwordHash }).from(users).where(eq(users.id, user.id));
+  if (!row || !(await verifyPassword(String(formData.get("password") ?? ""), row.hash))) return { error: "badPassword" };
+  const r = await deactivateAgency(agency.id, "self", user.id);
+  if ("error" in r) return { error: r.error === "openContracts" ? "openContracts" : "confirm", contracts: "openContracts" in r ? r.openContracts : undefined };
+  await destroySession();
+  const locale = await getLocale();
+  return redirect({ href: "/login?closed=1", locale });
 }

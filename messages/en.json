@@ -84,7 +84,8 @@
     },
     "country": "Country",
     "joinServices": "What do you offer?",
-    "joinServicesHint": "Pick what applies; you can add more later from your page."
+    "joinServicesHint": "Pick what applies; you can add more later from your page.",
+    "closed": "Your account is closed. Thank you for being part of Sawwiq."
   },
   "Cities": {
     "amman": "Amman",
@@ -643,7 +644,13 @@
       "mfaMissingKey": "MFA_ENCRYPTION_KEY is not set: admins can't use two-factor sign-in.",
       "mfaYouOff": "Your account has no two-factor sign-in.",
       "turnOn": "Turn it on"
-    }
+    },
+    "deactivated": "Deactivated",
+    "reactivate": "Reactivate",
+    "deactivatedDemo": "{count, plural, one {# demo agency that took part in contracts was deactivated instead; its test transactions stay on record.} other {# demo agencies that took part in contracts were deactivated instead; their test transactions stay on record.}}",
+    "testLedgerTitle": "Test transactions",
+    "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
+    "testLedgerExport": "Download test transactions (CSV)"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -1190,6 +1197,16 @@
     "errors": {
       "agency": "No agency with that username.",
       "invalid": "Check the fields and try again."
+    },
+    "stuckTitle": "Payouts and refunds needing attention",
+    "stuckBody": "The payment partner hasn't completed these. Failed ones are retried daily with the same reference (it can't pay twice); after 5 tries, contact the partner.",
+    "stuckType": {
+      "payout": "Payout to agency",
+      "refund": "Refund to client"
+    },
+    "stuckStatus": {
+      "failed": "Failed",
+      "pending": "Waiting for partner"
     }
   },
   "AdminUsers": {
@@ -2492,6 +2509,21 @@
       "invalid": "Give the work a clear title.",
       "tooMany": "You already have three requests waiting with this partner.",
       "rateLimited": "Too many attempts. Try again later."
+    }
+  },
+  "CloseAccount": {
+    "title": "Close your account",
+    "body": "Your page, posts and packages disappear from Sawwiq and you can no longer sign in. Contracts and payment records are kept, as the law and your clients need them; contact support if you want to come back. You can't close the account while a real contract is running or money is held for it.",
+    "start": "Close my account",
+    "confirmHandle": "Type your handle ({handle}) to confirm",
+    "password": "Your password",
+    "submit": "Close my account now",
+    "cancel": "Keep my account",
+    "errors": {
+      "badPassword": "That password isn't right.",
+      "confirm": "The handle doesn't match.",
+      "openContracts": "Finish or cancel these contracts first: {contracts}.",
+      "rateLimited": "Too many attempts. Try again in a few minutes."
     }
   }
 }

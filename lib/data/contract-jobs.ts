@@ -19,7 +19,7 @@ import { settleMilestone } from "./escrow";
 //     one is written to the audit log as a system decision under the terms.
 //  3. Dispute decisions whose 7-day appeal window closed become final.
 
-export type JobReport = { reminders: number; autoApproved: number; finalized: number };
+export type JobReport = { reminders: number; autoApproved: number; finalized: number; moneyOut: { sent: number; succeeded: number; failed: number; gaveUp: number } };
 
 export async function runMilestoneJobs(now = new Date()): Promise<JobReport> {
   const db = await getDb();
@@ -49,7 +49,10 @@ export async function runMilestoneJobs(now = new Date()): Promise<JobReport> {
     reminders++;
   }
   const finalized = await finalizeDueDecisions(now);
-  return { reminders, autoApproved, finalized };
+  // Payouts and refunds the partner hasn't taken yet, or that failed (retried with the same key).
+  const { dispatchMoneyOut } = await import("./money-out");
+  const moneyOut = await dispatchMoneyOut();
+  return { reminders, autoApproved, finalized, moneyOut };
 }
 
 /** Deemed acceptance of one overdue delivery (guarded: only from "submitted", past its deadline). */

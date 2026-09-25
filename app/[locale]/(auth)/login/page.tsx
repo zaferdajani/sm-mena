@@ -9,14 +9,20 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/login">)
   return { title: t("loginTitle"), robots: { index: false } };
 }
 
-export default async function LoginPage({ params }: PageProps<"/[locale]/login">) {
+export default async function LoginPage({ params, searchParams }: PageProps<"/[locale]/login">) {
   const { locale } = await params;
+  const closed = (await searchParams).closed === "1";
   setRequestLocale(locale);
   const t = await getTranslations("Auth");
   return (
     <>
       <h1 className="text-xl font-bold">{t("loginTitle")}</h1>
       <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("loginSubtitle")}</p>
+      {closed && (
+        <p role="status" className="mb-4 rounded-lg bg-muted p-3 text-sm" data-testid="account-closed">
+          {t("closed")}
+        </p>
+      )}
       <LoginForm />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("noAccount")}{" "}
