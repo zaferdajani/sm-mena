@@ -1,6 +1,6 @@
 // Clears two-factor sign-in for staff accounts so they can enrol again.
-// Needed when MFA_ENCRYPTION_KEY changes (e.g. after leaving Fly, where the old
-// key lived): authenticator secrets sealed with the old key can't be read.
+// Needed when MFA_ENCRYPTION_KEY changes: authenticator secrets sealed with
+// the old key can't be read.
 // Backup codes still work until this runs. GitHub Actions → Maintenance →
 // reset-staff-2fa (docs/27-vercel.md). Agency accounts are not touched.
 import { and, inArray, isNotNull } from "drizzle-orm";

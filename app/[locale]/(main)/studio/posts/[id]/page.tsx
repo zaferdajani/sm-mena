@@ -18,8 +18,8 @@ export default async function EditPostPage({ params }: PageProps<"/[locale]/stud
       <h1 className="text-lg font-bold">{tc("edit")}</h1>
       <PostForm
         mode="edit"
-        {...await postFormOptions(agency.services)}
-        initial={{ postId: post.id, caption: post.caption, services: post.services, platforms: post.platforms, industry: post.industry, result: post.result, images: post.images.map((i) => i.thumbUrl) }}
+        {...await postFormOptions(agency.services, agency.id)}
+        initial={{ postId: post.id, caption: post.caption, services: post.services, platforms: post.platforms, industry: post.industry, result: post.result, clientId: post.clientId, images: post.images.map((i) => i.thumbUrl) }}
       />
       <div className="border-t pt-4">
         <DeletePostButton postId={post.id} />

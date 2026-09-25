@@ -32,7 +32,7 @@ The product is an Instagram-style showcase for agencies plus an AI matchmaker wi
 - In Claude Code cloud sessions run e2e with `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium`.
 - `npm run db:generate` · `npm run db:migrate` · `npm run db:seed`
 - `npm run db:reset` (wipe and re-seed demo data)
-- Deploy: `Dockerfile` + `fly.toml` (`.github/workflows/fly-deploy.yml`), or `vercel.json` with Postgres. `GET /api/health` reports the mode.
+- Deploy: Vercel (`vercel.json`, `.github/workflows/vercel.yml`) with Supabase Postgres + Storage; maintenance jobs in `.github/workflows/maintenance.yml` (docs/27-vercel.md). `GET /api/health` reports the mode.
 
 ## Definition of done for any task
 1. Lint, typecheck, unit tests and relevant e2e pass.

@@ -81,7 +81,7 @@ export async function removeDemoData() {
   await db.delete(users).where(inArray(users.id, demo.map((d) => d.owner)));
   // Seeded demo client requests go with them.
   await db.delete(projectRequests).where(eq(projectRequests.source, "demo"));
-  // Remembered so the demo seed (SEED_DEMO on boot) never brings it back.
+  // Remembered so the demo seed (npm run db:seed, Maintenance → seed-demo) never brings it back.
   await db.insert(appSettings).values({ key: "demo_removed", value: true }).onConflictDoUpdate({ target: appSettings.key, set: { value: true, updatedAt: new Date() } });
   await storage().remove([...images.flatMap((i) => [i.key, i.thumbKey]), ...demo.flatMap((d) => (d.avatarKey ? [d.avatarKey] : []))]).catch(() => {});
   return demo.length;

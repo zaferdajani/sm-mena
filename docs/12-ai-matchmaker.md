@@ -4,12 +4,37 @@ The client-side "end game": a business owner describes a project in a chat, the 
 
 ## 1. Flow
 
-1. **Chat** (`/match`, or the ✨ button on the home feed). The client writes in Arabic or English.
-2. **Recommendation.** The agent returns 1–5 agencies with a match score, reasons (service, portfolio, price, city, reviews, Google rating), a budget range in JOD and a project summary.
+1. **Chat** (`/match`, or the ✨ button on the home feed). A guided chat asks one question at a time with tappable choices (section 1a); the client can also write or dictate in Arabic or English at any step.
+2. **Recommendation.** The agent returns 1–5 agencies with a match score, reasons (service, portfolio, price, city, reviews, Google rating), a budget range in the visitor's currency and a project summary.
 3. **Act.** Contact an agency directly (WhatsApp, profile), or **send the project** (`/request/new`, prefilled from the chat).
 4. **Request.** The project is stored; the top 5 matches are invited and get a `recommended` event. Other agencies offering the same services see it in Studio → Opportunities. Requests stay open 14 days and take at most 10 quotes.
 5. **Quotes.** Agencies send a price, pricing type (monthly / one-off), delivery time and message. The client sees them on a private link (`/r/<token>`) or under "My projects", shortlists, accepts one (the rest are declined and the request closes) or closes the request.
 6. **Review.** After working together the client can leave a verified review (see `lib/data/reviews.ts`).
+
+## 1a. Guided chat (wizard) and the country rule
+
+The match page is a chat with choice chips (`components/match/chat.tsx`, `wizard-chips.tsx`). The step machine is pure and shared by the page and the server (`lib/match-wizard.ts`, unit tested in `tests/unit/match-wizard.test.ts`):
+
+| Step | Choices | Select |
+|---|---|---|
+| 1. What are you looking for? | the six taxonomy groups (social media, paid ads, photo/video/creative, branding/design, web/SEO/growth, on-ground) | multi, then **Next** |
+| 1b. Which exactly? | the services in the chosen groups, or **Any of these** (the group's flagship services; paid ads follow the chosen platforms) | multi |
+| 2. What kind of business? | `INDUSTRIES` (incl. Other) | single |
+| 3. Which platforms? | `PLATFORMS` + **Not sure** (skipped for branding/on-ground-only projects) | multi |
+| 4. Monthly budget? | 5 ranges in the visitor's currency + **Not sure** | single |
+| 5. Where? | **All of <country>**, its main cities (+ More cities), **Change country** (sets the `sw_country` cookie and refreshes) | single |
+| 6. Results | recommendation cards + **Send my project to these agencies**, **Change budget**, **Change city**, **Start over** | |
+
+- Steps already answered (by a tap or by typed text) are skipped; **Show matches now** skips the rest. Each pick is shown as the client's bubble. State lives in `sessionStorage` (`sawwiq-match-wizard`).
+- **Free text at any step** goes to `POST /api/match` with the answers so far (`need`, validated by `lib/match-wizard-schema.ts`; `picked: true` when the message is a tapped choice). In rule-based mode the server merges what the text says (stated values replace earlier answers), replies "Got it: …" and the page asks the next open question. A full brief typed at the first question goes straight to matches, as the classic chat did.
+- **Budget ranges** come from real prices of agencies based in the visitor's country (`groupPriceStats` in `lib/matching/prices.ts`: quartiles from `suggestBudget`, rounded, each range ≥25% wider than the last) when a group has at least 4 prices; otherwise per-currency defaults (`DEFAULT_BUDGET_EDGES`: JOD 300/600/1,200/2,500; SAR/AED/QAR 2k/5k/10k/20k; KWD 150/400/800/1,600; BHD/OMR 200/500/1,000/2,000; EGP 10k/25k/50k/100k).
+- **Voice:** a mic button dictates into the text box with the browser's Web Speech API (`ar-SA`, `ar-JO`, … by country, `en-US` in English). Hidden where unsupported; no audio reaches our server.
+- **With an AI provider**, only step 1 is guided; the tapped groups go to the model and it takes over the conversation. Each turn's last user message carries a page-context note (country, currency, answers so far) so the system prompt stays cacheable. If the provider fails, the rule-based matchmaker continues the guided chat.
+
+**Country rule.** The visitor's country (`currentCountry()`: the `sw_country` cookie, else IP country, else Jordan) wins everywhere:
+- The parser (`lib/ai/extract.ts`) knows every country's cities (`COUNTRIES`) but reads budgets only in the visitor's currency (e.g. ريال/SAR in Saudi Arabia). A city or country elsewhere is not followed silently: the reply asks "Amman is in Jordan, but you're browsing Saudi Arabia. Did you mean agencies in Jordan?" with **Yes, show agencies in Jordan** / **No, stay in Saudi Arabia** chips.
+- `findMatches` uses the explicit `need.country`, else the request's country scope, else the city's country, and drops a city outside that country. Agencies abroad that serve the country (`serves_countries`) are included, labelled "Based in Jordan · serves Saudi Arabia", and shown without their prices (another currency).
+- `marketPrices` and the budget ranges only use agencies based in the visitor's country, so every amount is in one currency. Money is written as `5,000 ر.س` in Arabic and `5,000 SAR` in English. Examples and the placeholder use the country's capital and currency.
 
 ## 2. Matching score (`lib/matching/score.ts`)
 
@@ -38,10 +63,10 @@ Agencies that don't offer any requested service are excluded. The budget range c
 - **Order and fallback:** `auto` uses Claude, else OpenAI, whichever key exists; `anthropic`/`openai` put that one first and the other second. Any error (outage, rate or spend limit, refusal, empty answer) moves to the next provider, then to the rule-based matchmaker (`lib/ai/fallback.ts`). Logs record the provider and status, never the conversation.
 - **Loop:** manual tool loop, at most 6 model calls per user turn.
 - **Tools** (strict JSON schemas shared by both providers, executed against our database):
-  - `search_agencies(services, city, platforms, industry, budget)` → scored agencies with reasons
-  - `price_guide(service)` → market price range from real packages
+  - `search_agencies(services, city, platforms, industry, budget)` → scored agencies with reasons (in the visitor's country; the `*_jod` fields hold that country's currency)
+  - `price_guide(service)` → market price range from real packages in the visitor's country
   - `recommend_agencies(handles, budget, summary)` → the structured result the UI renders; handles not returned by a search are dropped
-- **Endpoint:** `POST /api/match`, zod-validated, 20 requests per 10 minutes per visitor. `GET /api/health` shows the active provider order and models.
+- **Endpoint:** `POST /api/match` (`{ locale, messages, need?, picked? }`), zod-validated, 20 requests per 10 minutes per visitor. The response may carry `need` (the guided chat's answers after the turn) and `countrySwitch`. `GET /api/health` shows the active provider order and models.
 
 ### Test conversations and evaluation
 

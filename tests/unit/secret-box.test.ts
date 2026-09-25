@@ -8,7 +8,7 @@ afterEach(() => {
 
 describe("sealed secrets across a key change", () => {
   it("reads values sealed with the current key and returns null (not a crash) for an earlier key", () => {
-    process.env.MFA_ENCRYPTION_KEY = "old-key-that-lived-on-fly-0123456789";
+    process.env.MFA_ENCRYPTION_KEY = "old-key-from-a-previous-host-0123456";
     const sealed = seal("client-link-token");
     expect(tryOpen(sealed)).toBe("client-link-token");
     process.env.MFA_ENCRYPTION_KEY = "new-key-on-vercel-9876543210abcdef";

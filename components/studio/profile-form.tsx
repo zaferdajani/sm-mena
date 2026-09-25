@@ -12,12 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AVATAR_UPLOAD, compressForRequest, replaceInputFile } from "@/lib/media/image-compress";
 import { ChipGroup, Field } from "./chips";
+import { ServesField } from "./serves-field";
 
 type Option = { key: string; label: string };
 
 export type ProfileFormProps = {
   agency: {
-    name: string; handle: string; bio: string; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
+    name: string; handle: string; bio: string; about: string; strengths: string[]; country: string; servesCountries: string[]; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
     startingPriceJod: number | null; whatsapp: string | null; phone: string | null; email: string | null; website: string | null; instagram: string | null; foundedYear: number | null; teamSize: string | null;
   };
   options: { serviceGroups: { key: string; label: string; services: Option[] }[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
@@ -78,12 +79,25 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
         <Field label={t("handle")} htmlFor="handle"><Input id="handle" name="handle" required maxLength={30} dir="ltr" defaultValue={agency.handle} /></Field>
       </div>
       <Field label={t("bio")} htmlFor="bio"><Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={agency.bio} placeholder={t("bioPlaceholder")} /></Field>
+      <Field label={t("about")} htmlFor="about"><Textarea id="about" name="about" rows={5} maxLength={1500} defaultValue={agency.about} placeholder={t("aboutPlaceholder")} /></Field>
+      <Field label={t("strengths")} hint={t("strengthsHint")} htmlFor="strengths">
+        <Textarea id="strengths" name="strengths" rows={4} maxLength={1000} defaultValue={agency.strengths.join("\n")} placeholder={t("strengthsPlaceholder")} />
+      </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <CountryCityField countries={options.countries} defaultCountry="jo" defaultCity={agency.city} countryLabel={t("country")} cityLabel={t("city")} className={select} />
+        <CountryCityField countries={options.countries} defaultCountry={agency.country} defaultCity={agency.city} countryLabel={t("country")} cityLabel={t("city")} className={select} />
         <Field label={t("startingPrice")} hint={t("startingPriceHint")} htmlFor="startingPriceJod">
           <Input id="startingPriceJod" name="startingPriceJod" type="number" inputMode="numeric" min={0} dir="ltr" defaultValue={agency.startingPriceJod ?? ""} />
         </Field>
       </div>
+
+      <Field label={t("serves")} hint={t("servesHint", { country: options.countries.find((c) => c.code === agency.country)?.name ?? "" })}>
+        <ServesField
+          options={options.countries.filter((c) => c.code !== agency.country).map((c) => ({ key: c.code, label: `${c.flag} ${c.name}` }))}
+          gulf={["sa", "ae", "kw", "qa", "bh", "om"]}
+          defaultValues={agency.servesCountries}
+          labels={{ gulf: t("servesGulf"), all: t("servesAll"), none: t("servesNone") }}
+        />
+      </Field>
 
       <fieldset className="grid gap-3">
         <legend className="mb-2 text-sm font-medium">{t("services")}</legend>

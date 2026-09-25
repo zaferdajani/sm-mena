@@ -3,7 +3,7 @@
 import { LocateFixed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { countryFromPosition, countryFromTimeZone, DEFAULT_COUNTRY, type CountryCode } from "@/lib/countries";
+import { countryFromPosition, countryFromTimeZone, type CountryCode } from "@/lib/countries";
 
 const COOKIE = "sw_country";
 const ASKED = "sw_country_gps"; // we asked the browser for the location once
@@ -25,9 +25,14 @@ function locate(onFound: (code: CountryCode) => void) {
 }
 
 /**
- * Which country's agencies to show. First visit: the device's time zone gives
- * an instant guess, then the browser's location (GPS, with the visitor's
- * permission) confirms it; the choice is remembered and can be changed here.
+ * Which country's agencies to show. The server's `current` is the saved choice,
+ * else the country of the visitor's IP address, else Jordan. First visit: the
+ * device's time zone refines that guess (when it names one of our countries),
+ * then the browser's location (GPS, with the visitor's permission) confirms it;
+ * the choice is remembered and can be changed here.
+ *
+ * `variant="landing"` draws it for the landing page header (flag and name on a
+ * pill, styled by components/landing/site.css) without the location button.
  */
 export function CountryPicker({
   current,
@@ -35,12 +40,14 @@ export function CountryPicker({
   options,
   label,
   locateLabel,
+  variant = "app",
 }: {
   current: CountryCode;
   chosen: boolean;
   options: { code: CountryCode; name: string; flag: string }[];
   label: string;
   locateLabel: string;
+  variant?: "app" | "landing";
 }) {
   const router = useRouter();
   const [value, setValue] = useState<CountryCode>(current);
@@ -60,7 +67,9 @@ export function CountryPicker({
 
   useEffect(() => {
     if (chosen) return;
-    const guess = countryFromTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone) ?? DEFAULT_COUNTRY;
+    // Never fall back to Jordan here: `current` already carries the server's
+    // best guess (IP country), which a time zone outside the region must not undo.
+    const guess = countryFromTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone) ?? current;
     save(guess);
     if (guess !== current) start(() => router.refresh());
     if (!document.cookie.includes(`${ASKED}=1`)) {
@@ -76,6 +85,31 @@ export function CountryPicker({
     // Runs once for a visitor without a saved country.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (variant === "landing") {
+    const selected = options.find((o) => o.code === value) ?? options[0];
+    return (
+      <div className="sw-country" data-pending={pending || undefined} data-testid="country-picker">
+        <span aria-hidden="true" className="sw-country__flag">
+          {selected.flag}
+        </span>
+        <span aria-hidden="true" className="sw-country__name">
+          {selected.name}
+        </span>
+        <svg aria-hidden="true" className="sw-country__chev" viewBox="0 0 20 20">
+          <path d="M6 8l4 4 4-4" />
+        </svg>
+        {/* The native select sits invisibly on top: the phone's own picker, full keyboard support. */}
+        <select aria-label={label} className="sw-country__select" disabled={pending} onChange={(e) => apply(e.target.value as CountryCode)} value={value}>
+          {options.map((o) => (
+            <option key={o.code} value={o.code}>
+              {o.flag} {o.name}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-w-0 items-center gap-1" data-testid="country-picker">

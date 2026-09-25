@@ -12,7 +12,9 @@ test("switching to Saudi Arabia shows Saudi agencies, cities and prices", async 
   const rows = await page.getByTestId("agency-row").allTextContents();
   expect(rows.join(" ")).toContain("@najd.creative");
   expect(rows.join(" ")).toContain("SAR");
-  expect(rows.join(" ")).not.toContain("@nakhla.studio");
+  // Saudi agencies first; a Jordanian agency appears only if it serves Saudi Arabia, and says so.
+  expect(rows[0]).not.toContain("Based in");
+  for (const row of rows.filter((r) => r.includes("· Amman ·"))) expect(row).toContain("takes clients in 🇸🇦 Saudi Arabia");
   await page.getByTestId("filters-button").click();
   await expect(page.locator('select[name="city"] option', { hasText: "Riyadh" })).toHaveCount(1);
   await expect(page.locator('select[name="city"] option', { hasText: "Amman" })).toHaveCount(0);

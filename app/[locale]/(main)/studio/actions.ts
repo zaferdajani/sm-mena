@@ -10,11 +10,13 @@ import { requireAgency } from "@/lib/auth/guards";
 import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
+import { deleteClient, ownsClient, saveClient } from "@/lib/data/portfolio-clients";
 import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
 import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
+import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
 import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
@@ -37,7 +39,14 @@ function postFields(formData: FormData) {
     platforms: platforms as string[],
     industry: (INDUSTRIES as readonly string[]).includes(industryRaw) ? industryRaw : null,
     result: String(formData.get("result") ?? "").trim().slice(0, 80) || null,
+    clientId: String(formData.get("clientId") ?? "") || null,
   };
+}
+
+/** Keeps a post's client only when it is one of the agency's own clients. */
+async function ownClient<T extends { clientId: string | null }>(agencyId: string, fields: T): Promise<T> {
+  const ok = fields.clientId && z.string().uuid().safeParse(fields.clientId).success && (await ownsClient(agencyId, fields.clientId));
+  return { ...fields, clientId: ok ? fields.clientId : null };
 }
 
 export async function createPostAction(_: StudioState, formData: FormData): Promise<StudioState> {
@@ -45,7 +54,7 @@ export async function createPostAction(_: StudioState, formData: FormData): Prom
   const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
   if (!files.length) return { error: "noImages" };
   if (files.length > MAX_IMAGES_PER_POST) return { error: "tooMany" };
-  const fields = postFields(formData);
+  const fields = await ownClient(agency.id, postFields(formData));
   if (!fields.services.length) return { error: "noServices" };
   if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
 
@@ -66,7 +75,7 @@ export async function updatePostAction(_: StudioState, formData: FormData): Prom
   const { agency } = await requireAgency();
   const postId = z.string().uuid().safeParse(formData.get("postId"));
   if (!postId.success) return { error: "generic" };
-  const fields = postFields(formData);
+  const fields = await ownClient(agency.id, postFields(formData));
   if (!fields.services.length) return { error: "noServices" };
   const updated = await updatePost(postId.data, agency.id, fields);
   if (!updated) return { error: "generic" };
@@ -86,6 +95,8 @@ const profileSchema = z.object({
   name: z.string().trim().min(2).max(80),
   handle: z.string().trim().toLowerCase(),
   bio: z.string().trim().max(500).default(""),
+  about: z.string().trim().max(1500).default(""),
+  strengths: z.string().max(1000).default(""),
   city: z.enum(CITIES),
   startingPriceJod: z.union([z.literal(""), z.coerce.number().int().min(0).max(100000)]),
   whatsapp: z.string().trim().max(20),
@@ -131,7 +142,11 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
     name: d.name,
     handle: d.handle,
     bio: d.bio,
+    about: d.about,
+    strengths: d.strengths.split("\n").map((s) => s.trim().replace(/^[-•*·]\s*/, "").slice(0, 80)).filter(Boolean).slice(0, 6),
     city: d.city,
+    // Countries besides the home country (from the city) where it also takes clients.
+    servesCountries: COUNTRY_CODES.filter((c) => list(formData, "serves").includes(c) && c !== countryOfCity(d.city)),
     services: [...new Set(list(formData, "services"))].filter(isServiceKey),
     platforms: oneOf(list(formData, "platforms") as unknown as typeof PLATFORMS, PLATFORMS) as string[],
     industries: oneOf(list(formData, "industries") as unknown as typeof INDUSTRIES, INDUSTRIES) as string[],
@@ -267,4 +282,31 @@ export async function submitProposalAction(_: ProposalState, formData: FormData)
   if ("error" in result) return { error: result.error };
   revalidatePath("/[locale]", "layout");
   return { ok: true };
+}
+
+export type ClientState = { ok?: boolean; id?: string; error?: "name" | "limit" | "generic" | "link"; index?: number; kind?: string } | undefined;
+
+/** Adds or updates a portfolio client and the accounts the agency runs for it. */
+export async function saveClientAction(_: ClientState, formData: FormData): Promise<ClientState> {
+  const { agency } = await requireAgency();
+  const id = String(formData.get("clientId") ?? "");
+  if (id && !z.string().uuid().safeParse(id).success) return { error: "generic" };
+  const kinds = formData.getAll("linkKind").map(String);
+  const values = formData.getAll("linkValue").map(String);
+  const result = await saveClient(agency.id, id || null, {
+    name: String(formData.get("name") ?? ""),
+    industry: String(formData.get("industry") ?? "") || null,
+    country: String(formData.get("country") ?? "") || null,
+    description: String(formData.get("description") ?? ""),
+    links: kinds.map((kind, i) => ({ kind, value: values[i] ?? "" })).slice(0, 40),
+  });
+  if ("error" in result) return result;
+  revalidatePath("/[locale]", "layout");
+  return { ok: true, id: result.id };
+}
+
+export async function deleteClientAction(clientId: string) {
+  const { agency } = await requireAgency();
+  await deleteClient(agency.id, z.string().uuid().parse(clientId));
+  revalidatePath("/[locale]", "layout");
 }

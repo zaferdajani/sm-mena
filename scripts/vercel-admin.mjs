@@ -64,6 +64,9 @@ async function setEnv(project) {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     AI_PROVIDER: process.env.AI_PROVIDER,
     GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
+    // Emails to agencies (lib/notify.ts, docs/29-email.md).
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_FROM: process.env.EMAIL_FROM || `Sawwiq <noreply@${DOMAIN}>`,
   };
   for (const [key, value] of Object.entries(vars)) {
     if (!value) {

@@ -56,7 +56,7 @@ const text = (t: string) => ({ type: "message", id: "msg", role: "assistant", st
 const env = { ...process.env };
 beforeAll(async () => {
   await seed({ quiet: true });
-}, 180_000);
+}, 600_000); // the demo seed encodes every demo photo (quality search)
 afterAll(async () => {
   process.env = env;
   await closeDb();

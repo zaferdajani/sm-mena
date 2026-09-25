@@ -13,8 +13,8 @@
   --sw-warn: #9a6200;
   --sw-danger: #b3261e;
   /* The app loads these faces through next/font (app/[locale]/layout.tsx). */
-  --sw-font-display: var(--font-readex), var(--font-plex-arabic), system-ui, sans-serif;
-  --sw-font-body: var(--font-plex-arabic), var(--font-readex), system-ui, sans-serif;
+  --sw-font-display: "Twemoji Country Flags", var(--font-readex), var(--font-plex-arabic), system-ui, sans-serif;
+  --sw-font-body: "Twemoji Country Flags", var(--font-plex-arabic), var(--font-readex), system-ui, sans-serif;
   --sw-font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --sw-r-sm: 10px;
   --sw-r: 14px;
@@ -139,7 +139,9 @@
   font-size: 0.875rem;
   font-weight: 600;
 }
-.sw-header__nav + .sw-switch { margin-inline-start: 0.5rem; }
+.sw-header__tools { display: flex; align-items: center; gap: 0.625rem; min-width: 0; }
+.sw-header__nav + .sw-header__tools { margin-inline-start: 0.5rem; }
+.sw-header__tools .sw-switch { flex: none; }
 .sw-switch__knob {
   position: absolute;
   top: 3px;
@@ -155,6 +157,54 @@
 .sw-switch[data-lang="en"] .sw-switch__knob { inset-inline-start: 50%; }
 .sw-switch:hover .sw-switch__knob { transform: translateX(calc(var(--sw-flip) * 18%)); }
 .sw-switch[data-lang="en"]:hover .sw-switch__knob { transform: translateX(calc(var(--sw-flip) * -18%)); }
+
+/* Country picker: flag and name on a pill; the native select lies invisibly on top. */
+.sw-country {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  max-width: 14rem;
+  height: 2.5rem;
+  padding-inline: 0.75rem 0.625rem;
+  border: 1px solid var(--sw-line);
+  border-radius: var(--sw-pill);
+  background: var(--sw-paper);
+  color: var(--sw-ink);
+  font-family: var(--sw-font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: border-color var(--sw-fast) ease, opacity var(--sw-fast) ease;
+}
+.sw-country:hover { border-color: var(--sw-green); }
+.sw-country:has(.sw-country__select:focus-visible) { outline: 2px solid var(--sw-green); outline-offset: 3px; }
+.sw-country[data-pending] { opacity: 0.6; }
+.sw-country__flag { flex: none; font-size: 1.125rem; line-height: 1; }
+.sw-country__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sw-country__chev { flex: none; width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--sw-ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sw-country__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+  /* 16px keeps iOS from zooming in when the picker opens. */
+  font-size: 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.sw-country__select:disabled { cursor: progress; }
+.sw-header__nav a { white-space: nowrap; }
+/* Laptop widths share the row with the section links: the flag alone. */
+@media (min-width: 961px) and (max-width: 1239px) {
+  .sw-country { gap: 0.3rem; padding-inline: 0.625rem 0.5rem; }
+  .sw-country__name { display: none; }
+}
 
 /* ---------- Scroll journey overrides ---------- */
 .sw .scroll-scrub { font-family: var(--sw-font-display); }
@@ -561,7 +611,7 @@
 /* ---------- Mobile collapse (declared per section) ---------- */
 @media (max-width: 960px) {
   .sw-header__nav { display: none; }
-  .sw-switch { margin-inline-start: auto; }
+  .sw-header__nav + .sw-header__tools { margin-inline-start: auto; }
   .sw-pay, .sw-agency { grid-template-columns: 1fr; }
   .sw-pay__text { position: static; }
   .sw-agency__frame { order: 0; max-width: 26rem; }
@@ -576,6 +626,7 @@
 @media (max-width: 640px) {
   .sw { font-size: 1rem; }
   .sw-header { gap: 1rem; }
+  .sw-header__tools { gap: 0.5rem; }
   .sw-ms { grid-template-columns: 2.25rem 1fr; }
   .sw-ms__items, .sw-ms .sw-chip { grid-column: 2; }
   .sw-ms .sw-chip { justify-self: start; }
@@ -587,6 +638,12 @@
   .sw-band { align-items: flex-end; }
   .sw-band__disc { width: 3rem; height: 3rem; }
   .sw-ledger__totals { gap: 1.25rem; }
+}
+
+/* Narrow phones: the flag alone (the select still reads the full name aloud). */
+@media (max-width: 520px) {
+  .sw-country { gap: 0.3rem; padding-inline: 0.625rem 0.5rem; }
+  .sw-country__name { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

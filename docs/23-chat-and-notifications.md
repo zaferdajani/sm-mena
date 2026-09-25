@@ -35,7 +35,7 @@ A shorter reminder sits under the composer, and the inquiry form says that an in
 
 ## Polling (no sockets)
 
-The app runs on one auto-stopping Fly machine with PGlite or on serverless functions, so there are no WebSockets or server-sent events.
+The app runs on serverless functions (Vercel), so there are no WebSockets or server-sent events.
 
 | Endpoint | Used by | Returns |
 |---|---|---|

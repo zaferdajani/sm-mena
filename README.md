@@ -30,7 +30,7 @@ Platform overview and system status, statistics (traffic sources, how visitors a
 
 ### Team access
 
-Maintenance, backbone (engineering) and support teams get their own roles with only the tools their job needs (Admin → Team). You stay the **owner**: only you invite people, change roles, time-box or switch off access, export payments or hand over ownership, and nobody can demote or lock out the owner. Invitations are single-use links, staff must turn on two-factor sign-in, and every change is audited. `docs/17-team-access.md` also covers keeping GitHub, Fly.io and the other accounts in your name (CODEOWNERS, branch protection) and a break-glass recovery.
+Maintenance, backbone (engineering) and support teams get their own roles with only the tools their job needs (Admin → Team). You stay the **owner**: only you invite people, change roles, time-box or switch off access, export payments or hand over ownership, and nobody can demote or lock out the owner. Invitations are single-use links, staff must turn on two-factor sign-in, and every change is audited. `docs/17-team-access.md` also covers keeping GitHub, Vercel, Supabase and the other accounts in your name (CODEOWNERS, branch protection) and a break-glass recovery.
 
 ### How matching works
 
@@ -83,39 +83,20 @@ Configuration is in `.env.example`. Copy it to `.env.local` and fill in only wha
 
 ## Put it online
 
-### Option A — Fly.io (recommended for the pilot, runs as is)
+The site runs on **Vercel** (free Hobby plan) with **Supabase** for the database (Postgres) and uploaded files (Storage). Everything is driven from GitHub Actions; see `docs/27-vercel.md` for the full walkthrough and `docs/25-supabase.md` for the database.
 
-One machine with a 1 GB volume holds the database and uploads, so no other services are needed.
-
-1. Create a Fly.io account and an access token (Account → Access Tokens).
-2. In GitHub → this repo → Settings → Secrets and variables → Actions, add:
-   - `FLY_API_TOKEN` (required)
+1. In GitHub → this repo → Settings → Secrets and variables → Actions, add:
+   - `VERCEL_TOKEN` (vercel.com → Account Settings → Tokens)
+   - `DATABASE_URL` (Supabase → Connect → Session pooler, with `?sslmode=require`), `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
    - `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` (12+ characters) for your admin login
-   - `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY` (optional, turns on the AI matchmaker); optionally `AI_PROVIDER`, `ANTHROPIC_MODEL` (e.g. `claude-haiku-4-5`) or `OPENAI_MODEL` (e.g. `gpt-4o-mini`)
+   - `ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY` (optional, turns on the AI matchmaker); optionally `AI_PROVIDER`, `ANTHROPIC_MODEL` or `OPENAI_MODEL`
    - `GOOGLE_PLACES_API_KEY` (optional, Google ratings)
+2. Run **Actions → Vercel → Run workflow → setup**. It copies the secrets into Vercel, generates `MFA_ENCRYPTION_KEY`, `PAYMENTS_WEBHOOK_SECRET` and `CRON_SECRET` once, adds the domain and deploys. Every push to `main` deploys again.
+3. Run **Actions → Maintenance → Run workflow → seed-demo** to create your admin account (and the demo agencies). Sign in at `/login` with the admin email and password, then turn on two-factor sign-in when asked.
 
-   The workflow also generates `MFA_ENCRYPTION_KEY` (two-factor sign-in), `PAYMENTS_WEBHOOK_SECRET` and `CRON_SECRET` on the first deploy. After signing in the first time, turn on two-factor sign-in (the admin console asks you to).
-3. Run **Actions → Deploy to Fly.io → Run workflow** (it also runs on every push to `main`).
+Other buttons in **Actions → Vercel**: `status` (latest deployments, build log, DNS check) and `logs` (recent server errors). In **Actions → Maintenance**: `migrate`, `seed-demo`, `rebuild-demo-media`, `reset-staff-2fa`, `recover-owner`.
 
-The site comes up at `https://sawwiq-jo.fly.dev` with demo agencies (remove them in Admin → Agencies when real agencies join). The admin account is created on the first boot after the admin secrets are set, so you can add them later. Change `app` in `fly.toml` for a different name. On a live deployment demo agency passwords are random unless `SEED_DEMO_PASSWORD` is set. For the daily Google refresh, point any scheduler at `GET /api/cron/google` with `Authorization: Bearer $CRON_SECRET`.
-
-From a terminal instead: `fly launch --copy-config --no-deploy`, `fly volumes create sawwiq_data --size 1`, `fly secrets set SEED_ADMIN_EMAIL=… SEED_ADMIN_PASSWORD=…`, `fly deploy --ha=false`.
-
-### Option B — Vercel + managed Postgres
-
-Vercel functions have no persistent disk, so set `DATABASE_URL` (Supabase or Neon) and `STORAGE_PROVIDER=supabase` with `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and a public bucket. `vercel.json` runs migrations during the build and schedules the Google refresh daily. Seed once with `DATABASE_URL=… npm run db:seed` if you want demo data.
-
-### Option C — any Docker host
-
-```bash
-docker build -t sawwiq --build-arg NEXT_PUBLIC_SITE_URL=https://your.domain .
-docker run -p 3000:3000 -v sawwiq-data:/data -e SEED_DEMO=true \
-  -e SEED_ADMIN_EMAIL=you@example.com -e SEED_ADMIN_PASSWORD='a-long-password' sawwiq
-```
-
-`GET /api/health` reports the database, storage, AI and monetization mode (never secrets).
-
-Before scaling past one machine, move to Postgres and Supabase Storage (rate limits are in memory and PGlite is single-process).
+`GET /api/health` reports the database, storage, AI and monetization mode (never secrets). Locally, without `DATABASE_URL`, the app uses an embedded database (PGlite) and a local upload folder, so `npm run dev` needs nothing else.
 
 ## Documents
 
@@ -132,8 +113,12 @@ Before scaling past one machine, move to Postgres and Supabase Storage (rate lim
 | `docs/18-seo.md` | SEO: the OneClickConvert playbook, what's in place, owner to-do, keyword map |
 | `docs/20-client-voice.md` | A real client's needs and pains, and how the platform answers them |
 | `docs/21-countries.md` | Jordan, the Gulf and Egypt: country picker (GPS), cities, currencies, per-country hire pages |
-| `docs/19-domain.md` | Connecting your own domain: GitHub variable, DNS records, automatic switch-over and redirects |
-| `docs/17-team-access.md` | Staff roles, owner protections, GitHub/Fly.io access for the team, break-glass, sites directory |
+| `docs/19-domain.md` | The domain: sawwiq.org at Namecheap pointing at Vercel |
+| `docs/25-supabase.md` | Database and file storage on Supabase |
+| `docs/27-vercel.md` | Hosting on Vercel, the GitHub Actions buttons, first-time setup |
+| `docs/28-portfolio-clients.md` | Agency introduction and strengths, countries served, portfolio clients and their accounts |
+| `docs/29-email.md` | Email to agencies with Resend: DNS at Namecheap, API key, setup |
+| `docs/17-team-access.md` | Staff roles, owner protections, GitHub and Vercel access for the team, break-glass, sites directory |
 | `CLAUDE.md` | Build rules for Claude Code |
 
 ## Stack

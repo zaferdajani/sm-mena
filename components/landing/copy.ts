@@ -1,4 +1,6 @@
-/* Bilingual copy for the landing page (the front page at /ar and /en). */
+/* Bilingual copy for the landing page (the front page at /ar and /en), per country. */
+import { countryOf, type Country, type CountryCode } from "@/lib/countries";
+
 export type Lang = "ar" | "en";
 
 // Links go straight into the app (same site): /ar/explore, /en/match, …
@@ -19,6 +21,7 @@ export interface SiteCopy {
   otherLangHref: string;
   otherLangName: string;
   nav: { href: string; label: string }[];
+  country: { label: string; locate: string };
   cta: { match: string; browse: string; join: string; reviews: string };
   chapters: Chapter[];
   payments: {
@@ -59,6 +62,7 @@ const ar: SiteCopy = {
     { href: "#services", label: "الخدمات" },
     { href: "#agencies", label: "للوكالات" },
   ],
+  country: { label: "الدولة", locate: "حدّد دولتي من موقعي" },
   cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "اقرأ المراجعات" },
   chapters: [
     { id: "start", label: "البداية", title: "اعثر على وكالة التسويق المناسبة في الأردن", body: "لعيادتك الطبية، عيادة الأسنان، صيدليتك، مطعمك، متجرك ومكتبك العقاري. شاهد أعمالاً حقيقية، واسأل المطابق الذكي، وادفع على مراحل وأنت مطمئن." },
@@ -163,7 +167,7 @@ const ar: SiteCopy = {
     bandSub: "اكتب ما تحتاجه، والمطابق يرشّح لك الوكالات الأنسب.",
   },
   footer: {
-    tagline: "واجهة وكالات التسويق في الأردن",
+    tagline: "أول منصة عربية لوكالات التسويق · الأردن",
     rights: "© 2026 سوّق",
     links: [
       { label: "تصفّح الوكالات", href: "explore" },
@@ -184,6 +188,7 @@ const en: SiteCopy = {
     { href: "#services", label: "Services" },
     { href: "#agencies", label: "For agencies" },
   ],
+  country: { label: "Country", locate: "Use my location" },
   cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "Read reviews" },
   chapters: [
     { id: "start", label: "Start", title: "Find the right marketing agency in Jordan", body: "For your clinic, dental practice, pharmacy, restaurant, shop or real estate office. See real work, ask the AI matchmaker, and pay by milestone." },
@@ -288,7 +293,7 @@ const en: SiteCopy = {
     bandSub: "Tell it what you need. It shortlists the right agencies.",
   },
   footer: {
-    tagline: "Jordan's showcase of marketing agencies",
+    tagline: "The first Arabic marketplace for marketing agencies · Jordan",
     rights: "© 2026 Sawwiq",
     links: [
       { label: "Browse agencies", href: "explore" },
@@ -298,5 +303,109 @@ const en: SiteCopy = {
   },
 };
 
+/** The copy as written, for Jordan. Use landingCopy() for the visitor's country. */
 export const siteCopy: Record<Lang, SiteCopy> = { ar, en };
+
+// The six cities the landing page names for Jordan (its original order);
+// other countries show their first six cities.
+const LANDING_CITIES: Partial<Record<CountryCode, string[]>> = { jo: ["amman", "irbid", "zarqa", "aqaba", "salt", "madaba"] };
+// The payments demo is priced in JOD; roughly the same budget in each currency.
+const LEDGER_SCALE: Record<CountryCode, number> = { jo: 1, sa: 5, ae: 5, qa: 5, kw: 0.45, bh: 0.55, om: 0.55, eg: 70 };
+
+const landingCities = (country: Country) => {
+  const keys = LANDING_CITIES[country.code];
+  return keys ? keys.map((k) => country.cities.find((city) => city.key === k)!) : country.cities.slice(0, 6);
+};
+/** A round amount: tens below a thousand, fifties above. */
+const scaleAmount = (n: number, code: CountryCode) => {
+  const v = n * LEDGER_SCALE[code];
+  const step = v >= 1000 ? 50 : 10;
+  return Math.round(v / step) * step;
+};
+const joinAr = (names: string[]) => names.join(" و");
+const joinEn = (names: string[]) => (names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`);
+/** "in Jordan", "in the United Arab Emirates". */
+const enIn = (country: Country) => (country.code === "ae" ? `the ${country.en}` : country.en);
+
+function build(lang: Lang, code: CountryCode): SiteCopy {
+  const base = siteCopy[lang];
+  if (code === "jo") return base;
+  const country = countryOf(code);
+  const cities = landingCities(country);
+  const project = country.cities[0];
+  const reviewCity = country.cities[Math.min(2, country.cities.length - 1)];
+  const isAr = lang === "ar";
+  const name = isAr ? country.ar : enIn(country);
+  const cityName = (city: { ar: string; en: string }) => (isAr ? city.ar : city.en);
+  const format = (n: number) => n.toLocaleString("en");
+  const scale = (m: Milestone): Milestone => ({ ...m, amount: scaleAmount(m.amount, code) });
+
+  return {
+    ...base,
+    chapters: base.chapters.map((ch) =>
+      ch.id === "start"
+        ? { ...ch, title: isAr ? `اعثر على وكالة التسويق المناسبة في ${name}` : `Find the right marketing agency in ${name}` }
+        : ch.id === "how"
+          ? {
+              ...ch,
+              body: isAr
+                ? `منشورات وحملات حقيقية نفّذتها الوكالات لمطاعم وعيادات ومتاجر في ${name}، ومعها تقييمات \u2068Google\u2069 ومراجعات موثّقة.`
+                : `Real posts and campaigns agencies made for restaurants, clinics and shops across ${name}, with Google ratings and verified reviews.`,
+            }
+          : ch,
+    ),
+    payments: {
+      ...base.payments,
+      ledger: {
+        ...base.payments.ledger,
+        project: isAr ? `حملة إطلاق مطعم، ${project.ar}` : `Restaurant launch campaign, ${project.en}`,
+        money: isAr ? (n) => `${format(n)} ${country.currencyAr}` : (n) => `${country.currency} ${format(n)}`,
+        milestones: base.payments.ledger.milestones.map(scale),
+      },
+    },
+    who: {
+      ...base.who,
+      sub: isAr
+        ? "من العيادة ومقهى الحي إلى الفنادق والمنتجعات: اعثر على وكالات اشتغلت في مجالك من قبل."
+        : "From the clinic and the corner café to hotels and resorts, find agencies that have already worked in your field.",
+      healthNote: isAr
+        ? `يلتزم الإعلان الطبي في ${name} بأنظمة الجهات الصحية المختصة، ووكالات سوّق تعرفها.`
+        : `Medical advertising in ${name} follows the health authorities' rules; agencies on Sawwiq know them.`,
+      items: base.who.items.map((item) => (item.slug === "hotels" ? { ...item, title: isAr ? "فنادق وسياحة" : "Hotels and tourism" } : item)),
+    },
+    trust: {
+      ...base.trust,
+      review: { ...base.trust.review, name: isAr ? `د. لينا، عيادة أسنان في ${reviewCity.ar}` : `Dr. Lina, dental clinic in ${reviewCity.en}` },
+    },
+    agencies: {
+      ...base.agencies,
+      body: isAr
+        ? `للوكالات والمستقلين في ${joinAr(cities.map(cityName))}. صفحتك على سوّق مجانية.`
+        : `For agencies and freelancers in ${joinEn(cities.map(cityName))}. Your Sawwiq page is free.`,
+    },
+    cities: {
+      ...base.cities,
+      title: isAr ? `في كل مدن ${name}` : `Across ${name}`,
+      list: cities.map((city) => ({ slug: city.key, name: cityName(city), alt: isAr ? city.en.toUpperCase() : city.ar })),
+    },
+    footer: { ...base.footer, tagline: isAr ? `أول منصة عربية لوكالات التسويق · ${name}` : `The first Arabic marketplace for marketing agencies · ${country.en}` },
+  };
+}
+
+const built = new Map<string, SiteCopy>();
+
+/**
+ * The landing copy for a country: its name in the titles, tagline and health
+ * note, its currency in the payments demo, and its cities. Jordan gets the copy
+ * exactly as written above.
+ */
+export function landingCopy(lang: Lang, code: CountryCode): SiteCopy {
+  const key = `${lang}:${code}`;
+  let copy = built.get(key);
+  if (!copy) {
+    copy = build(lang, code);
+    built.set(key, copy);
+  }
+  return copy;
+}
 export const THEME_COLOR = "#F2F2ED";

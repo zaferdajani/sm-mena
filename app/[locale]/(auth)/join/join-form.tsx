@@ -8,9 +8,10 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
+import { ChipGroup } from "@/components/studio/chips";
 import { join } from "../actions";
 
-export function JoinForm({ countries, defaultCountry }: { countries: CountryOption[]; defaultCountry: string }) {
+export function JoinForm({ countries, defaultCountry, services }: { countries: CountryOption[]; defaultCountry: string; services: { key: string; label: string }[] }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
@@ -48,6 +49,12 @@ export function JoinForm({ countries, defaultCountry }: { countries: CountryOpti
           className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm"
         />
       </div>
+      {/* One tap question so a new agency is matched from day one; the rest waits for the studio. */}
+      <fieldset className="grid gap-1.5">
+        <legend className="mb-1.5 text-sm font-medium">{t("joinServices")}</legend>
+        <ChipGroup name="services" options={services} />
+        <p className="text-xs text-muted-foreground">{t("joinServicesHint")}</p>
+      </fieldset>
       <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor="whatsapp">{t("whatsapp")}</Label>

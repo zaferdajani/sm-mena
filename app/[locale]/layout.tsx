@@ -7,7 +7,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DomGuard } from "@/components/dom-guard";
 import { ErrorReporter } from "@/components/error-reporter";
 import { LanguageOffer } from "@/components/language-offer";
+import { FlagPolyfill } from "@/components/flag-polyfill";
 import { PageTracker } from "@/components/page-tracker";
+import { themeScript } from "@/components/theme-toggle";
 import { directionOf, routing } from "@/i18n/routing";
 import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -85,7 +87,12 @@ export default async function LocaleLayout({
       lang={locale}
       dir={directionOf(locale)}
       className={`${plexArabic.variable} ${readex.variable} ${plexMono.variable} h-full antialiased`}
+      // The head script may set data-theme="dark" before React loads.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full">
         {/* Tells shadcn/Base UI components (menus, sliders, tabs) which way to read. */}
         <DirectionProvider direction={directionOf(locale)}>
@@ -94,6 +101,7 @@ export default async function LocaleLayout({
             <LanguageOffer texts={offerTexts} />
             {children}
             <PageTracker />
+            <FlagPolyfill />
           </NextIntlClientProvider>
           <ErrorReporter />
         </DirectionProvider>

@@ -100,7 +100,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           (agencies.length ? (
             <div className="grid grid-cols-1 gap-1 px-2 sm:grid-cols-2">
               {agencies.map((a) => (
-                <AgencyRow key={a.id} agency={a} />
+                <AgencyRow key={a.id} agency={a} viewCountry={country} />
               ))}
             </div>
           ) : (

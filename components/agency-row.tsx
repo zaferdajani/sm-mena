@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { currencyOf } from "@/lib/countries";
+import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { RatingBadge } from "@/components/reviews/stars";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -7,12 +7,15 @@ import { Link } from "@/i18n/navigation";
 import type { AgencySummary } from "@/lib/data/agencies";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
+import { servesNote } from "@/lib/serves-note";
 
-export async function AgencyRow({ agency }: { agency: AgencySummary }) {
+/** `viewCountry`: the country being browsed; an agency based elsewhere gets a "based in … · serves …" note. */
+export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary; viewCountry?: string }) {
   const locale = await getLocale();
   const tc = await getTranslations("Common");
   const tCity = await getTranslations("Cities");
   const tp = await getTranslations("Profile");
+  const note = viewCountry ? await servesNote(agency, viewCountry) : null;
   return (
     <Link href={`/a/${agency.handle}`} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted" data-testid="agency-row">
       <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={52} />
@@ -22,8 +25,9 @@ export async function AgencyRow({ agency }: { agency: AgencySummary }) {
           {agency.isVerified && <VerifiedBadge label={tc("verified")} />}
         </p>
         <p className="truncate text-sm text-muted-foreground">
-          <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)} · {agency.postCount} {tp("posts")}
+          <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)} · {agency.postCount} {tp("posts")}
         </p>
+        {note && <p className="truncate text-xs font-medium text-brand" data-testid="serves-note">{note}</p>}
         {agency.ratingAverage !== null && <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} />}
         <p className="truncate text-xs text-muted-foreground">
           {agency.services.slice(0, 3).map((s) => serviceLabel(s, locale)).join(" · ")}

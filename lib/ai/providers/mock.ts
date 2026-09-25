@@ -1,6 +1,6 @@
 import "server-only";
 import { serviceLabel } from "@/lib/labels";
-import { extractNeed, isArabic } from "../fallback";
+import { extractNeed, isArabic, turnCountry } from "../fallback";
 import { runTool, type ToolState } from "../tools";
 import { emptyUsage, type ChatMessage, type ProviderResult } from "../types";
 
@@ -14,7 +14,7 @@ export async function mockMatchmaker(history: ChatMessage[], locale: string): Pr
   const userText = history.filter((m) => m.role === "user").map((m) => m.content).join(" \n ");
   const last = history.filter((m) => m.role === "user").at(-1)?.content ?? "";
   const ar = last ? isArabic(last) : locale === "ar";
-  const need = extractNeed(userText);
+  const need = extractNeed(userText, turnCountry());
   const state: ToolState = { seen: new Map(), recommendation: null };
   const call = async (name: string, args: unknown) => {
     usage.calls++;

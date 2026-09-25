@@ -4,8 +4,10 @@ Sawwiq starts in Jordan and serves eight countries: Jordan, Saudi Arabia, the UA
 
 ## For visitors
 
-- **Country picker** in the header (phones) and the sidebar (desktop).
-- **First visit:** the device's time zone gives an instant guess, then the browser asks for the location once (GPS, with permission) and switches if it points to another country. The choice is saved (`sw_country` cookie) and can be changed any time; the target button re-detects from the location.
+- **Country picker** in the app header (phones), the sidebar (desktop), and the landing page header (flag and name; flag only on narrow phones and laptop widths).
+- **Which country (server, `lib/country-choice.ts` `currentCountry()`):** the saved choice (`sw_country` cookie) → the country of the visitor's IP address (`x-vercel-ip-country`, set by Vercel; `detectedCountry()`, only our eight countries count) → Jordan. So the very first page, including the landing page, already shows the visitor's country.
+- **First visit (browser, `components/country-picker.tsx`):** the device's time zone refines the server's guess when it names one of our countries (otherwise the server's guess stands — it never falls back to Jordan), then the browser asks for the location once (GPS, with permission) and switches if it points to another country. The result is saved in the `sw_country` cookie. A manual choice in any picker is saved the same way and wins over everything; the target button re-detects from the location.
+- **Landing page:** titles, the footer tagline, the medical-advertising note, the payments demo (project city, currency and a budget of roughly the same size), the example review, the agencies blurb and the cities section follow the country (`landingCopy(lang, country)` in `components/landing/copy.ts`). Jordan's copy is unchanged. The page's SEO title and description stay on Jordan (crawlers have no country).
 - Feed, stories strip, suggested agencies, Explore (posts and agencies), sponsored slots, the AI matchmaker and project requests all stay in the chosen country. Explore's city filter lists that country's cities; budgets and prices show in its currency.
 - A link with a city (for example from the landing page, `?city=riyadh`) opens that city's country.
 
@@ -31,5 +33,4 @@ Add it to `COUNTRIES` in `lib/countries.ts` (code, names, flag, currency, dial c
 ## Not yet
 
 - Payments: protected payments still run through the test provider in JOD terms; a real gateway per country (and currency) is needed before launch outside Jordan.
-- The landing page copy speaks about Jordan; a per-country landing is a later step.
 - Phone numbers: WhatsApp links assume numbers are entered with the country code outside Jordan.

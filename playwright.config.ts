@@ -31,6 +31,9 @@ export default defineConfig({
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   use: {
     baseURL,
+    // The front page asks first-time visitors "who are you?"; tests start as returning visitors
+    // (tests/e2e/welcome.spec.ts clears this to test the question itself).
+    storageState: { cookies: [], origins: [{ origin: baseURL, localStorage: [{ name: "sw_role", value: "browse" }] }] },
     trace: "on-first-retry",
     launchOptions: { executablePath },
   },

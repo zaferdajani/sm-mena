@@ -1,11 +1,9 @@
-# 27 · Running on Vercel + Supabase (no Fly)
+# 27 · Running on Vercel + Supabase
 
 The site needs two things: somewhere to **run the code** and somewhere to **keep the data**.
 - **Code:** Vercel (free Hobby plan), made by the Next.js team. It runs the app as serverless functions: no server to pay for or keep awake.
 - **Data:** Supabase (database + files), already set up (docs/25-supabase.md).
 - **Domain:** Namecheap (`sawwiq.org`).
-
-Fly is switched off: `.github/workflows/fly-deploy.yml` only runs if the repository variable `DEPLOY_TO_FLY` is `true`.
 
 > Vercel's Hobby plan is free for personal, non-commercial projects. When Sawwiq starts charging (the 10% guarantee fee, subscriptions), Vercel's terms require the Pro plan ($20/month per member). Until then Hobby is fine.
 
@@ -39,20 +37,20 @@ Optional, only if you use them: `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` (AI matc
 | Action | Type | Host | Value |
 |---|---|---|---|
 | Edit | A | `@` | the IP Vercel shows (usually `76.76.21.21`) |
-| **Delete** | AAAA | `@` | (the old Fly address) |
+| **Delete** | AAAA | `@` | (any old address) |
 | Edit | CNAME | `www` | the value Vercel shows (usually `cname.vercel-dns.com`) |
 
 After 5–30 minutes Vercel shows the domain as **Valid** and issues the HTTPS certificate on its own.
 
 ### 3. One click to restore the photos
-The demo agencies' photos were on the Fly disk. Go to GitHub → **Actions → Maintenance → Run workflow** → task **rebuild-demo-media**.
+If the demo agencies' photos are missing, go to GitHub → **Actions → Maintenance → Run workflow** → task **rebuild-demo-media**.
 - It re-creates the demo agencies with their photos in Supabase Storage, in about 5 minutes.
 - Real agencies are never changed. The log lists any of their files that are missing, so you can ask them to re-upload.
 
 ### 4. If you use two-factor sign-in as admin
-The key that protected authenticator codes lived on Fly. Sign in with one of your **backup codes**, or run **Maintenance → reset-staff-2fa**, then set up the authenticator again. Contract and NDA links sent before the move can't be re-shared from the studio: send a new contract if a client needs the link again.
+The key that protects authenticator codes was generated anew on Vercel. Sign in with one of your **backup codes**, or run **Maintenance → reset-staff-2fa**, then set up the authenticator again. Contract and NDA links sent before the switch can't be re-shared from the studio: send a new contract if a client needs the link again.
 
-## Differences from the Fly setup
+## Things to know
 
 - **Uploads.** Vercel accepts at most about 4.5 MB per request. Photos and background videos are compressed in the browser before upload (docs/26-media-compression.md), so normal use never hits the limit.
 - **Scheduled jobs.** Two daily cron jobs run from `vercel.json`: Google ratings, and data retention.

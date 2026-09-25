@@ -1,0 +1,31 @@
+# 28 · Agency introduction, countries served, and portfolio clients
+
+## Introduction and strengths
+
+Studio → Profile has, besides the one-line bio:
+- **Introduction** (up to 1,500 characters): who the agency is, how it works, what it excels at. Shown at the top of the About tab under "About us".
+- **Strengths** (up to 6 short points, one per line; leading "-" or "•" is removed). Shown on the About tab as a checklist under "What we do best".
+
+## Countries served
+
+An agency is based in one country (from its city) and prices in that country's currency. In Studio → Profile it can tick **other countries it takes clients in** (quick buttons: all Gulf, all, clear). Stored in `agencies.serves_countries`.
+
+- **Listings.** In a country's Explore, feed, hire pages, AI matcher and sponsored slots, agencies based there come first, then agencies that serve it (`inCountry()` in `lib/data/agency-filters.ts`). A city filter still means agencies in that city.
+- **The note.** Wherever such an agency appears outside its home country it says so: "🇯🇴 Based in Jordan · takes clients in 🇸🇦 Saudi Arabia" (`lib/serves-note.ts`). Its own page lists the countries it serves in the header and in About.
+- **Prices.** The matcher never compares a budget with a price in another currency: an agency from another country counts as "price unknown" for budget fit.
+
+## Portfolio clients
+
+Studio → **Clients** lists the businesses the agency works for. For each client:
+- name, business type, country, what the agency did for it;
+- **the accounts the agency runs for it**: as many rows as needed, each a type (Instagram, TikTok, Facebook, YouTube, X, Snapchat, LinkedIn, website, Google Maps, other link) and the account name (`@name`) or a pasted link. A new client starts with empty Instagram, TikTok, Facebook and website rows; "Add another account" adds more.
+
+Links are checked (`lib/social-links.ts`): a handle becomes the network's profile address; a pasted link must be on that network's domain (an Instagram row can't hold another site); websites must be http(s). Up to 20 accounts per client and 60 clients per agency.
+
+When publishing or editing a post, the agency can pick **Client (optional)**. On the agency's page, a **Clients** tab (shown once it has clients) groups everything by client: the accounts as tappable chips opening the real profiles (`rel="nofollow noopener ugc"`), the description, and thumbnails of the work tagged with that client. A tagged post shows "For {client}" under it.
+
+Data: table `portfolio_clients` (links as JSON), `posts.client_id` (set to null if the client is deleted; the posts stay). Migration `0009_portfolio_clients.sql`.
+
+## Demo data
+
+`lib/db/demo-profiles.ts` gives several demo agencies an introduction, strengths, countries served and made-up clients (marked "demo"). It runs once per database (`demo_profiles_v1` flag): locally with `npm run db:seed`, live with Actions → Maintenance → **seed-demo**.

@@ -1,6 +1,6 @@
 // Re-creates the demo agencies with their photos in the current storage
-// (Supabase Storage). Needed once after leaving Fly: the demo photos lived on
-// the Fly disk, the database rows pointing at them moved to Supabase.
+// (Supabase Storage), e.g. when their photos are missing from storage while the
+// database rows pointing at them are still there.
 // Run from GitHub Actions → Maintenance → rebuild-demo-media (docs/27-vercel.md).
 //
 // Only demo agencies (is_demo) are touched, and only those without contracts

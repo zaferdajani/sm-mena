@@ -99,6 +99,16 @@ export const isCityIn = (city: string, code: string) => countryOfCity(city) === 
 /** Every city key, for validation. */
 export const ALL_CITIES = COUNTRIES.flatMap((x) => x.cities.map((city) => city.key));
 
+/**
+ * Country from an IP-geolocation header value (Vercel's `x-vercel-ip-country`
+ * is an upper-case ISO code such as "SA"). Only countries Sawwiq serves count;
+ * anything else (or no header) is null.
+ */
+export function countryFromHeader(value: string | null | undefined): CountryCode | null {
+  const code = value?.trim().toLowerCase();
+  return isCountryCode(code) ? code : null;
+}
+
 /** Country from the device's time zone (no permission needed), or null. */
 export function countryFromTimeZone(tz: string | null | undefined): CountryCode | null {
   if (!tz) return null;

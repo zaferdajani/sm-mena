@@ -18,7 +18,7 @@ Modelled on the OneClickConvert admin (bug board, traffic page, owner sign-in wi
 ## Two-factor sign-in
 
 - Standard authenticator codes (RFC 6238: 6 digits, 30 seconds), implemented in `lib/auth/totp.ts` with Node's crypto and tested against the RFC's vectors. Works with Google Authenticator, Microsoft Authenticator, 1Password, Authy.
-- Secrets are encrypted at rest with AES-256-GCM (`lib/auth/secret-box.ts`, key `MFA_ENCRYPTION_KEY`). The Fly workflow generates the key once.
+- Secrets are encrypted at rest with AES-256-GCM (`lib/auth/secret-box.ts`, key `MFA_ENCRYPTION_KEY`). Actions → Vercel → setup generates the key once.
 - 10 single-use backup codes, stored as hashes, shown once (copy / download), regenerable.
 - Sign-in: password → a locked, 10-minute session that grants nothing → code or backup code → full session. A code can't be reused (the last used time step is stored). 5 tries per 10 minutes per account.
 - Admins: required in production (`ADMIN_REQUIRE_2FA`, default on in production). Until an admin turns it on, only `/admin/security` opens; every other admin page, server action and the CSV export refuse.

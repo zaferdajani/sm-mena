@@ -11,7 +11,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="mb-4 text-lg font-bold">{t("newPost")}</h1>
-      <PostForm mode="create" {...await postFormOptions(agency.services)} />
+      <PostForm mode="create" {...await postFormOptions(agency.services, agency.id)} />
     </div>
   );
 }

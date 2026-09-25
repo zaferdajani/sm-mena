@@ -1,4 +1,5 @@
 import type { Match } from "@/lib/matching";
+import type { WizardNeed } from "@/lib/match-wizard";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -11,6 +12,8 @@ export type Recommendation = {
   budgetMaxJod: number | null;
   budgetNote: string;
   summary: string;
+  /** Currency of the budget amounts (the visitor's country); JOD when missing. */
+  currency?: string;
 };
 
 /** "mock" runs the real tool loop with a scripted, offline stand-in for the model. */
@@ -22,6 +25,10 @@ export type MatchResponse = {
   suggestions: string[];
   mode: "ai" | "basic";
   provider: ProviderId | "basic";
+  /** The guided chat's answers after this turn (rule-based mode). */
+  need?: WizardNeed;
+  /** The message named a place in another country: offer to switch (the visitor's country otherwise wins). */
+  countrySwitch?: { country: string; city: string | null };
 };
 
 export type Usage = { inputTokens: number; cachedInputTokens: number; outputTokens: number; calls: number };

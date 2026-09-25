@@ -33,5 +33,5 @@ describe("demo seed", () => {
     expect(removed).toBe(DEMO_AGENCIES.length);
     await seed({ quiet: true });
     expect(await count()).toBe(0);
-  }, 240_000);
+  }, 600_000);
 });

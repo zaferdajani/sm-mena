@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { createPostAction, updatePostAction } from "@/app/[locale]/(main)/studio/actions";
 import { FormError } from "@/components/form-error";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,11 +19,13 @@ export type PostFormProps = {
   services: { primary: Option[]; other: Option[] };
   platforms: Option[];
   industries: Option[];
-  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; images: string[] };
+  clients: Option[];
+  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[] };
 };
 
-export function PostForm({ mode, services, platforms, industries, initial }: PostFormProps) {
+export function PostForm({ mode, services, platforms, industries, clients, initial }: PostFormProps) {
   const t = useTranslations("Studio.form");
+  const tc = useTranslations("PortfolioClients");
   const [state, formAction] = useActionState(mode === "create" ? createPostAction : updatePostAction, undefined);
   const [pending, start] = useTransition();
   const [files, setFiles] = useState<{ file: File; url: string }[]>([]);
@@ -137,6 +140,17 @@ export function PostForm({ mode, services, platforms, industries, initial }: Pos
           <Input id="result" name="result" maxLength={80} defaultValue={initial?.result ?? ""} placeholder={t("resultPlaceholder")} />
         </Field>
       </div>
+      <Field label={tc("postClient")} hint={tc("postClientHint")} htmlFor="clientId">
+        <div className="flex items-center gap-3">
+          <select id="clientId" name="clientId" defaultValue={initial?.clientId ?? ""} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm">
+            <option value="">{tc("postClientNone")}</option>
+            {clients.map((o) => (
+              <option key={o.key} value={o.key}>{o.label}</option>
+            ))}
+          </select>
+          <Link href="/studio/clients" className="shrink-0 text-sm text-brand">{clients.length ? tc("manage") : tc("add")}</Link>
+        </div>
+      </Field>
       {state?.ok && <p role="status" className="text-sm text-brand">✓ {t("saved")}</p>}
       <Button type="submit" disabled={pending} className="h-11 text-base" data-testid="publish-button">
         {pending ? t("publishing") : mode === "create" ? t("publish") : t("saveChanges")}

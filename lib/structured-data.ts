@@ -1,3 +1,4 @@
+import { COUNTRIES } from "@/lib/countries";
 import { serviceLabel } from "@/lib/labels";
 import { BRAND } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -19,7 +20,11 @@ export function organizationLd() {
     alternateName: BRAND.en,
     url: SITE_URL,
     logo: `${SITE_URL}/brand/mark-512.png`,
-    areaServed: { "@type": "Country", name: "Jordan" },
+    description: "أول منصة عربية للعثور على وكالات التسويق والسوشيال ميديا ومقارنتها وتوظيفها. The first Arabic marketplace for marketing and social media agencies.",
+    slogan: "أول منصة عربية لوكالات التسويق",
+    foundingDate: "2026",
+    knowsLanguage: ["ar", "en"],
+    areaServed: COUNTRIES.map((c) => ({ "@type": "Country", name: c.en })),
   };
 }
 
@@ -32,6 +37,10 @@ export function websiteLd(locale: string) {
     alternateName: locale === "ar" ? BRAND.en : BRAND.ar,
     url: `${SITE_URL}/${locale}`,
     inLanguage: ["ar", "en"],
+    description:
+      locale === "ar"
+        ? "أول منصة عربية لمقارنة وكالات التسويق والسوشيال ميديا وتوظيفها في الأردن والخليج ومصر."
+        : "The first Arabic marketplace to compare and hire marketing and social media agencies in Jordan, the Gulf and Egypt.",
     publisher: { "@id": ORG_ID },
     potentialAction: {
       "@type": "SearchAction",

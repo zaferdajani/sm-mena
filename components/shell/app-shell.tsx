@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { HeaderBell } from "@/components/notifications/header-bell";
 import { InterfaceBackground } from "@/components/theme/interface-background";
 import { Link } from "@/i18n/navigation";
@@ -21,6 +22,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   const locale = await getLocale();
   const [country, chosen] = await Promise.all([currentCountry(), chosenCountry()]);
+  const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
   const picker = (
     <CountryPicker
       current={country}
@@ -57,6 +59,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
           {picker}
+          <ThemeToggle labels={themeLabels} withText className="-mx-2 w-fit px-2" />
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
           <Link href="/support" className="hover:underline" data-testid="report-problem">
             {tf("report")}

@@ -4,6 +4,14 @@ import { FULL_SERVICE_GROUPS } from "@/lib/full-service";
 
 export type AgencyFilterInput = { platforms?: string[]; minPrice?: number; maxPrice?: number; fullService?: boolean };
 
+/**
+ * Agencies listed in a country: those based there, and those based elsewhere
+ * that take clients there (agencies.serves_countries).
+ */
+export function inCountry(country: string): SQL {
+  return sql`(${agencies.country} = ${country} or ${country} = any(${agencies.servesCountries}))`;
+}
+
 /** Conditions on the agencies table shared by the post feed and the agency list. */
 export function agencyConditions(f: AgencyFilterInput, { platformsOnAgency = true } = {}): SQL[] {
   const c: SQL[] = [];

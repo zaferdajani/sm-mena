@@ -1,4 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Link } from "@/i18n/navigation";
 import { serviceLinkText } from "@/lib/hire-content";
 
@@ -14,6 +15,7 @@ export async function SiteFooter() {
   const locale = await getLocale();
   const t = await getTranslations("Footer");
   const th = await getTranslations("Hire");
+  const tHead = await getTranslations("Header");
   const other = locale === "ar" ? "en" : "ar";
   return (
     <footer className="mx-auto mt-10 w-full max-w-4xl border-t px-4 py-8 text-sm" data-testid="site-footer">
@@ -46,6 +48,10 @@ export async function SiteFooter() {
               <Link href="/" locale={other} hrefLang={other} className="hover:text-foreground hover:underline">
                 {t("otherLanguage")}
               </Link>
+            </li>
+            {/* Phones: the header has no room, so the light/dark switch lives here (the desktop sidebar has its own). */}
+            <li className="md:hidden">
+              <ThemeToggle labels={{ dark: tHead("themeDark"), light: tHead("themeLight") }} withText className="-mx-2 w-fit px-2 py-1" />
             </li>
           </ul>
         </section>

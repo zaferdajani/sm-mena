@@ -17,7 +17,7 @@ Replaces Sprints 1–10 of `05-implementation-roadmap.md` for v1. Status is upda
 | 10 | Portfolio tools: service packages, pinned posts | Done |
 | 11 | Project requests and quotes (bidding): invite top matches, agency opportunities, accept/decline | Done |
 | 12 | AI matchmaker: matching engine, Claude agent with tools, rule-based fallback, capped paid boost | Done |
-| 13 | Availability: health check, Docker, Fly.io workflow, Vercel config, docs | Done |
+| 13 | Availability: health check, Vercel config and workflows, docs | Done |
 
 ## Architecture decisions
 
@@ -27,4 +27,4 @@ Replaces Sprints 1–10 of `05-implementation-roadmap.md` for v1. Status is upda
 - **Images.** Uploaded images are resized with `sharp` to WebP (1080 px feed size and 480 px square thumbnail). Storage adapter: local disk in development, Supabase Storage in production.
 - **Rendering.** Server Components and Server Actions; small client components for likes, carousels and uploads.
 - **Matching.** Pure scoring functions in `lib/matching/score.ts` with a reason breakdown; the AI agent calls them through tools and never ranks agencies on its own. See `12-ai-matchmaker.md`.
-- **Hosting.** One Fly.io machine with a volume (PGlite + uploads) for the pilot; Postgres and Supabase Storage before scaling out.
+- **Hosting.** Vercel (serverless) with Supabase Postgres and Storage (docs/27-vercel.md, docs/25-supabase.md); PGlite and a local folder for development.

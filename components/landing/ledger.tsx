@@ -4,10 +4,11 @@
 /* Interactive milestone ledger: tick every item of milestone two and watch the held amount release. */
 import { useState } from "react";
 import { Icon } from "./ctas";
-import { siteCopy, type Lang } from "./copy";
+import type { CountryCode } from "@/lib/countries";
+import { landingCopy, type Lang } from "./copy";
 
-export function MilestoneLedger({ lang }: { lang: Lang }) {
-  const l = siteCopy[lang].payments.ledger;
+export function MilestoneLedger({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const l = landingCopy(lang, country).payments.ledger;
   const [m1, m2, m3] = l.milestones;
   const [checks, setChecks] = useState<boolean[]>([true, false, false]);
   const released = checks.every(Boolean);

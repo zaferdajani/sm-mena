@@ -13,7 +13,7 @@ test("every public page declares its own canonical and language pairs", async ({
 
 test("the home page carries the site's identity and links to the hire hubs", async ({ page }) => {
   await page.goto("/en");
-  await expect(page).toHaveTitle("Social media & digital marketing agencies in Jordan | Sawwiq");
+  await expect(page).toHaveTitle("Sawwiq | The first Arabic marketplace for marketing agencies");
   const ld = (await page.locator('script[type="application/ld+json"]').allTextContents()).join("\n");
   expect(ld).toContain('"Organization"');
   expect(ld).toContain('"WebSite"');

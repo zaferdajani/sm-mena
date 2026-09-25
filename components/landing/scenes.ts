@@ -7,7 +7,8 @@
 import { createElement } from "react";
 import type { ScrollScrubScene, ScrollScrubTheme } from "./scroll-scrub/scroll-scrub";
 import { HeroActions } from "./ctas";
-import { siteCopy, type Lang } from "./copy";
+import type { CountryCode } from "@/lib/countries";
+import { landingCopy, type Lang } from "./copy";
 
 export const scrollScrubTheme: ScrollScrubTheme = {
   accent: "#0E6B46",
@@ -18,8 +19,8 @@ export const scrollScrubTheme: ScrollScrubTheme = {
 
 const weights = [1.1, 1.4, 1.4, 1.4, 1.9];
 
-function build(lang: Lang): ScrollScrubScene[] {
-  return siteCopy[lang].chapters.map((ch, i) => {
+function build(lang: Lang, country: CountryCode): ScrollScrubScene[] {
+  return landingCopy(lang, country).chapters.map((ch, i) => {
     const n = String(i + 1).padStart(2, "0");
     const scene: ScrollScrubScene = {
       id: ch.id,
@@ -39,5 +40,15 @@ function build(lang: Lang): ScrollScrubScene[] {
   });
 }
 
-export const scrollScrubScenesAr: ScrollScrubScene[] = build("ar");
-export const scrollScrubScenesEn: ScrollScrubScene[] = build("en");
+const built = new Map<string, ScrollScrubScene[]>();
+
+/** The film's scenes in a language, with the chapter text for the visitor's country. */
+export function scrollScrubScenes(lang: Lang, country: CountryCode): ScrollScrubScene[] {
+  const key = `${lang}:${country}`;
+  let scenes = built.get(key);
+  if (!scenes) {
+    scenes = build(lang, country);
+    built.set(key, scenes);
+  }
+  return scenes;
+}

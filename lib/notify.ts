@@ -22,7 +22,7 @@ export async function notifyNewInquiry(agency: Agency, inquiry: Inquiry) {
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: process.env.EMAIL_FROM ?? "Sawwiq <noreply@sawwiq.jo>", to, subject, text }),
+    body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
   });
 }
 
@@ -47,6 +47,6 @@ export async function notifyNewMessage(agency: Agency, conversation: Pick<Conver
   await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: process.env.EMAIL_FROM ?? "Sawwiq <noreply@sawwiq.jo>", to, subject, text }),
+    body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
   });
 }

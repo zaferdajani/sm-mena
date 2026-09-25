@@ -64,6 +64,13 @@
       "when": 1790268790814,
       "tag": "0008_conversations",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790338124777,
+      "tag": "0009_portfolio_clients",
+      "breakpoints": true
     }
   ]
 }

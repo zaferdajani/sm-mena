@@ -3,6 +3,7 @@ import { getDb } from "@/lib/db";
 import { agencies, packages, postImages, posts } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/storage";
 import { toSummary, type AgencySummary } from "./agencies";
+import { inCountry } from "./agency-filters";
 
 export type HireCard = AgencySummary & { thumbs: { postId: string; url: string; color: string }[] };
 
@@ -12,7 +13,7 @@ export type Place = { city?: string; country?: string };
 function where(service: string, place: Place = {}) {
   const c = [eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`];
   if (place.city) c.push(eq(agencies.city, place.city));
-  if (place.country) c.push(eq(agencies.country, place.country));
+  if (place.country) c.push(inCountry(place.country));
   return and(...c);
 }
 

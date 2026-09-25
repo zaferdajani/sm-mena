@@ -1,5 +1,5 @@
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
-import { agencyConditions } from "@/lib/data/agency-filters";
+import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, postImages, posts, type Agency } from "@/lib/db/schema";
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
@@ -12,6 +12,8 @@ export type PostInput = {
   platforms: string[];
   industry?: string | null;
   result?: string | null;
+  /** Portfolio client this work was for (lib/data/portfolio-clients.ts); checked by the caller. */
+  clientId?: string | null;
 };
 
 export type FeedFilters = {
@@ -41,6 +43,8 @@ export type PostView = {
   platforms: string[];
   industry: string | null;
   result: string | null;
+  /** Portfolio client this work was for, if tagged. */
+  clientId: string | null;
   likeCount: number;
   saveCount: number;
   viewCount: number;
@@ -94,6 +98,7 @@ export async function createPostFromProcessed(
         platforms: input.platforms,
         industry: input.industry ?? null,
         result: input.result ?? null,
+        clientId: input.clientId ?? null,
         searchText: normalizeForSearch(`${input.caption} ${agency?.name ?? ""}`),
         ...(createdAt ? { createdAt } : {}),
       })
@@ -175,7 +180,7 @@ function filterConditions(filters: FeedFilters): SQL[] {
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
   if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));
-  if (filters.country) c.push(eq(agencies.country, filters.country));
+  if (filters.country) c.push(inCountry(filters.country));
   if (filters.city) c.push(eq(agencies.city, filters.city));
   if (filters.verified) c.push(eq(agencies.isVerified, true));
   c.push(...agencyConditions(filters, { platformsOnAgency: false }));
@@ -227,6 +232,7 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     platforms: post.platforms,
     industry: post.industry,
     result: post.result,
+    clientId: post.clientId,
     likeCount: post.likeCount,
     saveCount: post.saveCount,
     viewCount: post.viewCount,

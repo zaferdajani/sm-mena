@@ -5,6 +5,7 @@ import { and, arrayOverlaps, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, packages, posts } from "@/lib/db/schema";
 import { toSummary, type AgencySummary } from "@/lib/data/agencies";
+import { inCountry } from "@/lib/data/agency-filters";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isServiceKey } from "@/lib/taxonomy";
 import { rank, suggestBudget, type Need, type Reason } from "./score";
@@ -22,12 +23,15 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const db = await getDb();
   const valid = need.services.filter(isServiceKey);
   const services = valid.length ? valid : null;
-  const country = need.country ?? countryOfCity(need.city) ?? scopedCountry() ?? null;
-  need = { ...need, services: valid, country };
+  // The visitor's chosen country wins; a city elsewhere never switches countries
+  // silently (the matchmaker asks first), so it is dropped here.
+  const country = need.country ?? scopedCountry() ?? countryOfCity(need.city) ?? null;
+  const city = need.city && country && countryOfCity(need.city) !== country ? null : need.city;
+  need = { ...need, services: valid, country, city };
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? eq(agencies.country, country) : undefined));
+    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 
@@ -53,24 +57,28 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const now = new Date();
   const ranked = rank(
     need,
-    candidates.map((a) => ({
-      id: a.id,
-      services: a.services,
-      platforms: a.platforms,
-      industries: a.industries,
-      city: a.city,
-      startingPriceJod: a.startingPriceJod,
-      cheapestPackageJod: cheapest.get(a.id)?.priceJod ?? null,
-      isVerified: a.isVerified,
-      ratingSum: a.ratingSum,
-      ratingCount: a.ratingCount,
-      googleRating: a.googleRating,
-      googleRatingCount: a.googleRatingCount,
-      servicePosts: postsBy.get(a.id) ?? 0,
-      plan: a.plan,
-      // No paid priority while the platform is free for everyone.
-      planActive: monetizationEnabled() && a.plan !== "free" && (!a.planExpiresAt || a.planExpiresAt > now),
-    })),
+    candidates.map((a) => {
+      // An agency based in another country prices in its own currency: no budget comparison.
+      const samePrices = !country || a.country === country;
+      return {
+        id: a.id,
+        services: a.services,
+        platforms: a.platforms,
+        industries: a.industries,
+        city: a.city,
+        startingPriceJod: samePrices ? a.startingPriceJod : null,
+        cheapestPackageJod: samePrices ? (cheapest.get(a.id)?.priceJod ?? null) : null,
+        isVerified: a.isVerified,
+        ratingSum: a.ratingSum,
+        ratingCount: a.ratingCount,
+        googleRating: a.googleRating,
+        googleRatingCount: a.googleRatingCount,
+        servicePosts: postsBy.get(a.id) ?? 0,
+        plan: a.plan,
+        // No paid priority while the platform is free for everyone.
+        planActive: monetizationEnabled() && a.plan !== "free" && (!a.planExpiresAt || a.planExpiresAt > now),
+      };
+    }),
     limit,
   );
   const byId = new Map(candidates.map((a) => [a.id, a]));
@@ -91,6 +99,9 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
 /** Market price data for a service, used for budget estimates. */
 export async function marketPrices(service: string, city?: string | null) {
   const db = await getDb();
+  // Prices are per currency, so always within one country: the visitor's, else the city's.
+  const country = scopedCountry() ?? countryOfCity(city) ?? "jo";
+  if (city && countryOfCity(city) !== country) city = null;
   const starting = await db
     .select({ p: agencies.startingPriceJod })
     .from(agencies)
@@ -99,15 +110,14 @@ export async function marketPrices(service: string, city?: string | null) {
         eq(agencies.status, "active"),
         sql`${service} = any(${agencies.services})`,
         city ? eq(agencies.city, city) : undefined,
-        // Prices are per currency, so always within one country.
-        eq(agencies.country, countryOfCity(city) ?? scopedCountry() ?? "jo"),
+        eq(agencies.country, country),
       ),
     );
   const pkgs = await db
     .select({ p: packages.priceJod })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active")));
+    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country)));
   const startingPrices = starting.map((r) => r.p).filter((p): p is number => p !== null);
   const packagePrices = pkgs.map((r) => r.p);
   return {

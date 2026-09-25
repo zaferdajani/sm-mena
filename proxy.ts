@@ -4,9 +4,9 @@ import { LANG_COOKIE, routing } from "./i18n/routing";
 
 const intl = createMiddleware(routing);
 const VISITOR_COOKIE = "sw_vid";
-// The canonical host. Any other host serving the app (the fly.dev address
-// once a domain is live, previews) tells search engines not to index it, so
-// only one copy of each page competes in results.
+// The canonical host. Any other host serving the app (Vercel preview and
+// *.vercel.app addresses) tells search engines not to index it, so only one
+// copy of each page competes in results.
 const CANONICAL_HOST = (() => {
   try {
     return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "").host;
@@ -30,9 +30,8 @@ export function proxy(request: NextRequest) {
   }
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   if (process.env.NODE_ENV === "production" && CANONICAL_HOST && host && host !== CANONICAL_HOST) {
-    // Once the site runs on its own domain, the fly.dev address and www send
-    // people and search engines there (permanently, keeping the path).
-    if (host.endsWith(".fly.dev") || host === `www.${CANONICAL_HOST}`) {
+    // www sends people and search engines to the bare domain (permanently, keeping the path).
+    if (host === `www.${CANONICAL_HOST}`) {
       const url = new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${CANONICAL_HOST}`);
       return NextResponse.redirect(url, 308);
     }

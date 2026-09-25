@@ -3,7 +3,6 @@
 # but nothing reaches production without the owner's approval.
 *                     @zaferdajani
 /.github/             @zaferdajani
-/fly.toml             @zaferdajani
-/Dockerfile           @zaferdajani
+/vercel.json          @zaferdajani
 /lib/auth/            @zaferdajani
 /lib/db/migrations/   @zaferdajani

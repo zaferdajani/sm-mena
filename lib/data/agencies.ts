@@ -1,6 +1,6 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { countryOfCity } from "@/lib/countries";
-import { agencyConditions } from "@/lib/data/agency-filters";
+import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
@@ -12,6 +12,9 @@ export type AgencyInput = {
   name: string;
   bio?: string;
   city: string;
+  servesCountries?: string[];
+  about?: string;
+  strengths?: string[];
   services?: string[];
   platforms?: string[];
   industries?: string[];
@@ -102,6 +105,7 @@ export type AgencySummary = {
   isVerified: boolean;
   isDemo: boolean;
   country: string;
+  servesCountries: string[];
   plan: Agency["plan"];
   postCount: number;
   followerCount: number;
@@ -124,6 +128,7 @@ export function toSummary(a: Agency): AgencySummary {
     isVerified: a.isVerified,
     isDemo: a.isDemo,
     country: a.country,
+    servesCountries: a.servesCountries,
     plan: a.plan,
     postCount: a.postCount,
     followerCount: a.followerCount,
@@ -143,7 +148,7 @@ export async function listStripAgencies(limit = 20, country?: string): Promise<A
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`, country ? eq(agencies.country, country) : undefined))
+    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`, country ? inCountry(country) : undefined))
     .orderBy(
       desc(sql`(select max(p.created_at) from posts p where p.agency_id = ${agencies.id} and p.status = 'published')`),
     )
@@ -166,7 +171,7 @@ export async function listAgencies(filters: {
   const db = await getDb();
   const conditions = [eq(agencies.status, "active")];
   if (filters.service) conditions.push(sql`${filters.service} = any(${agencies.services})`);
-  if (filters.country) conditions.push(eq(agencies.country, filters.country));
+  if (filters.country) conditions.push(inCountry(filters.country));
   if (filters.city) conditions.push(eq(agencies.city, filters.city));
   if (filters.verified) conditions.push(eq(agencies.isVerified, true));
   conditions.push(...agencyConditions(filters));
@@ -178,6 +183,8 @@ export async function listAgencies(filters: {
     .from(agencies)
     .where(and(...conditions))
     .orderBy(
+      // Agencies based in the country first, then those that also serve it.
+      ...(filters.country ? [desc(sql`${agencies.country} = ${filters.country}`)] : []),
       desc(agencies.isVerified),
       // Paid plans get a ranking boost only once monetization is switched on.
       ...(monetizationEnabled() ? [desc(sql`case ${agencies.plan} when 'business' then 2 when 'pro' then 1 else 0 end`)] : []),

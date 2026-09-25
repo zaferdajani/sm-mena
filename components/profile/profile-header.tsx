@@ -1,7 +1,7 @@
 "use client";
 
 import { Camera, Globe, Mail, MessageCircle, Phone } from "lucide-react";
-import { currencyOf } from "@/lib/countries";
+import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -43,7 +43,7 @@ export type ProfileData = {
   googleMapsUrl: string | null;
 };
 
-export function ProfileHeader({ agency, following, inquirySlot }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode }) {
+export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null }) {
   const t = useTranslations("Profile");
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
@@ -77,9 +77,10 @@ export function ProfileHeader({ agency, following, inquirySlot }: { agency: Prof
           {agency.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">{tc("demo")}</span>}
         </div>
         <p className="text-sm text-muted-foreground">
-          <span dir="ltr">@{agency.handle}</span> · {tCity(agency.city)}
+          <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)}
           {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}` : ""}
         </p>
+        {servesNote && <p className="text-xs font-medium text-brand" data-testid="serves-note">{servesNote}</p>}
         {(agency.ratingAverage !== null || agency.googleRating !== null) && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             {agency.ratingAverage !== null && (

@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   bigint,
   bigserial,
   check,
@@ -157,6 +158,11 @@ export const agencies = pgTable(
     // Country code (lib/countries.ts); prices are in this country's currency.
     country: text("country").notNull().default("jo"),
     city: text("city").notNull(),
+    // Other countries the agency takes clients in (it is listed there too, with a "based in" note).
+    servesCountries: text("serves_countries").array().notNull().default(sql`'{}'::text[]`),
+    // Longer introduction (About tab) and short strengths, beside the one-line bio.
+    about: text("about").notNull().default(""),
+    strengths: text("strengths").array().notNull().default(sql`'{}'::text[]`),
     services: text("services").array().notNull().default(sql`'{}'::text[]`),
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
     industries: text("industries").array().notNull().default(sql`'{}'::text[]`),
@@ -212,6 +218,8 @@ export const posts = pgTable(
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
     industry: text("industry"),
     result: text("result"),
+    // The client business this work was for (portfolio groups work by client).
+    clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
     status: postStatus("status").notNull().default("published"),
     likeCount: integer("like_count").notNull().default(0),
     saveCount: integer("save_count").notNull().default(0),
@@ -226,6 +234,28 @@ export const posts = pgTable(
     index("posts_services_idx").using("gin", t.services),
     index("posts_platforms_idx").using("gin", t.platforms),
   ],
+);
+
+// A client business in an agency's portfolio, with the accounts the agency
+// runs for it (Instagram, TikTok, website, …). Posts can be tagged with it.
+export type ClientLink = { kind: string; value: string };
+export const portfolioClients = pgTable(
+  "portfolio_clients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    industry: text("industry"),
+    country: text("country"),
+    description: text("description").notNull().default(""),
+    links: jsonb("links").$type<ClientLink[]>().notNull().default([]),
+    position: integer("position").notNull().default(0),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("portfolio_clients_agency_idx").on(t.agencyId, t.position)],
 );
 
 export const postImages = pgTable(
@@ -991,6 +1021,7 @@ export type User = typeof users.$inferSelect;
 export type Agency = typeof agencies.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type PostImage = typeof postImages.$inferSelect;
+export type PortfolioClient = typeof portfolioClients.$inferSelect;
 export type Inquiry = typeof inquiries.$inferSelect;
 export type Promotion = typeof promotions.$inferSelect;
 export type Report = typeof reports.$inferSelect;

@@ -134,7 +134,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
                       {a.isVerified && <VerifiedBadge label={tc("verified")} />}
                     </Link>
                     <p className="text-xs text-muted-foreground">
-                      <span dir="ltr">@{a.handle}</span> · {tCity(a.city)} · {t("posts", { count: a.postCount })}
+                      <span dir="ltr">@{a.handle}</span> · {countryOf(a.country).flag} {tCity(a.city)} · {t("posts", { count: a.postCount })}
                     </p>
                     <div className="mt-1 flex flex-wrap gap-x-3">
                       {a.ratingAverage !== null && <RatingBadge average={a.ratingAverage} count={a.ratingCount} />}

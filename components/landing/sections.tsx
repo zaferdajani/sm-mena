@@ -1,10 +1,12 @@
 /* eslint-disable @next/next/no-img-element -- landing images are pre-sized WebP/PNG files with explicit dimensions and lazy loading */
 /* Page sections that follow the scroll journey. Chrome is bespoke per section. */
+import { CountryPicker } from "@/components/country-picker";
+import { COUNTRIES, type CountryCode } from "@/lib/countries";
 import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./ctas";
 import { MilestoneLedger } from "./ledger";
-import { appUrl, siteCopy, type Lang, type WhoItem } from "./copy";
+import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
-export function SiteHeader({ lang }: { lang: Lang }) {
+export function SiteHeader({ lang, country, chosen }: { lang: Lang; country: CountryCode; chosen: boolean }) {
   const c = siteCopy[lang];
   return (
     <header className="sw-header">
@@ -19,13 +21,23 @@ export function SiteHeader({ lang }: { lang: Lang }) {
           </a>
         ))}
       </nav>
-      <LangSwitch lang={lang} />
+      <div className="sw-header__tools">
+        <CountryPicker
+          chosen={chosen}
+          current={country}
+          label={c.country.label}
+          locateLabel={c.country.locate}
+          options={COUNTRIES.map((x) => ({ code: x.code, name: lang === "ar" ? x.ar : x.en, flag: x.flag }))}
+          variant="landing"
+        />
+        <LangSwitch lang={lang} />
+      </div>
     </header>
   );
 }
 
-export function PaymentsSection({ lang }: { lang: Lang }) {
-  const p = siteCopy[lang].payments;
+export function PaymentsSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const p = landingCopy(lang, country).payments;
   return (
     <section aria-labelledby="payments-title" className="sw-pay" id="payments">
       <div className="sw-pay__text">
@@ -48,7 +60,7 @@ export function PaymentsSection({ lang }: { lang: Lang }) {
         <p className="sw-pay__direct">{p.direct}</p>
       </div>
       <div className="sw-pay__panel">
-        <MilestoneLedger lang={lang} />
+        <MilestoneLedger country={country} lang={lang} />
       </div>
     </section>
   );
@@ -72,8 +84,8 @@ function BizCard({ item, lang }: { item: WhoItem; lang: Lang }) {
   );
 }
 
-export function WhoSection({ lang }: { lang: Lang }) {
-  const w = siteCopy[lang].who;
+export function WhoSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const w = landingCopy(lang, country).who;
   return (
     <section aria-labelledby="who-title" className="sw-who" id="who">
       <div className="sw-who__head">
@@ -147,8 +159,8 @@ export function ServicesSection({ lang }: { lang: Lang }) {
   );
 }
 
-export function TrustSection({ lang }: { lang: Lang }) {
-  const t = siteCopy[lang].trust;
+export function TrustSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const t = landingCopy(lang, country).trust;
   return (
     <section aria-labelledby="trust-title" className="sw-trust" id="trust">
       <h2 className="sw-h2 sw-trust__title" id="trust-title">
@@ -208,8 +220,8 @@ export function TrustSection({ lang }: { lang: Lang }) {
   );
 }
 
-export function AgenciesSection({ lang }: { lang: Lang }) {
-  const a = siteCopy[lang].agencies;
+export function AgenciesSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const a = landingCopy(lang, country).agencies;
   return (
     <section aria-labelledby="agencies-title" className="sw-agency" id="agencies">
       <div className="sw-agency__frame">
@@ -234,8 +246,8 @@ export function AgenciesSection({ lang }: { lang: Lang }) {
   );
 }
 
-export function CitiesSection({ lang }: { lang: Lang }) {
-  const c = siteCopy[lang].cities;
+export function CitiesSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const c = landingCopy(lang, country).cities;
   return (
     <section aria-labelledby="cities-title" className="sw-cities" id="cities">
       <h2 className="sw-cities__title" id="cities-title">
@@ -256,8 +268,8 @@ export function CitiesSection({ lang }: { lang: Lang }) {
   );
 }
 
-export function SiteFooter({ lang }: { lang: Lang }) {
-  const f = siteCopy[lang].footer;
+export function SiteFooter({ lang, country }: { lang: Lang; country: CountryCode }) {
+  const f = landingCopy(lang, country).footer;
   const c = siteCopy[lang];
   return (
     <footer className="sw-footer">

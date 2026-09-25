@@ -1,152 +1,165 @@
 import "server-only";
-import { findMatches, marketPrices } from "@/lib/matching";
-import { normalizeForSearch } from "@/lib/text";
+import { createTranslator } from "next-intl";
+import { citiesOf, countryOf, DEFAULT_COUNTRY, isCountryCode, type CountryCode } from "@/lib/countries";
 import { serviceLabel } from "@/lib/labels";
+import { findMatches, marketPrices } from "@/lib/matching";
+import { scopedCountry } from "@/lib/matching/scope";
+import { emptyNeed, exampleBudget, formatAmount, mergeText, nextStep, resolveServices, skipRest, type WizardNeed } from "@/lib/match-wizard";
+import ar from "@/messages/ar.json";
+import en from "@/messages/en.json";
+import { extractNeed, isArabic } from "./extract";
 import type { ChatMessage, MatchResponse } from "./types";
 
 // Rule-based matchmaker used when no AI provider is configured or every
-// configured provider failed. Keyword lists are normalised with normalizeForSearch.
-const SERVICE_KEYWORDS: [string, string[]][] = [
-  ["ads_meta", ["اعلانات فيسبوك", "اعلانات انستغرام", "اعلانات انستقرام", "اعلان ممول", "ممول", "meta ads", "facebook ads", "instagram ads", "sponsored"]],
-  ["ads_tiktok", ["اعلانات تيك توك", "اعلان تيك توك", "tiktok ads"]],
-  ["ads_snapchat", ["اعلانات سناب", "سناب شات", "snapchat"]],
-  ["ads_google", ["اعلانات جوجل", "جوجل ادز", "google ads", "adwords"]],
-  ["ads_linkedin", ["لينكد", "linkedin"]],
-  ["smm_management", ["اداره حساب", "اداره حسابات", "اداره السوشيال", "سوشيال ميديا", "social media", "manage my", "account management", "community manager"]],
-  ["smm_content", ["محتوي", "منشورات", "بوستات", "content", "posts"]],
-  ["smm_community", ["الرد علي", "الردود", "التعليقات", "community"]],
-  ["smm_influencer", ["مؤثر", "مشاهير", "influencer", "ugc"]],
-  ["smm_strategy", ["استراتيجيه", "خطه تسويق", "strategy", "marketing plan"]],
-  ["video_production", ["فيديو", "ريلز", "ريل", "مونتاج", "video", "reels", "reel"]],
-  ["photography", ["تصوير", "صور منتجات", "photo", "photography", "shoot"]],
-  ["graphic_design", ["تصميم", "design", "graphic"]],
-  ["copywriting", ["كتابه", "كابشن", "copywriting", "captions"]],
-  ["brand_identity", ["هويه", "شعار", "لوجو", "logo", "brand identity", "branding"]],
-  ["seo", ["seo", "سيو", "محركات البحث"]],
-  ["email_marketing", ["ايميل", "بريد", "newsletter", "email marketing", "واتساب بزنس"]],
-  ["web_design", ["تصميم موقع", "موقع الكتروني", "موقع ويب", "website", "web design", "landing page"]],
-  ["analytics", ["تحليلات", "تقارير", "analytics", "reporting"]],
-];
-const PLATFORM_KEYWORDS: [string, string[]][] = [
-  ["instagram", ["انستغرام", "انستقرام", "انستا", "instagram", "insta"]],
-  ["facebook", ["فيسبوك", "فيس بوك", "facebook"]],
-  ["tiktok", ["تيك توك", "تيكتوك", "tiktok"]],
-  ["snapchat", ["سناب", "snapchat"]],
-  ["linkedin", ["لينكد", "linkedin"]],
-  ["youtube", ["يوتيوب", "youtube"]],
-  ["google", ["جوجل", "google"]],
-  ["x", ["تويتر", "twitter"]],
-];
-const INDUSTRY_KEYWORDS: [string, string[]][] = [
-  ["restaurant_cafe", ["مطعم", "مقهي", "كافيه", "كوفي", "restaurant", "cafe", "coffee"]],
-  ["clinic_health", ["عياده", "طبي", "اسنان", "صيدليه", "clinic", "dental", "medical", "pharmacy"]],
-  ["ecommerce", ["متجر الكتروني", "اونلاين", "online store", "ecommerce", "e-commerce"]],
-  ["retail_shop", ["محل", "متجر", "ملابس", "shop", "store", "boutique"]],
-  ["real_estate", ["عقار", "شقق", "real estate", "property"]],
-  ["education", ["مدرسه", "اكاديميه", "تعليم", "دورات", "school", "academy", "courses", "education"]],
-  ["beauty_fitness", ["صالون", "تجميل", "جيم", "نادي رياضي", "salon", "beauty", "gym", "fitness"]],
-  ["tourism_hospitality", ["فندق", "سياحه", "سفر", "hotel", "tourism", "travel"]],
-  ["manufacturing", ["مصنع", "factory", "manufacturing"]],
-  ["ngo", ["جمعيه", "منظمه", "ngo", "charity"]],
-];
-const CITY_KEYWORDS: [string, string[]][] = [
-  ["amman", ["عمان", "amman"]], ["zarqa", ["الزرقاء", "زرقاء", "zarqa"]], ["irbid", ["اربد", "irbid"]], ["aqaba", ["العقبه", "aqaba"]],
-  ["salt", ["السلط", "salt"]], ["madaba", ["مادبا", "madaba"]], ["karak", ["الكرك", "karak"]], ["mafraq", ["المفرق", "mafraq"]],
-  ["jerash", ["جرش", "jerash"]], ["ajloun", ["عجلون", "ajloun"]], ["tafilah", ["الطفيله", "tafilah"]], ["maan", ["معان", "maan"]],
-];
+// configured provider failed. The keyword rules live in ./extract.ts.
+export { extractNeed, isArabic };
 
-const find = (text: string, table: [string, string[]][]) => table.filter(([, words]) => words.some((w) => text.includes(normalizeForSearch(w)))).map(([key]) => key);
+/** The visitor's country for this turn (set by runMatchmaker), Jordan outside a request. */
+export const turnCountry = (): CountryCode => {
+  const c = scopedCountry();
+  return isCountryCode(c) ? c : DEFAULT_COUNTRY;
+};
 
-export function extractNeed(text: string) {
-  const t = ` ${normalizeForSearch(text)} `;
-  const services = find(t, SERVICE_KEYWORDS);
-  const platforms = find(t, PLATFORM_KEYWORDS);
-  const industries = find(t, INDUSTRY_KEYWORDS);
-  const cities = find(t, CITY_KEYWORDS);
-  // Plain "ads" plus a platform means that platform's ads.
-  if (/(اعلان|ads|advert)/.test(t)) {
-    const map: Record<string, string> = { instagram: "ads_meta", facebook: "ads_meta", tiktok: "ads_tiktok", snapchat: "ads_snapchat", google: "ads_google", linkedin: "ads_linkedin" };
-    for (const p of platforms) if (map[p] && !services.includes(map[p])) services.push(map[p]);
-  }
-  if (!services.length && platforms.length) services.push("smm_management");
-  // Budget: a number next to a currency or budget word.
-  let budget: number | null = null;
-  const re = /(\d[\d,.]*)\s*(k)?\s*(دينار|د\.?ا|jod|jd|dinar)|(?:ميزانيه|ميزانيتي|budget)\D{0,12}(\d[\d,.]*)\s*(k)?/g;
-  for (const m of t.matchAll(re)) {
-    const raw = (m[1] ?? m[4] ?? "").replace(/,/g, "");
-    let n = Number.parseFloat(raw);
-    if (m[2] || m[5]) n *= 1000;
-    if (Number.isFinite(n) && n >= 30 && n <= 1_000_000) budget = Math.round(n);
-  }
-  return { services: [...new Set(services)].slice(0, 4), platforms, industry: industries[0] ?? null, city: cities[0] ?? null, budget };
+const translator = (lang: "ar" | "en") => createTranslator({ locale: lang, messages: lang === "ar" ? ar : en, namespace: "MatchWizard" });
+
+/** Example briefs in the visitor's country: its capital and currency. */
+export function examples(country: CountryCode, lang: "ar" | "en") {
+  const t = translator(lang);
+  const c = countryOf(country);
+  const city = lang === "ar" ? c.cities[0].ar : c.cities[0].en;
+  const budget = formatAmount(exampleBudget(c.currency), lang, c.currency);
+  return [t("fallback.example1", { city }), t("fallback.example2", { budget }), t("fallback.example3"), t("fallback.example4")];
 }
 
-export const isArabic = (text: string) => /[؀-ۿ]/.test(text);
+/**
+ * One turn of the rule-based matchmaker. With `wizard` (the guided chat's
+ * answers so far) the last message fills in or changes answers; `picked`
+ * means it was a tapped choice the wizard already applied. Without it, the
+ * whole conversation is read as one brief (the classic chat).
+ */
+export async function basicMatchmaker(history: ChatMessage[], locale: string, wizard?: WizardNeed, picked = false): Promise<MatchResponse> {
+  const users = history.filter((m) => m.role === "user");
+  const last = users.at(-1)?.content ?? "";
+  const lang: "ar" | "en" = (last && !picked ? isArabic(last) : locale === "ar") ? "ar" : "en";
+  const t = translator(lang);
+  const country = turnCountry();
+  const c = countryOf(country);
+  const countryLabel = lang === "ar" ? c.ar : c.en;
+  const cityLabel = (key: string | null) => {
+    const city = key ? citiesOf(country).find((x) => x.key === key) : null;
+    return city ? (lang === "ar" ? city.ar : city.en) : null;
+  };
+  const money = (n: number) => formatAmount(n, lang, c.currency);
 
-export async function basicMatchmaker(history: ChatMessage[], locale: string): Promise<MatchResponse> {
-  const userText = history.filter((m) => m.role === "user").map((m) => m.content).join(" \n ");
-  const last = history.filter((m) => m.role === "user").at(-1)?.content ?? "";
-  const ar = last ? isArabic(last) : locale === "ar";
-  const need = extractNeed(userText);
+  const said = picked ? null : extractNeed(last, country);
+  let need: WizardNeed;
+  if (wizard) {
+    need = said ? mergeText(wizard, said) : wizard;
+    // A brief typed at the first question ("Instagram for my café in Jeddah")
+    // goes straight to matches, as in the classic chat; later text keeps the
+    // questions going.
+    const firstQuestion = !wizard.groups.length && !wizard.services.length;
+    if (firstQuestion && said?.services.length) need = skipRest(need);
+  } else {
+    need = mergeText(emptyNeed(), extractNeed(users.map((m) => m.content).join(" \n "), country));
+  }
 
-  if (!need.services.length) {
+  // A city or country elsewhere in the latest message: ask before switching.
+  if (said?.elsewhere) {
+    const other = countryOf(said.elsewhere.country);
+    const otherCity = said.elsewhere.city ? other.cities.find((x) => x.key === said.elsewhere!.city) : null;
+    const otherLabel = lang === "ar" ? other.ar : other.en;
     return {
       mode: "basic",
       provider: "basic",
       recommendation: null,
-      reply: ar
-        ? "أهلاً! أخبرني عن نشاطك وما تحتاجه: إدارة حسابات، إعلانات ممولة، تصوير وفيديو، أو هوية بصرية؟ ويفيدني أن أعرف مدينتك وميزانيتك الشهرية."
-        : "Hi! Tell me about your business and what you need: account management, paid ads, photo and video, or branding? Your city and monthly budget help too.",
-      suggestions: ar
-        ? ["أحتاج إدارة حساب إنستغرام لمطعم في عمّان", "إعلانات فيسبوك وإنستغرام لمتجر إلكتروني بميزانية ٥٠٠ دينار", "تصوير منتجات وريلز", "هوية بصرية لشركة ناشئة"]
-        : ["Instagram management for a restaurant in Amman", "Meta ads for an online store, 500 JOD budget", "Product photos and Reels", "Brand identity for a startup"],
+      reply: otherCity
+        ? t("fallback.switchAsk", { city: lang === "ar" ? otherCity.ar : otherCity.en, other: otherLabel, country: countryLabel })
+        : t("fallback.switchAskCountry", { other: otherLabel, country: countryLabel }),
+      suggestions: [],
+      need: wizard ? need : undefined,
+      countrySwitch: { country: other.code, city: otherCity?.key ?? null },
     };
   }
 
-  const matches = await findMatches({ services: need.services, city: need.city, budgetMaxJod: need.budget, platforms: need.platforms, industry: need.industry }, 5);
-  const prices = await marketPrices(need.services[0], null);
+  if (wizard) {
+    if (nextStep(need) !== "results") {
+      const items = said ? acknowledged(need, wizard, lang, cityLabel, money) : [];
+      return {
+        mode: "basic",
+        provider: "basic",
+        recommendation: null,
+        reply: picked ? "" : items.length ? t("fallback.ack", { items: items.join(lang === "ar" ? "، " : ", ") }) : t("fallback.ackNothing"),
+        suggestions: [],
+        need,
+      };
+    }
+  }
+
+  const services = resolveServices(need);
+  if (!services.length) {
+    return { mode: "basic", provider: "basic", recommendation: null, reply: t("fallback.intro", { country: countryLabel }), suggestions: examples(country, lang), need: wizard ? need : undefined };
+  }
+
+  const industry = need.industry === "other" ? null : need.industry;
+  const matches = await findMatches({ services, city: need.city, budgetMaxJod: need.budgetMax, platforms: need.platforms, industry, country }, 5);
+  const prices = await marketPrices(services[0], null);
   const range = prices.suggested;
-  const budgetMin = need.budget ? Math.min(need.budget, range?.min ?? need.budget) : range?.min ?? null;
-  const budgetMax = need.budget ?? range?.max ?? null;
-  const serviceNames = need.services.map((s) => serviceLabel(s, ar ? "ar" : "en")).join(ar ? "، " : ", ");
+  // The client's own budget wins; otherwise the market range (never below their minimum).
+  const budgetMax = need.budgetMax ?? (range ? Math.max(range.max, need.budgetMin ?? 0) : null);
+  const budgetMin = need.budgetMax ? Math.min(need.budgetMin ?? need.budgetMax, range?.min ?? need.budgetMax) : (need.budgetMin ?? range?.min ?? null);
+  const serviceNames = services.map((s) => serviceLabel(s, lang)).join(lang === "ar" ? "، " : ", ");
   const note = range
-    ? ar
-      ? `حسب أسعار ${prices.agencies} وكالة على سوّق، تتراوح الباقات الشهرية غالباً بين ${range.min} و${range.max} دينار (الوسيط ${range.median}).`
-      : `Based on ${prices.agencies} agencies on Sawwiq, monthly packages usually range from ${range.min} to ${range.max} JOD (median ${range.median}).`
-    : ar
-      ? "لا تتوفر أسعار كافية لهذه الخدمة بعد."
-      : "Not enough price data for this service yet.";
+    ? t("fallback.note", { count: prices.agencies, country: countryLabel, min: money(range.min), max: money(range.max), median: money(range.median) })
+    : t("fallback.noPrices", { country: countryLabel });
 
   if (!matches.length) {
     return {
       mode: "basic",
       provider: "basic",
       recommendation: null,
-      reply: ar ? `لم أجد وكالات لـ ${serviceNames} بهذه الشروط. جرّب مدينة أخرى أو ميزانية أوسع.` : `I couldn't find agencies for ${serviceNames} with these filters. Try another city or a wider budget.`,
-      suggestions: ar ? ["في أي مدينة", "ميزانية أعلى"] : ["Any city", "Higher budget"],
+      reply: t("fallback.notFound", { country: countryLabel, services: serviceNames }),
+      suggestions: wizard ? [] : [t("fallback.chipAnyCity"), t("fallback.chipHigherBudget")],
+      need: wizard ? need : undefined,
     };
   }
 
-  const summary = ar
-    ? `نبحث عن ${serviceNames}${need.city ? ` في ${need.city}` : ""}${need.budget ? ` بميزانية حوالي ${need.budget} دينار شهرياً` : ""}. ${last}`
-    : `Looking for ${serviceNames}${need.city ? ` in ${need.city}` : ""}${need.budget ? ` with a budget around ${need.budget} JOD per month` : ""}. ${last}`;
+  const summary = [
+    t("fallback.summaryServices", { services: serviceNames }),
+    need.city ? t("fallback.summaryCity", { city: cityLabel(need.city) ?? need.city }) : "",
+    need.budgetMax ? t("fallback.summaryBudget", { budget: money(need.budgetMax) }) : "",
+  ]
+    .filter(Boolean)
+    .join(lang === "ar" ? "، " : ", ");
 
   return {
     mode: "basic",
     provider: "basic",
-    reply: ar
-      ? `وجدت ${matches.length} وكالات مناسبة لـ ${serviceNames}. رتّبتها حسب ملاءمة الخدمات وأعمالها السابقة والتقييمات والسعر والموقع. تواصل معها عبر واتساب، أو أرسل مشروعك لتصلك عروض أسعار.`
-      : `I found ${matches.length} agencies that fit ${serviceNames}, ranked by service fit, past work, reviews, price and location. Contact them on WhatsApp, or send your project to receive quotes.`,
+    reply: t("fallback.found", { count: matches.length, country: countryLabel, services: serviceNames }),
     recommendation: {
       agencies: matches,
-      services: need.services,
+      services,
       city: need.city,
       platforms: need.platforms,
       budgetMinJod: budgetMin,
       budgetMaxJod: budgetMax,
       budgetNote: note,
-      summary: summary.slice(0, 1500),
+      summary: `${summary}. ${picked ? "" : last}`.trim().slice(0, 1500),
+      currency: c.currency,
     },
-    suggestions: ar ? ["أرسل مشروعي لهذه الوكالات", "أحتاج أيضاً تصوير", "في مدينة أخرى"] : ["Send my project to these agencies", "I also need photography", "Another city"],
+    suggestions: wizard ? [] : [t("fallback.chipSend"), t("fallback.chipPhoto"), t("fallback.chipOtherCity")],
+    need: wizard ? need : undefined,
   };
+}
+
+/** What a typed message added to the wizard's answers, as short labels. */
+function acknowledged(need: WizardNeed, before: WizardNeed, lang: "ar" | "en", cityLabel: (k: string | null) => string | null, money: (n: number) => string) {
+  const t = createTranslator({ locale: lang, messages: lang === "ar" ? ar : en });
+  const items: string[] = [];
+  for (const s of need.services) if (!before.services.includes(s)) items.push(serviceLabel(s, lang));
+  if (need.industry && need.industry !== before.industry) items.push(t(`Industries.${need.industry}` as "Industries.other"));
+  for (const p of need.platforms) if (!before.platforms.includes(p)) items.push(t(`Platforms.${p}` as "Platforms.instagram"));
+  if (need.budgetMax !== null && need.budgetMax !== before.budgetMax) items.push(money(need.budgetMax));
+  if (need.city && need.city !== before.city) items.push(cityLabel(need.city) ?? need.city);
+  return items;
 }

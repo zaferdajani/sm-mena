@@ -2,6 +2,7 @@ import "server-only";
 import { and, eq, gt, inArray, lte, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, promotions } from "@/lib/db/schema";
+import { inCountry } from "@/lib/data/agency-filters";
 import { getPostsByIds, type FeedFilters, type PostView } from "@/lib/data/posts";
 import { PROMOTION_RULES } from "./plans";
 
@@ -23,7 +24,7 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         gt(promotions.endsAt, now),
         eq(agencies.status, "active"),
         // Sponsored slots stay in the visitor's country.
-        filters.country ? eq(agencies.country, filters.country) : undefined,
+        filters.country ? inCountry(filters.country) : undefined,
       ),
     );
   return rows

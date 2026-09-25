@@ -2,8 +2,9 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Dark mode follows the operating system until a theme toggle exists. */
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* Light by default for everyone. Dark only when the visitor picks it with the
+   header toggle (components/theme-toggle.tsx sets <html data-theme="dark">). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* Tokens follow shadcn/ui names so its components pick up the brand.
    Brand green is the primary colour; brand-soft/tint/line are extras
@@ -43,40 +44,45 @@
   --ease-desk: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.17 0.01 160);
-    --foreground: oklch(0.95 0.01 160);
-    --card: oklch(0.2 0.012 160);
-    --card-foreground: oklch(0.95 0.01 160);
-    --popover: oklch(0.2 0.012 160);
-    --popover-foreground: oklch(0.95 0.01 160);
-    --primary: oklch(0.72 0.14 157);
-    --primary-foreground: oklch(0.17 0.01 160);
-    --secondary: oklch(0.25 0.012 160);
-    --secondary-foreground: oklch(0.95 0.01 160);
-    --muted: oklch(0.21 0.012 160);
-    --muted-foreground: oklch(0.72 0.02 160);
-    --accent: oklch(0.27 0.04 157);
-    --accent-foreground: oklch(0.95 0.01 160);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.6 0.1 157);
-    --brand: oklch(0.78 0.14 157);
-    --brand-deep: oklch(0.62 0.12 157);
-    --warning: oklch(0.8 0.14 75);
-    --brand-soft: oklch(0.22 0.03 157);
-    --brand-tint: oklch(0.3 0.05 157);
-    --brand-line: oklch(0.38 0.07 157);
-    /* Darker than --brand: stays inside the dark-mode lightness band for marks */
-    --chart-1: oklch(0.64 0.13 157);
-  }
+/* Native controls (scrollbars, date pickers) follow the chosen theme. */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: oklch(0.17 0.01 160);
+  --foreground: oklch(0.95 0.01 160);
+  --card: oklch(0.2 0.012 160);
+  --card-foreground: oklch(0.95 0.01 160);
+  --popover: oklch(0.2 0.012 160);
+  --popover-foreground: oklch(0.95 0.01 160);
+  --primary: oklch(0.72 0.14 157);
+  --primary-foreground: oklch(0.17 0.01 160);
+  --secondary: oklch(0.25 0.012 160);
+  --secondary-foreground: oklch(0.95 0.01 160);
+  --muted: oklch(0.21 0.012 160);
+  --muted-foreground: oklch(0.72 0.02 160);
+  --accent: oklch(0.27 0.04 157);
+  --accent-foreground: oklch(0.95 0.01 160);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.6 0.1 157);
+  --brand: oklch(0.78 0.14 157);
+  --brand-deep: oklch(0.62 0.12 157);
+  --warning: oklch(0.8 0.14 75);
+  --brand-soft: oklch(0.22 0.03 157);
+  --brand-tint: oklch(0.3 0.05 157);
+  --brand-line: oklch(0.38 0.07 157);
+  /* Darker than --brand: stays inside the dark-mode lightness band for marks */
+  --chart-1: oklch(0.64 0.13 157);
 }
 
 @theme inline {
-  --font-sans: var(--font-plex-arabic), system-ui, sans-serif;
-  --font-heading: var(--font-readex), var(--font-plex-arabic), system-ui, sans-serif;
+  /* "Twemoji Country Flags" only exists where FlagPolyfill loads it (Windows); it has flag glyphs only. */
+  --font-sans: "Twemoji Country Flags", var(--font-plex-arabic), system-ui, sans-serif;
+  --font-heading: "Twemoji Country Flags", var(--font-readex), var(--font-plex-arabic), system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --color-brand-deep: var(--brand-deep);
   --color-warning: var(--warning);

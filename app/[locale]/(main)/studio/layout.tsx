@@ -53,6 +53,7 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio", label: t("overview") },
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
+            { href: "/studio/clients", label: t("clients") },
             { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
             { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
             { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },

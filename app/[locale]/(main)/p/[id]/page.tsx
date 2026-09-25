@@ -1,3 +1,4 @@
+import { clientNames } from "@/lib/data/portfolio-clients";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -49,12 +50,21 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
     (await isCrawlerRequest()) ? null : recordView("post_view", post.agency.id, post.id, visitorId),
   ]);
   const others = more.items.filter((p) => p.id !== post.id).slice(0, 6);
+  const clientName = post.clientId ? (await clientNames([post.clientId])).get(post.clientId) : undefined;
+  const tp = await getTranslations("Profile");
 
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
       <h1 className="sr-only">{tSeo("postTitle", { agency: post.agency.name, service: post.services[0] ? serviceLabel(post.services[0], locale) : "" })}</h1>
       <PostCard post={item} priority linkToPost={false} />
-      <div className="flex justify-end px-3 py-2">
+      <div className="flex items-center justify-between gap-2 px-3 py-2">
+        {clientName ? (
+          <Link href={{ pathname: `/a/${post.agency.handle}`, query: { tab: "clients" } }} className="truncate text-sm font-medium text-brand" data-testid="post-client">
+            {tp("forClient", { name: clientName })}
+          </Link>
+        ) : (
+          <span />
+        )}
         <ReportDialog postId={post.id} />
       </div>
       {others.length > 0 && (

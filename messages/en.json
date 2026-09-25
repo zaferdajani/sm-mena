@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "Sawwiq · Social media & marketing agencies in Jordan",
-    "description": "Browse the work of social media and digital marketing agencies in Jordan, filter by service, city and budget, and contact them directly on WhatsApp."
+    "title": "Sawwiq · The first Arabic marketplace for marketing & social media agencies",
+    "description": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices and direct WhatsApp contact."
   },
   "Home": {
     "eyebrow": "Coming soon in Jordan",
@@ -82,7 +82,9 @@
       "invalidPhone": "Enter a valid phone number.",
       "generic": "Something went wrong. Please try again."
     },
-    "country": "Country"
+    "country": "Country",
+    "joinServices": "What do you offer?",
+    "joinServicesHint": "Pick what applies; you can add more later from your page."
   },
   "Cities": {
     "amman": "Amman",
@@ -279,7 +281,18 @@
     "services": "Services",
     "notSet": "Not set",
     "verifiedNote": "We checked this agency's commercial registration.",
-    "notFound": "This page doesn't exist."
+    "notFound": "This page doesn't exist.",
+    "basedIn": "Based in {country}",
+    "alsoServes": "Also serves {countries}",
+    "servesHere": "Based in {home} · takes clients in {here}",
+    "serves": "Serves",
+    "tabClients": "Clients",
+    "aboutTitle": "About us",
+    "strengthsTitle": "What we do best",
+    "clientsEmpty": "This agency hasn't listed its clients yet.",
+    "accountsManaged": "Accounts we run",
+    "clientWork": "Work for this client",
+    "forClient": "For {name}"
   },
   "Explore": {
     "title": "Explore",
@@ -326,7 +339,9 @@
     "switchLocale": "العربية",
     "switchLocaleLabel": "Switch to Arabic",
     "country": "Country",
-    "useLocation": "Use my location"
+    "useLocation": "Use my location",
+    "themeDark": "Dark mode",
+    "themeLight": "Light mode"
   },
   "Inquiry": {
     "open": "Message",
@@ -492,7 +507,17 @@
         "avatar": "Could not upload the picture.",
         "generic": "Could not save."
       },
-      "country": "Country"
+      "country": "Country",
+      "about": "Introduction",
+      "aboutPlaceholder": "Who you are, how you work and what you excel at…",
+      "strengths": "Strengths",
+      "strengthsHint": "Up to 6 short points, one per line.",
+      "strengthsPlaceholder": "Restaurant reels that sell\nMeta ads with clear monthly reports",
+      "serves": "Other countries you take clients in",
+      "servesHint": "You'll also appear to businesses looking for agencies there, marked as based in {country}.",
+      "servesGulf": "All Gulf",
+      "servesAll": "All countries",
+      "servesNone": "Clear"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -508,7 +533,8 @@
     },
     "billing": "Plan & billing",
     "security": "Security",
-    "contracts": "Contracts"
+    "contracts": "Contracts",
+    "clients": "Clients"
   },
   "Admin": {
     "title": "Admin",
@@ -1692,8 +1718,8 @@
     "dismiss": "Keep this language"
   },
   "Seo": {
-    "homeTitle": "Social media & digital marketing agencies in Jordan | Sawwiq",
-    "homeDescription": "Compare digital marketing and social media management agencies in Amman and across Jordan: real work, package prices in JOD and verified client reviews. Contacting them is free.",
+    "homeTitle": "Sawwiq | The first Arabic marketplace for marketing agencies",
+    "homeDescription": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices, verified reviews and milestone-protected payments.",
     "popularServices": "Most requested services",
     "agencyTitle": "{name}: {service} in {city}",
     "agencyDescription": "{name} is an agency in {city} offering {services}. See its work, package prices and client reviews, and contact it directly on Sawwiq.",
@@ -1703,13 +1729,13 @@
     "allReviews": "{count, plural, one {See the review} other {See all # reviews}}",
     "postTitle": "{service} by {agency}",
     "postDescription": "Work by {agency} in {service}. See more of the agency's work and contact it on Sawwiq.",
-    "feedTitle": "Latest work from marketing agencies in Jordan",
-    "feedDescription": "Follow the latest work from marketing and social media agencies in Jordan: real campaigns, reels and designs, with package prices and direct contact on WhatsApp."
+    "feedTitle": "Latest work from Arab marketing and social media agencies",
+    "feedDescription": "Follow the latest work from marketing and social media agencies in Jordan, the Gulf and Egypt on the first Arabic agency marketplace: real campaigns, reels and designs, with package prices and direct WhatsApp contact."
   },
   "About": {
     "title": "About Sawwiq",
-    "description": "Sawwiq is a Jordanian platform to find, compare and hire marketing and social media agencies: how we verify agencies and reviews, and how protected payments work.",
-    "intro": "Sawwiq is one place where business owners see the real work of marketing and social media agencies in Jordan, compare their prices and client reviews, then contact them directly or contract through the platform with protected payments.",
+    "description": "Sawwiq is the first Arabic platform to find, compare and hire marketing and social media agencies: how we verify agencies and reviews, and how protected payments work.",
+    "intro": "Sawwiq is the first Arabic platform that brings marketing and social media agencies together in one place: business owners in Jordan, the Gulf and Egypt see their real work, compare prices and client reviews, then contact them directly or contract through the platform with protected payments.",
     "what": {
       "title": "What we offer",
       "body": "A page for every agency with its work and priced packages, hire pages for every service and city, an AI assistant that asks about your project and suggests the best-suited agencies with a realistic budget, and project requests where several agencies send you quotes."
@@ -2010,5 +2036,135 @@
       "request_invited": "You were invited to quote on a new project: {services}",
       "inquiry": "{name} sent you an inquiry"
     }
+  },
+  "PortfolioClients": {
+    "title": "Clients and accounts",
+    "intro": "Group your work by client business. Add the accounts you run for each client (Instagram, TikTok, website…), then tag your posts with the client.",
+    "add": "Add a client",
+    "name": "Business name",
+    "industry": "Industry",
+    "country": "Country",
+    "description": "What you did for them",
+    "descriptionPlaceholder": "Monthly content, reels and Meta ads since 2024",
+    "accounts": "Accounts you run for this client",
+    "accountHint": "Type the account name (@name) or paste the link.",
+    "accountPlaceholder": "@name or link",
+    "addAccount": "Add another account",
+    "removeAccount": "Remove account",
+    "save": "Save client",
+    "saved": "Saved.",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDelete": "Delete this client? Its posts stay in your portfolio.",
+    "empty": "No clients yet. Add the businesses you work with.",
+    "posts": "{count} posts",
+    "postClient": "Client (optional)",
+    "postClientNone": "Not linked to a client",
+    "postClientHint": "Groups this post under the client on your page.",
+    "manage": "Manage clients",
+    "kinds": {
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "facebook": "Facebook",
+      "youtube": "YouTube",
+      "x": "X (Twitter)",
+      "snapchat": "Snapchat",
+      "linkedin": "LinkedIn",
+      "website": "Website",
+      "google_maps": "Google Maps",
+      "other": "Other link"
+    },
+    "errors": {
+      "name": "Add the business name.",
+      "link": "Check account {n}: it doesn't look like a {kind} account or link.",
+      "limit": "You can list up to 60 clients.",
+      "generic": "Could not save."
+    }
+  },
+  "MatchWizard": {
+    "placeholder": "Or type it: e.g. Instagram and TikTok for a restaurant in {city}, {budget} a month",
+    "mic": "Speak your request",
+    "micStop": "Stop dictation",
+    "listening": "Listening… speak now",
+    "questions": {
+      "groups": "What are you looking for? Pick one or more.",
+      "services": "Which of these exactly? Pick any, or tap “Any of these”.",
+      "industry": "What kind of business is it?",
+      "platforms": "Which platforms should they handle?",
+      "budget": "What's your monthly budget?",
+      "city": "Where should the agency be? You're browsing {country}.",
+      "country": "Which country should I search in?",
+      "changedCountry": "Done. Now showing agencies in {country}."
+    },
+    "groups": {
+      "social_media": "Social media",
+      "paid_media": "Paid ads",
+      "creative": "Photo, video and creative",
+      "branding": "Branding and design",
+      "digital": "Web, SEO and growth",
+      "offline": "On-ground and events"
+    },
+    "chips": {
+      "next": "Next",
+      "done": "Done",
+      "any": "Any of these",
+      "notSure": "Not sure",
+      "allCountry": "All of {country}",
+      "moreCities": "More cities",
+      "changeCountry": "Change country",
+      "showNow": "Show matches now",
+      "sendProject": "Send my project to these agencies",
+      "startOver": "Start over",
+      "changeBudget": "Change budget",
+      "changeCity": "Change city",
+      "switchYes": "Yes, show agencies in {country}",
+      "switchNo": "No, stay in {country}"
+    },
+    "budget": {
+      "under": "Under {max}",
+      "between": "{min} – {max}",
+      "over": "Over {min}",
+      "perMonth": "{range} a month",
+      "suggested": "Suggested budget: {range}"
+    },
+    "servesTag": "Based in {from} · serves {to}",
+    "reasons": {
+      "budget_fit": "Within budget ({price})",
+      "over_budget": "Above budget ({price})"
+    },
+    "fallback": {
+      "intro": "Hi! Tell me about your business and what you need: account management, paid ads, photo and video, or branding? Your city in {country} and your monthly budget help too.",
+      "example1": "Instagram management for a restaurant in {city}",
+      "example2": "Meta ads for an online store, {budget} budget",
+      "example3": "Product photos and Reels",
+      "example4": "Brand identity for a startup",
+      "found": "I found {count, plural, one {# agency} other {# agencies}} in {country} for {services}, ranked by service fit, past work, reviews, price and location. Contact them on WhatsApp, or send your project to receive quotes.",
+      "notFound": "I couldn't find agencies in {country} for {services} with these choices. Try another city or a wider budget.",
+      "note": "Based on {count} agencies in {country} on Sawwiq, monthly packages usually cost {min} to {max} (median {median}).",
+      "noPrices": "Not enough price data for this service in {country} yet.",
+      "summaryServices": "Looking for {services}",
+      "summaryCity": "in {city}",
+      "summaryBudget": "budget around {budget} a month",
+      "ack": "Got it: {items}.",
+      "ackNothing": "I couldn't pick that out. Choose from the options below, or say it another way.",
+      "switchAsk": "{city} is in {other}, but you're browsing agencies in {country}. Did you mean agencies in {other}?",
+      "switchAskCountry": "You're browsing agencies in {country}. Did you mean agencies in {other}?",
+      "chipSend": "Send my project to these agencies",
+      "chipPhoto": "I also need photography",
+      "chipOtherCity": "Another city",
+      "chipAnyCity": "Any city",
+      "chipHigherBudget": "Higher budget"
+    }
+  },
+  "Welcome": {
+    "title": "Welcome to Sawwiq",
+    "subtitle": "The first Arabic marketplace for marketing agencies. What brings you here?",
+    "client": "I need a marketing agency",
+    "clientHint": "For my business. Answer a few quick questions and we suggest the best fit.",
+    "agency": "I am an agency or freelancer",
+    "agencyHint": "Show your work and get client requests, free.",
+    "browse": "Just browsing",
+    "close": "Close"
   }
 }

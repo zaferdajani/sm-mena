@@ -1,5 +1,6 @@
 "use server";
 
+import { isServiceKey } from "@/lib/taxonomy";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
@@ -113,7 +114,8 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   const user = await createUser(data.email, data.password).catch(() => null);
   if (!user) return { error: "emailTaken", fields };
   try {
-    await createAgency(user.id, { handle: data.handle, name: data.name, city: data.city, whatsapp, phone: whatsapp });
+    const services = [...new Set(formData.getAll("services").map(String))].filter(isServiceKey);
+    await createAgency(user.id, { handle: data.handle, name: data.name, city: data.city, whatsapp, phone: whatsapp, services });
   } catch {
     // e.g. the handle was taken a moment ago; do not leave an orphan account
     await deleteUser(user.id);

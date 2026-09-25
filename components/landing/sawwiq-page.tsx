@@ -1,5 +1,6 @@
 import { ScrollScrub } from "./scroll-scrub/scroll-scrub";
-import { scrollScrubScenesAr, scrollScrubScenesEn, scrollScrubTheme } from "./scenes";
+import type { CountryCode } from "@/lib/countries";
+import { scrollScrubScenes, scrollScrubTheme } from "./scenes";
 import type { Lang } from "./copy";
 import {
   AgenciesSection,
@@ -11,22 +12,32 @@ import {
   TrustSection,
   WhoSection,
 } from "./sections";
+import { WelcomeChooser } from "@/components/welcome-chooser";
 import "./site.css";
 
-export function SawwiqPage({ lang }: { lang: Lang }) {
+/**
+ * The landing page for a language and the visitor's country (their saved
+ * choice, else the country of their IP address, else Jordan). `chosen` tells
+ * the header's country picker whether the visitor saved a choice yet.
+ */
+export function SawwiqPage({ lang, country, chosen }: { lang: Lang; country: CountryCode; chosen: boolean }) {
   return (
-    <div className="sw" data-lang={lang}>
-      <SiteHeader lang={lang} />
-      <main>
-        <ScrollScrub scenes={lang === "ar" ? scrollScrubScenesAr : scrollScrubScenesEn} theme={scrollScrubTheme} />
-        <WhoSection lang={lang} />
-        <PaymentsSection lang={lang} />
-        <ServicesSection lang={lang} />
-        <TrustSection lang={lang} />
-        <AgenciesSection lang={lang} />
-        <CitiesSection lang={lang} />
-      </main>
-      <SiteFooter lang={lang} />
-    </div>
+    <>
+      {/* Outside .sw so the landing styles don't restyle the dialog. */}
+      <WelcomeChooser />
+      <div className="sw" data-country={country} data-lang={lang}>
+        <SiteHeader chosen={chosen} country={country} lang={lang} />
+        <main>
+          <ScrollScrub scenes={scrollScrubScenes(lang, country)} theme={scrollScrubTheme} />
+          <WhoSection country={country} lang={lang} />
+          <PaymentsSection country={country} lang={lang} />
+          <ServicesSection lang={lang} />
+          <TrustSection country={country} lang={lang} />
+          <AgenciesSection country={country} lang={lang} />
+          <CitiesSection country={country} lang={lang} />
+        </main>
+        <SiteFooter country={country} lang={lang} />
+      </div>
+    </>
   );
 }

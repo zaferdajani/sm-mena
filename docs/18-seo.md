@@ -9,7 +9,7 @@ The same path we took on OneClickConvert: first make every page honest and index
 3. **Arabic is written, never translated; language parity is absolute.** Every service has written Arabic and English copy (`data/hire-content.json`), and every key exists in both `messages/*.json` (a unit test enforces it).
 4. **Search phrases, not catalogue names,** in titles, headings, breadcrumbs and link text (`searchPhrase()` / `serviceLinkText()` in `lib/hire-content.ts`).
 5. **A crawler is not a visitor** (`lib/crawler.ts`): robots don't count as profile or post views, page views or error reports.
-6. **Verify on the live host after each deploy:** `npm run seo:check -- https://sawwiq-jo.fly.dev`.
+6. **Verify on the live host after each deploy:** `npm run seo:check -- https://sawwiq.org`.
 
 ## What is in place
 
@@ -28,18 +28,18 @@ The same path we took on OneClickConvert: first make every page honest and index
 | robots.txt | Private areas blocked; search and AI answer engines named and welcome | `app/robots.ts` |
 | llms.txt | Summary, facts, hire hubs and real agencies for AI answer engines | `app/llms.txt/route.ts` |
 | 404 | Real 404 status in the visitor's language, with links to the hire hubs | `app/[locale]/not-found.tsx`, `[...rest]` |
-| Other hosts | `X-Robots-Tag: noindex` on any host other than `NEXT_PUBLIC_SITE_URL` (fly.dev once a domain is live, previews) | `proxy.ts` |
+| Other hosts | `X-Robots-Tag: noindex` on any host other than `NEXT_PUBLIC_SITE_URL` (Vercel preview and *.vercel.app addresses) | `proxy.ts` |
 | Switch | `SEO_INDEXABLE=false` keeps the whole site out of search (staging) | `.env.example` |
 | IndexNow | Pings Bing/Yandex when a real agency publishes work or edits its page (set `INDEXNOW_KEY`) | `lib/indexnow.ts`, `/indexnow.txt` |
 | Speed | Only the body font is preloaded (headings and numbers swap in) | `app/[locale]/layout.tsx` |
 
 ## Owner to-do (things code can't do)
 
-1. **Pick the final domain before submitting to Google.** Rankings built on `sawwiq-jo.fly.dev` must later be moved with redirects. The legal copy already says `sawwiq.jo`. When it's live: set `NEXT_PUBLIC_SITE_URL` in the deploy workflow; the fly.dev host then answers with `noindex` automatically.
+1. **The final domain is `sawwiq.org`** (`NEXT_PUBLIC_SITE_URL`, set by Actions → Vercel → setup). Any other host answers with `noindex`. The legal copy still says `sawwiq.jo`: update it to the sawwiq.org addresses.
 2. **Google Search Console and Bing Webmaster Tools:** verify the domain (DNS TXT is simplest, or set `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`), submit `/sitemap.xml`, and request indexing for `/ar`, `/ar/hire` and the top hire pages.
 3. **IndexNow:** add a secret `INDEXNOW_KEY` (32 hex characters, e.g. `openssl rand -hex 16`).
 4. **Remove the demo agencies once real ones join** (Admin → Agencies). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.
-5. **Keep one machine always on** (`min_machines_running = 1` in `fly.toml`, a few dollars a month): a cold start took 13 s, which slows Google's crawling.
+5. **Watch response times.** Vercel functions start fast, and pages are served close to the London database; check Search Console → Crawl stats if crawling slows.
 6. **Check the Jordan-specific facts in the service copy** before indexing: drone/archaeological-site permits (video), trademark registration at the Ministry of Industry, Trade and Supply (branding), JFDA Arabic labelling (packaging), municipality licences for outdoor ads and shop signs, `.jo` domain documents, CliQ and cash on delivery (e-commerce), LinkedIn minimum audience, WhatsApp template approval and per-conversation pricing.
 
 ## Keyword map (search phrase → owning page)
@@ -89,3 +89,19 @@ City pages (`/hire/{service}/{city}`) take «… في عمّان/إربد/الز
 4. Sites linking to Sawwiq.
 
 Then join with what happens on the site (inquiries and project requests per landing page) to see which pages bring customers, not just clicks.
+
+## Positioning: the first Arabic platform for marketing agencies
+
+Sawwiq is the first Arabic-first marketplace for hiring marketing and social media agencies, and every place a search or answer engine reads says so (2026-09):
+
+| Where | What it says |
+|---|---|
+| Home title | `سوّق \| أول منصة عربية لشركات التسويق والسوشيال ميديا` · `Sawwiq \| The first Arabic marketplace for marketing agencies` |
+| Home, feed and default descriptions | "أول منصة عربية…" plus the countries (Jordan, Saudi Arabia, UAE, the Gulf, Egypt) and the core keywords (شركات التسويق الإلكتروني، إدارة السوشيال ميديا) |
+| Organization JSON-LD | `description`, `slogan`, `foundingDate`, `knowsLanguage`, and `areaServed` listing all eight countries |
+| WebSite JSON-LD | `description` in the page language |
+| `llms.txt` | the summary line and a "facts" line for AI answer engines |
+| About page | description and introduction |
+| Landing footer | "أول منصة عربية لوكالات التسويق · {country}" |
+
+Country and city keywords stay on the hire pages (`/hire/{service}`, per country and city), so the home page can carry the brand claim without losing local searches. Keep the claim consistent when editing copy: "أول منصة عربية" / "the first Arabic marketplace".

@@ -7,9 +7,10 @@
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { and, eq, gt, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { countryOf, countryOfCity } from "../countries";
 import { updateAgency, createAgency } from "../data/agencies";
+import { saveClient } from "../data/portfolio-clients";
 import { createPostFromProcessed } from "../data/posts";
 import { createProjectRequest } from "../data/requests";
 import { ensureOwner, recoverOwner } from "../data/staff";
@@ -19,6 +20,7 @@ import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
 import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
+import { DEMO_PROFILES } from "./demo-profiles";
 import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, type DeliverableLine } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
@@ -170,6 +172,36 @@ async function addDemoPortfolio(log: (...a: unknown[]) => void) {
   log(`Added ${added} portfolio posts to demo agencies.`);
 }
 
+const PROFILES_FLAG = "demo_profiles_v1";
+
+/** Introductions, strengths, countries served and portfolio clients for demo agencies (lib/db/demo-profiles.ts). */
+async function addDemoProfiles(log: (...a: unknown[]) => void) {
+  const db = await getDb();
+  const [done] = await db.select().from(appSettings).where(eq(appSettings.key, PROFILES_FLAG));
+  if (done) return;
+  let clients = 0;
+  for (const [handle, p] of Object.entries(DEMO_PROFILES)) {
+    const [agency] = await db.select({ id: agencies.id, country: agencies.country }).from(agencies).where(and(eq(agencies.handle, handle), eq(agencies.isDemo, true)));
+    if (!agency) continue;
+    await db
+      .update(agencies)
+      .set({ about: p.about, strengths: p.strengths, servesCountries: (p.serves ?? []).filter((c) => c !== agency.country) })
+      .where(eq(agencies.id, agency.id));
+    const recent = await db.select({ id: posts.id }).from(posts).where(and(eq(posts.agencyId, agency.id), isNull(posts.clientId))).orderBy(desc(posts.createdAt));
+    let next = 0;
+    for (const c of p.clients ?? []) {
+      const saved = await saveClient(agency.id, null, c);
+      if (!("ok" in saved)) continue;
+      clients++;
+      const tagged = recent.slice(next, next + c.posts).map((r) => r.id);
+      next += c.posts;
+      if (tagged.length) await db.update(posts).set({ clientId: saved.id }).where(inArray(posts.id, tagged));
+    }
+  }
+  await db.insert(appSettings).values({ key: PROFILES_FLAG, value: true }).onConflictDoNothing();
+  log(`Added demo introductions and ${clients} portfolio clients.`);
+}
+
 /** Keeps a few open demo client requests (they expire after 14 days) so the agency request feed is never empty. */
 async function addDemoRequests(log: (...a: unknown[]) => void) {
   const db = await getDb();
@@ -295,6 +327,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const toCreate = [...DEMO_AGENCIES.entries()].filter(([, d]) => !existing.has(d.handle));
   if (!toCreate.length) {
     await addDemoPortfolio(log);
+    await addDemoProfiles(log);
     await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
@@ -474,6 +507,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   }
 
   await addDemoPortfolio(log);
+  await addDemoProfiles(log);
   await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
   if (!production) {

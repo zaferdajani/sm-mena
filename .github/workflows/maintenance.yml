@@ -2,7 +2,9 @@
 # no server needed. GitHub → Actions → Maintenance → Run workflow → pick a task.
 #   migrate             apply database migrations (Vercel also does this on every deploy)
 #   rebuild-demo-media  re-create the demo agencies with their photos in Supabase Storage
+#   seed-demo           add demo data introduced since the last run (quick; keeps everything else)
 #   reset-staff-2fa     clear staff two-factor sign-in so they can set it up again
+#   recover-owner       owner locked out: clears the owner's 2FA and, with OWNER_RECOVERY_PASSWORD, sets a new password
 # Uses the repository secrets DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 # (and SEED_ADMIN_* if present). docs/27-vercel.md
 name: Maintenance
@@ -14,7 +16,7 @@ on:
         description: What to run
         required: true
         type: choice
-        options: [migrate, rebuild-demo-media, reset-staff-2fa]
+        options: [migrate, seed-demo, rebuild-demo-media, reset-staff-2fa, recover-owner]
 
 concurrency:
   group: maintenance
@@ -32,6 +34,8 @@ jobs:
       STORAGE_PROVIDER: supabase
       SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
       SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+      OWNER_RECOVERY_EMAIL: ${{ inputs.task == 'recover-owner' && secrets.OWNER_RECOVERY_EMAIL || '' }}
+      OWNER_RECOVERY_PASSWORD: ${{ inputs.task == 'recover-owner' && secrets.OWNER_RECOVERY_PASSWORD || '' }}
     steps:
       - name: Check the secrets are there
         run: |
@@ -49,6 +53,10 @@ jobs:
         run: |
           case "${{ inputs.task }}" in
             migrate) npm run --silent db:migrate ;;
+            seed-demo) npm run --silent db:migrate && npx tsx lib/db/seed.ts ;;
             rebuild-demo-media) npm run --silent db:migrate && npx tsx lib/db/rebuild-demo-media.ts ;;
             reset-staff-2fa) npx tsx lib/db/reset-staff-2fa.ts ;;
+            recover-owner)
+              [ -n "$OWNER_RECOVERY_EMAIL" ] || { echo "::error::Add the OWNER_RECOVERY_EMAIL secret (and OWNER_RECOVERY_PASSWORD for a new password)."; exit 1; }
+              npx tsx lib/db/seed.ts --admin-only ;;
           esac

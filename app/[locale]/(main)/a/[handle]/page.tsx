@@ -1,5 +1,9 @@
-import { Grid3x3, Info, Star } from "lucide-react";
-import { currencyOf } from "@/lib/countries";
+import { Briefcase, Check, Grid3x3, Info, Star } from "lucide-react";
+import { COUNTRIES, currencyOf } from "@/lib/countries";
+import { currentCountry } from "@/lib/country-choice";
+import { ClientShowcaseList } from "@/components/profile/client-showcase";
+import { clientShowcase, listClients } from "@/lib/data/portfolio-clients";
+import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -51,7 +55,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const { locale, handle } = await params;
   setRequestLocale(locale);
   const rawTab = (await searchParams).tab;
-  const tab = rawTab === "about" || rawTab === "reviews" ? rawTab : "work";
+  const tab = rawTab === "about" || rawTab === "reviews" || rawTab === "clients" ? rawTab : "work";
   const agency = await getAgencyByHandle(handle);
   if (!agency) notFound();
 
@@ -61,13 +65,15 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
     getTranslations("Cities"), getTranslations("Platforms"), getTranslations("Industries"), getTranslations("TeamSize"), getTranslations("Languages"),
   ]);
   const visitorId = await getVisitorId();
-  const [following, posts, reviewRows, sub, canReview, pkgs] = await Promise.all([
+  const [following, posts, reviewRows, sub, canReview, pkgs, clients, viewCountry] = await Promise.all([
     isFollowing(visitorId, agency.id),
     tab === "work" ? feedPage({ agencyId: agency.id }, null, visitorId, { limit: 24 }) : null,
     tab === "reviews" ? listReviews(agency.id) : null,
     tab === "reviews" ? subScores(agency.id) : null,
     tab === "reviews" ? canReviewAfterInquiry(visitorId, agency.id) : false,
     listPackages(agency.id),
+    tab === "clients" ? clientShowcase(agency.id) : listClients(agency.id),
+    currentCountry(),
     (await isCrawlerRequest()) ? null : recordView("profile_view", agency.id, null, visitorId),
   ]);
   // Always rendered (every tab), so search engines see reviews and prices on the canonical URL.
@@ -77,8 +83,16 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const avatarUrl = mediaUrl(agency.avatarKey);
   const primary = agency.services[0];
 
+  // Visiting from a country the agency serves: say so; otherwise list where it works.
+  const note = await servesNote(agency, viewCountry !== agency.country && agency.servesCountries.includes(viewCountry) ? viewCountry : null);
+  const sep = locale === "ar" ? "، " : ", ";
+  const countryName = (code: string) => {
+    const c = COUNTRIES.find((x) => x.code === code);
+    return c ? `${c.flag} ${locale === "ar" ? c.ar : c.en}` : code;
+  };
   const about: [string, string][] = [
-    [t("city"), tCity(agency.city)],
+    [t("city"), `${tCity(agency.city)}${sep}${countryName(agency.country)}`],
+    ...(agency.servesCountries.length ? [[t("serves"), agency.servesCountries.map(countryName).join(sep)] as [string, string]] : []),
     [t("startingPrice"), agency.startingPriceJod ? formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) : t("notSet")],
     [t("services"), agency.services.map((s) => serviceLabel(s, locale)).join("، ") || t("notSet")],
     [t("platforms"), agency.platforms.map((p) => tPlat(p)).join("، ") || t("notSet")],
@@ -103,10 +117,11 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       <ProfileHeader
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}
+        servesNote={note}
         inquirySlot={<InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
       />
       <div className="mt-5 flex border-t text-xs font-semibold uppercase tracking-wide" role="tablist">
-        {([["work", Grid3x3], ["reviews", Star], ["about", Info]] as const).map(([key, Icon]) => (
+        {([["work", Grid3x3], ...(clients.length ? [["clients", Briefcase] as const] : []), ["reviews", Star], ["about", Info]] as const).map(([key, Icon]) => (
           <Link
             key={key}
             href={{ pathname: `/a/${agency.handle}`, query: key === "work" ? {} : { tab: key } }}
@@ -115,7 +130,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
             className={cn("-mt-px flex flex-1 items-center justify-center gap-1.5 border-t-2 border-transparent py-3 text-muted-foreground", tab === key && "border-foreground text-foreground")}
           >
             <Icon className="size-4" />
-            {key === "work" ? t("tabWork") : key === "reviews" ? `${tr("tab")}${rating.count ? ` (${rating.count})` : ""}` : t("tabAbout")}
+            {key === "work" ? t("tabWork") : key === "clients" ? `${t("tabClients")} (${clients.length})` : key === "reviews" ? `${tr("tab")}${rating.count ? ` (${rating.count})` : ""}` : t("tabAbout")}
           </Link>
         ))}
       </div>
@@ -125,6 +140,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
+      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
@@ -164,6 +180,24 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       {tab === "about" && (
         <div className="px-4 py-4">
           {agency.isVerified && <p className="mb-4 rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">✓ {t("verifiedNote")}</p>}
+          {agency.about && (
+            <section className="mb-5" data-testid="agency-about">
+              <h2 className="mb-2 font-semibold">{t("aboutTitle")}</h2>
+              <p className="whitespace-pre-line text-sm leading-relaxed" dir="auto">{agency.about}</p>
+            </section>
+          )}
+          {agency.strengths.length > 0 && (
+            <section className="mb-5" data-testid="agency-strengths">
+              <h2 className="mb-2 font-semibold">{t("strengthsTitle")}</h2>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {agency.strengths.map((s) => (
+                  <li key={s} className="flex items-start gap-2 rounded-lg border px-3 py-2 text-sm" dir="auto">
+                    <Check className="mt-0.5 size-4 shrink-0 text-brand" /> {s}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <dl className="divide-y">
             {about.map(([label, value]) => (
               <div key={label} className="grid grid-cols-3 gap-3 py-3 text-sm">

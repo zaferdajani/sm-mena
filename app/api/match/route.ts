@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { currentCountry } from "@/lib/country-choice";
 import { runMatchmaker } from "@/lib/ai/agent";
+import { wizardNeedSchema } from "@/lib/match-wizard-schema";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { getVisitorId } from "@/lib/visitor";
@@ -12,6 +13,10 @@ const body = z.object({
     .min(1)
     .max(30)
     .refine((m) => m[0].role === "user" && m.at(-1)!.role === "user", "must start and end with a user message"),
+  // The guided chat's answers so far (merged with what the text says).
+  need: wizardNeedSchema.optional(),
+  // The last message is a tapped choice already applied to `need`.
+  picked: z.boolean().optional(),
 });
 
 export async function POST(request: Request) {
@@ -23,7 +28,8 @@ export async function POST(request: Request) {
     return Response.json({ error: "rate_limited" }, { status: 429 });
   }
   try {
-    const result = await runMatchmaker(parsed.data.messages, parsed.data.locale, visitorId, await currentCountry());
+    const { messages, locale, need, picked } = parsed.data;
+    const result = await runMatchmaker(messages, locale, visitorId, await currentCountry(), { need, picked });
     return Response.json(result);
   } catch (error) {
     console.error("[api/match]", error);

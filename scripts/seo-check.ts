@@ -1,6 +1,6 @@
 // Post-deploy SEO check (OneClickConvert's "verify on the live host" habit).
 //   npm run seo:check                         checks http://localhost:3000
-//   npm run seo:check -- https://sawwiq-jo.fly.dev
+//   npm run seo:check -- https://sawwiq.org
 // Exits 1 when a page breaks a rule, so it can run in CI or after a deploy.
 const base = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
 const failures: string[] = [];

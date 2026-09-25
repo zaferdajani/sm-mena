@@ -1,6 +1,6 @@
 # 17 — Team access without giving away ownership
 
-Maintenance, backbone (core engineering) and support teams get the access their job needs, and nothing that would let them take the platform. This covers two places: **inside the app** (the admin console) and **outside it** (GitHub, Fly.io, Higgsfield, domain, AI and payment accounts).
+Maintenance, backbone (core engineering) and support teams get the access their job needs, and nothing that would let them take the platform. This covers two places: **inside the app** (the admin console) and **outside it** (GitHub, Vercel, Supabase, Higgsfield, domain, AI and payment accounts).
 
 ## The rule
 
@@ -60,11 +60,12 @@ Whoever controls these accounts controls the platform, whatever the app says. Ke
 | Place | What it is | Owner keeps | Team gets |
 |---|---|---|---|
 | GitHub `zaferdajani/sm-mena` | Code; pushes to `main` deploy | Admin role, repository secrets, branch protection settings | **Write** (or **Triage** for support). Never Admin or Owner. |
-| GitHub Actions secrets | `FLY_API_TOKEN`, `SEED_ADMIN_*`, AI keys, `GOOGLE_PLACES_API_KEY` | All of them | None (they deploy by merging, not with tokens) |
-| Fly.io app `sawwiq-jo` | Hosting, the database volume, generated secrets (`MFA_ENCRYPTION_KEY`, `PAYMENTS_WEBHOOK_SECRET`, `CRON_SECRET`) | Organization owner, billing, secrets | Backbone/maintenance may be invited as **members** for logs only if needed; not required |
-| https://sawwiq-jo.fly.dev | The live app | Owner account in Admin → Team | Staff accounts with roles above |
+| GitHub Actions secrets | `VERCEL_TOKEN`, `DATABASE_URL`, `SUPABASE_*`, `SEED_ADMIN_*`, AI keys, `GOOGLE_PLACES_API_KEY` | All of them | None (they deploy by merging, not with tokens) |
+| Vercel project `sm-mena` | Hosting, generated secrets (`MFA_ENCRYPTION_KEY`, `PAYMENTS_WEBHOOK_SECRET`, `CRON_SECRET`) | Account owner, billing, environment variables | Not required (logs are available from Actions → Vercel → logs) |
+| Supabase project `sm-mena` | Database and uploaded files | Organization owner, billing, keys | Not required |
+| https://sawwiq.org | The live app | Owner account in Admin → Team | Staff accounts with roles above |
 | Higgsfield `sawwiq-jordan.higgsfield.app` | Landing site (unlisted) | The Higgsfield account | No access |
-| Domain registrar and DNS (when bought) | The name | Account, 2FA, auto-renew | No access |
+| Namecheap (sawwiq.org) | The domain and DNS | Account, 2FA, auto-renew | No access |
 | Anthropic / OpenAI / Google Cloud consoles | API keys and billing | Accounts and keys | No access (keys only live in secrets) |
 | Payment provider (when connected) | Payouts | Account and bank details | No access |
 
@@ -81,17 +82,17 @@ Whoever controls these accounts controls the platform, whatever the app says. Ke
 
 Result: the team can branch, open pull requests and see CI, but nothing deploys until the owner approves.
 
-### Fly.io
+### Vercel and Supabase
 
-The team does not need Fly access to work: deploys happen through GitHub Actions when the owner merges. If someone must read logs, invite them to the Fly organization as a **member**, never as admin, and remove them when done. Keep volume snapshots on (Fly takes daily snapshots of `sawwiq_data`; check under Volumes).
+The team does not need Vercel or Supabase access to work: deploys happen through GitHub when the owner merges, and the Actions buttons (Vercel → status / logs, Maintenance) cover logs and routine jobs. If someone must look inside, invite them as a **member** (never owner or admin) and remove them when done.
 
 ### Break-glass (owner locked out of the app)
 
-Only someone who controls the hosting secrets can do this, which is you as the Fly.io and GitHub owner.
+Only someone who controls the GitHub repository secrets can do this, which is you as the owner.
 
-1. From your computer: `fly secrets set OWNER_RECOVERY_EMAIL=you@example.com -a sawwiq-jo` (add `OWNER_RECOVERY_PASSWORD=…` with 12+ characters if you also forgot the password). Setting a secret restarts the app.
-2. On boot the seed clears the owner's two-factor sign-in (and sets the new password), signs the owner out everywhere and writes `ownership.recovery` to the audit log. It never touches any other account.
-3. Sign in, turn two-factor sign-in back on (Admin → Security), then remove the secrets: `fly secrets unset OWNER_RECOVERY_EMAIL OWNER_RECOVERY_PASSWORD -a sawwiq-jo`.
+1. GitHub → the repository → Settings → Secrets and variables → Actions: add `OWNER_RECOVERY_EMAIL` (the owner's email) and, if you also forgot the password, `OWNER_RECOVERY_PASSWORD` (12+ characters).
+2. Actions → Maintenance → Run workflow → **recover-owner**. It clears the owner's two-factor sign-in (and sets the new password), signs the owner out everywhere and writes `ownership.recovery` to the audit log. It never touches any other account.
+3. Sign in, turn two-factor sign-in back on (Admin → Security), then delete both secrets.
 
 If the owner account itself is gone, set new `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` secrets: the seed creates that admin, and makes it the owner only if the platform has no owner.
 
@@ -99,10 +100,10 @@ If the owner account itself is gone, set new `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASS
 
 | What | Where | Visibility |
 |---|---|---|
-| Live app | https://sawwiq-jo.fly.dev (Arabic) · https://sawwiq-jo.fly.dev/en | Public |
-| Health check | https://sawwiq-jo.fly.dev/api/health | Public (no secrets) |
-| Admin console | https://sawwiq-jo.fly.dev/en/admin | Staff only, two-factor |
+| Live app | https://sawwiq.org (Arabic) · https://sawwiq.org/en | Public |
+| Health check | https://sawwiq.org/api/health | Public (no secrets) |
+| Admin console | https://sawwiq.org/en/admin | Staff only, two-factor |
 | Landing site | https://sawwiq-jordan.higgsfield.app | Unlisted (401 for visitors) |
 | Code | https://github.com/zaferdajani/sm-mena | Private repository |
-| Deploys | GitHub → Actions → Deploy to Fly.io (runs on every push to `main`) | Owner |
-| Hosting | Fly.io app `sawwiq-jo`, region `fra`, volume `sawwiq_data` | Owner |
+| Deploys | Vercel, on every push to `main`; GitHub → Actions → Vercel for setup, status and logs | Owner |
+| Hosting | Vercel project `sm-mena` (region `lhr1`) · Supabase project `sm-mena` (London) | Owner |
