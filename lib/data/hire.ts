@@ -124,7 +124,10 @@ export async function packageFacts(service: string, place: Place = {}) {
   if (!rows.length) return null;
   const median = (xs: number[]) => {
     const v = [...xs].sort((a, b) => a - b);
-    return v.length ? v[Math.floor((v.length - 1) / 2)] : null;
+    if (!v.length) return null;
+    const middle = Math.floor(v.length / 2);
+    // Match percentile_cont(0.5): an even sample uses both middle values.
+    return v.length % 2 === 0 ? (v[middle - 1] + v[middle]) / 2 : v[middle];
   };
   const monthly = rows.filter((r) => r.billing === "monthly").map((r) => r.price);
   const oneOff = rows.filter((r) => r.billing !== "monthly").map((r) => r.price);
