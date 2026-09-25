@@ -1,0 +1,54 @@
+# One-click maintenance against the live database and storage (Supabase),
+# no server needed. GitHub → Actions → Maintenance → Run workflow → pick a task.
+#   migrate             apply database migrations (Vercel also does this on every deploy)
+#   rebuild-demo-media  re-create the demo agencies with their photos in Supabase Storage
+#   reset-staff-2fa     clear staff two-factor sign-in so they can set it up again
+# Uses the repository secrets DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+# (and SEED_ADMIN_* if present). docs/27-vercel.md
+name: Maintenance
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: What to run
+        required: true
+        type: choice
+        options: [migrate, rebuild-demo-media, reset-staff-2fa]
+
+concurrency:
+  group: maintenance
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NODE_ENV: production
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      STORAGE_PROVIDER: supabase
+      SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
+      SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+    steps:
+      - name: Check the secrets are there
+        run: |
+          [ -n "$DATABASE_URL" ] || { echo "::error::Add the DATABASE_URL repository secret (docs/25-supabase.md)."; exit 1; }
+          if [ "${{ inputs.task }}" = "rebuild-demo-media" ]; then
+            [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] || { echo "::error::Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY secrets."; exit 1; }
+          fi
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Run ${{ inputs.task }}
+        run: |
+          case "${{ inputs.task }}" in
+            migrate) npm run --silent db:migrate ;;
+            rebuild-demo-media) npm run --silent db:migrate && npx tsx lib/db/rebuild-demo-media.ts ;;
+            reset-staff-2fa) npx tsx lib/db/reset-staff-2fa.ts ;;
+          esac

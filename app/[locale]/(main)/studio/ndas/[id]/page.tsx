@@ -18,6 +18,7 @@ export default async function StudioNda({ params, searchParams }: PageProps<"/[l
   const sp = await searchParams;
   const t = await getTranslations("Agreements");
   const n = v.nda;
+  const token = ndaClientToken(n);
   return (
     <div className="space-y-4">
       {sp.sent === "1" && (
@@ -28,7 +29,7 @@ export default async function StudioNda({ params, searchParams }: PageProps<"/[l
       <p className="text-sm" data-testid="nda-status">
         {t("ndaStudio.statusLabel")}: <b>{t(`ndaStudio.status.${n.status as "sent"}`)}</b>
       </p>
-      {n.status === "sent" && <ShareLink path={`/${locale}/n/${ndaClientToken(n)}`} phone={n.clientPhone} name={n.clientName} title={t("ndaStudio.shareTitle")} />}
+      {n.status === "sent" && token && <ShareLink path={`/${locale}/n/${token}`} phone={n.clientPhone} name={n.clientName} title={t("ndaStudio.shareTitle")} />}
       {n.clientNote && (
         <div className="space-y-1 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm dark:bg-amber-950/30" data-testid="nda-client-note">
           <p className="font-semibold">{n.status === "declined" ? t("ndaStudio.declined") : t("amendReceived")}</p>

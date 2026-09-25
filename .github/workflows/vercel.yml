@@ -1,0 +1,39 @@
+# Manages the Vercel project from GitHub, so settings don't need clicking
+# through the dashboard (docs/27-vercel.md). Needs the VERCEL_TOKEN secret.
+#   setup   copy the secrets into Vercel, add sawwiq.org + www, deploy, show DNS
+#   deploy  deploy main to production
+#   status  latest deployments, last build log, DNS check
+name: Vercel
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to do
+        required: true
+        type: choice
+        options: [status, setup, deploy]
+
+jobs:
+  vercel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: ${{ inputs.action }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          GITHUB_REPOSITORY_ID: ${{ github.repository_id }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          MFA_ENCRYPTION_KEY: ${{ secrets.MFA_ENCRYPTION_KEY }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_PROVIDER: ${{ secrets.AI_PROVIDER }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+        run: node scripts/vercel-admin.mjs "${{ inputs.action }}"

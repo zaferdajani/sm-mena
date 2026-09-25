@@ -24,6 +24,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
   const tl = await getTranslations("Agreements");
   const c = v.contract;
   const hidden = { contractId: c.id };
+  const token = clientToken(c);
 
   return (
     <div className="space-y-4">
@@ -43,7 +44,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
               <p className="text-xs text-muted-foreground">{tl("amendHowTo")}</p>
             </div>
           ))}
-      {["sent", "active", "disputed"].includes(c.status) && <ShareLink path={`/${locale}/c/${clientToken(c)}`} phone={c.clientPhone} name={c.clientName} title={c.title} />}
+      {["sent", "active", "disputed"].includes(c.status) && token && <ShareLink path={`/${locale}/c/${token}`} phone={c.clientPhone} name={c.clientName} title={c.title} />}
       {c.status === "disputed" && <p className="rounded-xl bg-destructive/10 p-3 text-sm">{t("dispute.active")}</p>}
       <ContractCommitments v={v} locale={locale} />
       {c.status !== "sent" && <ChangeRequests perspective="agency" hidden={hidden} changes={changesFor(v, locale)} active={c.status === "active"} />}

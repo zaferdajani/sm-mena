@@ -23,6 +23,16 @@ export function seal(plain: string): string {
   return ["v1", iv.toString("base64url"), cipher.getAuthTag().toString("base64url"), body.toString("base64url")].join(".");
 }
 
+/** Like open(), but null when the value can't be decrypted (e.g. sealed with an earlier MFA_ENCRYPTION_KEY). */
+export function tryOpen(sealed: string | null | undefined): string | null {
+  if (!sealed) return null;
+  try {
+    return open(sealed);
+  } catch {
+    return null;
+  }
+}
+
 export function open(sealed: string): string {
   const [version, iv, tag, body] = sealed.split(".");
   if (version !== "v1" || !iv || !tag || !body) throw new Error("bad sealed value");

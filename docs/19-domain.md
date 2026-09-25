@@ -2,7 +2,9 @@
 
 Sawwiq is international (starting in Jordan), so it uses a domain without a country ending: **`sawwiq.org`** (bought 2026-09). The deploy workflow uses it by default; a `SITE_URL` repository variable overrides it. `sawwiq.com` is taken (registered in 2019).
 
-DNS for `sawwiq.org` (Fly app `sawwiq-jo`):
+> Since 2026-09-25 the site runs on **Vercel**; use the DNS records in docs/27-vercel.md. The Fly records below are kept for reference.
+
+Old DNS for `sawwiq.org` (Fly app `sawwiq-jo`):
 
 | Type | Name | Value |
 |---|---|---|

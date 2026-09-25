@@ -247,7 +247,7 @@ async function reset() {
   await db.execute(sql`truncate table staff_invites, app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
-export async function seed({ reset: doReset = false, quiet = false, adminOnly = false } = {}) {
+export async function seed({ reset: doReset = false, quiet = false, adminOnly = false, restoreDemo = false } = {}) {
   const log = quiet ? () => {} : console.log;
   const db = await getDb();
   if (doReset) await reset();
@@ -284,7 +284,8 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const fresh = n === 0;
   // An existing database with demo data gets any demo agencies added since it
   // was seeded. Once an admin removes the demo data, nothing is added back.
-  if (!fresh && demoCount === 0) {
+  // restoreDemo: lib/db/rebuild-demo-media.ts re-creates demo agencies it removed.
+  if (!fresh && demoCount === 0 && !restoreDemo) {
     log(`Database already has ${n} agencies and no demo data. Use --reset to start over.`);
     return;
   }

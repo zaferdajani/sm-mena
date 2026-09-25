@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { audit } from "@/lib/data/agencies";
 import { getDb } from "@/lib/db";
 import { sessions, users } from "@/lib/db/schema";
-import { mfaKeyConfigured, open, seal } from "./secret-box";
+import { mfaKeyConfigured, seal, tryOpen } from "./secret-box";
 import { generateBackupCodes, generateSecret, hashBackupCode, otpauthUri, verifyTotp } from "./totp";
 
 export { mfaKeyConfigured };
@@ -45,7 +45,8 @@ export async function startEnrollment(userId: string, email: string) {
 export async function confirmEnrollment(userId: string, code: string): Promise<{ backupCodes: string[] } | { error: "noPending" | "badCode" }> {
   const u = await getUser(userId);
   if (!u?.totpPendingEnc) return { error: "noPending" };
-  const secret = open(u.totpPendingEnc);
+  const secret = tryOpen(u.totpPendingEnc);
+  if (!secret) return { error: "noPending" };
   const step = verifyTotp(secret, code);
   if (step === null) return { error: "badCode" };
   const backupCodes = generateBackupCodes();
@@ -66,7 +67,9 @@ export async function verifySecondFactor(userId: string, code: string): Promise<
   const u = await getUser(userId);
   if (!u?.totpSecretEnc) return null;
   const db = await getDb();
-  const step = verifyTotp(open(u.totpSecretEnc), code, u.totpLastStep);
+  // A secret sealed with an earlier MFA_ENCRYPTION_KEY can't be read; backup codes (hashes) still work.
+  const secret = tryOpen(u.totpSecretEnc);
+  const step = secret ? verifyTotp(secret, code, u.totpLastStep) : null;
   if (step !== null) {
     await db.update(users).set({ totpLastStep: step }).where(eq(users.id, userId));
     return "totp";

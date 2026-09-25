@@ -22,9 +22,10 @@ export default async function RequestByTokenPage({ params }: PageProps<"/[locale
   return (
     <>
       {contracts
-        .filter((c) => c.status !== "cancelled")
-        .map((c) => (
-          <Link key={c.id} href={`/c/${clientToken(c)}`} className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4 text-sm font-medium sm:mx-auto sm:max-w-2xl" data-testid="request-contract">
+        .map((c) => ({ c, link: clientToken(c) }))
+        .filter(({ c, link }) => c.status !== "cancelled" && link)
+        .map(({ c, link }) => (
+          <Link key={c.id} href={`/c/${link}`} className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4 text-sm font-medium sm:mx-auto sm:max-w-2xl" data-testid="request-contract">
             <FileSignature className="size-5 text-brand" /> {tc("requestContract", { agency: data.proposals.find((p) => p.agency.id === c.agencyId)?.agency.name ?? "" })}
           </Link>
         ))}

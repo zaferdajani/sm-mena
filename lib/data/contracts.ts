@@ -18,7 +18,7 @@ import {
   type Milestone,
   type MilestoneCheck,
 } from "@/lib/db/schema";
-import { open, seal } from "@/lib/auth/secret-box";
+import { seal, tryOpen } from "@/lib/auth/secret-box";
 import { isTestPayments, paymentProvider } from "@/lib/payments/provider";
 import { hashToken } from "./reviews";
 
@@ -368,8 +368,8 @@ export async function getContractById(id: string) {
   return c ? view(c) : null;
 }
 
-/** The client's private link token (for the agency to share again). */
-export const clientToken = (c: Contract) => open(c.clientTokenEnc);
+/** The client's private link token (for the agency to share again); null if it was sealed with an earlier key. */
+export const clientToken = (c: Contract) => tryOpen(c.clientTokenEnc);
 
 export async function contractsForRequest(requestId: string) {
   const db = await getDb();

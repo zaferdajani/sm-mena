@@ -1,7 +1,7 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
-import { open, seal } from "@/lib/auth/secret-box";
+import { seal, tryOpen } from "@/lib/auth/secret-box";
 import { getDb } from "@/lib/db";
 import { agencies, ndas, type Nda } from "@/lib/db/schema";
 import { LEGAL_VERSION } from "@/lib/legal/jurisdictions";
@@ -184,7 +184,7 @@ export async function listAgencyNdas(agencyId: string) {
   return db.select().from(ndas).where(eq(ndas.agencyId, agencyId)).orderBy(desc(ndas.createdAt)).limit(100);
 }
 
-export const ndaClientToken = (n: Nda) => open(n.clientTokenEnc);
+export const ndaClientToken = (n: Nda) => tryOpen(n.clientTokenEnc);
 
 type Result = { ok: true } | { error: string };
 
