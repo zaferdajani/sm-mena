@@ -51,24 +51,40 @@ function supabaseStorage(): Storage {
   if (!url || !serviceKey) {
     throw new Error("STORAGE_PROVIDER=supabase needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
   }
-  const clientPromise = import("@supabase/supabase-js").then(({ createClient }) =>
-    createClient(url, serviceKey, { auth: { persistSession: false } }),
-  );
+  // The bucket is created on first use (public: post photos, avatars and
+  // backgrounds are public anyway; contracts and signatures never go here).
+  // A failed connect is retried on the next call instead of being cached.
+  let ready: Promise<import("@supabase/supabase-js").SupabaseClient> | undefined;
+  const connect = async () => {
+    const { createClient } = await import("@supabase/supabase-js");
+    const client = createClient(url, serviceKey, { auth: { persistSession: false } });
+    const { error: missing } = await client.storage.getBucket(bucket);
+    if (missing) {
+      const { error } = await client.storage.createBucket(bucket, { public: true });
+      if (error && !/already exists/i.test(error.message)) throw error;
+    }
+    return client;
+  };
+  const getClient = () =>
+    (ready ??= connect().catch((error) => {
+      ready = undefined;
+      throw error;
+    }));
   return {
     async put(key, body, contentType) {
-      const client = await clientPromise;
+      const client = await getClient();
       const { error } = await client.storage
         .from(bucket)
         .upload(key, body, { contentType, upsert: true, cacheControl: "31536000" });
       if (error) throw error;
     },
     async get(key) {
-      const client = await clientPromise;
+      const client = await getClient();
       const { data } = await client.storage.from(bucket).download(key);
       return data ? Buffer.from(await data.arrayBuffer()) : null;
     },
     async remove(keys) {
-      const client = await clientPromise;
+      const client = await getClient();
       if (keys.length) await client.storage.from(bucket).remove(keys);
     },
     url: (key) => `${url}/storage/v1/object/public/${bucket}/${key}`,
