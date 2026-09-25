@@ -4,6 +4,7 @@ import { Briefcase, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { INTRO_DONE_EVENT, introPlaying } from "@/components/landing/intro-sting";
 
 const ROLE_KEY = "sw_role";
 
@@ -17,12 +18,19 @@ export function WelcomeChooser() {
   const t = useTranslations("Welcome");
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    try {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (!localStorage.getItem(ROLE_KEY)) setOpen(true);
-    } catch {
-      // Storage blocked: don't nag on every visit.
+    const ask = () => {
+      try {
+        if (!localStorage.getItem(ROLE_KEY)) setOpen(true);
+      } catch {
+        // Storage blocked: don't nag on every visit.
+      }
+    };
+    // On phones the logo intro plays first; ask once it has finished.
+    if (introPlaying()) {
+      window.addEventListener(INTRO_DONE_EVENT, ask, { once: true });
+      return () => window.removeEventListener(INTRO_DONE_EVENT, ask);
     }
+    ask();
   }, []);
   const remember = (role: string) => {
     try {

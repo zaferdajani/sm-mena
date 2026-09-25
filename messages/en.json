@@ -2166,5 +2166,10 @@
     "agencyHint": "Show your work and get client requests, free.",
     "browse": "Just browsing",
     "close": "Close"
+  },
+  "Intro": {
+    "label": "Sawwiq intro",
+    "skip": "Skip",
+    "soundOn": "Sound on"
   }
 }

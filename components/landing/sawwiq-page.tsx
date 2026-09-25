@@ -13,6 +13,7 @@ import {
   WhoSection,
 } from "./sections";
 import { WelcomeChooser } from "@/components/welcome-chooser";
+import { IntroSting } from "./intro-sting";
 import "./site.css";
 
 /**
@@ -23,7 +24,8 @@ import "./site.css";
 export function SawwiqPage({ lang, country, chosen }: { lang: Lang; country: CountryCode; chosen: boolean }) {
   return (
     <>
-      {/* Outside .sw so the landing styles don't restyle the dialog. */}
+      {/* Outside .sw so the landing styles don't restyle the dialogs. */}
+      <IntroSting />
       <WelcomeChooser />
       <div className="sw" data-country={country} data-lang={lang}>
         <SiteHeader chosen={chosen} country={country} lang={lang} />
