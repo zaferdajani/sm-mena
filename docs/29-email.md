@@ -8,16 +8,16 @@ Never paste the API key into chat; it goes only into GitHub.
 
 1. **Account.** Sign up at resend.com (use the owner's email, turn on two-factor sign-in).
 2. **Add the domain.** Resend → **Domains → Add Domain** → `sawwiq.org`, region **Ireland (eu-west-1)** (closest to the site and database in London).
-3. **DNS at Namecheap.** Resend shows 3–4 records. In Namecheap → Domain List → sawwiq.org → **Advanced DNS**, add each one. In the **Host** field type only the part before `sawwiq.org` (Namecheap adds the domain itself):
+3. **DNS at Namecheap.** Resend shows 4 records (it now uses CNAMEs, no MX). In Namecheap → Domain List → sawwiq.org → **Advanced DNS** → Host Records → **Add New Record**, add each one. Resend's table shortens long values with "[…]", so copy every value with its copy button. In the **Host** field type only the part before `sawwiq.org`:
 
-   | Resend shows | Namecheap type | Host | Value |
-   |---|---|---|---|
-   | MX `send.sawwiq.org` | MX Record (under **Mail Settings → Custom MX**) | `send` | `feedback-smtp.eu-west-1.amazonses.com`, priority `10` (copy Resend's exact value) |
-   | TXT `send.sawwiq.org` | TXT Record | `send` | `v=spf1 include:amazonses.com ~all` (copy Resend's) |
-   | TXT `resend._domainkey.sawwiq.org` | TXT Record | `resend._domainkey` | the long `p=…` key Resend shows |
-   | (recommended) TXT `_dmarc.sawwiq.org` | TXT Record | `_dmarc` | `v=DMARC1; p=none;` |
+   | Namecheap type | Host | Value |
+   |---|---|---|
+   | TXT Record | `resend._domainkey` | the full `p=…` key |
+   | CNAME Record | `rsend` | the full `rsend-eu….mta.net` value |
+   | CNAME Record | `send` | the full `send.for….mta.net` value |
+   | TXT Record | `_dmarc` | `v=DMARC1; p=none;` |
 
-   The MX record is on the `send` subdomain only, so it doesn't change where mail to `@sawwiq.org` goes. Namecheap only lets you add MX records after switching **Mail Settings** to **Custom MX**; that turns off Namecheap's free email forwarding for the domain. If you use that forwarding, keep it: add the MX record the same way anyway and set Mail Settings back if the forwarding stops, or ask Claude to use a DNS host with both.
+   TTL Automatic. Leave "Enable Receiving" off, and don't touch the `A @` and `CNAME www` records that run the site.
 4. **Verify.** Back in Resend click **Verify DNS Records**. It usually turns green within 5–30 minutes (sometimes a few hours).
 5. **API key.** Resend → **API Keys → Create API Key**: name `sawwiq-vercel`, permission **Sending access**, domain `sawwiq.org`. Copy it (it's shown once).
 6. **GitHub.** Repository → Settings → Secrets and variables → Actions:

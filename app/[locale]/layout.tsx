@@ -8,6 +8,8 @@ import { DomGuard } from "@/components/dom-guard";
 import { ErrorReporter } from "@/components/error-reporter";
 import { LanguageOffer } from "@/components/language-offer";
 import { FlagPolyfill } from "@/components/flag-polyfill";
+import { ServiceRegistry } from "@/components/service-registry";
+import { customTags } from "@/lib/services/tags";
 import { PageTracker } from "@/components/page-tracker";
 import { themeScript } from "@/components/theme-toggle";
 import { directionOf, routing } from "@/i18n/routing";
@@ -78,6 +80,8 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   // The offer line is written in the language it offers, so every live
   // language's three short strings are passed down (not whole dictionaries).
+  // Service tags approved by an admin (on top of the built-in catalog), for server and browser.
+  const approvedTags = await customTags();
   const offerTexts = Object.fromEntries(
     await Promise.all(routing.locales.map(async (l) => [l, (await import(`../../messages/${l}.json`)).default.LangOffer] as const)),
   );
@@ -98,6 +102,7 @@ export default async function LocaleLayout({
         <DirectionProvider direction={directionOf(locale)}>
           <DomGuard />
           <NextIntlClientProvider>
+            <ServiceRegistry tags={approvedTags} />
             <LanguageOffer texts={offerTexts} />
             {children}
             <PageTracker />

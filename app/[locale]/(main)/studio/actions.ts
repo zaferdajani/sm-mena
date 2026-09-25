@@ -10,6 +10,7 @@ import { requireAgency } from "@/lib/auth/guards";
 import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
+import { answerPartnerRequest, sendPartnerRequest } from "@/lib/data/partners";
 import { deleteClient, ownsClient, saveClient } from "@/lib/data/portfolio-clients";
 import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
@@ -17,6 +18,8 @@ import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
 import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
+import { ROLE_KEYS } from "@/lib/services/catalog";
+import { resolveServices } from "@/lib/services/tags";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
 import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
@@ -127,6 +130,8 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   const website = d.website ? normalizeUrl(d.website) : null;
   if (d.website && !website) return { error: "website" };
 
+  const picked = await resolveServices(agency.id, list(formData, "services"), list(formData, "newServices"));
+
   let avatarKey: string | undefined;
   const avatar = formData.get("avatar");
   if (avatar instanceof File && avatar.size > 0) {
@@ -147,7 +152,12 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
     city: d.city,
     // Countries besides the home country (from the city) where it also takes clients.
     servesCountries: COUNTRY_CODES.filter((c) => list(formData, "serves").includes(c) && c !== countryOfCity(d.city)),
-    services: [...new Set(list(formData, "services"))].filter(isServiceKey),
+    // Tags picked in the type-ahead, plus typed services that become proposals for review (docs/30).
+    services: picked.services,
+    pendingServices: [...new Set([...agency.pendingServices, ...picked.pending])],
+    kind: formData.get("kind") === "freelancer" ? "freelancer" : "agency",
+    teamRoles: list(formData, "teamRoles").filter((r) => ROLE_KEYS.includes(r)),
+    seeksRoles: formData.get("kind") === "freelancer" ? [] : list(formData, "seeksRoles").filter((r) => ROLE_KEYS.includes(r)),
     platforms: oneOf(list(formData, "platforms") as unknown as typeof PLATFORMS, PLATFORMS) as string[],
     industries: oneOf(list(formData, "industries") as unknown as typeof INDUSTRIES, INDUSTRIES) as string[],
     languages: oneOf(list(formData, "languages") as unknown as readonly ["ar", "en"], ["ar", "en"] as const) as string[],
@@ -308,5 +318,24 @@ export async function saveClientAction(_: ClientState, formData: FormData): Prom
 export async function deleteClientAction(clientId: string) {
   const { agency } = await requireAgency();
   await deleteClient(agency.id, z.string().uuid().parse(clientId));
+  revalidatePath("/[locale]", "layout");
+}
+
+export type PartnerState = { ok?: boolean; error?: string } | undefined;
+
+/** Studio → Partners: ask a freelancer or agency to work together on the roles you lack. */
+export async function sendPartnerRequestAction(_: PartnerState, formData: FormData): Promise<PartnerState> {
+  const { agency } = await requireAgency();
+  const to = z.string().uuid().safeParse(formData.get("toAgencyId"));
+  if (!to.success) return { error: "generic" };
+  const result = await sendPartnerRequest(agency, to.data, list(formData, "roles"), String(formData.get("message") ?? ""));
+  if ("error" in result) return { error: result.error };
+  revalidatePath("/[locale]/studio/partners", "page");
+  return { ok: true };
+}
+
+export async function answerPartnerAction(requestId: string, answer: "accepted" | "declined" | "cancelled") {
+  const { agency } = await requireAgency();
+  await answerPartnerRequest(agency, z.string().uuid().parse(requestId), z.enum(["accepted", "declined", "cancelled"]).parse(answer));
   revalidatePath("/[locale]", "layout");
 }

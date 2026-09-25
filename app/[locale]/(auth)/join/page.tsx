@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { currentCountry } from "@/lib/country-choice";
 import { countryOptions } from "@/lib/country-options";
 import { FOOTER_SERVICES } from "@/components/shell/site-footer";
-import { serviceLabel } from "@/lib/labels";
+import { JOIN_ROLES, roleLabel } from "@/lib/services/catalog";
 import { JoinForm } from "./join-form";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/join">): Promise<Metadata> {
@@ -23,7 +23,7 @@ export default async function JoinPage({ params }: PageProps<"/[locale]/join">) 
     <>
       <h1 className="text-xl font-bold">{t("joinTitle")}</h1>
       <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>
-      <JoinForm countries={countries} defaultCountry={country} services={FOOTER_SERVICES.map((key) => ({ key, label: serviceLabel(key, locale) }))} />
+      <JoinForm countries={countries} defaultCountry={country} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("haveAccount")}{" "}
         <Link href="/login" className="font-medium text-brand">

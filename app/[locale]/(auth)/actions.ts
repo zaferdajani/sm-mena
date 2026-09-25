@@ -1,6 +1,7 @@
 "use server";
 
-import { isServiceKey } from "@/lib/taxonomy";
+import { JOIN_ROLES, ROLE_KEYS } from "@/lib/services/catalog";
+import { resolveServices } from "@/lib/services/tags";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
@@ -114,8 +115,23 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   const user = await createUser(data.email, data.password).catch(() => null);
   if (!user) return { error: "emailTaken", fields };
   try {
-    const services = [...new Set(formData.getAll("services").map(String))].filter(isServiceKey);
-    await createAgency(user.id, { handle: data.handle, name: data.name, city: data.city, whatsapp, phone: whatsapp, services });
+    const all = (k: string) => formData.getAll(k).map(String).filter(Boolean);
+    const picked = await resolveServices(null, all("services"), all("newServices"));
+    const kind = formData.get("kind") === "freelancer" ? "freelancer" : "agency";
+    const teamRoles = all("teamRoles").filter((r) => ROLE_KEYS.includes(r));
+    await createAgency(user.id, {
+      handle: data.handle,
+      name: data.name,
+      city: data.city,
+      whatsapp,
+      phone: whatsapp,
+      services: picked.services,
+      pendingServices: picked.pending,
+      kind,
+      teamRoles,
+      // An agency is offered partners for the key roles it doesn't have in house (it can change this in the studio).
+      seeksRoles: kind === "agency" ? JOIN_ROLES.filter((r) => !teamRoles.includes(r)) : [],
+    });
   } catch {
     // e.g. the handle was taken a moment ago; do not leave an orphan account
     await deleteUser(user.id);

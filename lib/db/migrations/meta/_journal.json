@@ -71,6 +71,13 @@
       "when": 1790338124777,
       "tag": "0009_portfolio_clients",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790345109202,
+      "tag": "0010_services_and_partners",
+      "breakpoints": true
     }
   ]
 }

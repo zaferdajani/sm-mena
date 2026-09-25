@@ -15,7 +15,10 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
 
   await page.fill("#bio", "Testing the platform end to end.");
   await page.fill("#startingPriceJod", "250");
-  await page.locator('label:has(input[name="services"][value="ads_tiktok"])').click();
+  // Services are tags: type part of the name and pick the suggestion.
+  await page.getByTestId("service-search").fill("tiktok ads");
+  await page.getByTestId("service-suggestion").first().click();
+  await expect(page.locator('input[name="services"][value="ads_tiktok"]')).toHaveCount(1);
   await page.getByTestId("profile-form").locator('button[type="submit"]').click();
   await expect(page.getByText("Page saved.")).toBeVisible();
 

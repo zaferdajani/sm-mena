@@ -1,4 +1,4 @@
-import { BadgeCheck, BellRing, FileText, Inbox, MessagesSquare, XCircle, type LucideIcon } from "lucide-react";
+import { BadgeCheck, BellRing, FileText, Handshake, Inbox, MessagesSquare, XCircle, type LucideIcon } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { NOTIFICATION_KINDS, type NotificationKind } from "@/lib/chat";
@@ -14,6 +14,8 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   proposal_declined: XCircle,
   request_invited: BellRing,
   inquiry: Inbox,
+  partner_request: Handshake,
+  partner_accepted: Handshake,
 };
 
 const isKind = (kind: string): kind is NotificationKind => (NOTIFICATION_KINDS as readonly string[]).includes(kind);

@@ -24,6 +24,7 @@ export type ProfileData = {
   bio: string;
   city: string;
   country: string;
+  kind?: "agency" | "freelancer";
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
@@ -48,6 +49,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
   const tCity = useTranslations("Cities");
+  const tpart = useTranslations("Partners");
   const tr = useTranslations("Reviews");
   const locale = useLocale();
   const [followers, setFollowers] = useState(agency.followerCount);
@@ -74,6 +76,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
           {/* The heading is the agency's name only: badges sit beside it. */}
           <h1 className="text-base font-bold">{agency.name}</h1>
           {agency.isVerified && <VerifiedBadge label={tc("verified")} className="size-5" />}
+          {agency.kind === "freelancer" && <span className="rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand" data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
           {agency.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">{tc("demo")}</span>}
         </div>
         <p className="text-sm text-muted-foreground">

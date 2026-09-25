@@ -1,9 +1,11 @@
+import { tagLabel } from "@/lib/services/catalog";
 import { ALL_CITIES } from "@/lib/countries";
 import { allServices, taxonomy } from "@/lib/taxonomy";
 
 export function serviceLabel(key: string, locale: string): string {
   const service = allServices.find((s) => s.key === key);
-  if (!service) return key;
+  // Detailed catalog services and approved custom tags (lib/services/catalog.ts).
+  if (!service) return tagLabel(key, locale) ?? key;
   return locale === "ar" ? service.name_ar : service.name_en;
 }
 

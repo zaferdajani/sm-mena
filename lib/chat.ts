@@ -34,5 +34,5 @@ export function pollDelay(sinceActivityMs: number) {
   return POLL_AWAY_MS;
 }
 
-export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry"] as const;
+export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry", "partner_request", "partner_accepted"] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];

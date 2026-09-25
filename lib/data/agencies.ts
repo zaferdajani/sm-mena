@@ -13,6 +13,10 @@ export type AgencyInput = {
   bio?: string;
   city: string;
   servesCountries?: string[];
+  kind?: "agency" | "freelancer";
+  pendingServices?: number[];
+  teamRoles?: string[];
+  seeksRoles?: string[];
   about?: string;
   strengths?: string[];
   services?: string[];
@@ -106,6 +110,7 @@ export type AgencySummary = {
   isDemo: boolean;
   country: string;
   servesCountries: string[];
+  kind: Agency["kind"];
   plan: Agency["plan"];
   postCount: number;
   followerCount: number;
@@ -129,6 +134,7 @@ export function toSummary(a: Agency): AgencySummary {
     isDemo: a.isDemo,
     country: a.country,
     servesCountries: a.servesCountries,
+    kind: a.kind,
     plan: a.plan,
     postCount: a.postCount,
     followerCount: a.followerCount,

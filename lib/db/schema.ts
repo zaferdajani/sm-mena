@@ -5,6 +5,7 @@ import {
   bigserial,
   check,
   real,
+  serial,
   boolean,
   index,
   integer,
@@ -27,6 +28,10 @@ import {
 export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support"]);
 export const agencyStatus = pgEnum("agency_status", ["active", "suspended"]);
 export const planId = pgEnum("plan_id", ["free", "pro", "business"]);
+// agency: a company or team; freelancer: one person (photographer, videographer, designer, creator…).
+export const agencyKind = pgEnum("agency_kind", ["agency", "freelancer"]);
+export const serviceTagStatus = pgEnum("service_tag_status", ["approved", "pending", "rejected"]);
+export const partnerRequestStatus = pgEnum("partner_request_status", ["pending", "accepted", "declined", "cancelled"]);
 export const postStatus = pgEnum("post_status", ["published", "hidden"]);
 export const inquiryStatus = pgEnum("inquiry_status", ["new", "read", "archived"]);
 export const reportStatus = pgEnum("report_status", ["open", "resolved", "dismissed"]);
@@ -158,6 +163,12 @@ export const agencies = pgTable(
     // Country code (lib/countries.ts); prices are in this country's currency.
     country: text("country").notNull().default("jo"),
     city: text("city").notNull(),
+    kind: agencyKind("kind").notNull().default("agency"),
+    // Services typed in that aren't tags yet: ids of pending service_tags, until an admin reviews them.
+    pendingServices: integer("pending_services").array().notNull().default(sql`'{}'::integer[]`),
+    // Roles the team has in house (a freelancer: the roles they do), and roles it looks for partners for (docs/30).
+    teamRoles: text("team_roles").array().notNull().default(sql`'{}'::text[]`),
+    seeksRoles: text("seeks_roles").array().notNull().default(sql`'{}'::text[]`),
     // Other countries the agency takes clients in (it is listed there too, with a "based in" note).
     servesCountries: text("serves_countries").array().notNull().default(sql`'{}'::text[]`),
     // Longer introduction (About tab) and short strengths, beside the one-line bio.
@@ -1017,7 +1028,64 @@ export const notifications = pgTable(
   ],
 );
 
+// ---------------------------------------------------------------------------
+// Service tags (docs/30-services-and-partners.md): every service is a numbered
+// tag. Built-in ones come from data/service-catalog.json; agencies can type new
+// ones, which stay pending until an admin approves, merges or rejects them.
+// ---------------------------------------------------------------------------
+export const serviceTags = pgTable(
+  "service_tags",
+  {
+    id: serial("id").primaryKey(),
+    key: text("key").notNull().unique(),
+    nameAr: text("name_ar").notNull(),
+    nameEn: text("name_en").notNull(),
+    group: text("group").notNull().default("other"),
+    // The closest core service (lib/taxonomy.ts) so hire pages and matching find it.
+    parent: text("parent"),
+    aliases: text("aliases").array().notNull().default(sql`'{}'::text[]`),
+    roles: text("roles").array().notNull().default(sql`'{}'::text[]`),
+    status: serviceTagStatus("status").notNull().default("pending"),
+    builtin: boolean("builtin").notNull().default(false),
+    // What an agency typed, and who, for pending tags.
+    proposedText: text("proposed_text"),
+    proposedByAgencyId: uuid("proposed_by_agency_id").references(() => agencies.id, { onDelete: "set null" }),
+    mergedIntoId: integer("merged_into_id"),
+    reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+    reviewedAt: timestamp("reviewed_at", { withTimezone: true }),
+    searchText: text("search_text").notNull().default(""),
+    createdAt: createdAt(),
+  },
+  (t) => [index("service_tags_status_idx").on(t.status)],
+);
+
+// One agency asking another (or a freelancer) to work together on what it lacks.
+export const partnerRequests = pgTable(
+  "partner_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fromAgencyId: uuid("from_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    toAgencyId: uuid("to_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    roles: text("roles").array().notNull().default(sql`'{}'::text[]`),
+    message: text("message").notNull().default(""),
+    status: partnerRequestStatus("status").notNull().default("pending"),
+    createdAt: createdAt(),
+    respondedAt: timestamp("responded_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("partner_requests_to_idx").on(t.toAgencyId, t.status),
+    index("partner_requests_from_idx").on(t.fromAgencyId, t.status),
+    uniqueIndex("partner_requests_open_pair_idx").on(t.fromAgencyId, t.toAgencyId).where(sql`${t.status} = 'pending'`),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
+export type ServiceTag = typeof serviceTags.$inferSelect;
+export type PartnerRequest = typeof partnerRequests.$inferSelect;
 export type Agency = typeof agencies.$inferSelect;
 export type Post = typeof posts.$inferSelect;
 export type PostImage = typeof postImages.$inferSelect;

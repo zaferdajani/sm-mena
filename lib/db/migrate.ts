@@ -1,4 +1,5 @@
 // Applies migrations to DATABASE_URL (production) or the local PGlite store.
+import { syncServiceCatalog } from "../services/tags";
 import { closeDb, getDb, MIGRATIONS_DIR } from "./index";
 
 async function main() {
@@ -10,9 +11,14 @@ async function main() {
     await migrate(drizzle(client), { migrationsFolder: MIGRATIONS_DIR });
     await client.end();
     console.log("Migrations applied to DATABASE_URL.");
+    // Built-in service tags (data/service-catalog.json) get their numbers.
+    const synced = await syncServiceCatalog();
+    await closeDb();
+    console.log(`Service catalog: ${synced.added} added, ${synced.updated} updated.`);
     return;
   }
   await getDb(); // PGlite migrates on connect
+  await syncServiceCatalog();
   await closeDb();
   console.log("Migrations applied to local PGlite store.");
 }

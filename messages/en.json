@@ -518,7 +518,8 @@
       "servesHint": "You'll also appear to businesses looking for agencies there, marked as based in {country}.",
       "servesGulf": "All Gulf",
       "servesAll": "All countries",
-      "servesNone": "Clear"
+      "servesNone": "Clear",
+      "servicesHint": "Type part of a service name and pick it. If it's not in the list, add it: Sawwiq reviews new services."
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -2035,7 +2036,9 @@
       "proposal_accepted": "{name} accepted your quote. Time to agree the contract.",
       "proposal_declined": "{name} declined your quote",
       "request_invited": "You were invited to quote on a new project: {services}",
-      "inquiry": "{name} sent you an inquiry"
+      "inquiry": "{name} sent you an inquiry",
+      "partner_request": "{name} wants to work with you as a partner",
+      "partner_accepted": "{name} accepted your partnership request"
     }
   },
   "PortfolioClients": {
@@ -2167,5 +2170,102 @@
     "agencyHint": "Show your work and get client requests, free.",
     "browse": "Just browsing",
     "close": "Close"
+  },
+  "Services": {
+    "search": "Search services",
+    "placeholder": "Type a service, e.g. photography, reels, SEO…",
+    "full": "That's the maximum number of services",
+    "remove": "Remove {name}",
+    "new": "new",
+    "addNew": "Add “{name}” as a new service",
+    "needsReview": "reviewed by Sawwiq",
+    "popular": "Popular:",
+    "pendingHint": "Waiting for Sawwiq to review this service"
+  },
+  "AdminServices": {
+    "nav": "Services",
+    "title": "New services to review",
+    "intro": "Services agencies typed that aren't tags yet. Approve one as a new tag (it becomes searchable and matchable), merge it into an existing tag, or reject it. Agencies that used it are updated automatically.",
+    "none": "Nothing to review.",
+    "usedBy": "{count, plural, =0 {Not used} one {Used by 1 agency} other {Used by # agencies}}",
+    "approve": "Approve as new tag",
+    "merge": "Merge into existing",
+    "nameAr": "Arabic name",
+    "nameEn": "English name",
+    "group": "Group",
+    "parent": "Closest main service",
+    "roles": "Roles that deliver it",
+    "aliases": "Other spellings",
+    "aliasesHint": "Comma separated, e.g. ريلز، reels",
+    "approveButton": "Approve",
+    "reject": "Reject",
+    "mergeSearch": "Find the tag to merge into",
+    "mergeInto": "Merge into “{name}”",
+    "done": {
+      "approve": "“{name}” is now a tag.",
+      "merge": "“{name}” was merged.",
+      "reject": "“{name}” was rejected."
+    },
+    "errors": {
+      "invalid": "Check the fields.",
+      "names": "Both names are needed.",
+      "exists": "A tag with this name already exists: merge instead.",
+      "target": "Pick a tag to merge into.",
+      "notFound": "Already reviewed."
+    }
+  },
+  "Partners": {
+    "tab": "Partners",
+    "title": "Partners and freelancers",
+    "intro": "Missing a photographer, videographer or designer? Sawwiq suggests freelancers and agencies that fill the gap, and you work together on your clients' projects.",
+    "introFreelancer": "Agencies looking for your skills can send you partnership requests. Accept to share contacts and start working together.",
+    "have": "In your team",
+    "lookingFor": "Looking for",
+    "notSet": "not set",
+    "editRoles": "Edit",
+    "allRoles": "All roles",
+    "incoming": "Requests to you",
+    "partners": "Your partners",
+    "outgoing": "Requests you sent",
+    "suggestions": "Suggested for you",
+    "waiting": "waiting for an answer",
+    "noSeeks": "Tell us which roles you'd like partners for.",
+    "noSuggestions": "No one covers these roles in your country yet. We'll suggest partners as they join.",
+    "request": "Request partnership",
+    "requestTitle": "Work with {name} on:",
+    "messagePlaceholder": "A short note: the project, the timing, how you'd like to work together",
+    "send": "Send request",
+    "cancel": "Cancel",
+    "sent": "Request sent",
+    "withdraw": "Withdraw",
+    "accept": "Accept",
+    "decline": "Decline",
+    "forRoles": "For",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "waHello": "Hi {name}, we're partners on Sawwiq.",
+    "contractHint": "Agree the work in writing: from Studio → Contracts you can send a contract with milestones to a partner.",
+    "kinds": {
+      "agency": "Agency",
+      "freelancer": "Freelancer"
+    },
+    "errors": {
+      "self": "That's your own page.",
+      "notFound": "This page isn't available.",
+      "exists": "There's already an open request between you.",
+      "generic": "Could not send."
+    },
+    "form": {
+      "kind": "You are",
+      "agency": "An agency or company",
+      "agencyHint": "A team offering marketing services to clients",
+      "freelancer": "A freelancer or creator",
+      "freelancerHint": "Photographer, videographer, designer, writer, creator…",
+      "teamQuestion": "Who do you have in your team?",
+      "seeksQuestion": "Which roles would you like partners for?",
+      "seeksHint": "Missing a component? Sawwiq finds trusted freelancers and agencies to fill it, so you can take on the full project.",
+      "gapHint": "Don't have one of these in house? That's fine: Sawwiq will suggest freelancers and partner agencies for the missing roles.",
+      "doQuestion": "What do you do?"
+    }
   }
 }

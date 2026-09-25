@@ -10,6 +10,7 @@ import { unreadForAgency } from "@/lib/data/conversations";
 import { unreadCount } from "@/lib/data/inbox";
 import { unreadNotificationCount } from "@/lib/data/notifications";
 import { newOpportunityCount } from "@/lib/data/requests";
+import { pendingPartnerCount } from "@/lib/data/partners";
 import { mediaUrl } from "@/lib/storage";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -24,11 +25,13 @@ export default async function StudioLayout({ children }: { children: React.React
   const tl = await getTranslations("Agreements");
   const tchat = await getTranslations("Chat");
   const tn = await getTranslations("Notifications");
-  const [unread, unreadChats, newOpportunities, unreadNotes] = await Promise.all([
+  const tpart = await getTranslations("Partners");
+  const [unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
     unreadCount(agency.id),
     unreadForAgency(agency.id),
     newOpportunityCount(agency),
     unreadNotificationCount({ agencyId: agency.id }),
+    pendingPartnerCount(agency.id),
   ]);
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -54,6 +57,7 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
             { href: "/studio/clients", label: t("clients") },
+            { href: "/studio/partners", label: tpart("tab"), badge: partnerRequests },
             { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
             { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
             { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
