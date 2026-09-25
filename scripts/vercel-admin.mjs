@@ -4,6 +4,7 @@
 //   node scripts/vercel-admin.mjs setup    env vars + domains + production deploy
 //   node scripts/vercel-admin.mjs deploy   production deploy of main
 //   node scripts/vercel-admin.mjs status   latest deployment + build log tail + domain DNS
+//   node scripts/vercel-admin.mjs logs     recent runtime errors of the production deployment
 import { randomBytes } from "node:crypto";
 
 const TOKEN = process.env.VERCEL_TOKEN;
@@ -146,6 +147,48 @@ async function status(project) {
   await dnsReport();
 }
 
+/** Streams the production deployment's runtime logs for a short while and prints the errors. */
+async function runtimeLogs(project) {
+  const { body } = await api(`/v6/deployments?projectId=${project.id}&target=production&state=READY&limit=1`);
+  const d = body.deployments?.[0];
+  if (!d) return console.log("No ready production deployment.");
+  console.log(`Deployment https://${d.url}`);
+  // Visit a few pages so fresh errors show up while the stream is open.
+  const pages = (process.env.LOG_PATHS || "/ar,/ar/explore,/ar/requests").split(",");
+  const sep = teamQuery ? `?${teamQuery}` : "";
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 25_000);
+  const res = await fetch(`${API}/v1/projects/${project.id}/deployments/${d.uid}/runtime-logs${sep}`, {
+    headers: { Authorization: `Bearer ${TOKEN}` },
+    signal: ctl.signal,
+  });
+  setTimeout(() => pages.forEach((p) => fetch(`https://${DOMAIN}${p}`).then((r) => console.log(`GET ${p} → ${r.status}`)).catch(() => {})), 2000);
+  let buf = "";
+  try {
+    for await (const chunk of res.body) {
+      buf += Buffer.from(chunk).toString();
+      const lines = buf.split("\n");
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        let e;
+        try {
+          e = JSON.parse(line);
+        } catch {
+          continue;
+        }
+        if (e.level === "error" || e.level === "warning" || /error/i.test(e.message ?? "")) {
+          console.log(`[${e.level}] ${e.requestPath ?? ""} ${String(e.message ?? "").slice(0, 3000)}`);
+        }
+      }
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 const action = process.argv[2] ?? "status";
 const project = await findProject();
 console.log(`Project: ${project.name}`);
@@ -158,6 +201,8 @@ if (action === "setup") {
   if (state !== "READY") process.exit(1);
 } else if (action === "deploy") {
   if ((await deploy(project)) !== "READY") process.exit(1);
+} else if (action === "logs") {
+  await runtimeLogs(project);
 } else {
   await status(project);
 }

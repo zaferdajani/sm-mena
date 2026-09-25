@@ -3,6 +3,7 @@
 #   setup   copy the secrets into Vercel, add sawwiq.org + www, deploy, show DNS
 #   deploy  deploy main to production
 #   status  latest deployments, last build log, DNS check
+#   logs    recent runtime errors (visits a few pages while listening)
 name: Vercel
 
 on:
@@ -12,7 +13,7 @@ on:
         description: What to do
         required: true
         type: choice
-        options: [status, setup, deploy]
+        options: [status, setup, deploy, logs]
 
 jobs:
   vercel:
