@@ -23,7 +23,8 @@ export async function GET() {
       google: googleConfigured(),
       monetization: monetizationEnabled(),
     }, { status: storageReady ? 200 : 503 });
-  } catch {
+  } catch (error) {
+    console.error("health check failed:", error instanceof Error ? error.message : error);
     return Response.json({ ok: false }, { status: 503 });
   }
 }

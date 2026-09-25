@@ -23,12 +23,35 @@ export function getDb(): Promise<DB> {
   return cache.db;
 }
 
+const serverless = Boolean(process.env.VERCEL);
+
+/**
+ * On Vercel every function instance opens its own pool, which quickly uses up
+ * Supabase's session pooler (a handful of clients on the free plan). Requests
+ * there go through the transaction pooler instead (same host, port 6543, made
+ * for serverless; needs prepare: false). Migrations and the maintenance
+ * scripts keep the session pooler URL as given.
+ */
+function runtimeUrl(url: string) {
+  if (!serverless) return url;
+  try {
+    const u = new URL(url);
+    if (u.hostname.endsWith(".pooler.supabase.com") && u.port === "5432") {
+      u.port = "6543";
+      return u.toString();
+    }
+  } catch {
+    // Not a URL we can read; use it as given.
+  }
+  return url;
+}
+
 async function connect(): Promise<DB> {
   const url = process.env.DATABASE_URL;
   if (url) {
     const { default: postgres } = await import("postgres");
     const { drizzle } = await import("drizzle-orm/postgres-js");
-    const client = postgres(url, { prepare: false, max: 10 });
+    const client = postgres(runtimeUrl(url), serverless ? { prepare: false, max: 3, idle_timeout: 20 } : { prepare: false, max: 10 });
     cache.close = () => client.end();
     const db = drizzle(client, { schema });
     // drizzle turns postgres-js's date serializers into pass-throughs (it maps

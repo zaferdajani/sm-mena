@@ -59,3 +59,9 @@ The key that protected authenticator codes lived on Fly. Sign in with one of you
 - **Region.** Functions run in London (`lhr1`), next to the Supabase database (eu-west-2).
 - **Rate limits.** Limits kept in memory apply per function instance. That's fine at this size; a shared store (e.g. Upstash) is the upgrade path.
 - **Deploys.** Every push to `main` deploys automatically, and every other branch gets a preview link.
+
+## Database connections on Vercel
+
+Each Vercel function instance opens its own small connection pool. Supabase's session pooler (port 5432, the `DATABASE_URL` secret) only allows a handful of clients on the free plan, so the site runs out of connections under load. When `VERCEL` is set, `lib/db/index.ts` sends the site's queries to the transaction pooler instead: same host and credentials, port 6543, built for serverless. Migrations (`npm run db:migrate`, run in the Vercel build) and the Maintenance workflow keep using the session pooler URL as given. Nothing to change in the secrets.
+
+If the site shows errors, run **Actions → Vercel → Run workflow → logs**. It visits a few pages and prints the server errors. `/api/health` also returns 503 when the database can't be reached or the storage keys are missing.
