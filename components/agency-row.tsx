@@ -8,6 +8,7 @@ import type { AgencySummary } from "@/lib/data/agencies";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { servesNote } from "@/lib/serves-note";
+import { agencyName } from "@/lib/content-lang";
 
 /** `viewCountry`: the country being browsed; an agency based elsewhere gets a "based in … · serves …" note. */
 export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary; viewCountry?: string }) {
@@ -18,10 +19,10 @@ export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary
   const note = viewCountry ? await servesNote(agency, viewCountry) : null;
   return (
     <Link href={`/a/${agency.handle}`} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted" data-testid="agency-row">
-      <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={52} />
+      <AgencyAvatar name={agencyName(agency, locale)} src={agency.avatarUrl} size={52} />
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-1 font-semibold">
-          <span className="truncate">{agency.name}</span>
+          <span className="truncate">{agencyName(agency, locale)}</span>
           {agency.isVerified && <VerifiedBadge label={tc("verified")} />}
         </p>
         <p className="truncate text-sm text-muted-foreground">

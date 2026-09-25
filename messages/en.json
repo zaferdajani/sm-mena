@@ -517,7 +517,11 @@
       "servesHint": "You'll also appear to businesses looking for agencies there, marked as based in {country}.",
       "servesGulf": "All Gulf",
       "servesAll": "All countries",
-      "servesNone": "Clear"
+      "servesNone": "Clear",
+      "contentLang": "Main language of your page",
+      "contentLangHint": "Write the name, bio and introduction below in this language, and add the other language if you like. Switching moves your texts between the two versions.",
+      "langAr": "العربية",
+      "langEn": "English"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -534,7 +538,15 @@
     "billing": "Plan & billing",
     "security": "Security",
     "contracts": "Contracts",
-    "clients": "Clients"
+    "clients": "Clients",
+    "otherLanguage": {
+      "addEn": "Add an English version (optional)",
+      "addAr": "Add an Arabic version (optional)",
+      "hint": "Shown to people who browse Sawwiq in {language}. Empty fields show your main text.",
+      "english": "English",
+      "arabic": "Arabic",
+      "fieldIn": "{field} ({language})"
+    }
   },
   "Admin": {
     "title": "Admin",

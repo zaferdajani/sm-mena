@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
+import type { ContentLang, PostTranslation } from "@/lib/content-lang";
 import { ChipGroup, Field } from "./chips";
+import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
 
@@ -20,10 +22,12 @@ export type PostFormProps = {
   platforms: Option[];
   industries: Option[];
   clients: Option[];
-  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[] };
+  /** The agency's main language; the optional translation is in the other one. */
+  contentLang: ContentLang;
+  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation };
 };
 
-export function PostForm({ mode, services, platforms, industries, clients, initial }: PostFormProps) {
+export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial }: PostFormProps) {
   const t = useTranslations("Studio.form");
   const tc = useTranslations("PortfolioClients");
   const [state, formAction] = useActionState(mode === "create" ? createPostAction : updatePostAction, undefined);
@@ -140,6 +144,18 @@ export function PostForm({ mode, services, platforms, industries, clients, initi
           <Input id="result" name="result" maxLength={80} defaultValue={initial?.result ?? ""} placeholder={t("resultPlaceholder")} />
         </Field>
       </div>
+      <OtherLanguage main={contentLang} filled={Boolean(initial?.translation?.caption || initial?.translation?.result)}>
+        {(attrs, label) => (
+          <>
+            <Field label={label(t("caption"))} htmlFor="tr_caption">
+              <Textarea id="tr_caption" name="tr_caption" rows={3} maxLength={2200} defaultValue={initial?.translation?.caption ?? ""} {...attrs} />
+            </Field>
+            <Field label={label(t("result"))} htmlFor="tr_result">
+              <Input id="tr_result" name="tr_result" maxLength={80} defaultValue={initial?.translation?.result ?? ""} {...attrs} />
+            </Field>
+          </>
+        )}
+      </OtherLanguage>
       <Field label={tc("postClient")} hint={tc("postClientHint")} htmlFor="clientId">
         <div className="flex items-center gap-3">
           <select id="clientId" name="clientId" defaultValue={initial?.clientId ?? ""} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm">

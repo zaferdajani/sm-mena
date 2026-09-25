@@ -4,13 +4,15 @@ import { Link } from "@/i18n/navigation";
 import { COUNTRIES } from "@/lib/countries";
 import type { ClientShowcase } from "@/lib/data/portfolio-clients";
 import { isLinkKind, linkHref, linkLabel } from "@/lib/social-links";
+import { localized } from "@/lib/content-lang";
 
 /** The Clients tab: each client business with the accounts the agency runs and the work it did for it. */
-export async function ClientShowcaseList({ clients }: { clients: ClientShowcase[] }) {
+export async function ClientShowcaseList({ clients: rows, lang = "ar" }: { clients: ClientShowcase[]; lang?: string }) {
   const t = await getTranslations("Profile");
   const tk = await getTranslations("PortfolioClients");
   const tInd = await getTranslations("Industries");
   const locale = await getLocale();
+  const clients = rows.map((c) => ({ ...c, ...localized({ name: c.name, description: c.description }, c.translation, lang, locale) }));
   if (!clients.length) return <p className="px-4 py-16 text-center text-muted-foreground">{t("clientsEmpty")}</p>;
   return (
     <div className="grid gap-4 px-4 py-4" data-testid="client-showcase">

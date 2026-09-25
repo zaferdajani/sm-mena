@@ -7,6 +7,7 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import type { FeedItem } from "@/lib/feed";
+import { localizedPost } from "@/lib/content-lang";
 import { timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
@@ -16,11 +17,13 @@ import { ContactLink } from "./contact-link";
 import { ImageCarousel } from "./image-carousel";
 import { PostActions, useLike } from "./post-actions";
 
-export function PostCard({ post, priority = false, linkToPost = true }: { post: FeedItem; priority?: boolean; linkToPost?: boolean }) {
+export function PostCard({ post: raw, priority = false, linkToPost = true }: { post: FeedItem; priority?: boolean; linkToPost?: boolean }) {
   const t = useTranslations("Post");
   const tc = useTranslations("Common");
   const tCity = useTranslations("Cities");
   const locale = useLocale();
+  // Caption, result and agency name in the reader's language when the agency wrote it (lib/content-lang.ts).
+  const post = localizedPost(raw, locale);
   const like = useLike(post.id, post.liked, post.likeCount);
   const [expanded, setExpanded] = useState(false);
   const promotionId = post.sponsored?.promotionId;

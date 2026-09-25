@@ -39,7 +39,7 @@ test("agency adds an introduction, countries served and a client with accounts",
   // Clients: one client with Instagram, a website and an extra TikTok row.
   await page.goto("/en/studio/clients");
   const form = page.getByTestId("client-form");
-  await form.getByLabel("Business name").fill("Test Café");
+  await form.getByLabel("Business name", { exact: true }).fill("Test Café");
   const rows = form.getByTestId("client-link-row");
   await rows.nth(0).locator('input[name="linkValue"]').fill("@test.cafe");
   await rows.nth(3).locator('input[name="linkValue"]').fill("testcafe.example");

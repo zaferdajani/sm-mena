@@ -10,12 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DeliverablesPicker } from "@/components/contracts/deliverables-picker";
 import type { DeliverableLine } from "@/lib/db/schema";
+import type { ContentLang, PackageTranslation } from "@/lib/content-lang";
 import { Field } from "./chips";
+import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
-type Pkg = { id: string; title: string; description: string; service: string; priceJod: number; billing: "monthly" | "one_off"; deliverables: string[]; items: DeliverableLine[]; deliveryDays: number | null };
+type Pkg = { id: string; title: string; description: string; service: string; priceJod: number; billing: "monthly" | "one_off"; deliverables: string[]; items: DeliverableLine[]; deliveryDays: number | null; translation?: PackageTranslation | null };
 
-export function PackageForm({ services, platforms, initial }: { services: Option[]; platforms: Option[]; initial?: Pkg }) {
+export function PackageForm({ services, platforms, contentLang, initial }: { services: Option[]; platforms: Option[]; contentLang: ContentLang; initial?: Pkg }) {
+  const tr = initial?.translation ?? {};
   const t = useTranslations("Packages");
   const [state, action] = useActionState(savePackageAction, undefined);
   const [deleting, start] = useTransition();
@@ -59,6 +62,21 @@ export function PackageForm({ services, platforms, initial }: { services: Option
       <Field label={t("studio.deliverables")}>
         <Textarea name="deliverables" rows={3} maxLength={1000} defaultValue={initial?.deliverables.join("\n")} placeholder={t("studio.deliverablesPlaceholder")} />
       </Field>
+      <OtherLanguage main={contentLang} filled={Boolean(tr.title || tr.description || tr.deliverables?.length)}>
+        {(attrs, label) => (
+          <>
+            <Field label={label(t("studio.title"))}>
+              <Input name="tr_title" maxLength={80} defaultValue={tr.title ?? ""} {...attrs} />
+            </Field>
+            <Field label={label(t("studio.description"))}>
+              <Input name="tr_description" maxLength={300} defaultValue={tr.description ?? ""} {...attrs} />
+            </Field>
+            <Field label={label(t("studio.deliverables"))}>
+              <Textarea name="tr_deliverables" rows={3} maxLength={1000} defaultValue={(tr.deliverables ?? []).join("\n")} {...attrs} />
+            </Field>
+          </>
+        )}
+      </OtherLanguage>
       <div className="flex gap-2">
         <SubmitButton className="h-9">{initial ? t("studio.save") : t("studio.add")}</SubmitButton>
         {initial && (

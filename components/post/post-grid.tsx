@@ -1,10 +1,13 @@
 import { Copy, Megaphone, Pin } from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { localizedPost } from "@/lib/content-lang";
 import type { PostView } from "@/lib/data/posts";
 
 /** Instagram-style 3-column grid of square thumbnails. */
 export function PostGrid({ posts, sponsoredLabel }: { posts: PostView[]; sponsoredLabel?: string }) {
+  const locale = useLocale();
   return (
     <div className="grid grid-cols-3 gap-0.5 sm:gap-1" data-testid="post-grid">
       {posts.map((post) => {
@@ -14,7 +17,7 @@ export function PostGrid({ posts, sponsoredLabel }: { posts: PostView[]; sponsor
             {cover && (
               <Image
                 src={cover.thumbUrl}
-                alt={post.caption.slice(0, 80)}
+                alt={localizedPost(post, locale).caption.slice(0, 80)}
                 fill
                 unoptimized
                 sizes="(max-width: 640px) 33vw, 300px"

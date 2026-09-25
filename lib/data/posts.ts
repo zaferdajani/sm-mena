@@ -5,6 +5,7 @@ import { agencies, postImages, posts, type Agency } from "@/lib/db/schema";
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
+import { contentLang, translationSearchText, type ContentLang, type PostTranslation } from "@/lib/content-lang";
 
 export type PostInput = {
   caption: string;
@@ -14,6 +15,8 @@ export type PostInput = {
   result?: string | null;
   /** Portfolio client this work was for (lib/data/portfolio-clients.ts); checked by the caller. */
   clientId?: string | null;
+  /** Caption and result in the agency's other language. */
+  translation?: PostTranslation;
 };
 
 export type FeedFilters = {
@@ -51,10 +54,16 @@ export type PostView = {
   createdAt: string;
   status: "published" | "hidden";
   images: ImageView[];
+  /** Language of `caption`/`result` (the agency's); `translation` has the other one (lib/content-lang.ts). */
+  contentLang: ContentLang;
+  translation: PostTranslation;
   agency: {
     id: string;
     handle: string;
     name: string;
+    /** The agency's name in its other language, if given. */
+    nameTranslation: string | null;
+    contentLang: ContentLang;
     city: string;
     avatarUrl: string | null;
     isVerified: boolean;
@@ -64,6 +73,11 @@ export type PostView = {
   sponsored?: { promotionId: string };
   pinned?: boolean;
 };
+
+/** Caption and agency name in both languages, so a search in either finds the post. */
+function postSearchText(input: PostInput, agency?: { name: string; translation: { name?: string } | null }) {
+  return normalizeForSearch(`${input.caption} ${translationSearchText(input.translation)} ${agency?.name ?? ""} ${agency?.translation?.name ?? ""}`);
+}
 
 /** Creates a post from raw image buffers (already validated for count). */
 export async function createPost(agencyId: string, input: PostInput, files: Buffer[]) {
@@ -79,7 +93,7 @@ export async function createPostFromProcessed(
   createdAt?: Date,
 ) {
   const db = await getDb();
-  const [agency] = await db.select({ name: agencies.name }).from(agencies).where(eq(agencies.id, agencyId));
+  const [agency] = await db.select({ name: agencies.name, translation: agencies.translation }).from(agencies).where(eq(agencies.id, agencyId));
   const uploaded: { key: string; thumbKey: string; image: ProcessedImage }[] = [];
   for (const image of processed) {
     const format = image.fullFormat ?? "webp";
@@ -99,7 +113,8 @@ export async function createPostFromProcessed(
         industry: input.industry ?? null,
         result: input.result ?? null,
         clientId: input.clientId ?? null,
-        searchText: normalizeForSearch(`${input.caption} ${agency?.name ?? ""}`),
+        translation: input.translation ?? {},
+        searchText: postSearchText(input, agency),
         ...(createdAt ? { createdAt } : {}),
       })
       .returning();
@@ -124,10 +139,10 @@ export async function createPostFromProcessed(
 
 export async function updatePost(postId: string, agencyId: string, input: PostInput) {
   const db = await getDb();
-  const [agency] = await db.select({ name: agencies.name }).from(agencies).where(eq(agencies.id, agencyId));
+  const [agency] = await db.select({ name: agencies.name, translation: agencies.translation }).from(agencies).where(eq(agencies.id, agencyId));
   const [row] = await db
     .update(posts)
-    .set({ ...input, searchText: normalizeForSearch(`${input.caption} ${agency?.name ?? ""}`) })
+    .set({ ...input, translation: input.translation ?? {}, searchText: postSearchText(input, agency) })
     .where(and(eq(posts.id, postId), eq(posts.agencyId, agencyId)))
     .returning();
   return row ?? null;
@@ -196,6 +211,8 @@ function agencyView(a: Agency): PostView["agency"] {
     id: a.id,
     handle: a.handle,
     name: a.name,
+    nameTranslation: a.translation?.name?.trim() || null,
+    contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,
@@ -239,6 +256,8 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     createdAt: post.createdAt.toISOString(),
     status: post.status,
     images: byPost.get(post.id) ?? [],
+    contentLang: contentLang(agency.contentLang),
+    translation: post.translation ?? {},
     agency: agencyView(agency),
   }));
 }

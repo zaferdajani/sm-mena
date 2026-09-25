@@ -16,6 +16,7 @@ import { WriteReviewDialog } from "@/components/reviews/write-review-dialog";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
 import { getAgencyByHandle } from "@/lib/data/agencies";
+import { localizedAgency } from "@/lib/content-lang";
 import { isFollowing, recordView } from "@/lib/data/interactions";
 import { listPackages } from "@/lib/data/packages";
 import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/lib/data/reviews";
@@ -32,8 +33,9 @@ import { getVisitorId } from "@/lib/visitor";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
   const { locale, handle } = await params;
-  const agency = await getAgencyByHandle(handle);
-  if (!agency) return {};
+  const found = await getAgencyByHandle(handle);
+  if (!found) return {};
+  const agency = localizedAgency(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
   const city = (await getTranslations({ locale, namespace: "Cities" }))(agency.city);
   const services = agency.services.map((s) => serviceLabel(s, locale));
@@ -56,8 +58,10 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   setRequestLocale(locale);
   const rawTab = (await searchParams).tab;
   const tab = rawTab === "about" || rawTab === "reviews" || rawTab === "clients" ? rawTab : "work";
-  const agency = await getAgencyByHandle(handle);
-  if (!agency) notFound();
+  const found = await getAgencyByHandle(handle);
+  if (!found) notFound();
+  // Name, bio, about and strengths in the reader's language when the agency wrote both (lib/content-lang.ts).
+  const agency = localizedAgency(found, locale);
 
   const t = await getTranslations("Profile");
   const tr = await getTranslations("Reviews");
@@ -140,7 +144,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
-      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} />}
+      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
@@ -153,7 +157,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           {pkgs && pkgs.length > 0 && (
             <section>
               <h2 className="mb-3 font-semibold">{tSeo("packagesTitle", { name: agency.name })}</h2>
-              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} />
+              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} lang={agency.contentLang} />
               {pkgs.length > 3 && (
                 <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "about" } }} className="mt-2 inline-block text-sm font-medium text-brand">
                   {tSeo("allPackages", { count: pkgs.length })}
@@ -174,7 +178,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       ) : null}
       {tab === "about" && pkgs && pkgs.length > 0 && (
         <div className="px-4 pt-4">
-          <PackageList packages={pkgs} currency={currencyOf(agency.country)} />
+          <PackageList packages={pkgs} currency={currencyOf(agency.country)} lang={agency.contentLang} />
         </div>
       )}
       {tab === "about" && (
