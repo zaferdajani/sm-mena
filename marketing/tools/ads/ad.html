@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css"><style>
+:root{--green:#0e6b46;--deep:#0a4531;--mint:#dcede2;--stone:#f2f2ed;--paper:#fbfbf8;--ink:#10231a;--muted:#4c5c53}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}
+body{background:radial-gradient(120% 90% at 50% 20%,#fbfbf8,#f2f2ed 60%,#ebece4);font-family:'IBM Plex Sans Arabic',sans-serif;color:var(--ink);display:flex;flex-direction:column;padding:var(--pad)}
+.h{font-family:'Readex Pro',sans-serif;font-weight:700;line-height:1.18;letter-spacing:0}
+.brand{display:flex;align-items:center;gap:calc(var(--u)*1.2);font-family:'Readex Pro';font-weight:700;font-size:calc(var(--u)*var(--bs,3.4))}
+.brand img{width:calc(var(--u)*var(--bs,3.4)*1.5);height:calc(var(--u)*var(--bs,3.4)*1.5);border-radius:22%}
+.photo{flex:0 0 var(--ph,48%);min-height:0;border-radius:calc(var(--u)*2.6);background-size:cover;background-position:center;margin:calc(var(--u)*2) 0;box-shadow:0 calc(var(--u)*1) calc(var(--u)*4) rgba(16,35,26,.15)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*1.5);margin-bottom:calc(var(--u)*1.8)}.chip{display:inline-block;background:var(--mint);color:var(--deep);border-radius:999px;padding:calc(var(--u)*.6) calc(var(--u)*1.8);font-size:calc(var(--u)*var(--chs,2.3));font-weight:600;}
+.title{font-size:calc(var(--u)*var(--ts))}.title em{font-style:normal;color:var(--green)}
+.sub{font-size:calc(var(--u)*var(--ss,2.5));color:var(--muted);margin-top:calc(var(--u)*1.2);line-height:1.45}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:calc(var(--u)*2.4);gap:calc(var(--u)*2)}
+.cta{background:var(--green);color:#fff;border-radius:999px;padding:calc(var(--u)*1.4) calc(var(--u)*3.2);font-family:'Readex Pro';font-weight:600;font-size:calc(var(--u)*var(--cs,2.8));white-space:nowrap}
+.url{font-family:'Readex Pro';font-weight:500;color:var(--muted);font-size:calc(var(--u)*var(--us,2.4))}
+.note{font-size:calc(var(--u)*1.7);color:var(--muted);margin-top:calc(var(--u)*1.2)}
+/* wide layouts: photo beside text */
+body.wide{flex-direction:row;align-items:stretch;gap:var(--pad)}
+body.wide .photo{margin:0;flex:0 0 var(--pw)}
+body.wide .text{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+body.nophoto .photo{display:none}body.nophoto .text{margin:auto 0}.num{display:inline-flex;align-items:center;justify-content:center;width:calc(var(--u)*9);height:calc(var(--u)*9);border-radius:50%;background:var(--mint);color:var(--green);font-family:'Readex Pro';font-weight:700;font-size:calc(var(--u)*5);margin-bottom:calc(var(--u)*3)}
+/* tiny banners */
+body.tiny .sub,body.tiny .chip,body.tiny .note,body.tiny .url,body.tiny .brand span{display:none}body.tiny .title{white-space:nowrap}body.tiny .text{flex-direction:row!important;align-items:center;justify-content:space-between;gap:calc(var(--u)*1)}body.tiny .top,body.tiny .row{margin:0!important}
+body.tiny .row{margin-top:calc(var(--u)*1)}
+body.logo-hero .photo{background:radial-gradient(closest-side,#dcede2,rgba(220,237,226,0));box-shadow:none;display:flex;align-items:center;justify-content:center}body.logo-hero .photo img{height:62%!important;width:auto!important;max-width:none!important}
+</style></head><body>
+<div class="photo"></div>
+<div class="text"><div class="top"><div class="brand"><img src="mark.png"><span>سوّق</span></div><span class="chip"></span></div><div class="title h"></div><div class="sub"></div>
+<div class="row"><span class="cta"></span><span class="url">sawwiq.org</span></div><div class="note"></div></div>
+<script>
+const q=new URLSearchParams(location.search),W=innerWidth,H=innerHeight,ar=(q.get('lang')||'ar')==='ar';
+document.documentElement.dir=ar?'rtl':'ltr';document.documentElement.lang=ar?'ar':'en';
+const r=W/H,u=Math.min(W,H)/ (r>2.2? 9 : r>1.3? 60 : 62) * (r>2.2?1:1);
+document.body.style.setProperty('--u',(r>2.2? Math.min(H/9, W/60) : Math.min(W,H)/60)+'px');
+document.body.style.setProperty('--pad',(r>2.2? H*0.1 : Math.min(W,H)*0.055)+'px');
+document.body.style.setProperty('--ts',q.get('ts')||(r<0.7?6.6:r<0.9?5.0:r<1.3?3.9:4.6));document.body.style.setProperty('--ph',(r<0.7?'44%':r<0.9?'46%':'36%'));if(r<0.7){document.body.style.setProperty('--ss','3.1');document.body.style.setProperty('--cs','3.3')}if(r>=0.9&&r<1.3)document.body.style.setProperty('--ss','2.1');if(!q.get('photo'))document.body.style.setProperty('--ts',q.get('ts')||6.6);
+if(r>1.3){document.body.classList.add('wide');document.body.style.setProperty('--pw',(r>2.2?H*1.6:W*0.46)+'px');}
+if(r<0.6&&q.get('safe')!=='0'){document.body.style.paddingTop=(H*0.10)+'px';document.body.style.paddingBottom=(H*0.14)+'px'}
+if(q.get('center')){document.body.classList.add('nophoto');document.body.style.justifyContent='center';document.body.style.alignItems='center';document.body.style.textAlign='center';document.querySelector('.text').style.maxWidth=q.get('center')+'px';document.querySelector('.brand').style.justifyContent='center';document.querySelector('.row').style.justifyContent='center'}
+if(r>2.2){const B=document.body.style;const thin=H<130;B.setProperty('--u',(thin?Math.min(H/8,W/34):H/22)+'px');B.setProperty('--pad',(H*(thin?0.16:0.1))+'px');
+ B.setProperty('--ts',q.get('ts')||(thin?2.5:3.0));B.setProperty('--ss','1.3');B.setProperty('--cs',thin?'1.6':'1.35');B.setProperty('--bs',thin?'1.8':'1.4');B.setProperty('--chs','1.1');B.setProperty('--us','1.2');
+ B.setProperty('--pw',(thin?H*1.5:Math.min(W*0.42,H*2.2))+'px');if(thin)document.body.classList.add('tiny');
+ document.querySelectorAll('.top,.row').forEach(e=>e.style.marginTop=e.style.marginBottom='calc(var(--u)*0.6)');}
+else if(Math.min(W,H)<260)document.body.classList.add('tiny');
+const t=document.querySelector('.text');if(r<=1.3)document.body.appendChild(t);
+const set=(s,v)=>{const e=document.querySelector(s);if(v)e.innerHTML=v;else e.remove();};
+set('.title',q.get('t'));if(q.get('num')){const n=document.createElement('div');n.className='num';n.textContent=q.get('num');document.querySelector('.title').before(n)}set('.sub',q.get('s'));set('.chip',q.get('chip'));set('.cta',q.get('cta'));set('.note',q.get('note'));
+if(!ar)document.querySelector('.brand span').textContent='Sawwiq';
+const ph=q.get('photo');if(ph==='logo'){document.body.classList.add('logo-hero');document.querySelector('.photo').innerHTML='<img src="mark.png" style="width:55%;max-width:60%;border-radius:22%;box-shadow:0 0 0 4px rgba(255,255,255,.15)">'}
+else if(ph)document.querySelector('.photo').style.backgroundImage=`url(photos/${ph}.jpg)`;else document.body.classList.add('nophoto');
+if(q.get('pos'))document.querySelector('.photo').style.backgroundPosition=q.get('pos');
+</script></body></html>

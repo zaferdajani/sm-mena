@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.wrap{position:absolute;left:0;right:0;display:flex;justify-content:center}
+.card{background:rgba(251,251,248,.94);border-radius:36px;padding:30px 44px 32px;box-shadow:0 18px 50px rgba(16,35,26,.18);max-width:86%;text-align:center;border-bottom:8px solid var(--green)}
+.t{font-size:64px}.s{font-size:38px;color:var(--muted);margin-top:10px;font-weight:500}
+.wide .t{font-size:54px}.wide .s{font-size:32px}
+.hl{color:var(--green)}
+</style></head><body><div class="wrap"><div class="card"><div class="t h"></div><div class="s"></div></div></div>
+<script>const q=new URLSearchParams(location.search);document.documentElement.lang=q.get('lang')||'ar';document.documentElement.dir=(q.get('lang')||'ar')==='ar'?'rtl':'ltr';
+const W=innerWidth,H=innerHeight;if(W>H)document.body.classList.add('wide');
+document.querySelector('.t').innerHTML=q.get('t')||'';const s=q.get('s');if(s)document.querySelector('.s').innerHTML=s;else document.querySelector('.s').remove();
+document.querySelector('.wrap').style.top=(q.get('y')||(W>H?0.74*H:0.62*H))+'px';</script></body></html>

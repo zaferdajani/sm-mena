@@ -1,0 +1,5 @@
+@import url('fonts.css');
+:root{--green:#0e6b46;--deep:#0a4531;--mint:#dcede2;--stone:#f2f2ed;--paper:#fbfbf8;--ink:#10231a;--muted:#4c5c53;--line:#d5d8cf}
+html,body{margin:0;background:transparent;overflow:hidden}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;color:var(--ink)}
+.h{font-family:'Readex Pro',sans-serif;font-weight:700;line-height:1.25}

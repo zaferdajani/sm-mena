@@ -1,0 +1,8 @@
+[{"name":"SWQ-V08-agency-linkedin-ar-16x9","size":[1920,1080],"lang":"ar",
+ "segments":[
+  {"type":"clip","src":"clips/V06w.mp4","in":0.2,"dur":2.3,"amb":0.3},
+  {"type":"ui","rec":"rec2/explore.webm","in":1.4,"dur":5.7,"speed":1.0,"chip":"للوكالات","head":"صفحة <span style='color:#0e6b46'>مجانية</span> لوكالتك","sub":"اعرض شغلك، مجمّعاً حسب العميل","demo":"واجهة سوّق الحقيقية · حسابات تجريبية"},
+  {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":3.7,"speed":2.6,"chip":"طلبات العملاء","head":"طلبات من <span style='color:#0e6b46'>عملاء جادّين</span>","sub":"المطابق الذكي يوصّل العميل للوكالة المناسبة"},
+  {"type":"sting","src":"sting/out/sawwiq-sting-16x9.mp4","hold":2.4,"card_at":3.9,"endcard":{"tag":"صفحة مجانية لوكالتك، وطلبات عملاء حقيقية","cta":"أنشئ صفحتك مجاناً","y":880}}],
+ "captions":[{"t":"شغلك حلو…","s":"بس مين شايفه؟","start":0.2,"end":2.3}],
+ "vo":[{"src":"vo/A1.mp3","at":0.25},{"src":"vo/A2.mp3","at":2.45},{"src":"vo/A3.mp3","at":8.15},{"src":"vo/A5.mp3","at":14.8}]}]
