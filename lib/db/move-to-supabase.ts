@@ -105,10 +105,7 @@ async function moveFiles(uploadsDir: string) {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const bucket = process.env.SUPABASE_BUCKET ?? "media";
-  if (!url || !key) {
-    log("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; files stay on the volume.");
-    return;
-  }
+  if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set.");
   const { createClient } = await import("@supabase/supabase-js");
   const client = createClient(url, key, { auth: { persistSession: false } });
   // Public bucket: post photos, avatars and backgrounds are public anyway;
@@ -137,29 +134,52 @@ async function moveFiles(uploadsDir: string) {
   log(`Uploaded ${uploaded} files to Supabase Storage${skipped ? ` (skipped ${skipped} unexpected files)` : ""}.`);
 }
 
+/** Exit codes the entrypoint acts on: the database copy failed, or only the file copy failed. */
+const DB_FAILED = 2;
+const FILES_FAILED = 3;
+
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
   const pgliteDir = process.env.PGLITE_DIR ?? path.join(process.cwd(), ".data", "pglite");
   const uploadsDir = process.env.UPLOADS_DIR ?? path.join(process.cwd(), ".data", "uploads");
-  const done = path.join(path.dirname(pgliteDir), ".moved-to-supabase");
+  // Separate markers: the files can follow later (e.g. once the Supabase keys are added).
+  const dbDone = path.join(path.dirname(pgliteDir), ".moved-to-supabase");
+  const filesDone = path.join(path.dirname(pgliteDir), ".files-moved-to-supabase");
   if (!databaseUrl) throw new Error("DATABASE_URL is not set.");
-  if (existsSync(done)) return log("Already moved (marker file present).");
-  if (!existsSync(path.join(pgliteDir, "PG_VERSION"))) return log(`No embedded database at ${pgliteDir}; nothing to move.`);
 
-  const { default: postgres } = await import("postgres");
-  const target = postgres(databaseUrl, { max: 1, onnotice: () => {} });
-  try {
-    await moveDatabase(target, pgliteDir);
-  } finally {
-    await target.end();
+  if (existsSync(dbDone)) log("Database already moved (marker file present).");
+  else if (!existsSync(path.join(pgliteDir, "PG_VERSION"))) log(`No embedded database at ${pgliteDir}; nothing to move.`);
+  else {
+    const { default: postgres } = await import("postgres");
+    const target = postgres(databaseUrl, { max: 1, onnotice: () => {} });
+    try {
+      await moveDatabase(target, pgliteDir);
+    } catch (error) {
+      console.error("[move] database copy failed:", error);
+      process.exit(DB_FAILED);
+    } finally {
+      await target.end();
+    }
+    writeFileSync(dbDone, new Date().toISOString());
   }
-  if (existsSync(uploadsDir)) await moveFiles(uploadsDir);
+
+  const storageReady = process.env.STORAGE_PROVIDER === "supabase" && process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!storageReady) log("Supabase Storage keys not set; files stay on the volume for now.");
+  else if (existsSync(filesDone)) log("Files already moved (marker file present).");
+  else if (existsSync(uploadsDir)) {
+    try {
+      await moveFiles(uploadsDir);
+    } catch (error) {
+      console.error("[move] file copy failed:", error);
+      process.exit(FILES_FAILED);
+    }
+    writeFileSync(filesDone, new Date().toISOString());
+  }
   // The embedded database and files stay on the volume as a backup.
-  writeFileSync(done, new Date().toISOString());
   log("Done. The old data stays on the volume as a backup.");
 }
 
 main().catch((error) => {
   console.error("[move] failed:", error);
-  process.exit(1);
+  process.exit(DB_FAILED);
 });

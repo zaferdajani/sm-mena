@@ -144,6 +144,8 @@ jobs:
         if: steps.gate.outputs.go == 'true'
         env:
           HAS_DATABASE_URL: ${{ secrets.DATABASE_URL != '' }}
+          HAS_SUPABASE_URL: ${{ secrets.SUPABASE_URL != '' }}
+          HAS_SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}
         run: |
           APP="${{ steps.app.outputs.name }}"
           # The first boot on Supabase copies the old data across first (a few minutes).
@@ -155,5 +157,12 @@ jobs:
           grep -q '"ok":true' health.json
           if [ "$HAS_DATABASE_URL" = "true" ] && ! grep -q '"database":"postgres' health.json; then
             echo "::warning::DATABASE_URL is set but the app is still on the embedded database: the move to Supabase failed. Check 'flyctl logs' for lines starting with [move] (docs/25-supabase.md)."
+          fi
+          if [ "$HAS_DATABASE_URL" = "true" ] && ! grep -q '"storage":"supabase"' health.json; then
+            if [ "$HAS_SUPABASE_URL" != "true" ] || [ "$HAS_SUPABASE_KEY" != "true" ]; then
+              echo "::warning::Files are still served from the Fly disk: GitHub secret SUPABASE_URL is set=$HAS_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY is set=$HAS_SUPABASE_KEY. Add the missing one (exact name) and deploy again."
+            else
+              echo "::warning::Files are still served from the Fly disk: copying them to Supabase Storage failed. Check 'flyctl logs' for lines starting with [move] (usually a wrong service_role key)."
+            fi
           fi
           echo "::notice::Live at ${{ steps.domain.outputs.url }}"
