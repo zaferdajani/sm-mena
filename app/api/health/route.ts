@@ -6,20 +6,23 @@ import { monetizationEnabled } from "@/lib/monetization/plans";
 
 export const dynamic = "force-dynamic";
 
-// Health check for Fly.io / uptime monitors. Reports configuration flags only,
-// never secrets.
+// Health check for uptime monitors. Reports configuration flags only, never
+// secrets. Storage without its keys fails every page that shows a photo, so it
+// makes the check fail too.
 export async function GET() {
   try {
     const db = await getDb();
     await db.execute(sql`select 1`);
+    const supabase = process.env.STORAGE_PROVIDER === "supabase";
+    const storageReady = !supabase || Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
     return Response.json({
-      ok: true,
+      ok: storageReady,
       database: process.env.DATABASE_URL ? "postgres" : "pglite",
-      storage: process.env.STORAGE_PROVIDER === "supabase" ? "supabase" : "local",
+      storage: supabase ? (storageReady ? "supabase" : "supabase (keys missing)") : "local",
       ai: aiStatus(),
       google: googleConfigured(),
       monetization: monetizationEnabled(),
-    });
+    }, { status: storageReady ? 200 : 503 });
   } catch {
     return Response.json({ ok: false }, { status: 503 });
   }
