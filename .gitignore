@@ -49,3 +49,6 @@ next-env.d.ts
 
 # local database and uploads
 /.data/
+
+# vendored wasm engines (copied from node_modules by scripts/vendor-engines.mjs)
+/public/engines/

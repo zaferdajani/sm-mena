@@ -5,8 +5,8 @@ Admin → **Appearance** (permission `appearance.manage`: owner and admin) puts 
 ## How it works
 
 - **Upload**
-  - Images (JPG, PNG or WebP, up to 15 MB) are converted to WebP, at most 2400 px.
-  - Videos (MP4 or WebM, up to 25 MB) are stored as they are.
+  - Images (JPG, PNG or WebP) are compressed in the browser, then stored at most 2400 px wide at the smallest size that looks the same (usually WebP; see docs/26-media-compression.md).
+  - Videos (MP4, WebM or MOV) are compressed in the browser with ffmpeg.wasm into a muted H.264 MP4 of at most 30 s, 1280 px wide and 4 MB; the server refuses any video over 4 MB. Raw videos are never stored.
   - The file type is checked from its bytes, not its name.
   - Files go to storage under `backgrounds/` (local disk or Supabase). The `/media` route serves video with byte ranges, which Safari needs.
 - **Which background shows.** The choice follows the visitor's interface country (the `sw_country` cookie, which defaults to Jordan) and today's date in that country's time zone. Priority, highest first:

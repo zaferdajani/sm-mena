@@ -23,7 +23,7 @@ test("an admin sets a dated background for the Saudi interface only", async ({ p
   const sp = await saudi.newPage();
   await sp.goto("/en/feed");
   await expect(sp.getByTestId("interface-background")).toBeAttached();
-  await expect(sp.getByTestId("interface-background").locator("img")).toHaveAttribute("src", /\/media\/backgrounds\/.+\.webp$/);
+  await expect(sp.getByTestId("interface-background").locator("img")).toHaveAttribute("src", /\/media\/backgrounds\/.+\.(webp|png|jpg)$/);
 
   const jordan = await browser.newContext();
   await jordan.addCookies([{ name: "sw_country", value: "jo", domain: host, path: "/" }]);

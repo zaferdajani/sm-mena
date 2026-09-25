@@ -64,7 +64,7 @@ export function pickBackground(list: Background[], country: string, today: strin
   return candidates[0] ?? null;
 }
 
-export async function addBackground(input: Omit<Background, "id" | "createdAt" | "mediaKey">, file: { body: Buffer; ext: "webp" | "mp4" | "webm"; contentType: string }, by: string | null) {
+export async function addBackground(input: Omit<Background, "id" | "createdAt" | "mediaKey">, file: { body: Buffer; ext: "webp" | "jpg" | "png" | "mp4" | "webm"; contentType: string }, by: string | null) {
   const mediaKey = `backgrounds/${randomUUID()}.${file.ext}`;
   await storage().put(mediaKey, file.body, file.contentType);
   const bg: Background = { ...input, id: randomUUID(), mediaKey, createdAt: new Date().toISOString() };

@@ -1,16 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import sharp from "sharp";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/guards";
 import { audit } from "@/lib/data/agencies";
+import { DISPLAY, encodeSameQuality, STORED_EXT, STORED_TYPE } from "@/lib/images";
 import { addBackground, BACKGROUND_SCOPES, removeBackground, setBackgroundEnabled } from "@/lib/theme/backgrounds";
 
 export type AppearanceState = { error?: string; ok?: boolean } | undefined;
 
 const MAX_IMAGE = 15 * 1024 * 1024;
-const MAX_VIDEO = 25 * 1024 * 1024;
+// The browser compresses background videos to ~3.5 MB with ffmpeg.wasm before
+// sending them (components/theme/background-form.tsx). Anything bigger was not
+// compressed, and on Vercel a request body cannot exceed ~4.5 MB anyway.
+const MAX_VIDEO = 4 * 1024 * 1024;
 const refresh = () => revalidatePath("/[locale]", "layout");
 
 const formSchema = z.object({
@@ -38,15 +41,16 @@ export async function addBackgroundAction(_: AppearanceState, formData: FormData
   if (!(file instanceof File) || file.size === 0) return { error: "file" };
   const body = Buffer.from(await file.arrayBuffer());
   const video = videoKind(body);
-  let media: { body: Buffer; ext: "webp" | "mp4" | "webm"; contentType: string };
+  let media: { body: Buffer; ext: "webp" | "jpg" | "png" | "mp4" | "webm"; contentType: string };
   if (video) {
-    if (body.byteLength > MAX_VIDEO) return { error: "tooLarge" };
+    if (body.byteLength > MAX_VIDEO) return { error: "videoTooLarge" };
     media = { body, ext: video, contentType: `video/${video}` };
   } else {
     if (body.byteLength > MAX_IMAGE) return { error: "tooLarge" };
     try {
-      const out = await sharp(body).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
-      media = { body: out, ext: "webp", contentType: "image/webp" };
+      // Smallest size at the same visible quality (lib/images.ts); metadata stripped.
+      const out = await encodeSameQuality(body, DISPLAY.background, { allowOriginal: true });
+      media = { body: out.data, ext: STORED_EXT[out.format], contentType: STORED_TYPE[out.format] };
     } catch {
       return { error: "file" };
     }

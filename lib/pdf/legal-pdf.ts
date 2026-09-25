@@ -13,6 +13,7 @@
  */
 import { createHash } from "node:crypto";
 import { jsPDF } from "jspdf";
+import { shrinkDocument } from "@/lib/media/shrink";
 import type { DocBlock, DocSignature, LegalDocument } from "@/lib/legal/document-types";
 import {
   ARABIC_FONT,
@@ -283,7 +284,10 @@ export async function renderLegalPdf(doc: LegalDocument): Promise<Buffer> {
     pdf.text(shortPrint, rtl ? LEFT : RIGHT, FOOTER_Y, { align: rtl ? "left" : "right" });
   }
 
-  return Buffer.from(pdf.output("arraybuffer"));
+  // Content streams are already deflated (compress: true); the lossless
+  // re-pack also packs the objects into object streams when that is smaller.
+  const shrunk = await shrinkDocument(Buffer.from(pdf.output("arraybuffer")), { contentType: "application/pdf" });
+  return shrunk.body;
 }
 
 /** "Page {n} of {total}" patterns are filled in; a bare word gets "n / total". */

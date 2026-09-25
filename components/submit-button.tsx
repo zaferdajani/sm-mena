@@ -9,16 +9,19 @@ export function SubmitButton({
   variant,
   name,
   value,
+  disabled,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: "default" | "outline" | "secondary" | "destructive" | "ghost";
   name?: string;
   value?: string;
+  /** Extra reason to hold the button, e.g. a file still being compressed. */
+  disabled?: boolean;
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} aria-busy={pending} variant={variant} className={className} name={name} value={value}>
+    <Button type="submit" disabled={pending || disabled} aria-busy={pending || disabled} variant={variant} className={className} name={name} value={value}>
       {children}
     </Button>
   );

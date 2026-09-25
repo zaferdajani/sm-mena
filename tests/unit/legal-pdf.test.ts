@@ -1,3 +1,4 @@
+import { constants, inflateSync } from "node:zlib";
 import sharp from "sharp";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { LegalDocument } from "@/lib/legal/document-types";
@@ -109,7 +110,30 @@ function englishDoc(image: Uint8Array): LegalDocument {
   };
 }
 
-const pageCount = (pdf: Buffer) => (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) ?? []).length;
+/**
+ * The PDF's bytes plus every deflated stream inflated. The lossless re-pack
+ * (lib/media/shrink.ts) moves dictionaries into compressed object streams, so
+ * this is what a reader sees once it has decoded them.
+ */
+function pdfSource(pdf: Buffer) {
+  const raw = pdf.toString("latin1");
+  const parts = [raw];
+  const marker = /stream\r?\n/g;
+  for (let m = marker.exec(raw); m; m = marker.exec(raw)) {
+    const start = m.index + m[0].length;
+    const end = raw.indexOf("endstream", start);
+    if (end < 0) break;
+    try {
+      parts.push(inflateSync(pdf.subarray(start, end), { finishFlush: constants.Z_SYNC_FLUSH }).toString("latin1"));
+    } catch {
+      // not a deflated stream
+    }
+    marker.lastIndex = end + "endstream".length;
+  }
+  return parts.join("\n");
+}
+
+const pageCount = (pdf: Buffer) => (pdfSource(pdf).match(/\/Type\s*\/Page[^s]/g) ?? []).length;
 
 describe("renderLegalPdf", () => {
   it("renders an Arabic contract with an evidence page", async () => {
@@ -117,7 +141,7 @@ describe("renderLegalPdf", () => {
     expect(Buffer.isBuffer(pdf)).toBe(true);
     expect(pdf.subarray(0, 5).toString("latin1")).toBe("%PDF-");
     expect(pageCount(pdf)).toBeGreaterThan(1);
-    const raw = pdf.toString("latin1");
+    const raw = pdfSource(pdf);
     expect(raw).toContain("/FontName /NotoSansArabic");
     expect(raw).toContain("/Creator (Sawwiq)");
     // Created at the signing time, not at render time.

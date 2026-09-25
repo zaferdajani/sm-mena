@@ -38,6 +38,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "playwright-report/**",
     "test-results/**",
+    // Vendored ffmpeg.wasm engine, copied from node_modules at build time.
+    "public/engines/**",
   ]),
 ]);
 

@@ -10,6 +10,7 @@ import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AVATAR_UPLOAD, compressForRequest, replaceInputFile } from "@/lib/media/image-compress";
 import { ChipGroup, Field } from "./chips";
 
 type Option = { key: string; label: string };
@@ -26,7 +27,9 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
   const t = useTranslations("Studio.profileForm");
   const [state, action] = useActionState(updateProfileAction, undefined);
   const [preview, setPreview] = useState<string | null>(null);
+  const [compressing, setCompressing] = useState(false);
   const avatarInput = useRef<HTMLInputElement>(null);
+  const pick = useRef(0);
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
 
   return (
@@ -53,9 +56,18 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
             name="avatar"
             accept="image/jpeg,image/png,image/webp"
             className="sr-only"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPreview(URL.createObjectURL(file));
+            onChange={async (e) => {
+              const input = e.currentTarget;
+              const file = input.files?.[0];
+              if (!file) return;
+              setPreview(URL.createObjectURL(file));
+              // Shrink in the browser before upload; the server stores a 320 px WebP.
+              const id = ++pick.current;
+              setCompressing(true);
+              const [small] = await compressForRequest([file], AVATAR_UPLOAD);
+              if (id !== pick.current) return;
+              if (small !== file) replaceInputFile(input, small);
+              setCompressing(false);
             }}
           />
         </div>
@@ -105,7 +117,7 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
           </select>
         </Field>
       </fieldset>
-      <SubmitButton className="h-11 text-base">{t("save")}</SubmitButton>
+      <SubmitButton className="h-11 text-base" disabled={compressing}>{t("save")}</SubmitButton>
     </form>
   );
 }

@@ -2,7 +2,7 @@ import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } fro
 import { agencyConditions } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, postImages, posts, type Agency } from "@/lib/db/schema";
-import { newImageKeys, processImage, type ProcessedImage } from "@/lib/images";
+import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -63,8 +63,8 @@ export type PostView = {
 
 /** Creates a post from raw image buffers (already validated for count). */
 export async function createPost(agencyId: string, input: PostInput, files: Buffer[]) {
-  const processed: ProcessedImage[] = [];
-  for (const file of files) processed.push(await processImage(file));
+  // Side by side: each image runs its own quality search (lib/images.ts).
+  const processed: ProcessedImage[] = await Promise.all(files.map((file) => processImage(file)));
   return createPostFromProcessed(agencyId, input, processed);
 }
 
@@ -78,8 +78,9 @@ export async function createPostFromProcessed(
   const [agency] = await db.select({ name: agencies.name }).from(agencies).where(eq(agencies.id, agencyId));
   const uploaded: { key: string; thumbKey: string; image: ProcessedImage }[] = [];
   for (const image of processed) {
-    const keys = newImageKeys(agencyId);
-    await storage().put(keys.key, image.full, "image/webp");
+    const format = image.fullFormat ?? "webp";
+    const keys = newImageKeys(agencyId, format);
+    await storage().put(keys.key, image.full, STORED_TYPE[format]);
     await storage().put(keys.thumbKey, image.thumb, "image/webp");
     uploaded.push({ ...keys, image });
   }

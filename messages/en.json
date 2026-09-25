@@ -429,7 +429,7 @@
     "hiddenByAdmin": "Hidden by admin",
     "form": {
       "images": "Images",
-      "imagesHint": "Up to 10 images. The first one is the cover. JPG, PNG or WebP.",
+      "imagesHint": "Up to 10 images. The first one is the cover. JPG, PNG or WebP; they are compressed automatically without visible quality loss.",
       "addImages": "Choose images",
       "remove": "Remove",
       "cover": "Cover",
@@ -448,7 +448,7 @@
       "errors": {
         "noImages": "Add at least one image.",
         "tooMany": "Maximum 10 images.",
-        "too_large": "One image is larger than 10 MB.",
+        "too_large": "The images are too large to upload. Remove some or save them as JPG first.",
         "unsupported": "Unsupported image format.",
         "too_small": "One image is too small (under 200 px).",
         "noServices": "Choose at least one service.",
@@ -1879,7 +1879,17 @@
     "endsOn": "Until (optional)",
     "datesHint": "Dates follow each country's own calendar day. Leave both empty to show it until you turn it off. A dated background wins over an undated one; a country's own wins over \"All countries\".",
     "file": "Image or video",
-    "fileHint": "JPG, PNG or WebP up to 15 MB, or a short MP4/WebM loop up to 25 MB (plays muted; hidden for people who turn off motion).",
+    "fileHint": "JPG, PNG or WebP, or a short MP4, WebM or MOV video. Everything is compressed automatically in your browser before upload, to the smallest size that looks the same; videos become a muted MP4 of up to 30 seconds and 4 MB (plays muted; hidden for people who turn off motion).",
+    "compress": {
+      "image": "Compressing the image…",
+      "engine": "Loading the video compressor (about 31 MB, once)…",
+      "engineProgress": "Loading the video compressor… {pct}%",
+      "encoding": "Compressing the video, pass {pass}… {pct}%",
+      "done": "Compressed: {before} → {after}",
+      "cancel": "Cancel",
+      "mb": "{n} MB",
+      "reduced": "Shown at {width} px wide to fit the 4 MB upload limit."
+    },
     "veil": "Readability veil: {n}%",
     "veilHint": "How much of the page colour covers the media so text stays easy to read.",
     "veilShort": "veil {n}%",
@@ -1902,8 +1912,12 @@
     "errors": {
       "invalid": "Check the form and try again.",
       "dates": "The end date must be after the start date.",
-      "file": "Choose a JPG, PNG, WebP image or an MP4/WebM video.",
-      "tooLarge": "That file is too large."
+      "file": "Choose a JPG, PNG, WebP image or an MP4, WebM or MOV video.",
+      "tooLarge": "That file is too large.",
+      "videoTooLarge": "This video is still larger than 4 MB after compression, even at a smaller size. Try a shorter clip.",
+      "engine": "The video compressor could not start in this browser. Reload the page, or try a recent Chrome, Edge, Firefox or Safari.",
+      "unsupported": "This video could not be read. Try an MP4, WebM or MOV file.",
+      "cancelled": "Compression cancelled. Choose the file again to retry."
     }
   },
   "Chat": {

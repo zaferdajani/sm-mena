@@ -49,3 +49,15 @@ export async function drawSignature(page: Page, scope: Locator | Page = page) {
   for (let i = 1; i <= 8; i++) await page.mouse.move(box.x + box.width * (0.2 + i * 0.07), y + (i % 2 ? -12 : 12), { steps: 2 });
   await page.mouse.up();
 }
+
+/**
+ * A camera-sized photo as a PNG (a real demo photo scaled up to 4000×3000),
+ * tens of MB: far over what a serverless request may carry, so it only gets
+ * through if the browser compresses it first.
+ */
+export async function photoPng(width = 4000, height = 3000) {
+  const sharp = (await import("sharp")).default;
+  const { readFile } = await import("node:fs/promises");
+  const photo = await readFile("data/demo-portfolio/abha.trails-1.webp");
+  return sharp(photo).resize(width, height, { fit: "cover" }).png().toBuffer();
+}

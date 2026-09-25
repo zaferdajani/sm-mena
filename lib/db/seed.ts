@@ -145,10 +145,12 @@ async function addDemoPortfolio(log: (...a: unknown[]) => void) {
   const now = Date.now();
   for (const [i, a] of demos.entries()) {
     const captions = PORTFOLIO_CAPTIONS[a.handle] ?? [];
+    const files = [1, 2, 3].map((n) => path.join(PORTFOLIO_DIR, `${a.handle}-${n}.webp`));
+    // Encoded side by side: each image runs its own quality search (lib/images.ts).
+    const encoded = await Promise.all(files.map((file) => (existsSync(file) ? processImage(readFileSync(file)) : null)));
     for (let n = 1; n <= 3; n++) {
-      const file = path.join(PORTFOLIO_DIR, `${a.handle}-${n}.webp`);
-      if (!existsSync(file)) continue;
-      const processed = await processImage(readFileSync(file));
+      const processed = encoded[n - 1];
+      if (!processed) continue;
       await createPostFromProcessed(
         a.id,
         {
@@ -346,13 +348,15 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
       const service = demo.services[p % demo.services.length];
       const kind = kindFor(service);
       const imageCount = 1 + Math.floor(r() * 3);
-      const processed = [];
+      const sources = [];
       for (let i = 0; i < imageCount; i++) {
         const pool = demo.headlines ?? HEADLINES[kind];
         const headline = pool[Math.floor(r() * pool.length)];
         const tall = p % 3 === 1;
-        processed.push(await processImage(await demoImage(i === imageCount - 1 && imageCount > 1 ? "results" : kind, index * 100 + p * 10 + i, headline, `@${demo.handle}`, tall)));
+        sources.push(demoImage(i === imageCount - 1 && imageCount > 1 ? "results" : kind, index * 100 + p * 10 + i, headline, `@${demo.handle}`, tall));
       }
+      // Encoded side by side: each image runs its own quality search (lib/images.ts).
+      const processed = await Promise.all(sources.map(async (source) => processImage(await source)));
       const post = await createPostFromProcessed(
         agency.id,
         {

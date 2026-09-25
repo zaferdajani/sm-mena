@@ -8,8 +8,8 @@ import { FormError } from "@/components/form-error";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
 import { ChipGroup, Field } from "./chips";
-import { downscale } from "./downscale";
 
 type Option = { key: string; label: string };
 
@@ -47,7 +47,11 @@ export function PostForm({ mode, services, platforms, industries, initial }: Pos
     if (!form.getAll("services").length) return setLocalError("noServices");
     start(async () => {
       if (mode === "create") {
-        for (const f of files) form.append("images", await downscale(f.file));
+        // Compress in the browser at the same visible quality (SSIM search) so
+        // the request fits a serverless body limit; the server re-encodes too.
+        const small = await compressForRequest(files.map((f) => f.file), POST_UPLOAD);
+        if (small.reduce((n, f) => n + f.size, 0) > REQUEST_LIMIT) return setLocalError("too_large");
+        for (const f of small) form.append("images", f);
       }
       formAction(form);
     });
