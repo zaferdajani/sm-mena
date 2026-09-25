@@ -20,7 +20,7 @@ Branch `claude/marketing-campaign`. Prepared 25 Sep 2026. **Nothing has been pos
 |---|---|
 | **Higgsfield** (MCP) | Keyframes (GPT Image 2.5), films and logo sting with native sound (Seedance 2.5, FLUX 3 Video for the alternate sting), voice-over (Text to Speech V2 with the ElevenLabs engine; Seed Audio tested and rejected), an image edit (flag removal), a cloud sandbox with Whisper for pronunciation QA, and media hosting for the video masters. Generation history was checked; **no website was published or deployed on Higgsfield.** |
 | **GitHub** (repo access) | Studied `zaferdajani/oneclickconvert`: its `ad-director` and `campaign-director` skills define the production discipline copied here (short takes, locked assets, real UI instead of AI UI, Chromium-rendered Arabic, one outro identity, verify frames before delivery, claims traced to code). |
-| **Claude Docs** | Shareable version of the plan (link in the session summary). |
+| **Claude Docs** | Shareable version of the plan: https://claude.ai/code/artifact/d10b094a-b77f-4673-b2c4-8d6e2e951185 |
 | Playwright + Chromium, ffmpeg, Pillow | Real screen recordings of Sawwiq (Explore, Feed, the matcher in JO/SA/EN, the landing ledger), type rendering, assembly, loudness, QA contact sheets |
 | Explore sub-agent | Summarised `docs/` and the landing copy into a fact base (claims, fees, test-mode payments) |
 | Available but not used (no data yet) | Supermetrics: wire it to the ad accounts once they exist (launch checklist §2). Gmail and Google Drive: not needed; nothing was sent. |
