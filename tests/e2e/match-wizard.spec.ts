@@ -80,3 +80,17 @@ test("a city in another country is questioned, not followed", async ({ page }) =
   await page.getByTestId("choice-switch-no").click();
   await expectSaudiResults(page);
 });
+
+test("switching language re-words the wizard's questions, and Next sits under the options", async ({ page }) => {
+  await page.goto("/ar/match");
+  await expect(page.getByTestId("assistant-message").last()).toContainText("ما الذي تبحث عنه");
+  await page.goto("/en/match");
+  await expect(page.getByTestId("assistant-message").last()).toHaveText("What are you looking for? Pick one or more.");
+  const next = page.getByTestId("choice-next");
+  await expect(next).toBeDisabled();
+  const lastOption = await page.locator('[data-testid^="choice-group-"]').last().boundingBox();
+  const nextBox = await next.boundingBox();
+  expect(nextBox!.y).toBeGreaterThan(lastOption!.y + lastOption!.height);
+  await page.getByTestId("choice-group-social_media").click();
+  await expect(next).toBeEnabled();
+});

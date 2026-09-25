@@ -29,6 +29,9 @@ import { RecommendationCard } from "./recommendation-card";
 import { VoiceButton } from "./voice-button";
 import { Chip, useRangeLabel, WizardChips, type ChipStep, type ResultAction } from "./wizard-chips";
 
+const QUESTION_STEPS: readonly string[] = ["groups", "services", "industry", "platforms", "budget", "city", "country"];
+const isQuestionStep = (s: unknown): s is Step => typeof s === "string" && QUESTION_STEPS.includes(s);
+
 type Turn = {
   role: "user" | "assistant";
   content: string;
@@ -106,8 +109,10 @@ export function MatchChat({
     } catch {}
     if (!saved?.turns?.length || !saved.need) return;
     const restored = saved;
+    // Wizard questions are re-worded in the current language (the visitor may
+    // have switched language since); what the visitor typed or tapped stays.
     const id = setTimeout(() => {
-      setTurns(restored.turns);
+      setTurns(restored.turns.map((x) => (x.role === "assistant" && !x.mode && isQuestionStep(x.step) ? { ...x, content: question(x.step).content } : x)));
       setNeed(restored.country === serverCountry ? restored.need : forNewCountry(restored.need));
     }, 0);
     return () => clearTimeout(id);
