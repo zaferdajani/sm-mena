@@ -6,6 +6,9 @@ import { aiEnabled } from "@/lib/ai/agent";
 import { currentCountry } from "@/lib/country-choice";
 import { serviceAndCityOptions } from "@/lib/form-options";
 import { groupPriceStats } from "@/lib/matching/prices";
+import { canUse, featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { redirect } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/match">): Promise<Metadata> {
   const { locale } = await params;
@@ -16,6 +19,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/match">)
 export default async function MatchPage({ params }: PageProps<"/[locale]/match">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const gate = await featureGate("ai_matchmaker");
+  // Landing and welcome links point here; with the matcher off, visitors browse instead.
+  if (gate === "off") redirect({ href: "/explore", locale });
+  if (gate === "soon") return <ComingSoon feature="ai_matchmaker" />;
   const t = await getTranslations("Match");
   const country = await currentCountry();
   // Budget choices come from real prices in the visitor's country when there are enough.
@@ -26,7 +33,7 @@ export default async function MatchPage({ params }: PageProps<"/[locale]/match">
         <h1 className="font-bold">{t("title")}</h1>
         <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
       </header>
-      <MatchChat services={options.services} cities={options.cities} platforms={options.platforms} country={country} priceStats={priceStats} aiMode={aiEnabled()} />
+      <MatchChat services={options.services} cities={options.cities} platforms={options.platforms} country={country} priceStats={priceStats} aiMode={aiEnabled()} canRequest={await canUse("quote_requests")} />
     </div>
   );
 }

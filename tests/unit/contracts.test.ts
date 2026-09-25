@@ -175,12 +175,18 @@ describe("protected contract", () => {
   });
 });
 
-describe("every contract is protected", () => {
-  it("ignores a request for direct payment and applies the 10% guarantee fee", async () => {
-    const created = await createContract(agencyId, draft({ paymentMode: "direct" }));
+describe("payment modes", () => {
+  it("protects payments by default and applies the 10% fee", async () => {
+    const created = await createContract(agencyId, draft());
     if (!("token" in created)) throw new Error(created.error);
     expect(created.contract).toMatchObject({ paymentMode: "protected", feePercent: 10, termsVersion: 4, jurisdiction: "jo", jurisdictionCity: "amman", reviewDays: 7, revisionRounds: 2, paymentsLive: false });
     expect(created.contract.agencySignature).toBeTruthy();
+  });
+
+  it("records a direct contract, with no fee, while protected payments are coming soon", async () => {
+    const created = await createContract(agencyId, draft({ paymentMode: "direct" }));
+    if (!("token" in created)) throw new Error(created.error);
+    expect(created.contract).toMatchObject({ paymentMode: "direct", feePercent: 0, paymentsLive: false });
   });
 
   it("refuses to send without a drawn signature, and the client must draw one too", async () => {

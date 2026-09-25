@@ -30,6 +30,7 @@ import { mediaUrl } from "@/lib/storage";
 import { agencyLd, breadcrumbLd } from "@/lib/structured-data";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
+import { canUse } from "@/lib/feature-gate";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
   const { locale, handle } = await params;
@@ -125,7 +126,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}
         servesNote={note}
-        inquirySlot={<InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
+        inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />
       <div className="mt-5 flex border-t text-xs font-semibold uppercase tracking-wide" role="tablist">
         {([["work", Grid3x3], ...(clients.length ? [["clients", Briefcase] as const] : []), ["reviews", Star], ["about", Info]] as const).map(([key, Icon]) => (

@@ -11,6 +11,9 @@ import { listPartnerRequests, suggestPartners } from "@/lib/data/partners";
 import { roleLabel, ROLES } from "@/lib/services/catalog";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
+import { featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { notFound } from "next/navigation";
 
 /**
  * Studio → Partners (docs/30): the roles the team lacks, freelancers and
@@ -20,6 +23,9 @@ export default async function StudioPartnersPage({ params, searchParams }: PageP
   const { locale } = await params;
   setRequestLocale(locale);
   const { agency } = await requireAgency();
+  const gate = await featureGate("partners");
+  if (gate === "off") notFound();
+  if (gate === "soon") return <ComingSoon feature="partners" />;
   const t = await getTranslations("Partners");
   const tc = await getTranslations("PartnerContracts");
   const tCity = await getTranslations("Cities");

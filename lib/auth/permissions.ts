@@ -3,7 +3,7 @@
 // owner:       the platform owner. Everything, and the only role that can
 //              manage staff, export money data, remove demo data or transfer
 //              ownership. Nobody else can demote, disable or remove an owner.
-// admin:       day-to-day operations incl. payments and disputes; no staff management.
+// admin:       day-to-day operations incl. payments, disputes and feature switches; no staff management.
 // backbone:    core engineering: health, statistics, error journal, audit log, read-only users/agencies.
 // maintenance: keeps things running: health, statistics, error journal and user reports.
 // support:     helps people: users and agencies (read), verification and moderation, user reports,
@@ -37,6 +37,7 @@ export const PERMISSIONS = [
   "demo.remove",
   "appearance.manage",
   "conversations.view",
+  "features.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

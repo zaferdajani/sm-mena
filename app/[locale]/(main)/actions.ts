@@ -1,5 +1,6 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
 import { demoMode } from "@/lib/demo-mode";
 import { z } from "zod";
 import {
@@ -101,6 +102,8 @@ const inquirySchema = z.object({
 });
 
 export async function sendInquiry(_: InquiryState, formData: FormData): Promise<InquiryState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("messaging"))) return { error: "unavailable" };
   const raw = Object.fromEntries(formData);
   if (raw.consent !== "on") return { error: "consent" };
   const parsed = inquirySchema.safeParse(raw);

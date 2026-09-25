@@ -8,11 +8,18 @@ import { listPackages } from "@/lib/data/packages";
 import { countryName, currencyOf } from "@/lib/countries";
 import { PLATFORMS, serviceLabel } from "@/lib/labels";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
+import { featureOpen } from "@/lib/features";
+import { featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { notFound } from "next/navigation";
 
 export default async function NewContract({ params, searchParams }: PageProps<"/[locale]/studio/contracts/new">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const { agency } = await requireAgency();
+  const gate = await featureGate("contracts");
+  if (gate === "off") notFound();
+  if (gate === "soon") return <ComingSoon feature="contracts" />;
   const sp = await searchParams;
   const t = await getTranslations("Contracts.builder");
   const tp = await getTranslations("Platforms");
@@ -65,6 +72,7 @@ export default async function NewContract({ params, searchParams }: PageProps<"/
         currency={currencyOf(agency.country)}
         countryName={countryName(agency.country, locale)}
         paymentsLive={protectedPaymentsLive()}
+        protectedOpen={await featureOpen("protected_payments", { agencyHandle: agency.handle })}
         reviewDays={reviewDaysSetting()}
       />
     </div>

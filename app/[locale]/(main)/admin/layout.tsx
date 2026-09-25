@@ -21,11 +21,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const tp = await getTranslations("Appearance");
   const tchat = await getTranslations("Chat");
   const ts = await getTranslations("AdminServices");
+  const tf = await getTranslations("Features");
   // Each person sees only the sections their role allows (pages check again on the server).
   const nav: { href: string; label: string; badge?: number; perm: Permission }[] = [
     { href: "/admin", label: t("dashboard"), perm: "dashboard.view" },
     { href: "/admin/stats", label: t("statistics"), perm: "stats.view" },
     { href: "/admin/payments", label: t("payments"), perm: "payments.view" },
+    { href: "/admin/features", label: tf("nav"), perm: "features.manage" },
     { href: "/admin/bugs", label: t("bugs"), badge: bugs, perm: "support.manage" },
     { href: "/admin/agencies", label: t("agencies"), perm: "agencies.view" },
     { href: "/admin/services", label: ts("nav"), badge: pendingServices, perm: "agencies.moderate" },

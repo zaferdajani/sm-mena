@@ -1,5 +1,6 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
 import { demoMode } from "@/lib/demo-mode";
 import { withCountry } from "@/lib/matching/scope";
 import { revalidatePath } from "next/cache";
@@ -33,6 +34,8 @@ const schema = z.object({
 });
 
 export async function createRequestAction(_: RequestState, formData: FormData): Promise<RequestState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("quote_requests"))) return { error: "unavailable" };
   if (formData.get("consent") !== "on") return { error: "consent" };
   const services = [...new Set(formData.getAll("services").map(String))].filter(isServiceKey).slice(0, 6);
   const platforms = [...new Set(formData.getAll("platforms").map(String))].filter((p) => (PLATFORMS as readonly string[]).includes(p));

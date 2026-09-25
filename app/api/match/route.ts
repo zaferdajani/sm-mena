@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { canUse } from "@/lib/feature-gate";
 import { currentCountry } from "@/lib/country-choice";
 import { demoMode } from "@/lib/demo-mode";
 import { runMatchmaker } from "@/lib/ai/agent";
@@ -21,6 +22,8 @@ const body = z.object({
 });
 
 export async function POST(request: Request) {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("ai_matchmaker"))) return Response.json({ error: "unavailable" }, { status: 404 });
   const parsed = body.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid" }, { status: 400 });
   const visitorId = await getVisitorId({ create: true });

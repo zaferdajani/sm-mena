@@ -37,10 +37,23 @@ test("an agency turns on two-factor sign-in and needs a code to sign in", async 
   await expect(page.getByTestId("mfa-on")).toContainText("9 backup codes left");
 });
 
-test("an agency upgrades through the test checkout and admin sees the payment", async ({ page, browser }) => {
+test("an agency upgrades through the test checkout and admin sees the payment", async ({ page, browser }, info) => {
+  // Paid plans are "coming soon": admin lets this agency try them as a pilot (Admin → Features).
+  // One project only, since the pilot list is shared.
+  test.skip(info.project.name === "mobile", "the pilot list is global; the desktop run covers it");
   const account = await joinAgency(page, "pay");
   await page.goto("/en/studio/billing");
   await expect(page.getByTestId("current-plan")).toHaveText("Free");
+  await expect(page.getByRole("button", { name: "Choose Pro" })).toHaveCount(0);
+  const admin = await browser.newPage();
+  await login(admin, ADMIN.email, ADMIN.password);
+  await admin.goto("/en/admin/features");
+  const pilots = admin.getByTestId("feature-paid_plans-pilots");
+  await pilots.fill(`${await pilots.inputValue()}, ${account.handle}`);
+  await admin.getByTestId("feature-paid_plans-save").click();
+  await expect(admin.getByTestId("feature-paid_plans").getByRole("status")).toBeVisible();
+
+  await page.reload();
   await page.getByRole("button", { name: "Choose Pro" }).click();
   await expect(page).toHaveURL(/\/en\/pay\//);
   await expect(page.getByTestId("pay-amount")).toContainText("19");
@@ -49,8 +62,6 @@ test("an agency upgrades through the test checkout and admin sees the payment", 
   await expect(page.getByTestId("current-plan")).toHaveText("Pro");
   await expect(page.getByTestId("billing-history")).toContainText("Paid");
 
-  const admin = await browser.newPage();
-  await login(admin, ADMIN.email, ADMIN.password);
   await admin.goto("/en/admin/payments");
   await expect(admin.getByTestId("payments-list")).toContainText(`Agency ${account.handle}`);
   const csv = await admin.request.get("/api/admin/payments");

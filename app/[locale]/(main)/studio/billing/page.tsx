@@ -1,3 +1,4 @@
+import { featureOpen } from "@/lib/features";
 import { CheckCircle2, FlaskConical, XCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SubmitButton } from "@/components/submit-button";
@@ -16,7 +17,8 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
   const sp = await searchParams;
   const t = await getTranslations("Billing");
   const history = await listPayments("all", agency.id);
-  const canBuy = monetizationEnabled() || isTestPayments();
+  // Buying a plan follows Admin → Features → "Paid plans" (pilot agencies can try it while it's coming soon).
+  const canBuy = await featureOpen("paid_plans", { agencyHandle: agency.handle });
   const active = agency.plan !== "free" && (!agency.planExpiresAt || agency.planExpiresAt > new Date());
 
   return (

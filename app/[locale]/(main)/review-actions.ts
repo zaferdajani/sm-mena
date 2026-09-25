@@ -1,5 +1,6 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
 import { z } from "zod";
 import { submitInquiryReview, submitInviteReview } from "@/lib/data/reviews";
 import { rateLimit } from "@/lib/rate-limit";
@@ -56,6 +57,8 @@ async function parse(formData: FormData): Promise<{ error: string } | { input: P
 }
 
 export async function inviteReviewAction(_: ReviewState, formData: FormData): Promise<ReviewState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("reviews"))) return { error: "unavailable" };
   const token = String(formData.get("token") ?? "");
   const parsed = await parse(formData);
   if ("error" in parsed) return { error: parsed.error };
@@ -64,6 +67,8 @@ export async function inviteReviewAction(_: ReviewState, formData: FormData): Pr
 }
 
 export async function inquiryReviewAction(_: ReviewState, formData: FormData): Promise<ReviewState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("reviews"))) return { error: "unavailable" };
   const agencyId = z.string().uuid().safeParse(formData.get("agencyId"));
   if (!agencyId.success) return { error: "generic" };
   const parsed = await parse(formData);

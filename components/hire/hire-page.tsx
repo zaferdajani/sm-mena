@@ -21,6 +21,7 @@ import { breadcrumbLd, faqLd, hireServiceLd } from "@/lib/structured-data";
 import { taxonomy } from "@/lib/taxonomy";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
+import { canUse } from "@/lib/feature-gate";
 
 export async function hireCopy(locale: string, service: string, where: Place = {}) {
   const t = await getTranslations({ locale, namespace: "Hire" });
@@ -46,6 +47,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
   const tCity = await getTranslations("Cities");
   const td = await getTranslations("Demo");
   const includeDemo = await demoMode();
+  const canRequest = await canUse("quote_requests");
   const [cards, price, cities, facts, byCountry] = await Promise.all([
     hireCards(service, where, { includeDemo }),
     priceGuide(service, where),
@@ -120,10 +122,12 @@ export async function HirePage({ locale, service, city, country: countryParam }:
           </p>
         )}
         <div className="flex flex-wrap gap-2">
-          <Link href={{ pathname: "/request/new", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ className: "h-10 gap-2" })} data-testid="hire-get-quotes">
-            <Sparkles className="size-4" />
-            {tr("formTitle")}
-          </Link>
+          {canRequest && (
+            <Link href={{ pathname: "/request/new", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ className: "h-10 gap-2" })} data-testid="hire-get-quotes">
+              <Sparkles className="size-4" />
+              {tr("formTitle")}
+            </Link>
+          )}
           <Link href={{ pathname: "/explore", query: { service, ...(city ? { city } : {}) } }} className={buttonVariants({ variant: "outline", className: "h-10 gap-2" })}>
             <Compass className="size-4" />
             {t("browseWork")}

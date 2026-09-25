@@ -1,5 +1,7 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
+import { featureOpen } from "@/lib/features";
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
@@ -82,6 +84,8 @@ const draftSchema = z.object({
 });
 
 export async function createContractAction(_: ActionState, formData: FormData): Promise<ActionState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("contracts"))) return { error: "unavailable" };
   const { agency } = await requireAgency();
   const locale = await getLocale();
   if (!rateLimit(`contract:${agency.id}`, 20, 60 * 60 * 1000)) return { error: "invalid" };
@@ -97,8 +101,11 @@ export async function createContractAction(_: ActionState, formData: FormData): 
     return { error: path === "client" ? "client" : path === "title" ? "title" : path === "agree" ? "agree" : path === "revisionRounds" ? "rounds" : "invalid" };
   }
   const d = parsed.data;
+  // Protected payments only where Admin → Features allows it (on, or this agency is a pilot); otherwise direct.
+  const protectedOpen = await featureOpen("protected_payments", { agencyHandle: agency.handle });
   const result = await createContract(agency.id, {
     ...d,
+    paymentMode: protectedOpen ? "protected" : "direct",
     items: normalizeLines(d.items, PLATFORMS),
     client: { ...d.client, email: d.client.email || null },
     milestones: d.milestones.map((m) => ({ title: m.title, dueDate: m.dueDate, amountFils: fils(m.amountJod), checks: m.checks })),

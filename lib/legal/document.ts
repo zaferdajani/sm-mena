@@ -8,7 +8,7 @@ import en from "@/messages/en.json";
 import { COMMON_CLAUSES, daysText, DISCLAIMER, fill, LAW_CLAUSE, NDA_CLAUSES, roundsText, serviceClausesFor, type Bi, type Clause } from "./clauses";
 import type { DocBlock, DocSignature, LegalDocument } from "./document-types";
 import { jurisdictionOf, LEGAL_VERSION } from "./jurisdictions";
-import { HOLDER_LINE, PAYMENT_SECTION, paymentStateOf } from "./payment-holder";
+import { HOLDER_LINE, PAYMENT_DIRECT, PAYMENT_SECTION, paymentStateOf } from "./payment-holder";
 
 /**
  * Builds the text of a contract or NDA once, for the page and the PDF alike,
@@ -232,7 +232,8 @@ export function contractDocument(v: ContractForDoc, locale: string): LegalDocume
       ...(v4 ? [fill(L.reviewAndRounds[l], { days: daysText(c.reviewDays, l), rounds: roundsText(c.revisionRounds, l) })] : []),
     ],
   });
-  blocks.push({ heading: `5. ${(v4 ? L.paymentV4 : L.payment)[l]}`, paragraphs: [fill(v4 ? PAYMENT_SECTION[state][l] : L.paymentBody[l], { fee: c.feePercent })] });
+  if (v4 && c.paymentMode === "direct") blocks.push({ heading: `5. ${PAYMENT_DIRECT.heading[l]}`, paragraphs: [PAYMENT_DIRECT.body[l]] });
+  else blocks.push({ heading: `5. ${(v4 ? L.paymentV4 : L.payment)[l]}`, paragraphs: [fill(v4 ? PAYMENT_SECTION[state][l] : L.paymentBody[l], { fee: c.feePercent })] });
 
   let n = 6;
   const results: string[] = [];

@@ -17,6 +17,9 @@ const e2eEnv = {
   // The suite creates many accounts and sign-ins from one address.
   RATE_LIMIT_MULTIPLIER: "20",
   MFA_ENCRYPTION_KEY: "e2e-only-mfa-key-not-a-secret",
+  // Protected payments are "coming soon" in production until the partner is live;
+  // the contract suites exercise them in test mode (tests/e2e/features.spec.ts covers the switches).
+  FEATURE_DEFAULTS: "protected_payments=on",
 };
 
 export default defineConfig({

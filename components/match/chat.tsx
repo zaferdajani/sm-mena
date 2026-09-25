@@ -59,12 +59,15 @@ export function MatchChat({
   country: serverCountry,
   priceStats,
   aiMode,
+  canRequest = true,
 }: {
   services: Option[];
   cities: Option[];
   platforms: Option[];
   country: CountryCode;
   priceStats: Record<string, PriceStats>;
+  /** Quote requests are available (Admin → Features); otherwise no "send my project" step. */
+  canRequest?: boolean;
   aiMode: boolean;
 }) {
   const t = useTranslations("Match");
@@ -284,6 +287,7 @@ export function MatchChat({
             priceStats={priceStats}
             aiMode={aiMode}
             hasResults={Boolean(last?.recommendation?.agencies.length)}
+            canRequest={canRequest}
             switchTo={last?.switchTo && isCountryCode(last.switchTo.country) ? last.switchTo.country : undefined}
             onAnswer={onAnswer}
             onShowNow={onShowNow}

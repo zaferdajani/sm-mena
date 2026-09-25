@@ -1,6 +1,8 @@
 // Single source of truth for plans (docs/10-monetization.md).
-// Prices are proposals to validate with agencies; nothing is charged while
-// MONETIZATION_ENABLED is not "true".
+// Prices are proposals to validate with agencies; nothing is charged unless
+// the "Paid plans" feature is on (Admin → Features; MONETIZATION_ENABLED is its default).
+
+import { cachedFeatureState } from "@/lib/features";
 
 export type PlanId = "free" | "pro" | "business";
 
@@ -32,5 +34,6 @@ export const PROMOTION_RULES = {
 };
 
 export function monetizationEnabled(): boolean {
-  return process.env.MONETIZATION_ENABLED === "true";
+  // Admin → Features → "Paid plans" (lib/features.ts); MONETIZATION_ENABLED is only its default.
+  return cachedFeatureState("paid_plans") === "on";
 }

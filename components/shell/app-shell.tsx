@@ -14,6 +14,7 @@ import { chosenCountry, currentCountry } from "@/lib/country-choice";
 import { COUNTRIES } from "@/lib/countries";
 import { BottomNav, SideNav, type NavItem } from "./nav-links";
 import { SiteFooter } from "./site-footer";
+import { canUse } from "@/lib/feature-gate";
 
 /** Instagram-like shell: side navigation on desktop, top bar + bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -22,7 +23,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
   const locale = await getLocale();
-  const [country, chosen] = await Promise.all([currentCountry(), chosenCountry()]);
+  // Admin → Features decides which sections appear in the navigation.
+  const [country, chosen, matchOpen] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker")]);
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
   const picker = (
     <CountryPicker
@@ -37,7 +39,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
-    { href: "/match", label: t("match"), icon: "match" },
+    ...(matchOpen ? [{ href: "/match", label: t("match"), icon: "match" } as NavItem] : []),
     { href: "/saved", label: t("saved"), icon: "saved" },
     isStaffRole(user?.role)
       ? { href: "/admin", label: t("admin"), icon: "admin" }

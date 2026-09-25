@@ -246,8 +246,8 @@ function clean(input: ContractInput): ContractInput {
     ndaYears: input.nda ? ((NDA_YEARS as readonly number[]).includes(input.ndaYears ?? 0) ? input.ndaYears! : 2) : null,
     revisionRounds: clampRounds(input.revisionRounds ?? DEFAULT_REVISION_ROUNDS),
     clientAgencyId: input.clientAgencyId || null,
-    // Every contract on Sawwiq is payment-protected (docs/22-legal-documents.md).
-    paymentMode: "protected",
+    // Protected unless the caller asks for direct (protected payments not yet available to this agency: Admin → Features).
+    paymentMode: input.paymentMode === "direct" ? "direct" : "protected",
     signerName: cut(input.signerName, 80),
   };
 }
@@ -261,7 +261,8 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   if (input.clientAgencyId && !(await arePartners(agencyId, input.clientAgencyId))) return { error: "partner" };
   const number = contractNumber();
   const token = randomBytes(18).toString("base64url");
-  const fee = feePercent();
+  // Sawwiq's fee applies to protected payments only; a direct contract carries none.
+  const fee = input.paymentMode === "protected" ? feePercent() : 0;
   const specialRequests = input.specialRequests;
   const [{ country, city, name } = { country: "jo", city: "amman", name: "" }] = await db
     .select({ country: agencies.country, city: agencies.city, name: agencies.name })
@@ -270,7 +271,7 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   const legal = { version: LEGAL_VERSION, jurisdiction: country, city };
   input.agencyLegalName ??= name;
   const reviewDays = reviewDaysSetting();
-  const paymentsLive = protectedPaymentsLive();
+  const paymentsLive = input.paymentMode === "protected" && protectedPaymentsLive();
   const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee, legal, reviewDays, paymentsLive });
   const totalFils = input.milestones.reduce((s, m) => s + m.amountFils, 0);
 

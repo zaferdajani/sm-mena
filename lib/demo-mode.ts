@@ -1,5 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { featureState } from "@/lib/features";
 
 /**
  * Demo agencies are samples for trying the product, never evidence about the
@@ -11,5 +12,7 @@ import { cookies } from "next/headers";
 export const DEMO_COOKIE = "sw_demo";
 
 export async function demoMode(): Promise<boolean> {
-  return (await cookies()).get(DEMO_COOKIE)?.value === "1";
+  if ((await cookies()).get(DEMO_COOKIE)?.value !== "1") return false;
+  // The demo view can be switched off (Admin → Features): then everyone sees real agencies only.
+  return (await featureState("demo_view")) !== "off";
 }

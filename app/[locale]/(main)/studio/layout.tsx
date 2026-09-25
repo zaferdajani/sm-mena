@@ -12,6 +12,7 @@ import { unreadNotificationCount } from "@/lib/data/notifications";
 import { newOpportunityCount } from "@/lib/data/requests";
 import { pendingPartnerCount } from "@/lib/data/partners";
 import { mediaUrl } from "@/lib/storage";
+import { featureGate } from "@/lib/feature-gate";
 
 export const metadata: Metadata = { robots: { index: false } };
 
@@ -26,7 +27,8 @@ export default async function StudioLayout({ children }: { children: React.React
   const tchat = await getTranslations("Chat");
   const tn = await getTranslations("Notifications");
   const tpart = await getTranslations("Partners");
-  const [unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
+  const [partnersGate, unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
+    featureGate("partners"),
     unreadCount(agency.id),
     unreadForAgency(agency.id),
     newOpportunityCount(agency),
@@ -57,7 +59,7 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
             { href: "/studio/clients", label: t("clients") },
-            { href: "/studio/partners", label: tpart("tab"), badge: partnerRequests },
+            ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
             { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
             { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
             { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },

@@ -364,7 +364,8 @@
       "phone": "Enter a valid phone number.",
       "consent": "You need to agree before sending.",
       "rateLimited": "Too many messages. Try again later.",
-      "generic": "Could not send. Please try again."
+      "generic": "Could not send. Please try again.",
+      "unavailable": "Messaging agencies through Sawwiq isn't available right now."
     }
   },
   "Report": {
@@ -740,7 +741,8 @@
         "name": "Your name is required.",
         "consent": "Please confirm to continue.",
         "rateLimited": "Too many attempts. Try again later.",
-        "generic": "Could not publish the review."
+        "generic": "Could not publish the review.",
+        "unavailable": "Writing reviews isn't available right now."
       }
     },
     "studio": {
@@ -871,7 +873,8 @@
       "phone": "Invalid phone number.",
       "consent": "Please agree to continue.",
       "rateLimited": "Too many projects sent. Try again later.",
-      "generic": "Could not send."
+      "generic": "Could not send.",
+      "unavailable": "Sending projects for quotes isn't available right now."
     },
     "created": "Your project was sent! We invited {count} agencies to send quotes.",
     "saveLink": "Save this link to follow quotes from any device:",
@@ -1475,7 +1478,8 @@
         "kpis": "Complete each target (name and number), up to six.",
         "signature": "Draw your signature to sign.",
         "rounds": "Pick the number of revision rounds (0 to 10).",
-        "partner": "You can contract with a partner agency only after the partnership was accepted."
+        "partner": "You can contract with a partner agency only after the partnership was accepted.",
+        "unavailable": "Creating contracts isn't available right now."
       },
       "results": {
         "title": "Results and reporting",
@@ -1846,7 +1850,9 @@
       "liveBody": "The client pays each milestone to Sawwiq's licensed payment partner, which holds it until the milestone is accepted and then pays the agency. Sawwiq never holds the money in its own accounts.",
       "builderFeeLive": "Sawwiq's fee: {fee}% of each amount released to you; nothing refunded carries a fee.",
       "builderFeeTest": "No fee in test mode. Once live: {fee}% of each amount released to the agency.",
-      "checkoutTest": "Test checkout: no real money is charged."
+      "checkoutTest": "Test checkout: no real money is charged.",
+      "soonTitle": "Protected payments: coming soon",
+      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee."
     },
     "cancelMutual": {
       "title": "Cancel by agreement",
@@ -2064,7 +2070,8 @@
         "signature": "Draw your signature to sign.",
         "agree": "Tick the box to agree.",
         "rateLimited": "Too many attempts. Try again later.",
-        "invalid": "Check the form and try again."
+        "invalid": "Check the form and try again.",
+        "unavailable": "NDAs aren't available right now."
       }
     },
     "ndaClient": {
@@ -2468,7 +2475,8 @@
       "self": "That's your own page.",
       "notFound": "This page isn't available.",
       "exists": "There's already an open request between you.",
-      "generic": "Could not send."
+      "generic": "Could not send.",
+      "unavailable": "The partner network isn't available right now."
     },
     "form": {
       "kind": "You are",
@@ -2524,6 +2532,112 @@
       "confirm": "The handle doesn't match.",
       "openContracts": "Finish or cancel these contracts first: {contracts}.",
       "rateLimited": "Too many attempts. Try again in a few minutes."
+    }
+  },
+  "Features": {
+    "nav": "Features",
+    "title": "Platform features",
+    "intro": "Choose what is live on Sawwiq. Changes apply within seconds and are recorded in the audit log. Contracts and records that already exist keep working whatever you choose.",
+    "states": {
+      "on": "On",
+      "soon": "Coming soon",
+      "off": "Off"
+    },
+    "stateHints": {
+      "on": "everyone can use it",
+      "soon": "shown as under construction; pilot agencies and staff can use it",
+      "off": "hidden everywhere"
+    },
+    "pilots": "Pilot agencies (handles, separated by commas) who can use it now",
+    "save": "Save",
+    "saved": "Saved",
+    "error": "Couldn't save. Check the values and try again.",
+    "groups": {
+      "money": "Money",
+      "work": "Contracts and work",
+      "discovery": "Finding agencies",
+      "trust": "Trust",
+      "network": "Agency network"
+    },
+    "soonTitle": "Coming soon",
+    "soonShort": "coming soon",
+    "back": "Back to Sawwiq",
+    "items": {
+      "protected_payments": {
+        "name": "Protected milestone payments",
+        "desc": "The client pays each milestone to Sawwiq's licensed payment partner, which pays the agency when the milestone is accepted. While not on, contracts are signed with direct payment between the two sides.",
+        "soon": "Protected payments through a licensed payment partner are under construction. For now, contracts on Sawwiq record milestones and checklists, and the client pays the agency directly."
+      },
+      "paid_plans": {
+        "name": "Paid plans for agencies",
+        "desc": "Pro and Business subscriptions with priority placement, always labelled.",
+        "soon": "Paid plans are coming soon. Every agency uses Sawwiq for free during the launch."
+      },
+      "contracts": {
+        "name": "Contracts",
+        "desc": "Agencies send milestone contracts that clients sign by private link.",
+        "soon": "Creating new contracts is coming soon. Contracts already sent keep working."
+      },
+      "ndas": {
+        "name": "NDAs",
+        "desc": "Non-disclosure agreements signed on Sawwiq.",
+        "soon": "NDAs are coming soon."
+      },
+      "quote_requests": {
+        "name": "Quote requests",
+        "desc": "Businesses send a project to matched agencies and compare quotes.",
+        "soon": "Sending a project for quotes is coming soon. Meanwhile, browse agencies and contact them directly."
+      },
+      "ai_matchmaker": {
+        "name": "AI matchmaker",
+        "desc": "A guided chat that recommends agencies and a realistic budget.",
+        "soon": "The AI matchmaker is under construction. Meanwhile, browse agencies by service and city."
+      },
+      "messaging": {
+        "name": "Messages to agencies",
+        "desc": "Visitors message an agency through Sawwiq without an account.",
+        "soon": "Messaging agencies through Sawwiq is coming soon. Use WhatsApp from the agency's page."
+      },
+      "reviews": {
+        "name": "Writing reviews",
+        "desc": "Invited clients and clients who contacted an agency can review it.",
+        "soon": "Writing reviews is coming soon."
+      },
+      "partners": {
+        "name": "Partner network",
+        "desc": "Agencies and freelancers find each other to fill gaps in their teams.",
+        "soon": "The partner network is under construction."
+      },
+      "demo_view": {
+        "name": "Demo view",
+        "desc": "Visitors can explore sample agencies, clearly labelled, when real ones are few.",
+        "soon": "The demo view is being prepared."
+      }
+    },
+    "golive": {
+      "title": "Protected payments: go-live checklist",
+      "intro": "Real money moves only when every step is done and the live switch is set in the deployment (PROTECTED_PAYMENTS_LIVE=true with the partner connected). Tick the steps you finish outside the platform; the others are checked automatically.",
+      "statusNotReady": "Not ready: payments stay in test mode and the feature stays \"Coming soon\" for clients.",
+      "statusReady": "Ready: every step is done. Ask Claude to set the live switch, then turn the feature on (or pilots first).",
+      "statusLive": "Live: real protected payments are running.",
+      "auto": "checked automatically",
+      "doneOn": "Done on {date}",
+      "docs": "The full go-live pack (partner letter in Arabic and English, lawyer brief, step-by-step) is in docs/33-protected-payments-go-live.md.",
+      "steps": {
+        "partnerChosen": "Payment partner chosen (PayTabs, HyperPay or a bank escrow service)",
+        "partnerSigned": "Partner contract signed; agencies' onboarding (KYC) agreed",
+        "lawyerReviewed": "A Jordanian lawyer reviewed the contract terms, the payment section and the privacy notice",
+        "feeAccount": "Sawwiq's own bank account set up with the partner to receive the fee",
+        "adapterConnected": "Partner connected in the code (sandbox keys in GitHub secrets)",
+        "webhookSecret": "Webhook signing secret set",
+        "dailyJob": "Daily job secret set (reminders, deemed acceptance, payout retries)",
+        "email": "Email notifications configured",
+        "staff2fa": "Two-factor sign-in available for staff",
+        "sandboxTested": "Full milestone flow tested in the partner's sandbox (pay, release, refund, dispute, chargeback)",
+        "pilotsChosen": "Pilot agencies chosen and added under \"Coming soon\"",
+        "disputeCover": "Someone assigned to review disputes and stuck payouts every day",
+        "liveSwitch": "Live switch set in the deployment"
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
 
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
@@ -196,6 +197,8 @@ export async function markAllReadAction() {
 export type InviteState = { token?: string; clientName?: string; error?: string } | undefined;
 
 export async function createReviewInviteAction(_: InviteState, formData: FormData): Promise<InviteState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("reviews"))) return { error: "unavailable" };
   const { agency } = await requireAgency();
   const clientName = String(formData.get("clientName") ?? "").trim().slice(0, 80);
   const { token } = await createReviewInvite(agency.id, clientName);
@@ -325,6 +328,8 @@ export type PartnerState = { ok?: boolean; error?: string } | undefined;
 
 /** Studio → Partners: ask a freelancer or agency to work together on the roles you lack. */
 export async function sendPartnerRequestAction(_: PartnerState, formData: FormData): Promise<PartnerState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("partners"))) return { error: "unavailable" };
   const { agency } = await requireAgency();
   const to = z.string().uuid().safeParse(formData.get("toAgencyId"));
   if (!to.success) return { error: "generic" };

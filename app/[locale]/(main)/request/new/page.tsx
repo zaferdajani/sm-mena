@@ -6,6 +6,9 @@ import { serviceAndCityOptions } from "@/lib/form-options";
 import { CITIES } from "@/lib/labels";
 import { isServiceKey } from "@/lib/taxonomy";
 import { demoMode } from "@/lib/demo-mode";
+import { featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/request/new">): Promise<Metadata> {
   const { locale } = await params;
@@ -16,6 +19,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/request/
 export default async function NewRequestPage({ params, searchParams }: PageProps<"/[locale]/request/new">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const gate = await featureGate("quote_requests");
+  if (gate === "off") notFound();
+  if (gate === "soon") return <ComingSoon feature="quote_requests" />;
   const sp = await searchParams;
   const service = typeof sp.service === "string" && isServiceKey(sp.service) ? sp.service : null;
   const city = typeof sp.city === "string" && (CITIES as readonly string[]).includes(sp.city) ? sp.city : null;

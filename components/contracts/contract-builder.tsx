@@ -1,6 +1,6 @@
 "use client";
 
-import { FlaskConical, Handshake, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { Construction, FlaskConical, Handshake, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 import { createContractAction } from "@/app/[locale]/(main)/contract-actions";
@@ -58,6 +58,7 @@ export function ContractBuilder({
   currency,
   countryName,
   paymentsLive,
+  protectedOpen,
   reviewDays,
 }: {
   initial: BuilderInitial;
@@ -68,6 +69,8 @@ export function ContractBuilder({
   countryName: string;
   /** Whether protected payments are live (lib/payments/readiness.ts); new contracts record it. */
   paymentsLive: boolean;
+  /** Protected payments available to this agency (Admin → Features); otherwise the contract is direct. */
+  protectedOpen: boolean;
   reviewDays: number;
 }) {
   const t = useTranslations("Contracts.builder");
@@ -139,7 +142,7 @@ export function ContractBuilder({
     specialRequests: requests.filter((r) => r.text.trim()),
     startDate: start,
     endDate: end,
-    paymentMode: "protected",
+    paymentMode: protectedOpen ? "protected" : "direct",
     nda,
     ndaExtra: nda ? ndaExtra : null,
     ndaYears: nda ? ndaYears : null,
@@ -362,6 +365,14 @@ export function ContractBuilder({
       </Step>
 
       <Step n={8} title={tl("paymentTitle")}>
+        {!protectedOpen ? (
+          <div className="space-y-1 rounded-xl border-2 border-dashed p-4" data-testid="direct-payment">
+            <span className="flex items-center gap-2 font-semibold">
+              <Construction className="size-5 text-muted-foreground" /> {tr("soonTitle")}
+            </span>
+            <span className="block text-sm text-muted-foreground">{tr("soonBody")}</span>
+          </div>
+        ) : (
         <div className={paymentsLive ? "space-y-1 rounded-xl border-2 border-brand bg-brand/5 p-4" : "space-y-1 rounded-xl border-2 border-amber-500/50 bg-amber-500/10 p-4"} data-testid="guaranteed-payment" data-live={paymentsLive ? "true" : "false"}>
           <span className="flex items-center gap-2 font-semibold">
             {paymentsLive ? <ShieldCheck className="size-5 text-brand" /> : <FlaskConical className="size-5 text-amber-600" />} {tr(paymentsLive ? "liveTitle" : "testTitle")}
@@ -369,6 +380,7 @@ export function ContractBuilder({
           <span className="block text-sm text-muted-foreground">{tr(paymentsLive ? "liveBody" : "testBody")}</span>
           <span className="block text-xs text-muted-foreground">{tr(paymentsLive ? "builderFeeLive" : "builderFeeTest", { fee: feePercent })}</span>
         </div>
+        )}
         <div className="grid gap-1.5">
           <Label htmlFor="a-terms">{tl("agencyTerms")}</Label>
           <Textarea id="a-terms" value={agencyTerms} onChange={(e) => setAgencyTerms(e.target.value)} placeholder={tl("agencyTermsPh")} rows={3} maxLength={3000} dir="auto" data-testid="agency-terms" />

@@ -41,3 +41,16 @@ export const PAYMENT_SECTION: Record<PaymentState, Bi> = {
     en: "Protected payments on Sawwiq are in test mode until Sawwiq's licensed payment partner is connected: the pay-in, release and refund steps on the platform are a simulation with no real money, and Sawwiq holds no money and guarantees no payout. The parties settle milestone payments directly between themselves and still use the platform's checklists, review deadlines and contract record as written. Sawwiq charges no fee on this contract in test mode.",
   },
 };
+
+/**
+ * The payment section of a direct contract (terms v4), used while protected
+ * payments are switched off or "coming soon" (Admin → Features): the client
+ * pays the agency directly and Sawwiq takes no fee.
+ */
+export const PAYMENT_DIRECT: { heading: Bi; body: Bi } = {
+  heading: { ar: "الدفع", en: "Payment" },
+  body: {
+    ar: "يدفع العميل مبلغ كل مرحلة للوكالة مباشرة وفق ما يتفق عليه الطرفان. تسجّل سوّق العقد وقوائم التسليم ومواعيد المراجعة والتأكيدات، لكنها لا تستلم أي مبلغ ولا تحفظه ولا تضمن دفعه أو تسليم العمل، ولا تتقاضى رسوماً على هذا العقد. الدفع المحمي عبر شريك الدفع المرخّص لدى سوّق غير متاح بعد.",
+    en: "The client pays the agency each milestone's amount directly, as the parties agree. Sawwiq records the contract, the checklists, the review deadlines and the confirmations, but does not receive, hold or guarantee any payment or delivery, and charges no fee on this contract. Protected payments through Sawwiq's licensed payment partner are not available yet.",
+  },
+};
