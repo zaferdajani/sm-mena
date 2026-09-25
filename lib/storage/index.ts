@@ -47,7 +47,7 @@ function localStorage(): Storage {
 function supabaseStorage(): Storage {
   const url = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const bucket = process.env.SUPABASE_BUCKET ?? "media";
+  const bucket = process.env.SUPABASE_BUCKET || "media";
   if (!url || !serviceKey) {
     throw new Error("STORAGE_PROVIDER=supabase needs SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
   }

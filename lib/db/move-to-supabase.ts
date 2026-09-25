@@ -104,7 +104,7 @@ const TYPES: Record<string, string> = { png: "image/png", jpg: "image/jpeg", web
 async function moveFiles(uploadsDir: string) {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const bucket = process.env.SUPABASE_BUCKET ?? "media";
+  const bucket = process.env.SUPABASE_BUCKET || "media";
   if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set.");
   const { createClient } = await import("@supabase/supabase-js");
   const client = createClient(url, key, { auth: { persistSession: false } });
