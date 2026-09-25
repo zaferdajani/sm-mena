@@ -34,7 +34,7 @@ On the first boot with `DATABASE_URL` (`scripts/docker-entrypoint.sh` → `npm r
    - Counters (sequences) continue after the copied rows.
    - If Supabase already has data, the copy is skipped.
 2. **Files.** Every uploaded file (post photos, avatars, backgrounds) goes into a **public** bucket `media`, created if missing. Contracts, NDAs and signatures are stored in the database, not in files.
-3. **Marker.** A marker file `/data/.moved-to-supabase` is written, so later boots don't copy again.
+3. **Markers.** `/data/.moved-to-supabase` (database) and `/data/.files-moved-to-supabase` (files) stop later boots from copying again. They are separate: if the Storage keys are missing or wrong, the database still moves, the files keep being served from the Fly disk, and the next deploy with the right keys copies them.
 4. **Old data kept.** The old database and files stay on the Fly disk as a backup.
 5. **If the copy fails,** the site keeps running on the old database, and the deploy prints a warning: "the move to Supabase failed". Run `flyctl logs -a sawwiq-jo` and read the lines that start with `[move]`. Fix the cause (usually a wrong password in `DATABASE_URL`), then deploy again.
 
@@ -48,5 +48,5 @@ The deploy waits up to 6 minutes for the first boot. Afterwards `https://sawwiq.
 ## After the move
 
 - Supabase makes daily backups on the Pro plan; point-in-time restore is optional.
-- **Deleting the old volume copy.** Wait a couple of weeks, then delete `/data/pglite` and `/data/uploads` from the Fly disk if you want to. `flyctl ssh console -a sawwiq-jo`, then `rm -rf /data/pglite /data/uploads`. Keep the marker file.
+- **Deleting the old volume copy.** Wait a couple of weeks, then delete `/data/pglite` and `/data/uploads` from the Fly disk if you want to. `flyctl ssh console -a sawwiq-jo`, then `rm -rf /data/pglite /data/uploads`. Keep the marker files.
 - **Staying on Fly.** Fly still runs the website code (pages, logins, contracts, chat). Supabase only stores the data. To move the website to Vercel later, `vercel.json` already exists; it would use the same Supabase secrets.
