@@ -94,3 +94,21 @@ test("switching language re-words the wizard's questions, and Next sits under th
   await page.getByTestId("choice-group-social_media").click();
   await expect(next).toBeEnabled();
 });
+
+test("each answer brings the next question and its options into view", async ({ page }) => {
+  await page.goto("/ar/match");
+  const question = page.getByTestId("assistant-message").last();
+  const choices = page.getByTestId("wizard-choices");
+  const nearTop = async () => expect.poll(async () => (await question.boundingBox())!.y).toBeLessThan(200);
+
+  await page.getByTestId("choice-group-social_media").click();
+  await page.getByTestId("choice-next").click();
+  await expect(choices).toHaveAttribute("data-step", "services");
+  await nearTop();
+  await expect(choices.locator("button").first()).toBeInViewport();
+
+  await page.getByTestId("choice-any").click();
+  await expect(choices).toHaveAttribute("data-step", "industry");
+  await nearTop();
+  await expect(choices.locator("button").first()).toBeInViewport();
+});
