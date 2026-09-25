@@ -1,3 +1,5 @@
+import { isStaffRole } from "@/lib/auth/permissions";
+import { getSessionUser } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Lang } from "@/components/landing/copy";
@@ -23,11 +25,18 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
 export default async function LandingPage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [country, chosen] = await Promise.all([currentCountry(), chosenCountry()]);
+  const [country, chosen, user] = await Promise.all([currentCountry(), chosenCountry(), getSessionUser()]);
+  // Header account button: sign in, or back to the studio / admin console.
+  const ar = locale !== "en";
+  const account = !user
+    ? { href: `/${locale}/login`, label: ar ? "تسجيل الدخول" : "Sign in" }
+    : isStaffRole(user.role)
+      ? { href: `/${locale}/admin`, label: ar ? "لوحة الإدارة" : "Admin" }
+      : { href: `/${locale}/studio`, label: ar ? "الاستوديو" : "Studio" };
   return (
     <>
       <JsonLd data={[organizationLd(), websiteLd(locale)]} />
-      <SawwiqPage chosen={chosen !== null} country={country} lang={(locale === "en" ? "en" : "ar") as Lang} />
+      <SawwiqPage account={account} chosen={chosen !== null} country={country} lang={(locale === "en" ? "en" : "ar") as Lang} />
     </>
   );
 }

@@ -142,6 +142,28 @@
 .sw-header__tools { display: flex; align-items: center; gap: 0.625rem; min-width: 0; }
 .sw-header__nav + .sw-header__tools { margin-inline-start: 0.5rem; }
 .sw-header__tools .sw-switch { flex: none; }
+.sw-signin {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.5rem;
+  padding-inline: 0.9rem;
+  border-radius: var(--sw-pill);
+  background: var(--sw-green);
+  color: #fff;
+  font-family: var(--sw-font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: filter var(--sw-fast) ease;
+}
+.sw-signin:hover { filter: brightness(1.08); }
+/* Narrow phones: the icon alone keeps the header on one line. */
+@media (max-width: 520px) {
+  .sw-signin { width: 2.5rem; padding: 0; justify-content: center; }
+  .sw-signin span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 .sw-switch__knob {
   position: absolute;
   top: 3px;
@@ -220,10 +242,27 @@
 .sw { --sw-scrim-dir: 90deg; }
 [dir="rtl"] .sw { --sw-scrim-dir: 270deg; }
 [dir="ltr"] .sw .scroll-scrub__title { max-width: 13ch; line-height: 1; letter-spacing: -0.035em; }
+/* Arabic needs room above and below the line for dots and descenders, and no
+   tracking (negative letter-spacing pulls joined letters apart). */
+[dir="rtl"] .sw .scroll-scrub__title { max-width: none; font-size: clamp(2.1rem, 3.6vw, 4rem); line-height: 1.35; letter-spacing: 0; }
+[dir="rtl"] .sw .scroll-scrub__body { margin-top: 1rem; line-height: 1.9; }
+[dir="rtl"] .sw .scroll-scrub__tags { margin-top: 1.25rem; }
+
+[dir="rtl"] .sw .sw-band__label { line-height: 1.4; }
+[dir="rtl"] .sw .sw-city__name { line-height: 1.3; }
 .sw .scroll-scrub__body { max-width: 40ch; font-family: var(--sw-font-body); font-size: clamp(1.0625rem, 1.3vw, 1.25rem); line-height: 1.75; }
 .sw .scroll-scrub__copy { width: min(32rem, 38vw); }
 .sw .scroll-scrub__copy::before { display: none; }
-.sw .scroll-scrub__chapter-pin { padding-top: calc(var(--sw-header-h) + 3rem); }
+/* Mid-size screens: the photos sit behind the text, so give the words a soft limestone backdrop. */
+@media (max-width: 1240px) {
+  /* isolate: keeps the backdrop (z-index -1) above the film, just under the words. */
+  .sw .scroll-scrub__copy { isolation: isolate; }
+  .sw .scroll-scrub__copy::before {
+    display: block;
+    inset: -3rem -4rem;
+    background: radial-gradient(ellipse at center, rgb(242 242 237 / 0.97) 0%, rgb(242 242 237 / 0.9) 60%, transparent 86%);
+  }
+}.sw .scroll-scrub__chapter-pin { padding-top: calc(var(--sw-header-h) + 3rem); }
 .sw .scroll-scrub__tags li {
   display: inline-flex;
   align-items: center;

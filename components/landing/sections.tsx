@@ -6,7 +6,7 @@ import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./cta
 import { MilestoneLedger } from "./ledger";
 import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
-export function SiteHeader({ lang, country, chosen }: { lang: Lang; country: CountryCode; chosen: boolean }) {
+export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
   const c = siteCopy[lang];
   return (
     <header className="sw-header">
@@ -31,6 +31,13 @@ export function SiteHeader({ lang, country, chosen }: { lang: Lang; country: Cou
           variant="landing"
         />
         <LangSwitch lang={lang} />
+        <a className="sw-signin" href={account.href} data-testid="landing-account">
+          <svg aria-hidden="true" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21a8 8 0 0 1 16 0" />
+          </svg>
+          <span>{account.label}</span>
+        </a>
       </div>
     </header>
   );

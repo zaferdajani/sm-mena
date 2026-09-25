@@ -1,4 +1,4 @@
-import { LifeBuoy } from "lucide-react";
+import { LifeBuoy, LogIn } from "lucide-react";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
@@ -54,7 +54,14 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {th("brand")}
         </Link>
         <nav aria-label={t("menu")}>
-          <SideNav items={[...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3)]} />
+          <SideNav
+            items={[
+              ...items.slice(0, 3),
+              { href: "/hire", label: t("hire"), icon: "hire" },
+              ...items.slice(3),
+              ...(user ? [] : [{ href: "/login", label: t("login"), icon: "login" } as NavItem]),
+            ]}
+          />
           <HeaderBell variant="row" />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
@@ -79,9 +86,16 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex min-w-0 items-center gap-1">
           {picker}
           <HeaderBell />
-          <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
-            <LifeBuoy className="size-5" />
-          </Link>
+          {user ? (
+            <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
+              <LifeBuoy className="size-5" />
+            </Link>
+          ) : (
+            // Signed out: sign-in takes the support icon's place (support stays in the footer).
+            <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login">
+              <LogIn className="size-5" />
+            </Link>
+          )}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
         </div>
       </header>

@@ -44,6 +44,7 @@ export async function SiteFooter() {
             <li><Link href="/contact" className="hover:text-foreground hover:underline">{t("contact")}</Link></li>
             <li><Link href="/join" className="hover:text-foreground hover:underline">{t("forAgencies")}</Link></li>
             <li><Link href="/legal" className="hover:text-foreground hover:underline">{t("legal")}</Link></li>
+            <li><Link href="/support" className="hover:text-foreground hover:underline">{t("report")}</Link></li>
             <li>
               <Link href="/" locale={other} hrefLang={other} className="hover:text-foreground hover:underline">
                 {t("otherLanguage")}

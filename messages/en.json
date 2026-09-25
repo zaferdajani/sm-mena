@@ -216,7 +216,8 @@
     "menu": "Menu",
     "newPost": "New post",
     "hire": "Hire an agency",
-    "match": "AI assistant"
+    "match": "AI assistant",
+    "login": "Sign in"
   },
   "Common": {
     "verified": "Verified",

@@ -1,12 +1,12 @@
 "use client";
 
-import { Bookmark, BriefcaseBusiness, Compass, Home, LayoutDashboard, Shield, Sparkles, Store } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, Compass, Home, LayoutDashboard, LogIn, Shield, Sparkles, Store } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-export type NavItem = { href: string; label: string; icon: "home" | "explore" | "hire" | "match" | "saved" | "studio" | "join" | "admin" };
+export type NavItem = { href: string; label: string; icon: "home" | "explore" | "hire" | "match" | "saved" | "studio" | "join" | "admin" | "login" };
 
-const ICONS = { home: Home, explore: Compass, hire: BriefcaseBusiness, match: Sparkles, saved: Bookmark, studio: LayoutDashboard, join: Store, admin: Shield };
+const ICONS = { home: Home, explore: Compass, hire: BriefcaseBusiness, match: Sparkles, saved: Bookmark, studio: LayoutDashboard, join: Store, admin: Shield, login: LogIn };
 
 function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
