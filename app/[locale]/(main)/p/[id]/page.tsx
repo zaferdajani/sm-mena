@@ -9,6 +9,7 @@ import { ReportDialog } from "@/components/post/report-dialog";
 import { Link } from "@/i18n/navigation";
 import { recordView } from "@/lib/data/interactions";
 import { getFeed, getPost } from "@/lib/data/posts";
+import { localized, localizedPost } from "@/lib/content-lang";
 import { withState } from "@/lib/feed";
 import { serviceLabel } from "@/lib/labels";
 import { isCrawlerRequest } from "@/lib/request";
@@ -19,8 +20,9 @@ const captionFits = (caption: string, locale: string) => (/[\u0600-\u06FF]/.test
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">): Promise<Metadata> {
   const { locale, id } = await params;
-  const post = await getPost(id);
-  if (!post) return {};
+  const found = await getPost(id);
+  if (!found) return {};
+  const post = localizedPost(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
   const service = post.services[0] ? serviceLabel(post.services[0], locale) : "";
   const image = post.images[0];
@@ -40,8 +42,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">
 export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const post = await getPost(id);
-  if (!post) notFound();
+  const found = await getPost(id);
+  if (!found) notFound();
+  const post = localizedPost(found, locale);
   const t = await getTranslations("Post");
   const tSeo = await getTranslations("Seo");
   const visitorId = await getVisitorId();
@@ -51,7 +54,8 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
     (await isCrawlerRequest()) ? null : recordView("post_view", post.agency.id, post.id, visitorId),
   ]);
   const others = more.items.filter((p) => p.id !== post.id).slice(0, 6);
-  const clientName = post.clientId ? (await clientNames([post.clientId])).get(post.clientId) : undefined;
+  const client = post.clientId ? (await clientNames([post.clientId])).get(post.clientId) : undefined;
+  const clientName = client ? localized({ name: client.name }, client.translation, post.contentLang, locale).name : undefined;
   const tp = await getTranslations("Profile");
 
   return (

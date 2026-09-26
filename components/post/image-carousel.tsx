@@ -12,11 +12,14 @@ export function ImageCarousel({
   alt,
   priority = false,
   onDoubleTap,
+  fill = false,
 }: {
   images: ImageView[];
   alt: string;
   priority?: boolean;
   onDoubleTap?: () => void;
+  /** Fill the parent (the phone feed's full-screen post): whole image shown, no fixed ratio. */
+  fill?: boolean;
 }) {
   const t = useTranslations("Post");
   const scroller = useRef<HTMLDivElement>(null);
@@ -37,17 +40,19 @@ export function ImageCarousel({
     el.scrollBy({ left: (rtl ? -1 : 1) * delta * el.clientWidth, behavior: "smooth" });
   };
 
-  if (!first) return <div className="aspect-square bg-muted" />;
+  if (!first) return <div className={fill ? "h-full bg-muted" : "aspect-square bg-muted"} />;
 
   return (
-    <div className="relative bg-muted" style={{ aspectRatio: ratio }} onDoubleClick={onDoubleTap}>
+    <div className={cn("relative bg-muted", fill && "h-full bg-black")} style={fill ? undefined : { aspectRatio: ratio }} onDoubleClick={onDoubleTap}>
       <div
         ref={scroller}
         onScroll={onScroll}
         className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {images.map((image, i) => (
-          <div key={image.url} className="relative h-full w-full shrink-0 snap-center" style={{ backgroundColor: image.color }}>
+          <div key={image.url} className="relative h-full w-full shrink-0 snap-center overflow-hidden" style={{ backgroundColor: image.color }}>
+            {/* Full screen: the same photo, blurred, fills the space around the whole one (same file, no extra download). */}
+            {fill && <Image src={image.url} alt="" aria-hidden fill unoptimized sizes="100vw" className="scale-110 object-cover opacity-70 blur-2xl" />}
             <Image
               src={image.url}
               alt={image.alt || `${alt} ${t("slide", { n: i + 1, total: images.length })}`}
@@ -55,7 +60,7 @@ export function ImageCarousel({
               unoptimized
               priority={priority && i === 0}
               sizes="(max-width: 640px) 100vw, 470px"
-              className="object-cover"
+              className={fill ? "object-contain" : "object-cover"}
             />
           </div>
         ))}
@@ -81,7 +86,7 @@ export function ImageCarousel({
           >
             <ChevronRight className="size-4 rtl:rotate-180" />
           </button>
-          <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1">
+          <div className={cn("absolute inset-x-0 flex justify-center gap-1", fill ? "top-3" : "bottom-2")}>
             {images.map((image, i) => (
               <span key={image.url} className={cn("size-1.5 rounded-full bg-white/60", i === index && "bg-white")} />
             ))}

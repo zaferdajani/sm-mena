@@ -43,6 +43,16 @@ npm run i18n:translate -- --to ur --provider pseudo   # offline pseudo-translati
 - Every result is validated (`lib/i18n/pipeline.ts`): ICU argument names and plural/select structure must match, braces must balance, brand and platform names (Sawwiq, WhatsApp, Instagram, …, JOD) must survive, and long sentences must actually change. Failures are retried once in small batches, then kept in English and listed.
 - Switching a language on: review `messages/<code>.json` with a fluent speaker, set `enabled: true` in `i18n/languages.ts`, add the code to `locales` in `i18n/routing.ts` and to the `(ar|en)` handle matcher in `proxy.ts`, and add its three `LangOffer` strings.
 
+## Agency content in two languages
+
+Agencies write their page in a main language (`agencies.content_lang`, `ar` or `en`) and may add the same text in the other one. The second language is optional and field by field.
+
+- Storage: a `translation` jsonb on `agencies` (name, bio, about, strengths), `posts` (caption, result), `portfolio_clients` (name, description) and `packages` (title, description, deliverables). The existing columns stay the main text. Migration `0010_agency_translations`.
+- Forms: Studio profile, post, client and package forms have an "Add it in English / بالعربية" section; its fields are named `tr_*` and validated by the schemas in `lib/content-lang.ts`. Switching the profile's main language swaps the main and `tr_` texts so each stays labelled with its real language.
+- Display: `localized`, `localizedAgency`, `localizedPost` and `agencyName` show the reader's locale when that field is filled, else the main text. Search text includes both languages.
+- Legal and transactional names (contracts, NDAs, chat, reviews) keep the main text.
+- Tests: `tests/unit/content-lang.test.ts`, `tests/e2e/bilingual.spec.ts`.
+
 ## Checks
 
 - `tests/unit/messages.test.ts`: every locale has the same keys.

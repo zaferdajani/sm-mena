@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.wrap{position:absolute;left:0;right:0;text-align:center}
+.tag{font-size:50px;color:var(--ink)}
+.cta{display:inline-flex;align-items:center;gap:18px;margin-top:34px;background:var(--green);color:#fff;border-radius:999px;padding:22px 44px;font-size:40px;font-weight:600;font-family:'Readex Pro'}
+.url{font-family:'Readex Pro';font-weight:500;font-size:34px;color:var(--muted);margin-top:26px;letter-spacing:.5px}
+.note{font-size:24px;color:var(--muted);margin-top:18px}
+.wide .tag{font-size:40px}.wide .cta{font-size:32px;padding:16px 34px;margin-top:22px}.wide .url{font-size:28px;margin-top:16px}
+</style></head><body><div class="wrap"><div class="tag h"></div><div class="cta"></div><div class="url">sawwiq.org</div><div class="note"></div></div>
+<script>const q=new URLSearchParams(location.search);const ar=(q.get('lang')||'ar')==='ar';document.documentElement.dir=ar?'rtl':'ltr';
+if(innerWidth>innerHeight)document.body.classList.add('wide');
+document.querySelector('.tag').innerHTML=q.get('tag')||'';document.querySelector('.cta').innerHTML=q.get('cta')||'';
+q.get('note')?document.querySelector('.note').innerHTML=q.get('note'):document.querySelector('.note').remove();
+if(q.get('url')==='0')document.querySelector('.url').remove();
+document.querySelector('.wrap').style.top=(q.get('y')||0.70*innerHeight)+'px';</script></body></html>

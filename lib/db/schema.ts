@@ -87,6 +87,12 @@ export const disputeStatus = pgEnum("dispute_status", ["open", "decided", "appea
 export const ledgerType = pgEnum("ledger_type", ["deposit", "release", "refund", "fee"]);
 
 export type DeliverableLine = { key: string; quantity: number; platform?: string | null };
+// An agency's text in its other language (the main text is in `agencies.content_lang`).
+// Empty or missing values fall back to the main text (lib/content-lang.ts).
+export type AgencyTranslation = { name?: string; bio?: string; about?: string; strengths?: string[] };
+export type PostTranslation = { caption?: string; result?: string };
+export type ClientTranslation = { name?: string; description?: string };
+export type PackageTranslation = { title?: string; description?: string; deliverables?: string[] };
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -184,6 +190,9 @@ export const agencies = pgTable(
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
     industries: text("industries").array().notNull().default(sql`'{}'::text[]`),
     languages: text("languages").array().notNull().default(sql`'{ar}'::text[]`),
+    // Language the agency writes its page in; `translation` holds the same text in the other one (lib/content-lang.ts).
+    contentLang: text("content_lang").notNull().default("ar"),
+    translation: jsonb("translation").$type<AgencyTranslation>().notNull().default({}),
     startingPriceJod: integer("starting_price_jod"),
     whatsapp: text("whatsapp"),
     phone: text("phone"),
@@ -237,6 +246,8 @@ export const posts = pgTable(
     platforms: text("platforms").array().notNull().default(sql`'{}'::text[]`),
     industry: text("industry"),
     result: text("result"),
+    // Caption and result in the agency's other language (lib/content-lang.ts).
+    translation: jsonb("translation").$type<PostTranslation>().notNull().default({}),
     // The client business this work was for (portfolio groups work by client).
     clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
     status: postStatus("status").notNull().default("published"),
@@ -269,6 +280,7 @@ export const portfolioClients = pgTable(
     industry: text("industry"),
     country: text("country"),
     description: text("description").notNull().default(""),
+    translation: jsonb("translation").$type<ClientTranslation>().notNull().default({}),
     links: jsonb("links").$type<ClientLink[]>().notNull().default([]),
     position: integer("position").notNull().default(0),
     createdAt: createdAt(),
@@ -514,6 +526,7 @@ export const packages = pgTable(
     priceJod: integer("price_jod").notNull(),
     billing: billing("billing").notNull().default("monthly"),
     deliverables: text("deliverables").array().notNull().default(sql`'{}'::text[]`),
+    translation: jsonb("translation").$type<PackageTranslation>().notNull().default({}),
     // Structured contents: [{ key: "reels", quantity: 12, platform: "instagram" }] (lib/deliverables.ts)
     items: jsonb("items").$type<DeliverableLine[]>().notNull().default([]),
     deliveryDays: integer("delivery_days"),

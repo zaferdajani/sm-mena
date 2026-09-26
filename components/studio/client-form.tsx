@@ -12,9 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LINK_KINDS, linkLabel, type LinkKind } from "@/lib/social-links";
 import { Field } from "./chips";
+import type { ClientTranslation, ContentLang } from "@/lib/content-lang";
+import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
-export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[] };
+export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[]; translation?: ClientTranslation | null };
 
 // Empty rows ready to fill for a new client: the accounts agencies run most.
 const STARTER: LinkKind[] = ["instagram", "tiktok", "facebook", "website"];
@@ -23,7 +25,7 @@ let rowSeq = 0;
 const row = (kind: string, value = "") => ({ id: ++rowSeq, kind, value });
 
 /** One portfolio client: its details and as many account rows as the agency needs. */
-export function ClientForm({ initial, industries, countries, defaultCountry, onDone }: { initial?: ClientFormInitial; industries: Option[]; countries: Option[]; defaultCountry: string; onDone?: () => void }) {
+export function ClientForm({ initial, industries, countries, defaultCountry, contentLang, onDone }: { initial?: ClientFormInitial; industries: Option[]; countries: Option[]; defaultCountry: string; contentLang: ContentLang; onDone?: () => void }) {
   const t = useTranslations("PortfolioClients");
   const [state, action, saving] = useActionState(saveClientAction, undefined);
   const [, startSave] = useTransition();
@@ -71,6 +73,18 @@ export function ClientForm({ initial, industries, countries, defaultCountry, onD
       <Field label={t("description")} htmlFor={`desc-${initial?.id ?? "new"}`}>
         <Textarea id={`desc-${initial?.id ?? "new"}`} name="description" rows={2} maxLength={500} defaultValue={initial?.description} placeholder={t("descriptionPlaceholder")} />
       </Field>
+      <OtherLanguage main={contentLang} filled={Boolean(initial?.translation?.name || initial?.translation?.description)}>
+        {(attrs, label) => (
+          <>
+            <Field label={label(t("name"))} htmlFor={`tr-name-${initial?.id ?? "new"}`}>
+              <Input id={`tr-name-${initial?.id ?? "new"}`} name="tr_name" maxLength={80} defaultValue={initial?.translation?.name ?? ""} {...attrs} />
+            </Field>
+            <Field label={label(t("description"))} htmlFor={`tr-desc-${initial?.id ?? "new"}`}>
+              <Textarea id={`tr-desc-${initial?.id ?? "new"}`} name="tr_description" rows={2} maxLength={500} defaultValue={initial?.translation?.description ?? ""} {...attrs} />
+            </Field>
+          </>
+        )}
+      </OtherLanguage>
 
       <fieldset className="grid gap-2">
         <legend className="mb-1 text-sm font-medium">{t("accounts")}</legend>
@@ -151,10 +165,10 @@ export function DeleteClientButton({ clientId }: { clientId: string }) {
 }
 
 /** A saved client in the studio list: its accounts at a glance, edited in place. */
-export function ClientItem({ client, industries, countries, industryLabel, postCount }: { client: ClientFormInitial; industries: Option[]; countries: Option[]; industryLabel: string | null; postCount: number }) {
+export function ClientItem({ client, industries, countries, industryLabel, postCount, contentLang }: { client: ClientFormInitial; industries: Option[]; countries: Option[]; industryLabel: string | null; postCount: number; contentLang: ContentLang }) {
   const t = useTranslations("PortfolioClients");
   const [editing, setEditing] = useState(false);
-  if (editing) return <ClientForm initial={client} industries={industries} countries={countries} defaultCountry={client.country ?? ""} onDone={() => setEditing(false)} />;
+  if (editing) return <ClientForm initial={client} industries={industries} countries={countries} defaultCountry={client.country ?? ""} contentLang={contentLang} onDone={() => setEditing(false)} />;
   return (
     <div className="rounded-xl border p-4" data-testid="client-item">
       <div className="flex flex-wrap items-start gap-2">

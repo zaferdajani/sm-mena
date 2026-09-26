@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { canUse } from "@/lib/feature-gate";
 import { PostForm } from "@/components/studio/post-form";
 import { requireAgency } from "@/lib/auth/guards";
+import { contentLang } from "@/lib/content-lang";
 import { postFormOptions } from "@/lib/studio-options";
 
 export default async function NewPostPage({ params }: PageProps<"/[locale]/studio/new">) {
@@ -24,7 +25,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
           </span>
         </Link>
       )}
-      <PostForm mode="create" {...await postFormOptions(agency.services, agency.id)} />
+      <PostForm mode="create" contentLang={contentLang(agency.contentLang)} {...await postFormOptions(agency.services, agency.id)} />
     </div>
   );
 }

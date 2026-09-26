@@ -522,7 +522,12 @@
       "servesGulf": "All Gulf",
       "servesAll": "All countries",
       "servesNone": "Clear",
-      "servicesHint": "Type part of a service name and pick it. If it's not in the list, add it: Sawwiq reviews new services."
+      "servicesHint": "Type part of a service name and pick it. If it's not in the list, add it: Sawwiq reviews new services.",
+      "contentLang": "Main language of your page",
+      "contentLangHint": "Write the name, bio and introduction below in this language, and add the other language if you like. Switching moves your texts between the two versions.",
+      "langAr": "العربية",
+      "langEn": "English",
+      "saveContinue": "Save and continue"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -539,7 +544,25 @@
     "billing": "Plan & billing",
     "security": "Security",
     "contracts": "Contracts",
-    "clients": "Clients"
+    "clients": "Clients",
+    "otherLanguage": {
+      "addEn": "Add an English version (optional)",
+      "addAr": "Add an Arabic version (optional)",
+      "hint": "Shown to people who browse Sawwiq in {language}. Empty fields show your main text.",
+      "english": "English",
+      "arabic": "Arabic",
+      "fieldIn": "{field} ({language})"
+    },
+    "setup": {
+      "title": "Set up your page",
+      "profile": "Complete your page: logo, short bio and services",
+      "packages": "Add your packages with clear prices",
+      "post": "Post your first work",
+      "done": "Done"
+    },
+    "savedProfile": "Page saved.",
+    "packagesWelcome": "Page saved. Next, add your packages: what you offer and for how much. Businesses compare them, and the AI assistant uses them to recommend you.",
+    "packagesSkip": "Skip for now and post your first work"
   },
   "Admin": {
     "title": "Admin",
@@ -988,7 +1011,8 @@
       "noPending": "Start again: the setup expired.",
       "alreadyOn": "Two-factor sign-in is already on.",
       "notConfigured": "Two-factor sign-in isn't available: the server has no MFA_ENCRYPTION_KEY.",
-      "requiredForAdmins": "Admins can't turn off two-factor sign-in."
+      "requiredForAdmins": "Admins can't turn off two-factor sign-in.",
+      "demo": "Two-factor sign-in is off for demo accounts."
     }
   },
   "Support": {
@@ -2502,7 +2526,20 @@
     "join": "Join as an agency",
     "sampleAgency": "Sample agency: made up to show how Sawwiq works. It is not a real business and can't take on work.",
     "samplePost": "Sample work from a demo agency, not a real business.",
-    "requestNote": "You're in the demo: this request goes only to sample agencies. Leave the demo to reach real agencies."
+    "requestNote": "You're in the demo: this request goes only to sample agencies. Leave the demo to reach real agencies.",
+    "title": "Sawwiq demo",
+    "intro": "Explore Sawwiq with sample agencies, work and requests. They are made up to show how Sawwiq works; nothing here reaches real agencies or clients.",
+    "asClient": {
+      "title": "Browse as a client",
+      "body": "See the work, search agencies and try the AI matchmaker. No sign-in needed."
+    },
+    "asAgency": {
+      "title": "Try the studio as {name}",
+      "body": "Edit the page, post work, answer requests and send quotes. No sign-in needed."
+    },
+    "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
+    "off": "The demo is switched off right now.",
+    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies."
   },
   "PartnerContracts": {
     "request": "Ask this partner for a contract",
@@ -2768,5 +2805,18 @@
       "useAsLogo": "Use as my page logo",
       "asClientLogos": "Add as client logos"
     }
+  },
+  "Intro": {
+    "label": "Sawwiq intro",
+    "skip": "Skip",
+    "soundOn": "Sound on"
+  },
+  "Feed": {
+    "typeBarLabel": "Business type",
+    "allTypes": "All",
+    "swipeHint": "Swipe up for more work",
+    "emptyType": "No work for this business type yet.",
+    "showAll": "Show all work",
+    "introEyebrow": "Looking for an agency?"
   }
 }

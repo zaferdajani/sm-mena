@@ -1,6 +1,6 @@
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { packages, type DeliverableLine, type Package } from "@/lib/db/schema";
+import { packages, type DeliverableLine, type Package, type PackageTranslation } from "@/lib/db/schema";
 
 export const MAX_PACKAGES = 6;
 
@@ -13,6 +13,8 @@ export type PackageInput = {
   deliverables: string[];
   items?: DeliverableLine[];
   deliveryDays?: number | null;
+  /** Title, description and deliverables in the agency's other language. */
+  translation?: PackageTranslation;
 };
 
 export async function listPackages(agencyId: string): Promise<Package[]> {

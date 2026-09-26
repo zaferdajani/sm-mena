@@ -40,6 +40,8 @@ const eslintConfig = defineConfig([
     "test-results/**",
     // Vendored ffmpeg.wasm engine, copied from node_modules at build time.
     "public/engines/**",
+    // Marketing recording/render scripts (Node CommonJS), not app code.
+    "marketing/tools/**",
   ]),
 ]);
 

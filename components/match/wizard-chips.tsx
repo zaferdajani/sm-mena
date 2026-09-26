@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Globe, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Globe, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { citiesOf, COUNTRIES, type CountryCode } from "@/lib/countries";
@@ -62,7 +62,8 @@ export function useRangeLabel() {
 
 /**
  * The tappable choices under the latest assistant question. Multi-select steps
- * collect picks (aria-pressed) and commit with "Next"; single-choice steps
+ * collect picks (aria-pressed) and commit with "Next" (its own row, below the
+ * options, disabled until something is picked); single-choice steps
  * commit on tap. `onAnswer` gets the answer and the text for the user's bubble.
  */
 export function WizardChips({
@@ -115,7 +116,10 @@ export function WizardChips({
     !aiMode && step !== "groups" && step !== "services" && step !== "results" && step !== "switch" && (need.groups.length > 0 || need.services.length > 0);
 
   let body: React.ReactNode = null;
+  // Multi-select steps commit with "Next", shown on its own row under the options.
+  let commit: (() => void) | null = null;
   if (step === "groups") {
+    commit = () => onAnswer({ step: "groups", groups: picked }, picked.map((g) => tw(`groups.${g}` as "groups.social_media")).join(sep));
     body = (
       <>
         {GROUPS.map((g) => (
@@ -123,13 +127,11 @@ export function WizardChips({
             {tw(`groups.${g}` as "groups.social_media")}
           </Chip>
         ))}
-        <Chip primary disabled={!picked.length} onClick={() => onAnswer({ step: "groups", groups: picked }, picked.map((g) => tw(`groups.${g}` as "groups.social_media")).join(sep))} testId="choice-next">
-          {tw("chips.next")}
-        </Chip>
       </>
     );
   } else if (step === "services") {
     const options = need.groups.flatMap(servicesOfGroup);
+    commit = () => onAnswer({ step: "services", services: picked }, picked.map((s) => serviceLabel(s, locale)).join(sep));
     body = (
       <>
         <Chip onClick={() => onAnswer({ step: "services", services: [] }, tw("chips.any"))} testId="choice-any">
@@ -140,9 +142,6 @@ export function WizardChips({
             {serviceLabel(s, locale)}
           </Chip>
         ))}
-        <Chip primary disabled={!picked.length} onClick={() => onAnswer({ step: "services", services: picked }, picked.map((s) => serviceLabel(s, locale)).join(sep))} testId="choice-next">
-          {tw("chips.next")}
-        </Chip>
       </>
     );
   } else if (step === "industry") {
@@ -152,6 +151,7 @@ export function WizardChips({
       </Chip>
     ));
   } else if (step === "platforms") {
+    commit = () => onAnswer({ step: "platforms", platforms: picked }, picked.map((p) => tPlat(p as "instagram")).join(sep));
     body = (
       <>
         {PLATFORM_CHOICES.map((p) => (
@@ -161,9 +161,6 @@ export function WizardChips({
         ))}
         <Chip onClick={() => onAnswer({ step: "platforms", platforms: [] }, tw("chips.notSure"))} testId="choice-not-sure">
           {tw("chips.notSure")}
-        </Chip>
-        <Chip primary disabled={!picked.length} onClick={() => onAnswer({ step: "platforms", platforms: picked }, picked.map((p) => tPlat(p as "instagram")).join(sep))} testId="choice-next">
-          {tw("chips.next")}
         </Chip>
       </>
     );
@@ -258,12 +255,26 @@ export function WizardChips({
   }
 
   return (
-    <div className="flex flex-wrap gap-2" data-testid="wizard-choices" data-step={step}>
-      {body}
-      {showNow && (
-        <Chip onClick={() => onShowNow(tw("chips.showNow"))} testId="choice-show-now">
-          {tw("chips.showNow")}
-        </Chip>
+    <div className="space-y-3" data-testid="wizard-choices" data-step={step}>
+      <div className="flex flex-wrap gap-2">
+        {body}
+        {showNow && (
+          <Chip onClick={() => onShowNow(tw("chips.showNow"))} testId="choice-show-now">
+            {tw("chips.showNow")}
+          </Chip>
+        )}
+      </div>
+      {commit && (
+        <button
+          type="button"
+          onClick={commit}
+          disabled={!picked.length}
+          data-testid="choice-next"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground outline-none transition-colors hover:bg-primary/85 focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground sm:w-auto sm:min-w-40"
+        >
+          {tw("chips.next")}
+          <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
+        </button>
       )}
     </div>
   );

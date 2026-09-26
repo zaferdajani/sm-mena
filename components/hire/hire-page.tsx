@@ -21,6 +21,7 @@ import { breadcrumbLd, faqLd, hireServiceLd } from "@/lib/structured-data";
 import { taxonomy } from "@/lib/taxonomy";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
+import { agencyName } from "@/lib/content-lang";
 import { canUse } from "@/lib/feature-gate";
 import { ClosestMatches } from "@/components/closest/closest-matches";
 import { closestAgencies } from "@/lib/matching/closest";
@@ -87,7 +88,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
             name: title,
             url: pageUrl,
             numberOfItems: real.length,
-            itemListElement: real.map((a, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}/${locale}/a/${a.handle}`, name: a.name })),
+            itemListElement: real.map((a, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE_URL}/${locale}/a/${a.handle}`, name: agencyName(a, locale) })),
           },
           hireServiceLd({
             locale,
@@ -145,10 +146,10 @@ export async function HirePage({ locale, service, city, country: countryParam }:
             {cards.map((a) => (
               <li key={a.id} className="flex flex-col rounded-xl border p-4">
                 <div className="flex items-start gap-3">
-                  <AgencyAvatar name={a.name} src={a.avatarUrl} size={52} />
+                  <AgencyAvatar name={agencyName(a, locale)} src={a.avatarUrl} size={52} />
                   <div className="min-w-0 flex-1">
                     <Link href={`/a/${a.handle}`} className="flex items-center gap-1 font-semibold">
-                      <span className="truncate">{a.name}</span>
+                      <span className="truncate">{agencyName(a, locale)}</span>
                       {a.isVerified && <VerifiedBadge label={tc("verified")} />}
                       {a.isDemo && <span className="rounded bg-amber-100 px-1.5 text-[10px] font-medium text-amber-900 dark:bg-amber-900 dark:text-amber-100" data-testid="demo-badge">{td("badge")}</span>}
                     </Link>

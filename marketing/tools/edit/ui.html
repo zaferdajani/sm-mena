@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+body{background:radial-gradient(120% 70% at 50% 35%,#fbfbf8 0%,#f2f2ed 60%,#e8e9e1 100%)}
+body.frameonly{background:transparent}
+.head{position:absolute;text-align:center;left:6%;right:6%}
+.head .t{font-size:66px}.head .s{font-size:36px;color:var(--muted);margin-top:14px}
+.chip{display:inline-block;background:var(--mint);color:var(--deep);border-radius:999px;padding:8px 22px;font-size:28px;font-weight:600;margin-bottom:22px}
+.phone{position:absolute;border-radius:78px;box-shadow:0 0 0 18px #13201a,0 0 0 20px #3a4a42,0 40px 90px rgba(16,35,26,.35)}
+body.frameonly .phone{box-shadow:0 0 0 18px #13201a,0 0 0 20px #3a4a42}
+body:not(.frameonly) .phone{background:#fff}
+.demo{position:absolute;font-size:24px;color:var(--muted);text-align:center;left:0;right:0}
+body.frameonly .head,body.frameonly .demo{display:none}
+body.bgonly .phone{box-shadow:0 40px 90px rgba(16,35,26,.35)}
+</style></head><body><div class="head"><div class="chip"></div><div class="t h"></div><div class="s"></div></div><div class="phone"></div><div class="demo"></div>
+<script>const q=new URLSearchParams(location.search);const ar=(q.get('lang')||'ar')==='ar';document.documentElement.dir=ar?'rtl':'ltr';
+if(q.get('mode')==='frame')document.body.classList.add('frameonly');if(q.get('mode')==='bg')document.body.classList.add('bgonly');
+const W=innerWidth,H=innerHeight;const [px,py,pw,ph]=(q.get('box')||'').split(',').map(Number);
+const p=document.querySelector('.phone');Object.assign(p.style,{left:px+'px',top:py+'px',width:pw+'px',height:ph+'px'});
+const hd=document.querySelector('.head');document.querySelector('.head .t').innerHTML=q.get('t')||'';
+q.get('s')?document.querySelector('.head .s').innerHTML=q.get('s'):document.querySelector('.head .s').remove();
+q.get('chip')?document.querySelector('.chip').innerHTML=q.get('chip'):document.querySelector('.chip').remove();
+if(W>H){Object.assign(hd.style,{left:ar?'46%':'6%',right:ar?'6%':'46%',top:'30%',textAlign:ar?'right':'left'});}else{hd.style.top='90px';}
+const d=document.querySelector('.demo');d.innerHTML=q.get('demo')||'';d.style.top=(py+ph+34)+'px';if(W>H){d.style.left=px+'px';d.style.width=pw+'px';d.style.right='auto'}
+</script></body></html>

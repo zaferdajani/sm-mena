@@ -25,6 +25,7 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
         <GoogleForm current={agency.googleMapsUrl ?? agency.googlePlaceId} />
       </div>
       <ProfileForm
+        welcome={welcome}
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingTexts: (await pendingTexts(agency.pendingServices)).map((p) => p.text) }}
         options={{
           roles: ROLES.map((r) => ({ key: r.key, label: locale === "ar" ? r.name_ar : r.name_en })),

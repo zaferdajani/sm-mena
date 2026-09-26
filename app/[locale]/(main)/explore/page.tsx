@@ -52,6 +52,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const currency = currencyOf(country);
   const t = await getTranslations("Explore");
   const tc = await getTranslations("Common");
+  const td = await getTranslations("Demo");
   const th = await getTranslations("Hire");
   const [tCity, tPlat, tInd] = await Promise.all([getTranslations("Cities"), getTranslations("Platforms"), getTranslations("Industries")]);
   const visitorId = await getVisitorId();
@@ -119,7 +120,8 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           (posts.items.length ? (
             <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
           ) : (
-            hasActiveFilters(p) ? closestBlock : <EmptySupply />
+            // Works are posts: a registered agency with nothing posted yet only appears under Agencies.
+            hasActiveFilters(p) ? closestBlock : <EmptySupply text={td("emptyWork")} />
           ))}
         {agencies &&
           (agencies.length ? (

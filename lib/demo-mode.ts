@@ -11,6 +11,9 @@ import { featureState } from "@/lib/features";
  */
 export const DEMO_COOKIE = "sw_demo";
 
+/** Demo agencies anyone can open the studio of from /demo, without a password (docs/35). */
+export const DEMO_STUDIO_HANDLES = ["nakhla.studio", "petra.growth"] as const;
+
 export async function demoMode(): Promise<boolean> {
   if ((await cookies()).get(DEMO_COOKIE)?.value !== "1") return false;
   // The demo view can be switched off (Admin → Features): then everyone sees real agencies only.

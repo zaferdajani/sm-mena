@@ -2,10 +2,13 @@ import { EmptySupply } from "@/components/demo/empty-supply";
 import { Compass, Sparkles, Star } from "lucide-react";
 import { demoMode } from "@/lib/demo-mode";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { AgenciesStrip } from "@/components/feed/agencies-strip";
+import { BusinessTypeBar } from "@/components/feed/business-type-bar";
 import { FeedList } from "@/components/feed/feed-list";
+import { ReelFeed } from "@/components/feed/reel-feed";
 import { FOOTER_SERVICES } from "@/components/shell/site-footer";
 import { buttonVariants } from "@/components/ui/button";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -20,6 +23,8 @@ import { currentCountry } from "@/lib/country-choice";
 import { countryName } from "@/lib/countries";
 import { getVisitorId } from "@/lib/visitor";
 import { canUse } from "@/lib/feature-gate";
+import { isBusinessType } from "@/lib/business-types";
+import { deviceOf } from "@/lib/data/stats";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/feed">): Promise<Metadata> {
   const { locale } = await params;
@@ -27,17 +32,108 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/feed">):
   return pageMeta({ locale, path: "/feed", title: t("feedTitle"), description: t("feedDescription") });
 }
 
-export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) {
+export default async function FeedPage({ params, searchParams }: PageProps<"/[locale]/feed">) {
   const { locale } = await params;
+  // ?type= narrows the feed to one business type (the chips and each post's tag).
+  const rawType = (await searchParams).type;
+  const type = isBusinessType(rawType) ? rawType : null;
+  // Phones get the full-screen swipe feed; the server decides, so the page never flips after loading.
+  const phone = deviceOf((await headers()).get("user-agent") ?? "") === "mobile";
   setRequestLocale(locale);
   const t = await getTranslations("Home");
+  const td = await getTranslations("Demo");
   const ts = await getTranslations("Seo");
   const tc = await getTranslations("Common");
   const tCity = await getTranslations("Cities");
   const tn = await getTranslations("Nav");
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
   const [country, includeDemo, matchOpen] = await Promise.all([currentCountry(), demoMode(), canUse("ai_matchmaker")]);
-  const [strip, page] = await Promise.all([stripAgencies(country, includeDemo), feedPage({ country, includeDemo }, null, visitorId, { placement: "feed" })]);
+  const tf = await getTranslations("Feed");
+  const filters = { country, ...(type ? { industry: type } : {}) };
+  const [strip, page] = await Promise.all([stripAgencies(country, includeDemo), feedPage({ ...filters, includeDemo }, null, visitorId, { placement: "feed" })]);
+  const empty = type ? (
+    <div className="px-4 py-12 text-center" data-testid="feed-type-empty">
+      <p className="font-medium">{tf("emptyType")}</p>
+      <Link href="/feed" className={buttonVariants({ variant: "outline", className: "mt-4 h-9" })}>
+        {tf("showAll")}
+      </Link>
+    </div>
+  ) : (
+    <EmptySupply text={td("emptyWork")} />
+  );
+  const introTitle = t("introTitleIn", { country: countryName(country, locale) });
+  const ctas = (
+    <div className="mt-3 flex flex-wrap items-center gap-3">
+      {matchOpen && (
+        <Link href="/match" className={buttonVariants({ className: "cta-bubble h-10 gap-2 px-4" })} data-testid="home-ai">
+          <Sparkles className="size-4" />
+          {tn("match")}
+          <span className="typing" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </Link>
+      )}
+      <Link href="/explore" className={buttonVariants({ variant: "outline", className: "h-9 gap-2 px-4" })}>
+        <Compass className="size-4" />
+        {t("introCta")}
+      </Link>
+      {!user && (
+        <Link href="/join" className="text-sm font-medium text-brand">
+          {t("introAgency")}
+        </Link>
+      )}
+    </div>
+  );
+
+  // Links to the hire hubs: on every layout (search engines crawl as phones too).
+  const popular = (
+    <nav aria-label={ts("popularServices")} className="mt-4 border-t pt-3">
+      <h2 className="mb-2 text-xs font-medium text-muted-foreground">{ts("popularServices")}</h2>
+      <ul className="flex flex-wrap gap-1.5">
+        {FOOTER_SERVICES.map((s) => (
+          <li key={s}>
+            <Link href={`/hire/${s}`} className="inline-block rounded-full bg-accent px-2.5 py-1 text-xs text-accent-foreground hover:underline" data-testid="home-service-link">
+              {serviceLinkText(s, locale)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+
+  if (phone) {
+    return (
+      <div data-testid="feed-reels">
+        <h1 className="sr-only">{introTitle}</h1>
+        <div className="snap-start scroll-mt-14">
+          <AgenciesStrip agencies={strip} showJoin={!user} />
+        </div>
+        <div data-reel-bar className="sticky top-14 z-20 border-b">
+          <BusinessTypeBar active={type} />
+        </div>
+        {page.items.length ? (
+          <ReelFeed
+            key={type ?? "all"}
+            initial={page}
+            filters={filters}
+            interstitial={
+              <>
+                <p className="text-sm font-medium text-brand">{tf("introEyebrow")}</p>
+                <h2 className="mt-1 text-2xl leading-snug">{introTitle}</h2>
+                <p className="mt-2 text-muted-foreground">{t("introBody")}</p>
+                {ctas}
+                {popular}
+              </>
+            }
+          />
+        ) : (
+          empty
+        )}
+      </div>
+    );
+  }
 
   const suggested = strip.filter((a) => !a.sponsored).slice(0, 5);
   // Phones: one column (stories, intro, feed). Desktop: the feed with a sticky
@@ -50,42 +146,10 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
 
       <aside className="flex min-w-0 flex-col lg:sticky lg:top-8 lg:gap-6 lg:self-start lg:[grid-area:aside]">
         <section className="border-b bg-card px-4 py-5 sm:my-6 sm:rounded-xl sm:border sm:shadow-card lg:my-0">
-          <h1 className="text-xl leading-snug">{t("introTitleIn", { country: countryName(country, locale) })}</h1>
+          <h1 className="text-xl leading-snug">{introTitle}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("introBody")}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            {matchOpen && (
-            <Link href="/match" className={buttonVariants({ className: "cta-bubble h-10 gap-2 px-4" })} data-testid="home-ai">
-              <Sparkles className="size-4" />
-              {tn("match")}
-              <span className="typing" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </span>
-            </Link>
-            )}
-            <Link href="/explore" className={buttonVariants({ variant: "outline", className: "h-9 gap-2 px-4" })}>
-              <Compass className="size-4" />
-              {t("introCta")}
-            </Link>
-            {!user && (
-              <Link href="/join" className="text-sm font-medium text-brand">
-                {t("introAgency")}
-              </Link>
-            )}
-          </div>
-          <nav aria-label={ts("popularServices")} className="mt-4 border-t pt-3">
-            <h2 className="mb-2 text-xs font-medium text-muted-foreground">{ts("popularServices")}</h2>
-            <ul className="flex flex-wrap gap-1.5">
-              {FOOTER_SERVICES.map((s) => (
-                <li key={s}>
-                  <Link href={`/hire/${s}`} className="inline-block rounded-full bg-accent px-2.5 py-1 text-xs text-accent-foreground hover:underline" data-testid="home-service-link">
-                    {serviceLinkText(s, locale)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {ctas}
+          {popular}
         </section>
 
         {suggested.length > 0 && (
@@ -126,11 +190,8 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
       </aside>
 
       <div className="min-w-0 lg:[grid-area:feed] lg:pt-6">
-        {page.items.length ? (
-          <FeedList initial={page} filters={{ country }} placement="feed" />
-        ) : (
-          <EmptySupply />
-        )}
+        <BusinessTypeBar active={type} className="mb-3 sm:rounded-xl sm:border" />
+        {page.items.length ? <FeedList key={type ?? "all"} initial={page} filters={filters} placement="feed" /> : empty}
       </div>
     </div>
   );

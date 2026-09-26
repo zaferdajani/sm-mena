@@ -40,7 +40,8 @@ function toHex({ r, g, b }: { r: number; g: number; b: number }) {
 export const DISPLAY = {
   feed: { maxWidth: 1080, maxHeight: 1350, fit: "inside" },
   thumb: { maxWidth: 480, maxHeight: 480, fit: "cover" },
-  avatar: { maxWidth: 320, maxHeight: 320, fit: "cover" },
+  // Logos are cropped from the centre, exactly as the upload preview shows them.
+  avatar: { maxWidth: 320, maxHeight: 320, fit: "cover", position: "centre" },
   background: { maxWidth: 2400, maxHeight: 2400, fit: "inside" },
 } as const;
 
@@ -60,6 +61,8 @@ export type EncodeTarget = {
   maxWidth: number;
   maxHeight: number;
   fit: "inside" | "cover";
+  /** Where a cover crop keeps: "attention" (the busiest region, the default) or "centre". */
+  position?: "attention" | "centre";
   /** Minimum SSIM against the resized source; defaults to SSIM_FLOOR. */
   ssimFloor?: number;
   ladder?: number[];
@@ -149,7 +152,7 @@ export async function encodeSameQuality(
       width: target.maxWidth,
       height: target.maxHeight,
       fit: target.fit,
-      position: target.fit === "cover" ? "attention" : undefined,
+      position: target.fit === "cover" ? (target.position ?? "attention") : undefined,
       withoutEnlargement: target.fit === "inside",
     })
     .raw()

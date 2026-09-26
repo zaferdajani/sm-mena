@@ -1,0 +1,38 @@
+[
+{"name":"SWQ-V01-hero-ar-9x16","size":[1080,1920],"lang":"ar",
+ "segments":[
+  {"type":"clip","src":"clips/V01.mp4","in":0.2,"dur":2.7,"amb":0.25},
+  {"type":"clip","src":"clips/V02.mp4","in":0.4,"dur":2.7,"amb":0.25},
+  {"type":"ui","rec":"rec2/explore.webm","in":1.4,"dur":5.2,"speed":1.1,"chip":"استكشف","head":"شغل <span style='color:#0e6b46'>حقيقي</span>، قبل ما تدفع","sub":"أعمال وكالات في بلدك، مع الباقات والأسعار","demo":"واجهة سوّق الحقيقية · حسابات تجريبية"},
+  {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":3.8,"speed":2.6,"chip":"المطابق الذكي","head":"٤ أسئلة… و<span style='color:#0e6b46'>ترشيحات</span> جاهزة","sub":"الخدمة، المنصّات، الميزانية، المدينة"},
+  {"type":"clip","src":"clips/V05.mp4","in":0.2,"dur":4.3,"amb":0.3},
+  {"type":"clip","src":"clips/V10.mp4","in":1.4,"dur":2.1,"amb":0.25},
+  {"type":"clip","src":"clips/V06.mp4","in":1.0,"dur":2.0,"amb":0.25},
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.3,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}],
+ "captions":[
+  {"t":"بدّك وكالة تسويق؟","s":"ومش عارف مين تختار؟","start":0.2,"end":2.7},
+  {"t":"مع <span class='hl'>سوّق</span>","s":"شوف شغلهم الحقيقي وأسعارهم","start":2.8,"end":5.4},
+  {"t":"عقد واضح، <span class='hl'>على مراحل</span>","s":"تعتمد كل مرحلة بنفسك","start":14.5,"end":18.7},
+  {"t":"وكالات <span class='hl'>موثّقة</span>","s":"وعقود واضحة","start":18.8,"end":22.7}],
+ "vo":[{"src":"vo/H1.mp3","at":0.3},{"src":"vo/H2.mp3","at":2.85},{"src":"vo/H3.mp3","at":7.7},{"src":"vo/H4.mp3","at":10.8},
+       {"src":"vo/P2.mp3","at":14.6},{"src":"vo/H6.mp3","at":18.85},{"src":"vo/H7.mp3","at":25.6}]},
+
+{"name":"SWQ-V02-hero-ar-16x9","size":[1920,1080],"lang":"ar",
+ "segments":[
+  {"type":"clip","src":"clips/V01w.mp4","in":0.2,"dur":2.7,"amb":0.25},
+  {"type":"clip","src":"clips/V02w.mp4","in":0.4,"dur":2.7,"amb":0.25},
+  {"type":"ui","rec":"rec2/explore.webm","in":1.4,"dur":5.2,"speed":1.1,"chip":"استكشف","head":"شغل <span style='color:#0e6b46'>حقيقي</span>، قبل ما تدفع","sub":"أعمال وكالات في بلدك، مع الباقات والأسعار","demo":"واجهة سوّق الحقيقية · حسابات تجريبية"},
+  {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":3.8,"speed":2.6,"chip":"المطابق الذكي","head":"٤ أسئلة… و<span style='color:#0e6b46'>ترشيحات</span> جاهزة","sub":"الخدمة، المنصّات، الميزانية، المدينة"},
+  {"type":"clip","src":"clips/V04w.mp4","in":2.3,"dur":2.6,"amb":0.3},
+  {"type":"clip","src":"clips/V03w.mp4","in":1.0,"dur":1.7,"amb":0.2},
+  {"type":"clip","src":"clips/V01w.mp4","in":2.3,"dur":1.7,"amb":0.25},
+  {"type":"clip","src":"clips/V06w.mp4","in":1.0,"dur":2.4,"amb":0.25},
+  {"type":"sting","src":"sting/out/sawwiq-sting-16x9.mp4","hold":2.3,"card_at":3.9,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":880}}],
+ "captions":[
+  {"t":"بدّك وكالة تسويق؟","s":"ومش عارف مين تختار؟","start":0.2,"end":2.7},
+  {"t":"مع <span class='hl'>سوّق</span>","s":"شوف شغلهم الحقيقي وأسعارهم","start":2.8,"end":5.4},
+  {"t":"عقد واضح، <span class='hl'>على مراحل</span>","s":"تعتمد كل مرحلة بنفسك","start":14.5,"end":18.7},
+  {"t":"وكالات <span class='hl'>موثّقة</span>","s":"وعقود واضحة","start":18.8,"end":22.7}],
+ "vo":[{"src":"vo/H1.mp3","at":0.3},{"src":"vo/H2.mp3","at":2.85},{"src":"vo/H3.mp3","at":7.7},{"src":"vo/H4.mp3","at":10.8},
+       {"src":"vo/P2.mp3","at":14.6},{"src":"vo/H6.mp3","at":18.85},{"src":"vo/H7.mp3","at":25.6}]}
+]
