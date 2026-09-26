@@ -43,7 +43,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     { href: "/saved", label: t("saved"), icon: "saved" },
     isStaffRole(user?.role)
       ? { href: "/admin", label: t("admin"), icon: "admin" }
-      : user
+      : user && user.role !== "client"
         ? { href: "/studio", label: t("studio"), icon: "studio" }
         : { href: "/join", label: t("join"), icon: "join" },
   ];

@@ -1,19 +1,34 @@
 import { expect, test } from "@playwright/test";
+import { signInClient } from "./helpers";
 
-test("like persists across reloads for the same browser", async ({ page }) => {
+test("following, liking and saving ask visitors to sign in, then come back", async ({ page }) => {
+  await page.goto("/en/a/aqaba.waves");
+  await page.getByTestId("follow-button").click();
+  // Not signed in: to the code sign-in, and back to the agency afterwards.
+  await expect(page).toHaveURL(/\/en\/signin\?next=/);
+  await page.fill("#email", `owner-${Date.now()}@test.jo`);
+  await page.check('input[name="consent"]');
+  await page.getByRole("button", { name: "Send the code" }).click();
+  const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
+  await page.fill("#code", code);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/en\/a\/aqaba\.waves/);
+  await page.getByTestId("follow-button").click();
+  await expect(page.getByTestId("follow-button")).toHaveAttribute("aria-pressed", "true");
+});
+
+test("a signed-in business owner's likes, saves and follows stay with the account", async ({ page }) => {
+  await signInClient(page);
   await page.goto("/ar/a/zaytoon.brand");
   await page.getByTestId("post-grid").locator("a").first().click();
   await expect(page).toHaveURL(/\/ar\/p\//);
   const like = page.getByTestId("like-button");
-  const pressed = await like.getAttribute("aria-pressed");
   await like.click();
-  await expect(like).toHaveAttribute("aria-pressed", pressed === "true" ? "false" : "true");
+  await expect(like).toHaveAttribute("aria-pressed", "true");
   await page.waitForTimeout(500);
   await page.reload();
-  await expect(page.getByTestId("like-button")).toHaveAttribute("aria-pressed", pressed === "true" ? "false" : "true");
-});
+  await expect(page.getByTestId("like-button")).toHaveAttribute("aria-pressed", "true");
 
-test("saved posts and followed agencies appear on the saved page", async ({ page }) => {
   await page.goto("/en/a/aqaba.waves");
   await page.getByTestId("follow-button").click();
   await expect(page.getByTestId("follow-button")).toHaveAttribute("aria-pressed", "true");
@@ -22,6 +37,7 @@ test("saved posts and followed agencies appear on the saved page", async ({ page
   await expect(page.getByTestId("save-button")).toHaveAttribute("aria-pressed", "true");
   await page.waitForTimeout(500);
   await page.goto("/en/saved");
+  await expect(page.getByTestId("saved-account")).toBeVisible();
   await expect(page.getByTestId("agency-row").filter({ hasText: "@aqaba.waves" })).toBeVisible();
   await expect(page.getByTestId("post-grid").locator("a")).toHaveCount(1);
 });

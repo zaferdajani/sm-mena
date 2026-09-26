@@ -12,7 +12,7 @@ import { getAgencyByHandle } from "@/lib/data/agencies";
 import { getClient } from "@/lib/data/portfolio-clients";
 import { feedPage } from "@/lib/feed";
 import { pageMeta } from "@/lib/seo";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -49,7 +49,7 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
   if (!data) notFound();
   const { agency, client, name, description } = data;
   const [t, tInd, visitorId] = await Promise.all([getTranslations("Profile"), getTranslations("Industries"), getVisitorId()]);
-  const posts = await feedPage({ agencyId: agency.id, clientId: client.id }, null, visitorId, { limit: 24 });
+  const posts = await feedPage({ agencyId: agency.id, clientId: client.id }, null, visitorId, { limit: 24, stateKey: await interactionKey() });
   const country = COUNTRIES.find((x) => x.code === client.country);
   const meta = [client.industry ? tInd(client.industry) : null, country ? `${country.flag} ${locale === "ar" ? country.ar : country.en}` : null].filter(Boolean).join(" · ");
 

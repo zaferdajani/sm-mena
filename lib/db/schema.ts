@@ -26,7 +26,8 @@ import {
 // agency = an agency account. The rest are staff (lib/auth/permissions.ts):
 // owner (the platform owner; cannot be removed by anyone else), admin, and
 // scoped team roles for engineering (backbone), maintenance and support.
-export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support"]);
+// "client": a business owner who signs in with an emailed code to follow, save and like (docs/41).
+export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support", "client"]);
 // deactivated: the account holder closed it (or the demo cleanup did); hidden
 // everywhere and sign-in is off, but its contracts and ledger stay (docs/32).
 export const agencyStatus = pgEnum("agency_status", ["active", "suspended", "deactivated"]);
@@ -122,6 +123,25 @@ export const users = pgTable("users", {
   invitedBy: uuid("invited_by"),
   createdAt: createdAt(),
 });
+
+/**
+ * One-time sign-in codes sent by email (docs/41-client-accounts.md). Only a
+ * hash of the code is stored; codes expire after 10 minutes and allow five
+ * tries. Rows are deleted after a day.
+ */
+export const loginCodes = pgTable(
+  "login_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email").notNull(),
+    codeHash: text("code_hash").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("login_codes_email_idx").on(t.email, t.createdAt)],
+);
 
 /** Single-use invitations to join the staff with a given role (owner only). */
 export const staffInvites = pgTable(

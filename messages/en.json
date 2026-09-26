@@ -85,7 +85,9 @@
     "country": "Country",
     "joinServices": "What do you offer?",
     "joinServicesHint": "Pick what applies; you can add more later from your page.",
-    "closed": "Your account is closed. Thank you for being part of Sawwiq."
+    "closed": "Your account is closed. Thank you for being part of Sawwiq.",
+    "clientPrompt": "A business owner who wants to follow agencies?",
+    "clientLink": "Sign in with a code by email"
   },
   "Cities": {
     "amman": "Amman",
@@ -340,7 +342,10 @@
     "agencies": "Agencies you follow",
     "emptyPosts": "Tap the bookmark on any post to keep it here.",
     "emptyAgencies": "Follow agencies you like to find them here easily.",
-    "deviceNote": "Kept on this device only, no account needed."
+    "signedInAs": "Signed in as",
+    "signOut": "Sign out",
+    "signInNote": "Sign in to follow agencies and save work, and find them on any device. No password needed: we email you a code.",
+    "signIn": "Sign in with a code"
   },
   "Header": {
     "brand": "Sawwiq",
@@ -3054,6 +3059,32 @@
         "locked": "This milestone can't be submitted now.",
         "notFound": "Not available."
       }
+    }
+  },
+  "ClientAuth": {
+    "title": "Sign in",
+    "subtitle": "Follow agencies and keep your saves and likes on any device. No password: we email you a code.",
+    "email": "Your email",
+    "consent": "I agree to my email being used for signing in only, under the",
+    "privacy": "privacy policy",
+    "sendCode": "Send the code",
+    "codeSent": "We sent a 6-digit code to {email}.",
+    "testCode": "Test code (never shown on the real site):",
+    "code": "Code",
+    "verify": "Sign in",
+    "codeHelp": "The code works for 10 minutes. Didn't get it? Check spam, or go back and ask again.",
+    "agency": "Agency or freelancer?",
+    "agencyLink": "Sign in with your password",
+    "errors": {
+      "email": "Enter a valid email address.",
+      "consent": "Agree to your email being used for signing in to continue.",
+      "unavailable": "Signing in by email isn't available right now. Try again later.",
+      "rateLimited": "Too many requests. Wait a little and try again.",
+      "useLogin": "This email belongs to an agency or Sawwiq team account. Sign in with your password.",
+      "sendFailed": "We couldn't send the code. Try again shortly.",
+      "badCode": "That code isn't right.",
+      "expired": "That code expired. Ask for a new one.",
+      "tooMany": "Too many tries for this code. Ask for a new one."
     }
   }
 }

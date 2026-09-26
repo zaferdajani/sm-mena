@@ -153,3 +153,45 @@ export async function createReport(input: {
   const [row] = await db.insert(reports).values(input).returning();
   return row;
 }
+
+/** The key follows, likes and saves are stored under for a signed-in account (docs/41). */
+export const accountKey = (userId: string) => `u:${userId}`;
+
+/**
+ * After signing in: this device's anonymous follows, likes and saves move to
+ * the account (duplicates dropped), and the counts they touch are recounted
+ * from account rows only.
+ */
+export async function mergeDeviceInteractions(visitorId: string | null, userId: string) {
+  if (!visitorId) return;
+  const key = accountKey(userId);
+  const db = await getDb();
+  await db.transaction(async (tx) => {
+    const movedFollows = await tx.select({ agencyId: follows.agencyId }).from(follows).where(eq(follows.visitorId, visitorId));
+    const movedLikes = await tx.select({ postId: likes.postId }).from(likes).where(eq(likes.visitorId, visitorId));
+    const movedSaves = await tx.select({ postId: saves.postId }).from(saves).where(eq(saves.visitorId, visitorId));
+    if (movedFollows.length) await tx.insert(follows).values(movedFollows.map((f) => ({ agencyId: f.agencyId, visitorId: key }))).onConflictDoNothing();
+    if (movedLikes.length) await tx.insert(likes).values(movedLikes.map((l) => ({ postId: l.postId, visitorId: key }))).onConflictDoNothing();
+    if (movedSaves.length) await tx.insert(saves).values(movedSaves.map((s) => ({ postId: s.postId, visitorId: key }))).onConflictDoNothing();
+    await tx.delete(follows).where(eq(follows.visitorId, visitorId));
+    await tx.delete(likes).where(eq(likes.visitorId, visitorId));
+    await tx.delete(saves).where(eq(saves.visitorId, visitorId));
+    const agencyIds = movedFollows.map((f) => f.agencyId);
+    const postIds = [...new Set([...movedLikes, ...movedSaves].map((r) => r.postId))];
+    if (agencyIds.length) {
+      await tx
+        .update(agencies)
+        .set({ followerCount: sql`(select count(*) from ${follows} f where f.agency_id = ${agencies.id} and f.visitor_id like 'u:%')::int` })
+        .where(and(inArray(agencies.id, agencyIds), eq(agencies.isDemo, false)));
+    }
+    if (postIds.length) {
+      await tx
+        .update(posts)
+        .set({
+          likeCount: sql`(select count(*) from ${likes} l where l.post_id = ${posts.id} and l.visitor_id like 'u:%')::int`,
+          saveCount: sql`(select count(*) from ${saves} s where s.post_id = ${posts.id} and s.visitor_id like 'u:%')::int`,
+        })
+        .where(inArray(posts.id, postIds));
+    }
+  });
+}

@@ -61,3 +61,16 @@ export async function photoPng(width = 4000, height = 3000) {
   const photo = await readFile("data/demo-portfolio/abha.trails-1.webp");
   return sharp(photo).resize(width, height, { fit: "cover" }).png().toBuffer();
 }
+
+/** Business owner sign-in with an emailed code (docs/41); the e2e server shows the code on screen. */
+export async function signInClient(page: Page, email = `client-${Date.now()}-${Math.floor(Math.random() * 1e6)}@test.jo`, next = "/en/saved") {
+  await page.goto(`/en/signin?next=${encodeURIComponent(next)}`);
+  await page.fill("#email", email);
+  await page.check('input[name="consent"]');
+  await page.getByRole("button", { name: "Send the code" }).click();
+  const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
+  await page.fill("#code", code);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.waitForURL((url) => !url.pathname.endsWith("/signin"));
+  return email;
+}

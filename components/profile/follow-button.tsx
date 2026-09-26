@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useOptimistic, useState, useTransition } from "react";
 import { followAgency } from "@/app/[locale]/(main)/actions";
+import { useGoToSignIn } from "@/components/sign-in-redirect";
 import { Button } from "@/components/ui/button";
 
 export function FollowButton({ agencyId, following, count, onCount }: { agencyId: string; following: boolean; count: number; onCount?: (n: number) => void }) {
@@ -10,6 +11,7 @@ export function FollowButton({ agencyId, following, count, onCount }: { agencyId
   const [state, setState] = useState(following);
   const [optimistic, setOptimistic] = useOptimistic(state);
   const [, start] = useTransition();
+  const goToSignIn = useGoToSignIn();
   return (
     <Button
       variant={optimistic ? "secondary" : "default"}
@@ -20,6 +22,7 @@ export function FollowButton({ agencyId, following, count, onCount }: { agencyId
         start(async () => {
           setOptimistic(!optimistic);
           const result = await followAgency(agencyId).catch(() => null);
+          if (result && "signIn" in result) return goToSignIn();
           if (result) {
             setState(result.following);
             onCount?.(result.count);

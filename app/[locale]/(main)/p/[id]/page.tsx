@@ -13,7 +13,7 @@ import { withState } from "@/lib/feed";
 import { serviceLabel } from "@/lib/labels";
 import { isCrawlerRequest } from "@/lib/request";
 import { pageMeta, postIndexable } from "@/lib/seo";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 
 const captionFits = (caption: string, locale: string) => (/[\u0600-\u06FF]/.test(caption) ? locale === "ar" : locale !== "ar");
 
@@ -48,7 +48,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const tSeo = await getTranslations("Seo");
   const visitorId = await getVisitorId();
   const [{ items: [item] }, more] = await Promise.all([
-    withState([post], visitorId),
+    withState([post], await interactionKey()),
     getFeed({ agencyId: post.agency.id }, null, 7),
     (await isCrawlerRequest()) ? null : recordView("post_view", post.agency.id, post.id, visitorId),
   ]);

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { signInClient } from "./helpers";
 
 // The feed (docs/38-feed.md): business-type tags and chips everywhere; phones get
 // the full-screen swipe feed, desktops the card list.
@@ -20,6 +21,8 @@ test("business-type chips filter the feed, and every post shows its type", async
 
 test("phones get one post per screen that snaps, with a swipe hint", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "the swipe feed is for phones");
+  // Liking needs an account (docs/41).
+  await signInClient(page);
   await page.goto("/ar/feed");
   await expect(page.getByTestId("reel-feed")).toBeVisible();
   await expect(page.locator("html")).toHaveClass(/reel-snap/);

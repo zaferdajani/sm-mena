@@ -8,7 +8,11 @@ import { followedAgencyIds, savedPostIds } from "@/lib/data/interactions";
 import { getPostsByIds } from "@/lib/data/posts";
 import { getDb } from "@/lib/db";
 import { agencies } from "@/lib/db/schema";
-import { getVisitorId } from "@/lib/visitor";
+import { interactionKey } from "@/lib/visitor";
+import { getSessionUser } from "@/lib/auth/session";
+import { logout } from "@/app/[locale]/(auth)/actions";
+import { SubmitButton } from "@/components/submit-button";
+import { buttonVariants } from "@/components/ui/button";
 import { and, eq, inArray } from "drizzle-orm";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/saved">): Promise<Metadata> {
@@ -22,8 +26,9 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
   setRequestLocale(locale);
   const t = await getTranslations("Saved");
   const tr = await getTranslations("Requests");
-  const visitorId = await getVisitorId();
-  const [postIds, agencyIds] = visitorId ? await Promise.all([savedPostIds(visitorId), followedAgencyIds(visitorId)]) : [[], []];
+  // Saved work and follows belong to an account (docs/41).
+  const [key, user] = await Promise.all([interactionKey(), getSessionUser()]);
+  const [postIds, agencyIds] = key ? await Promise.all([savedPostIds(key), followedAgencyIds(key)]) : [[], []];
   const posts = await getPostsByIds(postIds);
   const db = await getDb();
   const followed = agencyIds.length
@@ -34,7 +39,25 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
     <div className="mx-auto w-full max-w-4xl space-y-8 px-0 pt-4 sm:px-4 sm:pt-8">
       <div className="px-4 sm:px-0">
         <h1 className="text-xl font-bold">{t("title")}</h1>
-        <p className="text-xs text-muted-foreground">{t("deviceNote")}</p>
+        {user ? (
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground" data-testid="saved-account">
+            <span>
+              {t("signedInAs")} <bdi dir="ltr">{user.email}</bdi>
+            </span>
+            {user.role === "client" && (
+              <form action={logout}>
+                <SubmitButton variant="ghost" className="h-7 px-2 text-xs">{t("signOut")}</SubmitButton>
+              </form>
+            )}
+          </div>
+        ) : (
+          <div className="mt-2 rounded-xl border p-3 text-sm" data-testid="saved-sign-in">
+            <p>{t("signInNote")}</p>
+            <Link href="/signin?next=/saved" className={buttonVariants({ size: "sm", className: "mt-2" })}>
+              {t("signIn")}
+            </Link>
+          </div>
+        )}
         <Link href="/requests" className="mt-2 inline-block text-sm font-medium text-brand">{tr("myRequests")} →</Link>
       </div>
       <section>
