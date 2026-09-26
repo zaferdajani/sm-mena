@@ -1,0 +1,17 @@
+[{"name":"SWQ-V13-hero-en-9x16","size":[1080,1920],"lang":"en",
+ "segments":[
+  {"type":"clip","src":"clips/V01.mp4","in":0.2,"dur":2.7,"amb":0.25},
+  {"type":"clip","src":"clips/V02.mp4","in":0.4,"dur":2.7,"amb":0.25},
+  {"type":"ui","rec":"rec2/explore-en.webm","in":1.4,"dur":5.2,"speed":1.0,"chip":"Explore","head":"<span style='color:#0e6b46'>Real work</span>, before you pay","sub":"Agencies in your country, with packages and prices","demo":"Real Sawwiq interface · demo accounts"},
+  {"type":"ui","rec":"rec2/match-en.webm","in":1.6,"dur":3.8,"speed":2.6,"chip":"AI matchmaker","head":"4 questions, <span style='color:#0e6b46'>ready matches</span>","sub":"Service, platforms, budget, city"},
+  {"type":"clip","src":"clips/V05.mp4","in":0.2,"dur":4.3,"amb":0.3},
+  {"type":"clip","src":"clips/V10.mp4","in":1.4,"dur":2.1,"amb":0.25},
+  {"type":"clip","src":"clips/V06.mp4","in":1.0,"dur":2.0,"amb":0.25},
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.9,"card_at":3.4,"endcard":{"tag":"The first Arabic marketplace for marketing agencies","cta":"Ask the matchmaker","y":1420}}],
+ "captions":[
+  {"t":"Need a marketing agency?","s":"Not sure who to pick?","start":0.2,"end":2.7},
+  {"t":"With <span class='hl'>Sawwiq</span>","s":"see their real work and prices","start":2.8,"end":5.4},
+  {"t":"A clear contract, <span class='hl'>in milestones</span>","s":"you approve each one","start":14.5,"end":18.7},
+  {"t":"<span class='hl'>Verified</span> agencies","s":"Clear contracts","start":18.8,"end":22.7}],
+ "vo":[{"src":"vo/E1.mp3","at":0.3,"tempo":1.1},{"src":"vo/E2.mp3","at":2.85,"tempo":1.1},{"src":"vo/E3.mp3","at":7.4,"tempo":1.1},{"src":"vo/E4.mp3","at":10.6,"tempo":1.1},
+       {"src":"vo/E5.mp3","at":14.9,"tempo":1.1},{"src":"vo/E6.mp3","at":18.9,"tempo":1.1},{"src":"vo/E7.mp3","at":25.5,"tempo":1.1}]}]

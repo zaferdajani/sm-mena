@@ -56,6 +56,9 @@ export default async function StudioLayout({ children }: { children: React.React
         <StudioNav
           items={[
             { href: "/studio", label: t("overview") },
+            // Setting up comes first: the page, then the packages (easy to miss further along on a phone).
+            { href: "/studio/profile", label: t("profile") },
+            { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
             { href: "/studio/clients", label: t("clients") },
@@ -65,10 +68,8 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
             { href: "/studio/inbox", label: t("inbox"), badge: unread },
             { href: "/studio/reviews", label: tr("studio.tab") },
-            { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/contracts", label: t("contracts") },
             { href: "/studio/ndas", label: tl("ndaStudio.tab") },
-            { href: "/studio/profile", label: t("profile") },
             { href: "/studio/billing", label: t("billing") },
             { href: "/studio/security", label: t("security") },
           ]}

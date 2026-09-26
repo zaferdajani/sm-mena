@@ -29,6 +29,9 @@ import { RecommendationCard } from "./recommendation-card";
 import { VoiceButton } from "./voice-button";
 import { Chip, useRangeLabel, WizardChips, type ChipStep, type ResultAction } from "./wizard-chips";
 
+const QUESTION_STEPS: readonly string[] = ["groups", "services", "industry", "platforms", "budget", "city", "country"];
+const isQuestionStep = (s: unknown): s is Step => typeof s === "string" && QUESTION_STEPS.includes(s);
+
 type Turn = {
   role: "user" | "assistant";
   content: string;
@@ -90,7 +93,9 @@ export function MatchChat({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [requestFor, setRequestFor] = useState<number | null>(null);
-  const bottom = useRef<HTMLDivElement>(null);
+  const log = useRef<HTMLDivElement>(null);
+  const thinking = useRef<HTMLDivElement>(null);
+  const shown = useRef(1);
 
   // The header's country picker changed the country: a budget in the old
   // currency and a city there no longer apply.
@@ -110,8 +115,10 @@ export function MatchChat({
     } catch {}
     if (!saved?.turns?.length || !saved.need) return;
     const restored = saved;
+    // Wizard questions are re-worded in the current language (the visitor may
+    // have switched language since); what the visitor typed or tapped stays.
     const id = setTimeout(() => {
-      setTurns(restored.turns);
+      setTurns(restored.turns.map((x) => (x.role === "assistant" && !x.mode && isQuestionStep(x.step) ? { ...x, content: question(x.step).content } : x)));
       setNeed(restored.country === serverCountry ? restored.need : forNewCountry(restored.need));
     }, 0);
     return () => clearTimeout(id);
@@ -122,8 +129,30 @@ export function MatchChat({
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ turns: turns.slice(-30), need, country } satisfies Saved));
     } catch {}
-    bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [turns, need, country, pending]);
+  }, [turns, need, country]);
+
+  // Lead the visitor to what is new: while waiting, the "thinking" bubble; then
+  // the first new assistant turn at the top of the screen, so the next question
+  // and its options sit right under the header instead of below the fold.
+  useEffect(() => {
+    const before = shown.current;
+    shown.current = turns.length;
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    // Newer browsers return a Promise from scrollIntoView; an effect must
+    // return nothing or a cleanup function, so never return its result.
+    if (pending) {
+      thinking.current?.scrollIntoView({ behavior, block: "nearest" });
+      return;
+    }
+    if (turns.length === before) return;
+    // A restored conversation (many turns at once) opens at its latest question.
+    const first =
+      turns.length - before > 3
+        ? turns.findLastIndex((x) => x.role === "assistant")
+        : turns.findIndex((x, i) => i >= Math.min(before, turns.length - 1) && x.role === "assistant");
+    if (first < 0) return;
+    log.current?.querySelector(`[data-turn="${first}"]`)?.scrollIntoView({ behavior, block: "start" });
+  }, [turns, pending]);
 
   const user = (content: string): Turn => ({ role: "user", content });
 
@@ -218,10 +247,10 @@ export function MatchChat({
 
   return (
     <div className="flex min-h-[calc(100dvh-8rem)] flex-col">
-      <div className="flex-1 space-y-4 px-3 py-4" data-testid="chat-log">
+      <div ref={log} className="flex-1 space-y-4 px-3 py-4" data-testid="chat-log">
         <Bubble role="assistant">{t("intro")}</Bubble>
         {turns.map((turn, i) => (
-          <div key={i} className="space-y-3">
+          <div key={i} className="scroll-mt-20 space-y-3" data-turn={i}>
             {turn.content && <Bubble role={turn.role}>{turn.content}</Bubble>}
             {turn.recommendation && (
               <div className="space-y-3" data-testid="recommendation">
@@ -274,9 +303,11 @@ export function MatchChat({
           </div>
         ))}
         {pending && (
-          <Bubble role="assistant">
-            <span className="animate-pulse">{t("thinking")}</span>
-          </Bubble>
+          <div ref={thinking} className="scroll-mb-40">
+            <Bubble role="assistant">
+              <span className="animate-pulse">{t("thinking")}</span>
+            </Bubble>
+          </div>
         )}
         {error && (
           <p role="alert" className="text-sm text-destructive">
@@ -311,7 +342,6 @@ export function MatchChat({
             ))}
           </div>
         )}
-        <div ref={bottom} />
       </div>
       <form
         onSubmit={(e) => {

@@ -81,7 +81,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
+      <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
         <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
           <Image src="/brand/mark-192.png" alt="" width={28} height={28} className="rounded-md" priority />
           {th("brand")}
@@ -109,7 +109,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <SiteFooter />
       </main>
 
-      <nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+      <nav data-app-nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <BottomNav items={items} />
       </nav>
     </div>

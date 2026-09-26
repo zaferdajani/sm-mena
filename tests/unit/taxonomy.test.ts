@@ -27,4 +27,14 @@ describe("taxonomy", () => {
     expect(isServiceKey("ads_meta")).toBe(true);
     expect(isServiceKey("not_a_service")).toBe(false);
   });
+
+  it("keeps the term SEO in English in every language", () => {
+    const seo = allServices.find((s) => s.key === "seo")!;
+    expect(seo.name_ar).toBe("SEO");
+    expect(seo.name_en).toBe("SEO");
+    for (const file of ["../../messages/ar.json", "../../data/hire-content.json"]) {
+      const text = readFileSync(new URL(file, import.meta.url), "utf8");
+      expect(text).not.toMatch(/السيو|تحسين محركات البحث/);
+    }
+  });
 });

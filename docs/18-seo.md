@@ -38,13 +38,15 @@ The same path we took on OneClickConvert: first make every page honest and index
 1. **The final domain is `sawwiq.org`** (`NEXT_PUBLIC_SITE_URL`, set by Actions → Vercel → setup). Any other host answers with `noindex`.
 2. **Google Search Console and Bing Webmaster Tools:** verify the domain (DNS TXT is simplest, or set `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`), submit `/sitemap.xml`, and request indexing for `/ar`, `/ar/hire` and the top hire pages.
 3. **IndexNow:** add a secret `INDEXNOW_KEY` (32 hex characters, e.g. `openssl rand -hex 16`).
-4. **Remove the demo agencies once real ones join** (Admin → Agencies). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.
+4. **Demo agencies never count as real** (docs/31-trust-and-demo.md); they stay reachable through the demo view and `/demo` (docs/35-demo-link.md). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.
 5. **Watch response times.** Vercel functions start fast, and pages are served close to the London database; check Search Console → Crawl stats if crawling slows.
 6. **Check the Jordan-specific facts in the service copy** before indexing: drone/archaeological-site permits (video), trademark registration at the Ministry of Industry, Trade and Supply (branding), JFDA Arabic labelling (packaging), municipality licences for outdoor ads and shop signs, `.jo` domain documents, CliQ and cash on delivery (e-commerce), LinkedIn minimum audience, WhatsApp template approval and per-conversation pricing.
 
 ## Keyword map (search phrase → owning page)
 
 Volumes are unmeasured. Replace this list with Search Console data after about 60 days, as on OneClickConvert.
+
+The term **SEO** stays in English in every language (service name, hire page, deliverables and copy); `tests/unit/taxonomy.test.ts` checks it. The matchmaker still understands «سيو» and «تحسين محركات البحث» when a client types them (`lib/ai/extract.ts`).
 
 | Page | Arabic phrase | English phrase | Kind |
 |---|---|---|---|
@@ -68,7 +70,7 @@ Volumes are unmeasured. Replace this list with Search Console data after about 6
 | `/hire/brand_identity` | تصميم هوية بصرية وشعار | logo and brand identity design | remote |
 | `/hire/brand_strategy` | بناء استراتيجية العلامة التجارية | brand strategy | remote |
 | `/hire/packaging_design` | تصميم تغليف وعلب منتجات | packaging design | remote |
-| `/hire/seo` | السيو وتحسين محركات البحث | SEO | remote |
+| `/hire/seo` | SEO | SEO | remote |
 | `/hire/email_marketing` | التسويق عبر الواتساب والبريد الإلكتروني | WhatsApp and email marketing | remote |
 | `/hire/web_design` | تصميم مواقع إلكترونية | website design | remote |
 | `/hire/analytics` | تحليل بيانات التسويق والتقارير | marketing analytics and reporting | remote |

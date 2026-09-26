@@ -1,0 +1,14 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@500&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%}
+body{background:radial-gradient(120% 80% at 50% 38%,#f7f7f3 0%,#f2f2ed 55%,#ebebe4 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:'Readex Pro',sans-serif;color:#10231a;overflow:hidden}
+.m{width:34vmin;height:34vmin;filter:drop-shadow(0 2.2vmin 3vmin rgba(16,35,26,.16))}
+.w{font-weight:700;font-size:15vmin;line-height:1;margin-top:5vmin;letter-spacing:0}
+body.blank .m,body.blank .w{visibility:hidden}
+body.markonly .w{visibility:hidden}
+</style></head><body><img class="m" src="mark.png"><div class="w">سوّق</div>
+<script>const q=location.search;if(q.includes('blank'))document.body.classList.add('blank');if(q.includes('markonly'))document.body.classList.add('markonly');</script></body></html>
+<script>if(location.search.includes('transparent')){document.body.style.background='transparent';document.documentElement.style.background='transparent'}
+if(location.search.includes('wordonly'))document.querySelector('.m').style.visibility='hidden';
+if(location.search.includes('tileonly'))document.querySelector('.w').style.visibility='hidden';</script>

@@ -20,7 +20,12 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await page.getByTestId("service-suggestion").first().click();
   await expect(page.locator('input[name="services"][value="ads_tiktok"]')).toHaveCount(1);
   await page.getByTestId("profile-form").locator('button[type="submit"]').click();
-  await expect(page.getByText("Page saved.")).toBeVisible();
+  // A new agency's first save moves on to the next setup step: its packages.
+  await expect(page).toHaveURL(/\/en\/studio\/packages\?welcome=1/);
+  await expect(page.getByTestId("packages-welcome")).toContainText("Page saved.");
+  await page.goto("/en/studio");
+  await expect(page.getByTestId("setup-profile")).toHaveAttribute("data-done", "true");
+  await expect(page.getByTestId("setup-packages")).toHaveAttribute("data-done", "false");
 
   await page.goto("/en/studio/new");
   await page.getByTestId("image-input").setInputFiles([

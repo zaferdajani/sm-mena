@@ -4,12 +4,15 @@ import type { Package } from "@/lib/db/schema";
 import { formatJod } from "@/lib/format";
 import { deliverable, lineLabel } from "@/lib/deliverables";
 import { serviceLabel } from "@/lib/labels";
+import { localized } from "@/lib/content-lang";
 
-export async function PackageList({ packages, currency = "JOD" }: { packages: Package[]; currency?: string }) {
+/** `lang` = the agency's main language; packages show their translation to readers of the other one. */
+export async function PackageList({ packages: rows, currency = "JOD", lang = "ar" }: { packages: Package[]; currency?: string; lang?: string }) {
   const t = await getTranslations("Packages");
   const locale = await getLocale();
   const td = await getTranslations("Deliverables");
   const tp = await getTranslations("Platforms");
+  const packages = rows.map((p) => ({ ...p, ...localized({ title: p.title, description: p.description, deliverables: p.deliverables }, p.translation, lang, locale) }));
   return (
     <section>
       <h2 className="mb-3 text-sm font-semibold">{t("title")}</h2>

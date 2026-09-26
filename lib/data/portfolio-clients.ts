@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
 import { isCountryCode } from "@/lib/countries";
 import { getDb } from "@/lib/db";
-import { portfolioClients, postImages, posts, type PortfolioClient } from "@/lib/db/schema";
+import { portfolioClients, postImages, posts, type ClientTranslation, type PortfolioClient } from "@/lib/db/schema";
 import { INDUSTRIES } from "@/lib/labels";
 import { cleanLinks, type CleanLink } from "@/lib/social-links";
 import { mediaUrl } from "@/lib/storage";
@@ -11,10 +11,18 @@ import { mediaUrl } from "@/lib/storage";
 
 export const MAX_CLIENTS = 60;
 
-export type ClientInput = { name: string; industry?: string | null; country?: string | null; description?: string | null; links: { kind: string; value: string }[] };
+export type ClientInput = {
+  name: string;
+  industry?: string | null;
+  country?: string | null;
+  description?: string | null;
+  links: { kind: string; value: string }[];
+  /** Name and description in the agency's other language. */
+  translation?: ClientTranslation;
+};
 export type ClientError = { error: "name" | "limit" | "generic" } | { error: "link"; index: number; kind: string };
 
-function clean(raw: ClientInput): ClientError | { values: { name: string; industry: string | null; country: string | null; description: string; links: CleanLink[] } } {
+function clean(raw: ClientInput): ClientError | { values: { name: string; industry: string | null; country: string | null; description: string; links: CleanLink[]; translation: ClientTranslation } } {
   const name = raw.name.trim().slice(0, 80);
   if (name.length < 2) return { error: "name" };
   const links = cleanLinks(raw.links);
@@ -30,6 +38,7 @@ function clean(raw: ClientInput): ClientError | { values: { name: string; indust
       country: isCountryCode(raw.country ?? undefined) ? raw.country! : null,
       description: (raw.description ?? "").trim().slice(0, 500),
       links: links.links,
+      translation: raw.translation ?? {},
     },
   };
 }
@@ -99,10 +108,13 @@ export async function clientShowcase(agencyId: string): Promise<ClientShowcase[]
   return clients.map((c) => ({ ...c, thumbs: thumbs.get(c.id) ?? [] }));
 }
 
-/** Client names for a set of posts (the post page and feed cards show "For {client}"). */
-export async function clientNames(ids: string[]): Promise<Map<string, string>> {
+/** Client names for a set of posts (the post page and feed cards show "For {client}"), with the other-language name. */
+export async function clientNames(ids: string[]): Promise<Map<string, { name: string; translation: ClientTranslation }>> {
   if (!ids.length) return new Map();
   const db = await getDb();
-  const rows = await db.select({ id: portfolioClients.id, name: portfolioClients.name }).from(portfolioClients).where(inArray(portfolioClients.id, ids));
-  return new Map(rows.map((r) => [r.id, r.name]));
+  const rows = await db
+    .select({ id: portfolioClients.id, name: portfolioClients.name, translation: portfolioClients.translation })
+    .from(portfolioClients)
+    .where(inArray(portfolioClients.id, ids));
+  return new Map(rows.map((r) => [r.id, { name: r.name, translation: r.translation ?? {} }]));
 }

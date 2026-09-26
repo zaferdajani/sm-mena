@@ -17,6 +17,7 @@ import { diffLines } from "@/lib/matching/describe-core";
 import { DiffList, MatchMeter } from "@/components/closest/match-bits";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
+import { agencyName } from "@/lib/content-lang";
 
 function reasonText(t: ReturnType<typeof useTranslations>, tw: ReturnType<typeof useTranslations>, r: Reason, money: (n: number) => string) {
   switch (r.code) {
@@ -63,10 +64,10 @@ export function RecommendationCard({ agency, rank, country }: { agency: Match; r
     <article className={cn("rounded-xl border bg-card p-3", agency.featured && "border-amber-300")} data-testid="recommendation-card" data-country={agency.country}>
       <div className="flex items-start gap-3">
         <span className="mt-1 w-4 text-center text-xs font-bold text-muted-foreground">{rank}</span>
-        <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={44} />
+        <AgencyAvatar name={agencyName(agency, locale)} src={agency.avatarUrl} size={44} />
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-1 font-semibold">
-            <span className="truncate">{agency.name}</span>
+            <span className="truncate">{agencyName(agency, locale)}</span>
             {agency.isVerified && <VerifiedBadge label={tc("verified")} />}
             {agency.featured && (
               <span title={t("featuredHint")} className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">

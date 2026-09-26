@@ -5,6 +5,8 @@
 #   seed-demo           add demo data introduced since the last run (quick; keeps everything else)
 #   reset-staff-2fa     clear staff two-factor sign-in so they can set it up again
 #   recover-owner       owner locked out: clears the owner's 2FA and, with OWNER_RECOVERY_PASSWORD, sets a new password
+# Every Sunday at 02:17 UTC it also runs rebuild-demo-media, so the shared demo at
+# /demo starts the week clean (docs/35-demo-link.md). Only demo agencies are touched.
 # Uses the repository secrets DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 # (and SEED_ADMIN_* if present). docs/27-vercel.md
 name: Maintenance
@@ -17,6 +19,8 @@ on:
         required: true
         type: choice
         options: [migrate, seed-demo, rebuild-demo-media, reset-staff-2fa, recover-owner]
+  schedule:
+    - cron: "17 2 * * 0"
 
 concurrency:
   group: maintenance
@@ -28,19 +32,21 @@ jobs:
     timeout-minutes: 30
     env:
       NODE_ENV: production
+      # The weekly schedule has no inputs: it resets the demo.
+      TASK: ${{ inputs.task || 'rebuild-demo-media' }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       STORAGE_PROVIDER: supabase
       SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
       SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
-      OWNER_RECOVERY_EMAIL: ${{ inputs.task == 'recover-owner' && secrets.OWNER_RECOVERY_EMAIL || '' }}
-      OWNER_RECOVERY_PASSWORD: ${{ inputs.task == 'recover-owner' && secrets.OWNER_RECOVERY_PASSWORD || '' }}
+      OWNER_RECOVERY_EMAIL: ${{ (inputs.task || 'rebuild-demo-media') == 'recover-owner' && secrets.OWNER_RECOVERY_EMAIL || '' }}
+      OWNER_RECOVERY_PASSWORD: ${{ (inputs.task || 'rebuild-demo-media') == 'recover-owner' && secrets.OWNER_RECOVERY_PASSWORD || '' }}
     steps:
       - name: Check the secrets are there
         run: |
           [ -n "$DATABASE_URL" ] || { echo "::error::Add the DATABASE_URL repository secret (docs/25-supabase.md)."; exit 1; }
-          if [ "${{ inputs.task }}" = "rebuild-demo-media" ]; then
+          if [ "$TASK" = "rebuild-demo-media" ]; then
             [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] || { echo "::error::Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY secrets."; exit 1; }
           fi
       - uses: actions/checkout@v5
@@ -49,9 +55,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --ignore-scripts --include=dev
-      - name: Run ${{ inputs.task }}
+      - name: Run ${{ inputs.task || 'rebuild-demo-media' }}
         run: |
-          case "${{ inputs.task }}" in
+          case "$TASK" in
             migrate) npm run --silent db:migrate ;;
             seed-demo) npm run --silent db:migrate && npx tsx lib/db/seed.ts ;;
             rebuild-demo-media) npm run --silent db:migrate && npx tsx lib/db/rebuild-demo-media.ts ;;

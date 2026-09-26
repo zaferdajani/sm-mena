@@ -1,20 +1,27 @@
-import { Plus } from "lucide-react";
+import { CheckCircle2, Circle, ExternalLink, Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClicksChart } from "@/components/studio/clicks-chart";
-import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { agencyInsights, topPosts } from "@/lib/data/insights";
+import { listPackages } from "@/lib/data/packages";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
-export default async function StudioOverview({ params }: PageProps<"/[locale]/studio">) {
+export default async function StudioOverview({ params, searchParams }: PageProps<"/[locale]/studio">) {
   const { locale } = await params;
+  const saved = (await searchParams).saved === "profile";
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const t = await getTranslations("Studio");
   const ent = entitlementsFor(agency);
   const days = Math.min(30, ent.insightsDays);
-  const [insights, top] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id)]);
+  const [insights, top, packages] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id)]);
+  // Setup steps, in order: the page, the packages, the first work.
+  const steps = [
+    { key: "profile", href: "/studio/profile", done: Boolean(agency.bio.trim() && agency.services.length) },
+    { key: "packages", href: "/studio/packages", done: packages.length > 0 },
+    { key: "post", href: "/studio/new", done: agency.postCount > 0 },
+  ] as const;
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
 
   const tiles = [
@@ -30,14 +37,29 @@ export default async function StudioOverview({ params }: PageProps<"/[locale]/st
 
   return (
     <div className="space-y-6">
-      {agency.postCount === 0 && (
-        <div className="rounded-xl border border-brand-line bg-brand-soft p-4">
-          <p className="text-sm">{t("welcome")}</p>
-          <Link href="/studio/new" className={buttonVariants({ className: "mt-3 h-9 gap-1.5" })}>
-            <Plus className="size-4" />
-            {t("firstPost")}
+      {saved && (
+        <p role="status" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-brand-line bg-brand-soft p-4 text-sm font-medium" data-testid="profile-saved">
+          ✓ {t("savedProfile")}
+          <Link href={`/a/${agency.handle}`} className="inline-flex items-center gap-1 text-brand">
+            {t("viewPage")} <ExternalLink className="size-3.5" />
           </Link>
-        </div>
+        </p>
+      )}
+      {steps.some((x) => !x.done) && (
+        <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">
+          <h2 className="font-semibold">{t("setup.title")}</h2>
+          <ol className="mt-3 grid gap-2">
+            {steps.map((x) => (
+              <li key={x.key}>
+                <Link href={x.href} className="flex items-center gap-2 rounded-lg bg-background p-3 text-sm hover:bg-muted" data-testid={`setup-${x.key}`} data-done={x.done}>
+                  {x.done ? <CheckCircle2 className="size-5 shrink-0 text-brand" aria-label={t("setup.done")} /> : <Circle className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
+                  <span className={x.done ? "text-muted-foreground line-through" : "font-medium"}>{t(`setup.${x.key}`)}</span>
+                  {x.key === "post" && !x.done && <Plus className="ms-auto size-4 text-brand" aria-hidden />}
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
       )}
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>

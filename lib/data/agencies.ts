@@ -6,6 +6,7 @@ import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
+import { contentLang, type AgencyTranslation, type ContentLang } from "@/lib/content-lang";
 
 export type AgencyInput = {
   handle: string;
@@ -31,10 +32,12 @@ export type AgencyInput = {
   instagram?: string | null;
   foundedYear?: number | null;
   teamSize?: string | null;
+  contentLang?: ContentLang;
+  translation?: AgencyTranslation;
 };
 
-export function agencySearchText(a: { name: string; handle: string; bio?: string | null }) {
-  return normalizeForSearch(`${a.name} ${a.handle} ${a.bio ?? ""}`);
+export function agencySearchText(a: { name: string; handle: string; bio?: string | null; translation?: AgencyTranslation | null }) {
+  return normalizeForSearch(`${a.name} ${a.handle} ${a.bio ?? ""} ${a.translation?.name ?? ""} ${a.translation?.bio ?? ""}`);
 }
 
 export async function createAgency(ownerUserId: string, input: AgencyInput, extra: Partial<Agency> = {}) {
@@ -104,6 +107,9 @@ export type AgencySummary = {
   id: string;
   handle: string;
   name: string;
+  /** The name in the agency's other language, if given (lib/content-lang.ts `agencyName`). */
+  nameTranslation: string | null;
+  contentLang: ContentLang;
   city: string;
   avatarUrl: string | null;
   isVerified: boolean;
@@ -128,6 +134,8 @@ export function toSummary(a: Agency): AgencySummary {
     id: a.id,
     handle: a.handle,
     name: a.name,
+    nameTranslation: a.translation?.name?.trim() || null,
+    contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,

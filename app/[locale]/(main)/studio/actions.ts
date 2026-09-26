@@ -27,6 +27,7 @@ import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
 import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
 import { instagramHandle, normalizePhone, normalizeUrl, validateHandle } from "@/lib/text";
+import { agencyTranslationSchema, clientTranslationSchema, contentLang, packageTranslationSchema, postTranslationSchema, readTranslation } from "@/lib/content-lang";
 
 export type StudioState = { ok?: boolean; error?: string } | undefined;
 
@@ -44,6 +45,8 @@ function postFields(formData: FormData) {
     industry: (INDUSTRIES as readonly string[]).includes(industryRaw) ? industryRaw : null,
     result: String(formData.get("result") ?? "").trim().slice(0, 80) || null,
     clientId: String(formData.get("clientId") ?? "") || null,
+    // Caption and result in the agency's other language (optional, lib/content-lang.ts).
+    translation: readTranslation(formData, postTranslationSchema) ?? {},
   };
 }
 
@@ -170,13 +173,18 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
     instagram: d.instagram ? instagramHandle(d.instagram) : null,
     foundedYear: d.foundedYear === "" ? null : d.foundedYear,
     teamSize: d.teamSize || null,
+    contentLang: contentLang(formData.get("contentLang")),
+    translation: readTranslation(formData, agencyTranslationSchema) ?? {},
     ...(avatarKey ? { avatarKey } : {}),
   });
   if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   await audit(user.id, "agency.update", "agency", agency.id);
   if (!agency.isDemo) pingIndexNow([`/a/${d.handle}`]);
   revalidatePath("/[locale]", "layout");
-  return { ok: true };
+  // Leave the long form so the result is plain to see: a new agency goes on to
+  // its packages (the next setup step), others to the studio with "Page saved".
+  const locale = await getLocale();
+  return redirect({ href: formData.get("welcome") === "1" ? "/studio/packages?welcome=1" : "/studio?saved=profile", locale });
 }
 
 export async function setInquiryStatusAction(inquiryId: string, status: "read" | "archived" | "new") {
@@ -241,6 +249,7 @@ export async function savePackageAction(_: StudioState, formData: FormData): Pro
     deliverables: parsed.data.deliverables.split("\n").map((d) => d.trim()).filter(Boolean).slice(0, 12),
     items: normalizeLines(items, PLATFORMS),
     deliveryDays: Number.isInteger(days) && days > 0 && days <= 365 ? days : null,
+    translation: readTranslation(formData, packageTranslationSchema) ?? {},
   };
   const id = String(formData.get("packageId") ?? "");
   const ok = id ? await updatePackage(agency.id, z.string().uuid().parse(id), input) : await createPackage(agency.id, input);
@@ -312,6 +321,7 @@ export async function saveClientAction(_: ClientState, formData: FormData): Prom
     country: String(formData.get("country") ?? "") || null,
     description: String(formData.get("description") ?? ""),
     links: kinds.map((kind, i) => ({ kind, value: values[i] ?? "" })).slice(0, 40),
+    translation: readTranslation(formData, clientTranslationSchema) ?? {},
   });
   if ("error" in result) return result;
   revalidatePath("/[locale]", "layout");

@@ -1,0 +1,16 @@
+const { chromium } = require('playwright-core');
+const [out,country,industry,platforms,city,budget]=process.argv.slice(2);
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});
+ const c=await b.newContext({locale:'ar-JO',viewport:{width:540,height:1080},recordVideo:{dir:out,size:{width:540,height:1080}},storageState:{cookies:[{name:'sw_country',value:country,url:'http://localhost:3200'}],origins:[{origin:'http://localhost:3200',localStorage:[{name:'sw_role',value:'browse'}]}]}});
+ const p=await c.newPage();const t0=Date.now();const mark=(n)=>console.log(n,((Date.now()-t0)/1000).toFixed(1));
+ await p.goto('http://localhost:3200/ar/match');await p.getByTestId('wizard-choices').waitFor();await p.waitForTimeout(1200);mark('start');
+ const tap=async(id,w=900)=>{await p.getByTestId(id).click();await p.waitForTimeout(w);};
+ await tap('choice-group-social_media');await tap('choice-next',1200);mark('groups');
+ await tap('choice-any',1200);
+ const ids=await p.locator('[data-testid^="choice-industry-"]').evaluateAll(es=>es.map(e=>e.dataset.testid));console.log(ids.join(','));
+ const ind=ids.find(i=>i.includes(industry))||ids[0];await tap(ind,1200);mark('industry');
+ for(const pl of platforms.split(',')) await tap('choice-platform-'+pl,500);await tap('choice-next',1200);mark('platforms');
+ await tap('choice-budget-'+budget,1200);mark('budget');await tap('choice-city-'+city,500);mark('city');
+ await p.getByTestId('recommendation-card').first().waitFor({timeout:30000});mark('results');await p.waitForTimeout(1500);
+ for(let i=0;i<60;i++){await p.mouse.wheel(0,18);await p.waitForTimeout(40);} await p.waitForTimeout(1500);mark('end');
+ await p.screenshot({path:out+'/end.png'});await c.close();await b.close();})();
