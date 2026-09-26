@@ -8,7 +8,7 @@
  * runs from `prebuild` (and `predev`), so the ~31 MB never enters the repository.
  * Vercel runs `npm run build`, and npm runs `prebuild` before it automatically.
  */
-import { copyFileSync, existsSync, mkdirSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 const root = process.cwd();
@@ -42,4 +42,13 @@ for (const name of ["worker.js", "const.js", "errors.js"]) {
   bytes += copy(`@ffmpeg/ffmpeg/dist/esm/${name}`, `ffmpeg/worker/${name}`);
 }
 
-console.log(`[vendor] ffmpeg engine -> public/engines (${(bytes / 1e6).toFixed(1)} MB)`);
+// pdf.js's worker, for reading PDF portfolios in the browser (Studio → Import
+// a PDF portfolio; docs/36-portfolio-import.md).
+bytes += copy("pdfjs-dist/legacy/build/pdf.worker.min.mjs", "pdfjs/pdf.worker.min.mjs");
+// Its standard fonts and character maps, for PDFs that don't embed their fonts.
+for (const dir of ["standard_fonts", "cmaps"]) {
+  const src = join(root, "node_modules/pdfjs-dist", dir);
+  if (existsSync(src)) for (const name of readdirSync(src)) bytes += copy(`pdfjs-dist/${dir}/${name}`, `pdfjs/${dir}/${name}`);
+}
+
+console.log(`[vendor] ffmpeg engine and pdf.js worker -> public/engines (${(bytes / 1e6).toFixed(1)} MB)`);

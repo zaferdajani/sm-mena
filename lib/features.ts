@@ -20,6 +20,7 @@ export const FEATURES = [
   { key: "paid_plans", group: "money" },
   { key: "contracts", group: "work" },
   { key: "ndas", group: "work" },
+  { key: "portfolio_import", group: "work" },
   { key: "quote_requests", group: "work" },
   { key: "ai_matchmaker", group: "discovery" },
   { key: "messaging", group: "discovery" },

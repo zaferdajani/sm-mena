@@ -2613,6 +2613,11 @@
         "name": "Demo view",
         "desc": "Visitors can explore sample agencies, clearly labelled, when real ones are few.",
         "soon": "The demo view is being prepared."
+      },
+      "portfolio_import": {
+        "name": "PDF portfolio import",
+        "desc": "Agencies turn a PDF portfolio into reviewed posts, clients and an introduction.",
+        "soon": "Importing a PDF portfolio is coming soon. Meanwhile, add your work as posts."
       }
     },
     "golive": {
@@ -2670,6 +2675,65 @@
       "fullServicePartly": "Covers {count, plural, =0 {none} one {one} other {#}} of content, ads and branding",
       "verifiedMet": "Business identity verified",
       "verifiedMissing": "Business identity not verified yet"
+    }
+  },
+  "PortfolioImport": {
+    "title": "Import your PDF portfolio",
+    "intro": "Turn the portfolio you already send to clients into posts, clients and an introduction on your Sawwiq page. You review everything before anything is published.",
+    "linkTitle": "Have a PDF portfolio?",
+    "linkBody": "Import it and we'll prepare your posts for you to review.",
+    "choose": "Choose your PDF portfolio, or drop it here",
+    "chooseHint": "Up to {pages} pages and {mb} MB. Each page becomes an image you can post.",
+    "reading": "Reading page {done} of {total}…",
+    "thinking": "Preparing your drafts…",
+    "thinkingAi": "Sawwiq's AI is reading your portfolio…",
+    "how1": "Your PDF is read on your device; each page becomes a high-quality image.",
+    "how2": "Sawwiq groups the pages into projects and suggests captions, services and clients from the text on each page.",
+    "how2ai": "Sawwiq's AI looks at every page and suggests projects, captions, services and clients. It never invents numbers or client names.",
+    "how3": "You edit, remove or merge anything, then publish only what you keep.",
+    "readByAi": "Read by Sawwiq's AI from {pages} pages. Check every draft: the AI can be wrong.",
+    "readByText": "Read from the text on {pages} pages. Pages with little text need a caption from you.",
+    "truncated": "Only the first {pages} pages were read.",
+    "reviewHint": "Untick anything you don't want. Nothing is published until you press Publish.",
+    "profileTitle": "For your profile",
+    "useAbout": "Use this as my introduction (About tab)",
+    "strengths": "Strengths",
+    "clients": "Clients to add to your Clients tab",
+    "draftsTitle": "{count, plural, =0 {No posts found} one {1 post ready to review} other {# posts ready to review}}",
+    "untitled": "Post {n}",
+    "published": "Published",
+    "merge": "Merge with the post above",
+    "pageN": "Page {n}",
+    "removePage": "Remove this page",
+    "client": "Client",
+    "clientPh": "Client or brand (optional)",
+    "result": "Result",
+    "resultPh": "Result, e.g. +40% orders (optional)",
+    "removeService": "Remove service",
+    "addService": "Add a service",
+    "otherPages": "Pages not used",
+    "otherPagesHint": "Covers, contact and client pages are left out. Tap a page to make a post from it.",
+    "makePost": "Make a post from this page",
+    "publish": "{count, plural, =0 {Save profile details} one {Publish 1 post} other {Publish # posts}}",
+    "publishing": "Publishing {done} of {total}…",
+    "startOver": "Start over",
+    "someFailed": "{failed, plural, one {1 post} other {# posts}} couldn't be published ({posts} published). Fix them and publish again.",
+    "done": "Done: {posts, plural, =0 {no posts} one {1 post} other {# posts}} published and {clients, plural, =0 {no clients} one {1 client} other {# clients}} added.",
+    "seePosts": "See my posts",
+    "seeClients": "See my clients",
+    "errors": {
+      "notPdf": "That isn't a PDF. Choose a .pdf file.",
+      "tooBig": "That PDF is too large. Keep it under 40 MB.",
+      "unreadable": "We couldn't read that PDF. If it's password-protected, save a copy without the password.",
+      "invalid": "Something in that PDF couldn't be read. Try again or use a smaller file.",
+      "rateLimited": "You've imported several times this hour. Try again later.",
+      "unavailable": "Importing portfolios isn't available right now.",
+      "noServices": "Every post needs at least one service.",
+      "noImages": "This post has no pages.",
+      "tooMany": "A post can have up to 10 pages.",
+      "limit": "You've reached your plan's post limit.",
+      "too_large": "These pages are too large to upload together. Remove a page.",
+      "generic": "Something went wrong. Try again."
     }
   }
 }
