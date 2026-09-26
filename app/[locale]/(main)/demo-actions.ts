@@ -47,5 +47,6 @@ export async function enterDemoAction(formData: FormData) {
       }
     }
   }
-  return redirect({ href: "/", locale });
+  // Explore shows the sample work and agencies straight away (and the demo banner).
+  return redirect({ href: "/explore", locale });
 }

@@ -11,6 +11,7 @@ test("typing /demo opens the demo: sample agencies, a studio without sign-in, an
   await expect(page.getByTestId("demo-banner")).toHaveCount(0);
 
   await page.getByTestId("demo-as-client").click();
+  await expect(page).toHaveURL(/\/explore/);
   await expect(page.getByTestId("demo-banner")).toBeVisible();
 
   // Try the studio as a sample agency, without a password.

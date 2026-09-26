@@ -181,7 +181,10 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   await audit(user.id, "agency.update", "agency", agency.id);
   if (!agency.isDemo) pingIndexNow([`/a/${d.handle}`]);
   revalidatePath("/[locale]", "layout");
-  return { ok: true };
+  // Leave the long form so the result is plain to see: a new agency goes on to
+  // its packages (the next setup step), others to the studio with "Page saved".
+  const locale = await getLocale();
+  return redirect({ href: formData.get("welcome") === "1" ? "/studio/packages?welcome=1" : "/studio?saved=profile", locale });
 }
 
 export async function setInquiryStatusAction(inquiryId: string, status: "read" | "archived" | "new") {

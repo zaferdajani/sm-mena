@@ -29,7 +29,7 @@ export type ProfileFormProps = {
   options: { roles: Option[]; popularServices: string[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
 };
 
-export function ProfileForm({ agency, options }: ProfileFormProps) {
+export function ProfileForm({ agency, options, welcome = false }: ProfileFormProps & { welcome?: boolean }) {
   const t = useTranslations("Studio.profileForm");
   const [state, action] = useActionState(updateProfileAction, undefined);
   const [preview, setPreview] = useState<string | null>(null);
@@ -60,8 +60,7 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
 
   return (
     <form ref={form} action={action} className="grid gap-6" data-testid="profile-form">
-      <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
-      {state?.ok && <p role="status" className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground">✓ {t("saved")}</p>}
+      {welcome && <input type="hidden" name="welcome" value="1" />}
 
       <div className="flex items-center gap-4">
         {preview ? (
@@ -177,7 +176,9 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
           </select>
         </Field>
       </fieldset>
-      <SubmitButton className="h-11 text-base" disabled={compressing}>{t("save")}</SubmitButton>
+      {/* Next to Save, where the agency is looking (a saved form moves on to the next page). */}
+      <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
+      <SubmitButton className="h-11 text-base" disabled={compressing}>{t(welcome ? "saveContinue" : "save")}</SubmitButton>
     </form>
   );
 }

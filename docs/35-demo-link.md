@@ -4,7 +4,7 @@ Typing `sawwiq.org/demo` opens a page for showing Sawwiq with its sample agencie
 
 ## What the page offers
 
-- **Browse as a client** turns the demo view on (`sw_demo` cookie, one day) and opens the home page. The feed, explore, the hire cards, the strip and the matchmaker then include the sample agencies, and every page shows the demo banner with **Leave the demo**.
+- **Browse as a client** turns the demo view on (`sw_demo` cookie, one day) and opens Explore. The feed, explore, the hire cards, the strip and the matchmaker then include the sample agencies, and every page shows the demo banner with **Leave the demo**.
 - **Try the studio as Nakhla Studio** (Arabic) or **as Petra Growth** (English) also signs in as that sample agency, with no password (`enterDemoAction`, `DEMO_STUDIO_HANDLES` in `lib/demo-mode.ts`). Only seeded demo agencies whose owner is a plain agency account qualify, never staff.
 - **Leave the demo** (the banner) ends the demo view and signs out of a sample agency.
 - If an admin switched the demo view off (Admin → Features → demo view), the page says the demo is off and offers nothing.

@@ -35,7 +35,9 @@ test("an agency writes its page in Arabic and English; each reader sees their la
   await expect(page.locator("#name")).toHaveValue("Duo Studio");
   await expect(page.locator("#tr_name")).toHaveValue("استوديو ثنائي");
   await page.getByTestId("profile-form").locator('button[type="submit"]').click();
-  await expect(page.getByText("Page saved.")).toBeVisible();
+  // Later saves leave the form for the studio, with the result at the top.
+  await expect(page).toHaveURL(/\/en\/studio\?saved=profile/);
+  await expect(page.getByTestId("profile-saved")).toContainText("Page saved.");
   await page.goto(`/ar/a/${handle}`);
   await expect(page.locator("h1")).toContainText("استوديو ثنائي");
   await page.goto(`/en/a/${handle}`);

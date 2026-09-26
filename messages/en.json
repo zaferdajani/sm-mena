@@ -526,7 +526,8 @@
       "contentLang": "Main language of your page",
       "contentLangHint": "Write the name, bio and introduction below in this language, and add the other language if you like. Switching moves your texts between the two versions.",
       "langAr": "العربية",
-      "langEn": "English"
+      "langEn": "English",
+      "saveContinue": "Save and continue"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -551,7 +552,17 @@
       "english": "English",
       "arabic": "Arabic",
       "fieldIn": "{field} ({language})"
-    }
+    },
+    "setup": {
+      "title": "Set up your page",
+      "profile": "Complete your page: logo, short bio and services",
+      "packages": "Add your packages with clear prices",
+      "post": "Post your first work",
+      "done": "Done"
+    },
+    "savedProfile": "Page saved.",
+    "packagesWelcome": "Page saved. Next, add your packages: what you offer and for how much. Businesses compare them, and the AI assistant uses them to recommend you.",
+    "packagesSkip": "Skip for now and post your first work"
   },
   "Admin": {
     "title": "Admin",

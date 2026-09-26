@@ -81,6 +81,23 @@ describe("same quality, smallest size", () => {
     expect([meta.width, meta.height, meta.format]).toEqual([320, 320, "webp"]);
     expect(avatar.byteLength).toBeLessThan(input.byteLength);
   }, 60_000);
+
+  it("crops a logo from the centre, as the upload preview shows it", async () => {
+    // A wide logo: a saturated block on one side (which a saliency crop would pick), a dark mark in the middle.
+    const block = (color: string) => sharp({ create: { width: 200, height: 200, channels: 3, background: color } }).png().toBuffer();
+    const input = await sharp({ create: { width: 900, height: 300, channels: 3, background: "#ffffff" } })
+      .composite([
+        { input: await block("#e11d48"), left: 20, top: 50 },
+        { input: await block("#111111"), left: 350, top: 50 },
+      ])
+      .png()
+      .toBuffer();
+    const { data, info } = await sharp(await processAvatar(input)).raw().toBuffer({ resolveWithObject: true });
+    const at = (x: number, y: number) => Array.from(data.subarray((y * info.width + x) * info.channels, (y * info.width + x) * info.channels + 3));
+    // The dark mark is in the middle, and the red block is out of the crop.
+    expect(at(160, 160).every((v) => v < 60)).toBe(true);
+    for (const x of [5, 315]) expect(at(x, 160)[1]).toBeGreaterThan(200);
+  }, 60_000);
 });
 
 describe("SSIM", () => {
