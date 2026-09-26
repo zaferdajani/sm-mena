@@ -8,7 +8,9 @@ import { audit, updateAgency } from "@/lib/data/agencies";
 import { listClients, saveClient } from "@/lib/data/portfolio-clients";
 import { createPost } from "@/lib/data/posts";
 import { canUse } from "@/lib/feature-gate";
-import { ImageError, MAX_IMAGES_PER_POST } from "@/lib/images";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
+import { resolveServices } from "@/lib/services/tags";
+import { storage } from "@/lib/storage";
 import { INDUSTRIES, PLATFORMS } from "@/lib/labels";
 import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
 import { analyzePortfolio } from "@/lib/portfolio-import";
@@ -28,6 +30,9 @@ const pagesSchema = z
     z.object({
       index: z.number().int().min(0).max(IMPORT_LIMITS.pages - 1),
       text: z.string().max(IMPORT_LIMITS.textPerPage * 2).transform((t) => t.slice(0, IMPORT_LIMITS.textPerPage)),
+      layout: z.enum(["gallery", "logos", "single", "plain"]).optional(),
+      crops: z.number().int().min(0).max(IMPORT_LIMITS.cropsPerPage).optional(),
+      cropTexts: z.array(z.string().max(80)).max(IMPORT_LIMITS.cropsPerPage).optional(),
       image: z
         .string()
         .max(Math.ceil(IMPORT_LIMITS.thumbBytes * 1.4))
@@ -103,27 +108,56 @@ export async function importPostAction(formData: FormData): Promise<ImportPostSt
 const profileSchema = z.object({
   about: z.string().max(2000).nullable(),
   strengths: z.array(z.string().trim().min(1).max(80)).max(6),
+  services: z.array(z.string().max(60)).max(8),
   clients: z.array(z.object({ name: z.string().trim().min(2).max(80), industry: z.string().nullable() })).max(30),
 });
 
-/** Saves the profile details the agency accepted: its introduction, strengths and clients. */
-export async function applyProfileImportAction(input: unknown): Promise<{ ok?: boolean; clients?: number; error?: string }> {
-  const { agency } = await requireAgency();
+/**
+ * Saves the profile details the agency accepted: its introduction, strengths,
+ * services the portfolio names, clients, and the logo from the cover as its
+ * page picture. `formData` carries `data` (JSON) and optionally `avatar`.
+ */
+export async function applyProfileImportAction(formData: FormData): Promise<{ ok?: boolean; clients?: number; services?: number; avatar?: boolean; error?: string }> {
+  const { user, agency } = await requireAgency();
   if (!(await canUse("portfolio_import"))) return { error: "unavailable" };
-  const parsed = profileSchema.safeParse(input);
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get("data") ?? ""));
+  } catch {
+    return { error: "invalid" };
+  }
+  const parsed = profileSchema.safeParse(raw);
   if (!parsed.success) return { error: "invalid" };
-  const { about, strengths, clients } = parsed.data;
-  if (about?.trim() || strengths.length) {
-    await updateAgency(agency.id, {
-      ...(about?.trim() ? { about: about.trim() } : {}),
-      ...(strengths.length ? { strengths: [...new Set([...agency.strengths, ...strengths])].slice(0, 8) } : {}),
-    });
+  const { about, strengths, services, clients } = parsed.data;
+
+  let avatarKey: string | undefined;
+  const avatar = formData.get("avatar");
+  if (avatar instanceof File && avatar.size > 0) {
+    try {
+      avatarKey = newAvatarKey(agency.id);
+      await storage().put(avatarKey, await processAvatar(Buffer.from(await avatar.arrayBuffer())), "image/webp");
+    } catch {
+      return { error: "avatar" };
+    }
+  }
+  // Known catalog tags only; their core parents come along (docs/30).
+  const picked = services.length ? await resolveServices(agency.id, services, []) : null;
+  const patch = {
+    ...(about?.trim() ? { about: about.trim() } : {}),
+    ...(strengths.length ? { strengths: [...new Set([...agency.strengths, ...strengths])].slice(0, 8) } : {}),
+    ...(picked?.services.length ? { services: [...new Set([...agency.services, ...picked.services])] } : {}),
+    ...(avatarKey ? { avatarKey } : {}),
+  };
+  if (Object.keys(patch).length) {
+    await updateAgency(agency.id, patch);
+    if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   }
   let added = 0;
   for (const c of clients) {
     const industry = c.industry && (INDUSTRIES as readonly string[]).includes(c.industry) ? c.industry : null;
     if (await clientIdFor(agency.id, c.name, industry)) added++;
   }
+  await audit(user.id, "portfolio_import.apply", "agency", agency.id, { clients: added, services: picked?.services.length ?? 0, avatar: Boolean(avatarKey), about: Boolean(about?.trim()) });
   revalidatePath("/[locale]", "layout");
-  return { ok: true, clients: added };
+  return { ok: true, clients: added, services: picked?.services.length ?? 0, avatar: Boolean(avatarKey) };
 }

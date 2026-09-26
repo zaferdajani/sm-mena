@@ -8,7 +8,7 @@
  * runs from `prebuild` (and `predev`), so the ~31 MB never enters the repository.
  * Vercel runs `npm run build`, and npm runs `prebuild` before it automatically.
  */
-import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 const root = process.cwd();
@@ -51,4 +51,32 @@ for (const dir of ["standard_fonts", "cmaps"]) {
   if (existsSync(src)) for (const name of readdirSync(src)) bytes += copy(`pdfjs-dist/${dir}/${name}`, `pdfjs/${dir}/${name}`);
 }
 
-console.log(`[vendor] ffmpeg engine and pdf.js worker -> public/engines (${(bytes / 1e6).toFixed(1)} MB)`);
+// tesseract.js, for reading the text off image-only portfolio pages on the
+// device (docs/36). The worker and the wasm core come from node_modules; the
+// English and Arabic language files ("fast" models) are downloaded once from
+// tesseract.js's own data host and kept next to them. If the download fails
+// (no network at build time) the browser falls back to that host at run time.
+bytes += copy("tesseract.js/dist/worker.min.js", "tesseract/worker.min.js");
+for (const name of ["tesseract-core-simd-lstm.wasm.js", "tesseract-core-simd-lstm.wasm", "tesseract-core-lstm.wasm.js", "tesseract-core-lstm.wasm"]) {
+  bytes += copy(`tesseract.js-core/${name}`, `tesseract/${name}`);
+}
+const TESSDATA = "https://tessdata.projectnaptha.com/4.0.0_fast";
+for (const lang of ["eng", "ara"]) {
+  const file = out(`tesseract/${lang}.traineddata.gz`);
+  if (existsSync(file) && statSync(file).size > 100_000) {
+    bytes += statSync(file).size;
+    continue;
+  }
+  try {
+    const res = await fetch(`${TESSDATA}/${lang}.traineddata.gz`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const buf = Buffer.from(await res.arrayBuffer());
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, buf);
+    bytes += buf.byteLength;
+  } catch (e) {
+    console.warn(`[vendor] could not download ${lang}.traineddata.gz (${e.message}); the browser will fetch it from ${TESSDATA} instead`);
+  }
+}
+
+console.log(`[vendor] ffmpeg, pdf.js and tesseract engines -> public/engines (${(bytes / 1e6).toFixed(1)} MB)`);

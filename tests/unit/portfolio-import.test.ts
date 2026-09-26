@@ -49,6 +49,32 @@ describe("reading a portfolio from its text", () => {
     expect(plan.profile.clients.map((c) => c.name)).toEqual(["Rose Café", "Petra Motors", "Zaytoon Market"]);
   });
 
+  // Pages read off images (OCR): direction marks glued to words, a stylised heading half read, one service per page.
+  it("reads an image-only portfolio: covers, about, a run of service pages, logo walls and photo grids", () => {
+    const scanned = [
+      { index: 0, text: "210\niis", layout: "plain" as const },
+      { index: 1, text: "\u200esh 1 1\u200f\n\u200ei Marketing Agency\u200f\nES AND MAGIC.\n-SETH GODIN" },
+      { index: 2, text: "ABOUT\nWe Inspire Action.\nWe are a brand strategy and marketing agency that brings brands and culture together, with a belief that culture drives commerce." },
+      { index: 3, text: "\u200eYe\u200f\n\u200eSERVICE BR:\u200f ) :\nTe we, fi\nSe 1 4\n36 3" },
+      { index: 4, text: "DIGITAL\nMARKETING\n1.Search Engine Optimization (SEO)\n2.Search Engine Marketing\n3.Social Media Marketing", layout: "single" as const, crops: 1 },
+      { index: 5, text: "EVEN\nPRNING\n{Establish your event goals and objectives.\n2.Select your event's date.\n3.Develop an event master plan.\n4 Create an event budget.\n5.Brand your event and begin publicity." },
+      { index: 6, text: "CLIENT\nax\nah", layout: "logos" as const, crops: 4, cropTexts: ["", "WW WHITE HALL", "2 UP ©) 22 ft", "DU NES C LUB, \u200fا\u200e"] },
+      { index: 7, text: "KAGING\n7 1\n00 4 3", layout: "gallery" as const, crops: 6, cropTexts: ["", "", "", "", "", ""] },
+      { index: 8, text: "— 5 ye SZ)\n14 2 1 ee 29", layout: "gallery" as const, crops: 3 },
+    ];
+    const plan = planFromText(scanned, "jo", ["smm_management"]);
+    expect(plan.kinds).toEqual({ 0: "cover", 1: "cover", 2: "about", 3: "services", 4: "services", 5: "services", 6: "clients", 7: "work", 8: "work" });
+    expect(plan.drafts.map((d) => [d.title, d.images.length])).toEqual([
+      ["KAGING", 6],
+      ["", 3], // a heading that isn't words is left for the agency to write
+    ]);
+    expect(plan.profile.about).toMatch(/^We Inspire Action/);
+    expect(plan.profile.services).toEqual(expect.arrayContaining(["seo", "ads_meta"]));
+    // One client per logo, named only when the wordmark read as words.
+    expect(plan.profile.clients.map((c) => c.name)).toEqual(["", "WW WHITE HALL", "", ""]);
+    expect(plan.profile.clients[1].logo).toEqual({ page: 6, crop: 1 });
+  });
+
   it("tags a page whose text names no service with the agency's own service", () => {
     const plan = planFromText([{ index: 0, text: "Summer campaign" }, { index: 1, text: "Autumn lookbook" }], "jo", ["photography"]);
     expect(plan.drafts.every((d) => d.services[0] === "photography")).toBe(true);
@@ -85,7 +111,7 @@ describe("reading a portfolio with the AI", () => {
         { index: 1, text: "Rose Café", image: "data:image/jpeg;base64,BBBB" },
         { index: 2, text: "", image: null },
       ],
-      { name: "Nakhla", services: ["smm_management"] },
+      { name: "Nakhla", services: ["smm_management"], country: "jo" },
       "en",
     );
     const req = created[0] as { tool_choice: { name: string }; messages: { content: { type: string }[] }[] };

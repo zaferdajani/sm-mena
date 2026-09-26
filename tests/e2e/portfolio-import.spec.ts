@@ -36,6 +36,19 @@ test("an agency turns its PDF portfolio into posts and clients", async ({ page }
   await expect(drafts.first().locator("img")).toHaveCount(2);
   await expect(review.getByTestId("import-client")).toHaveCount(2);
 
+  // The picture picker lists every picture found; a picked page becomes a new post.
+  await page.getByTestId("open-pictures").click();
+  const pictures = page.getByTestId("picture");
+  await expect(pictures.first()).toBeVisible();
+  const before = await pictures.count();
+  expect(before).toBeGreaterThanOrEqual(4); // at least the four pages
+  await page.getByRole("tab", { name: /Pages/ }).click();
+  await pictures.last().click();
+  await page.getByTestId("pictures-to-post").click();
+  await expect(drafts).toHaveCount(2);
+  // Untick the new one so the published count stays the same.
+  await drafts.last().getByTestId("draft-include").uncheck();
+
   await page.getByTestId("import-publish").click();
   await expect(page.getByTestId("import-done")).toContainText("1 post published", { timeout: 60_000 });
   await expect(page.getByTestId("import-done")).toContainText("2 clients added");

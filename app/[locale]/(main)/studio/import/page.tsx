@@ -27,6 +27,7 @@ export default async function ImportPortfolioPage({ params }: PageProps<"/[local
         services={[...options.services.primary, ...options.services.other]}
         platforms={options.platforms}
         industries={options.industries}
+        clients={options.clients}
         agencyServices={agency.services}
         aiAvailable={aiImportAvailable()}
       />

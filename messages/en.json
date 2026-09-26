@@ -2687,7 +2687,7 @@
     "reading": "Reading page {done} of {total}…",
     "thinking": "Preparing your drafts…",
     "thinkingAi": "Sawwiq's AI is reading your portfolio…",
-    "how1": "Your PDF is read on your device; each page becomes a high-quality image.",
+    "how1": "Your PDF is read on your device: each page becomes a high-quality image, photo grids are cut into single photos, and text is read off picture-only pages.",
     "how2": "Sawwiq groups the pages into projects and suggests captions, services and clients from the text on each page.",
     "how2ai": "Sawwiq's AI looks at every page and suggests projects, captions, services and clients. It never invents numbers or client names.",
     "how3": "You edit, remove or merge anything, then publish only what you keep.",
@@ -2706,7 +2706,7 @@
     "pageN": "Page {n}",
     "removePage": "Remove this page",
     "client": "Client",
-    "clientPh": "Client or brand (optional)",
+    "clientPh": "Client this work was for (groups the post under that client)",
     "result": "Result",
     "resultPh": "Result, e.g. +40% orders (optional)",
     "removeService": "Remove service",
@@ -2733,7 +2733,40 @@
       "tooMany": "A post can have up to 10 pages.",
       "limit": "You've reached your plan's post limit.",
       "too_large": "These pages are too large to upload together. Remove a page.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "avatar": "The logo couldn't be used as a picture. Upload one from your page settings."
+    },
+    "ocr": "Reading the text off page images ({done} of {total})…",
+    "ocrHint": "Pages that are pictures only are read on your device. This can take a minute on a phone.",
+    "useAvatar": "Use the logo from the cover as my page picture",
+    "services": "Services your portfolio mentions that aren't on your page yet",
+    "clientsHint": "Logos found on your clients pages. Type or fix the name; unnamed ones aren't added.",
+    "clientNamePh": "Client name",
+    "imagesCount": "{count, plural, one {1 image} other {# images}}",
+    "doneProfile": "Also added: {services, plural, =0 {no new services} one {1 service} other {# services}}{avatar, select, yes {, and your page picture} other {}}.",
+    "seeProfile": "See my page",
+    "picker": {
+      "open": "All pictures found ({count})",
+      "title": "{count, plural, one {1 picture} other {# pictures}} found in your PDF",
+      "hint": "Select pictures, then choose what to do with them: make a post (or add them to one), use one as your page logo, or add them as your clients' logos.",
+      "kinds": {
+        "all": "All",
+        "photo": "Photos",
+        "logo": "Logos",
+        "block": "Blocks",
+        "page": "Pages"
+      },
+      "selectAll": "Select all shown",
+      "clear": "Clear",
+      "inPost": "In a post",
+      "pageN": "p. {n}",
+      "selected": "{count, plural, =0 {Nothing selected} one {1 selected} other {# selected}}",
+      "addTo": "Add to",
+      "newPost": "A new post",
+      "postN": "Post {n}",
+      "makePost": "Add to post",
+      "useAsLogo": "Use as my page logo",
+      "asClientLogos": "Add as client logos"
     }
   }
 }

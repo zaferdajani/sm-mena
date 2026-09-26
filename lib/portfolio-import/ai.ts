@@ -1,10 +1,12 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
+import type { CountryCode } from "@/lib/countries";
 import { anthropicConfigured, anthropicModel } from "@/lib/ai/providers/anthropic";
 import { INDUSTRIES, PLATFORMS } from "@/lib/labels";
 import { isKnownService } from "@/lib/services/catalog";
 import { allServices } from "@/lib/taxonomy";
+import { imagesOf, profileFrom } from "./rules";
 import { IMPORT_LIMITS, type ImportPage, type ImportPlan, type PageKind } from "./types";
 
 // Reading a PDF portfolio with Claude (docs/36-portfolio-import.md), the way
@@ -89,7 +91,7 @@ let client: Anthropic | undefined;
 const getClient = () => (client ??= new Anthropic({ timeout: 120_000 }));
 
 /** Asks Claude to read the portfolio. Throws on any failure (the caller falls back to the rules). */
-export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[] }, locale: string): Promise<ImportPlan> {
+export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[]; country: CountryCode }, locale: string): Promise<ImportPlan> {
   const shown = pages.slice(0, IMPORT_LIMITS.aiPages);
   const content: Anthropic.ContentBlockParam[] = [
     {
@@ -101,7 +103,8 @@ export async function planWithAi(pages: ImportPage[], agency: { name: string; se
     },
   ];
   for (const p of shown) {
-    content.push({ type: "text", text: `Page ${p.index}:\n${p.text.slice(0, IMPORT_LIMITS.textPerPage) || "(no text)"}` });
+    const layout = p.layout === "gallery" ? ` (a grid of ${p.crops} photos, each will be a post image)` : p.layout === "logos" ? ` (a wall of ${p.crops} client logos)` : "";
+    content.push({ type: "text", text: `Page ${p.index}${layout}:\n${p.text.slice(0, IMPORT_LIMITS.textPerPage) || "(no text)"}` });
     const data = p.image?.replace(/^data:image\/jpeg;base64,/, "");
     if (data) content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data } });
   }
@@ -129,8 +132,10 @@ export async function planWithAi(pages: ImportPage[], agency: { name: string; se
     .map((d) => {
       const own = [...new Set(d.pages)].filter((i) => valid.has(i) && !used.has(i)).slice(0, IMPORT_LIMITS.imagesPerPost);
       own.forEach((i) => used.add(i));
+      const byIndex = new Map(pages.map((p) => [p.index, p]));
       return {
         pages: own,
+        images: own.flatMap((i) => imagesOf(byIndex.get(i)!)).slice(0, IMPORT_LIMITS.imagesPerPost),
         title: d.title.trim().slice(0, 80),
         caption: d.caption.trim().slice(0, 2200),
         services: d.services.filter(isKnownService).slice(0, 6),
@@ -142,6 +147,12 @@ export async function planWithAi(pages: ImportPage[], agency: { name: string; se
     })
     .filter((d) => d.pages.length);
   // Pages beyond what the model saw stay as work pages the agency can add by hand.
+  // Logo clients, suggested services and the cover logo come from the rules (they read pixels, not words).
+  const rules = profileFrom(pages, kinds, agency.country, agency.services);
+  const named = plan.profile.clients
+    .map((c) => ({ name: c.name.trim().slice(0, 80), industry: c.industry && (INDUSTRIES as readonly string[]).includes(c.industry) ? c.industry : null }))
+    .filter((c) => c.name.length >= 2);
+  const namedKeys = new Set(named.map((c) => c.name.toLowerCase()));
   return {
     mode: "ai",
     kinds,
@@ -149,10 +160,9 @@ export async function planWithAi(pages: ImportPage[], agency: { name: string; se
     profile: {
       about: plan.profile.about?.trim().slice(0, 2000) || null,
       strengths: plan.profile.strengths.map((s) => s.trim().slice(0, 80)).filter(Boolean).slice(0, 6),
-      clients: plan.profile.clients
-        .map((c) => ({ name: c.name.trim().slice(0, 80), industry: c.industry && (INDUSTRIES as readonly string[]).includes(c.industry) ? c.industry : null }))
-        .filter((c) => c.name.length >= 2)
-        .slice(0, 30),
+      services: rules.services,
+      clients: [...named, ...rules.clients.filter((c) => c.logo && !namedKeys.has(c.name.toLowerCase()))].slice(0, 30),
+      avatar: rules.avatar,
     },
   };
 }
