@@ -15,6 +15,7 @@ export function milestoneInfo(v: ContractView, locale: string, now = new Date())
           ...(m.status === "submitted" && m.reviewDueAt ? { reviewBy: formatDate(m.reviewDueAt, locale), daysLeft: daysLeft(m.reviewDueAt, now) } : {}),
           ...(v4 ? { rounds: { left: r.left, total: r.included + r.extra } } : {}),
           roundAsked: Boolean(m.extraRoundAskedAt),
+          ...(v.partners?.[m.id] ? { partner: v.partners[m.id].name } : {}),
           autoApproved: m.approvedBy === "deadline",
         } satisfies MilestoneInfo,
       ];

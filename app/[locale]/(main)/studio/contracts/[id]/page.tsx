@@ -8,6 +8,7 @@ import { ChangeRequests, UpdateForm } from "@/components/contracts/change-reques
 import { ContractCommitments, UpdatesList } from "@/components/contracts/commitments";
 import { ContractSummary, ContractTimeline } from "@/components/contracts/contract-summary";
 import { MilestoneList } from "@/components/contracts/milestone-list";
+import { MilestonePartners } from "@/components/contracts/milestone-partners";
 import { milestoneInfo } from "@/components/contracts/milestone-info";
 import { PrintButton } from "@/components/contracts/print-button";
 import { ProblemPanel } from "@/components/contracts/problem-panel";
@@ -16,6 +17,9 @@ import { ReceiptsList } from "@/components/contracts/receipts-list";
 import { ShareLink } from "@/components/contracts/share-link";
 import { requireAgency } from "@/lib/auth/guards";
 import { clientToken, getContractForAgency, getContractForClientAgency } from "@/lib/data/contracts";
+import { sharesForContract } from "@/lib/data/milestone-shares";
+import { listPartnerRequests } from "@/lib/data/partners";
+import { canUse } from "@/lib/feature-gate";
 
 export default async function StudioContract({ params, searchParams }: PageProps<"/[locale]/studio/contracts/[id]">) {
   const { locale, id } = await params;
@@ -42,6 +46,10 @@ export default async function StudioContract({ params, searchParams }: PageProps
   const c = v.contract;
   const hidden = { contractId: c.id };
   const token = clientToken(c);
+  // Partners on milestones (docs/40): the agency's accepted partners and the shares on this contract.
+  const partnersOn = await canUse("partners");
+  const [shares, partnerRows] = partnersOn ? await Promise.all([sharesForContract(c.id), listPartnerRequests(agency.id)]) : [[], []];
+  const partners = partnerRows.filter((r) => r.status === "accepted").map((r) => ({ id: r.other.id, name: r.other.name, handle: r.other.handle }));
 
   return (
     <div className="space-y-4">
@@ -76,6 +84,19 @@ export default async function StudioContract({ params, searchParams }: PageProps
         <h2 className="font-semibold">{t("view.milestones")}</h2>
         <MilestoneList perspective="agency" milestones={v.milestones} mode={c.paymentMode} currency={c.currency} active={c.status === "active"} fundableId={null} hidden={hidden} info={milestoneInfo(v, locale)} />
       </section>
+      {partnersOn && !v.clientAgency && ["sent", "active", "disputed"].includes(c.status) && (
+        <MilestonePartners
+          contractId={c.id}
+          currency={c.currency}
+          mode={c.paymentMode}
+          active={["sent", "active"].includes(c.status)}
+          partners={partners}
+          milestones={v.milestones.map((m) => {
+            const s = shares.find((x) => x.share.milestoneId === m.id);
+            return { id: m.id, title: m.title, status: m.status, amountFils: m.amountFils, share: s ? { ...s.share, partner: s.partner } : null };
+          })}
+        />
+      )}
       {["active", "disputed"].includes(c.status) && <UpdateForm hidden={hidden} />}
       <UpdatesList v={v} locale={locale} />
       <ProblemPanel v={v} side="agency" hidden={hidden} locale={locale} />

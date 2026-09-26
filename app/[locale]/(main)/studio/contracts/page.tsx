@@ -8,6 +8,8 @@ import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { listContractRequests } from "@/lib/data/contract-requests";
 import { listAgencyContracts, listBuyingContracts } from "@/lib/data/contracts";
+import { sharesForPartner } from "@/lib/data/milestone-shares";
+import { PartnerWorkList } from "@/components/contracts/partner-work-list";
 import { formatDate, formatFils } from "@/lib/format";
 import { currencyOf } from "@/lib/countries";
 import type { Contract } from "@/lib/db/schema";
@@ -18,7 +20,7 @@ export default async function StudioContracts({ params }: PageProps<"/[locale]/s
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const t = await getTranslations("Contracts");
-  const [rows, buying, requests] = await Promise.all([listAgencyContracts(agency.id), listBuyingContracts(agency.id), listContractRequests(agency.id)]);
+  const [rows, buying, requests, partnerWork] = await Promise.all([listAgencyContracts(agency.id), listBuyingContracts(agency.id), listContractRequests(agency.id), sharesForPartner(agency.id)]);
   const incoming = requests.incoming.filter((r) => r.status === "pending");
   const outgoing = requests.outgoing.filter((r) => r.status === "pending");
 
@@ -45,6 +47,7 @@ export default async function StudioContracts({ params }: PageProps<"/[locale]/s
 
   return (
     <div className="space-y-6">
+      <PartnerWorkList rows={partnerWork} locale={locale} />
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("listTitle")}</h2>

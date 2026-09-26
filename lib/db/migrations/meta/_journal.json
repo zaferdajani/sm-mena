@@ -113,6 +113,13 @@
       "when": 1790442709117,
       "tag": "0015_founding_seats",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1790448362542,
+      "tag": "0016_milestone_shares",
+      "breakpoints": true
     }
   ]
 }
