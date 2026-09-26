@@ -2537,7 +2537,8 @@
       "body": "Edit the page, post work, answer requests and send quotes. No sign-in needed."
     },
     "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
-    "off": "The demo is switched off right now."
+    "off": "The demo is switched off right now.",
+    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies."
   },
   "PartnerContracts": {
     "request": "Ask this partner for a contract",

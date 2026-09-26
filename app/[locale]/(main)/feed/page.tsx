@@ -31,6 +31,7 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Home");
+  const td = await getTranslations("Demo");
   const ts = await getTranslations("Seo");
   const tc = await getTranslations("Common");
   const tCity = await getTranslations("Cities");
@@ -129,7 +130,7 @@ export default async function FeedPage({ params }: PageProps<"/[locale]/feed">) 
         {page.items.length ? (
           <FeedList initial={page} filters={{ country }} placement="feed" />
         ) : (
-          <EmptySupply />
+          <EmptySupply text={td("emptyWork")} />
         )}
       </div>
     </div>
