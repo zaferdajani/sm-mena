@@ -4,6 +4,7 @@
 //   npm run db:seed -- --admin-only   only ensure the SEED_ADMIN_* account exists
 // Demo agencies carry is_demo=true so they can be removed before launch
 // (Admin → Agencies → "Remove demo data").
+import { rmSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -337,14 +338,25 @@ function kindFor(service: string): DemoKind {
 }
 
 async function reset() {
+  // On the local PGlite store, start from an empty directory: truncating keeps the
+  // migrations ledger, and a migration whose timestamp is older than one already
+  // applied (two branches adding migrations at once) would then be skipped for good.
+  const dir = process.env.PGLITE_DIR;
+  if (!process.env.DATABASE_URL && dir && !dir.startsWith("memory://")) {
+    await closeDb();
+    rmSync(dir, { recursive: true, force: true });
+    await getDb();
+    return;
+  }
   const db = await getDb();
   await db.execute(sql`truncate table staff_invites, app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false, restoreDemo = false } = {}) {
   const log = quiet ? () => {} : console.log;
-  const db = await getDb();
+  // Reset first: on PGlite it reopens the store, so the handle is taken after it.
   if (doReset) await reset();
+  const db = await getDb();
   // Every built-in service gets its numbered tag (data/service-catalog.json).
   await syncServiceCatalog();
   const production = process.env.NODE_ENV === "production";
