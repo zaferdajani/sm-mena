@@ -259,3 +259,8 @@ export function newImageKeys(agencyId: string, fullFormat: StoredFormat = "webp"
 export function newAvatarKey(agencyId: string) {
   return `avatars/${agencyId}/${randomUUID()}.webp`;
 }
+
+/** A portfolio client's (account's) logo, processed like an avatar. */
+export function newClientLogoKey(agencyId: string) {
+  return `clients/${agencyId}/${randomUUID()}.webp`;
+}

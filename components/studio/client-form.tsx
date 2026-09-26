@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2, X } from "lucide-react";
+import { ImagePlus, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useState, useTransition } from "react";
 import { deleteClientAction, saveClientAction } from "@/app/[locale]/(main)/studio/actions";
@@ -16,7 +16,7 @@ import type { ClientTranslation, ContentLang } from "@/lib/content-lang";
 import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
-export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[]; translation?: ClientTranslation | null };
+export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[]; translation?: ClientTranslation | null; logoUrl?: string | null };
 
 // Empty rows ready to fill for a new client: the accounts agencies run most.
 const STARTER: LinkKind[] = ["instagram", "tiktok", "facebook", "website"];
@@ -36,6 +36,9 @@ export function ClientForm({ initial, industries, countries, defaultCountry, con
     if (state?.ok && initial) onDone?.();
   }
   const [rows, setRows] = useState(() => (initial?.links.length ? initial.links.map((l) => row(l.kind, l.value)) : STARTER.map((k) => row(k))));
+  // The logo: what's saved, a new picture chosen, or removed.
+  const [logoPreview, setLogoPreview] = useState<string | null>(initial?.logoUrl ?? null);
+  const [removeLogo, setRemoveLogo] = useState(false);
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
   const error =
     state?.error === "link" ? t("errors.link", { n: (state.index ?? 0) + 1, kind: t(`kinds.${state.kind ?? "other"}`) }) : state?.error ? t(`errors.${state.error}`) : undefined;
@@ -54,6 +57,39 @@ export function ClientForm({ initial, industries, countries, defaultCountry, con
       {initial && <input type="hidden" name="clientId" value={initial.id} />}
       <FormError message={error} />
       {state?.ok && !initial && <p role="status" className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground">✓ {t("saved")}</p>}
+      <div className="flex items-start gap-3">
+        <label className="group relative grid size-16 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-full border bg-muted" title={t("logo")}>
+          {logoPreview && !removeLogo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoPreview} alt="" className="size-full object-cover" data-testid="client-logo-preview" />
+          ) : (
+            <ImagePlus className="size-6 text-muted-foreground" />
+          )}
+          <input
+            type="file"
+            name="logo"
+            accept="image/*"
+            className="sr-only"
+            data-testid="client-logo-input"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) {
+                setLogoPreview(URL.createObjectURL(f));
+                setRemoveLogo(false);
+              }
+            }}
+          />
+        </label>
+        <div className="text-xs text-muted-foreground">
+          <p className="text-sm font-medium text-foreground">{t("logo")}</p>
+          <p>{t("logoHint")}</p>
+          {initial?.logoUrl && (
+            <label className="mt-1 flex items-center gap-1.5">
+              <input type="checkbox" name="removeLogo" value="1" checked={removeLogo} onChange={(e) => setRemoveLogo(e.target.checked)} /> {t("removeLogo")}
+            </label>
+          )}
+        </div>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t("name")} htmlFor={`name-${initial?.id ?? "new"}`}>
           <Input id={`name-${initial?.id ?? "new"}`} name="name" required minLength={2} maxLength={80} defaultValue={initial?.name} />
@@ -172,6 +208,12 @@ export function ClientItem({ client, industries, countries, industryLabel, postC
   return (
     <div className="rounded-xl border p-4" data-testid="client-item">
       <div className="flex flex-wrap items-start gap-2">
+        {client.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={client.logoUrl} alt="" className="size-10 rounded-full border object-cover" data-testid="client-logo" />
+        ) : (
+          <span className="grid size-10 place-items-center rounded-full border bg-muted text-sm font-semibold text-muted-foreground">{client.name.slice(0, 1)}</span>
+        )}
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{client.name}</p>
           <p className="text-xs text-muted-foreground">

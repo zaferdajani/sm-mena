@@ -1,5 +1,4 @@
 import { DemoNotice } from "@/components/demo/demo-banner";
-import { clientNames } from "@/lib/data/portfolio-clients";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -54,8 +53,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
     (await isCrawlerRequest()) ? null : recordView("post_view", post.agency.id, post.id, visitorId),
   ]);
   const others = more.items.filter((p) => p.id !== post.id).slice(0, 6);
-  const client = post.clientId ? (await clientNames([post.clientId])).get(post.clientId) : undefined;
-  const clientName = client ? localized({ name: client.name }, client.translation, post.contentLang, locale).name : undefined;
+  const clientName = post.client ? localized({ name: post.client.name }, { name: post.client.nameTranslation ?? undefined }, post.contentLang, locale).name : undefined;
   const tp = await getTranslations("Profile");
 
   return (
@@ -68,8 +66,12 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
       )}
       <PostCard post={item} priority linkToPost={false} />
       <div className="flex items-center justify-between gap-2 px-3 py-2">
-        {clientName ? (
-          <Link href={{ pathname: `/a/${post.agency.handle}`, query: { tab: "clients" } }} className="truncate text-sm font-medium text-brand" data-testid="post-client">
+        {clientName && post.client ? (
+          <Link href={`/a/${post.agency.handle}/c/${post.client.id}`} className="flex min-w-0 items-center gap-1.5 truncate text-sm font-medium text-brand" data-testid="post-client">
+            {post.client.logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={post.client.logoUrl} alt="" className="size-6 shrink-0 rounded-full border bg-white object-cover" />
+            )}
             {tp("forClient", { name: clientName })}
           </Link>
         ) : (

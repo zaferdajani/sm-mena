@@ -26,6 +26,22 @@ When publishing or editing a post, the agency can pick **Client (optional)**. On
 
 Data: table `portfolio_clients` (links as JSON), `posts.client_id` (set to null if the client is deleted; the posts stay). Migration `0009_portfolio_clients.sql`.
 
+## Accounts: an agency's work grouped by the client it handles
+
+Each portfolio client is an **account** the agency handles, and the agency's work falls into two kinds:
+- **work filed under an account** (`posts.client_id` set): on the agency's page it is grouped, not spread through the grid;
+- **standalone work** (no account): shown as ordinary posts.
+
+What visitors see:
+- **Work tab.** First the accounts: one tile per account with published work (`accountTiles()`): the latest post's picture as a cover, the account's logo, its name and how many posts. Then the standalone posts (`feedPage({ agencyId, standalone: true })`).
+- **Account page** `/a/{handle}/c/{clientId}`: the logo, name, business type and country, what the agency did, the real accounts it runs (Instagram, TikTok, website…), and every post filed under it (`feedPage({ agencyId, clientId })`). Pressing an account anywhere (tile, Clients tab, a post's "For {account}" line) opens it.
+- **Posts.** A post filed under an account carries the account's logo and name ("For {account}") linking to its page, in the feed and on the post page.
+
+The agency side:
+- Studio → Clients: each account has a **logo** (any picture; stored square like an agency avatar, `portfolio_clients.logo_key`, migration `0014_client_logos.sql`), besides its links and description.
+- New post / edit post: **Account (client)** files the post under an account.
+- PDF import (docs/36): logos cut out of the PDF become accounts, and each draft names the account it belongs to; the guide at the top of the review says what is still unsorted.
+
 ## Demo data
 
 `lib/db/demo-profiles.ts` gives several demo agencies an introduction, strengths, countries served and made-up clients (marked "demo"). It runs once per database (`demo_profiles_v1` flag): locally with `npm run db:seed`, live with Actions → Maintenance → **seed-demo**.

@@ -1,7 +1,7 @@
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
-import { agencies, postImages, posts, type Agency } from "@/lib/db/schema";
+import { agencies, portfolioClients, postImages, posts, type Agency } from "@/lib/db/schema";
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
@@ -35,6 +35,10 @@ export type FeedFilters = {
   fullService?: boolean;
   verified?: boolean;
   agencyId?: string;
+  /** Work for one portfolio client (an account the agency handles, docs/28). */
+  clientId?: string;
+  /** Only work not filed under an account (the agency's page groups the rest by account). */
+  standalone?: boolean;
   /** The visitor chose the demo view (lib/demo-mode.ts); set on the server only. */
   includeDemo?: boolean;
 };
@@ -50,6 +54,8 @@ export type PostView = {
   result: string | null;
   /** Portfolio client this work was for, if tagged. */
   clientId: string | null;
+  /** That client as an account: name and logo for the "For {client}" line (null when untagged). */
+  client: { id: string; name: string; nameTranslation: string | null; logoUrl: string | null } | null;
   likeCount: number;
   saveCount: number;
   viewCount: number;
@@ -196,6 +202,8 @@ function filterConditions(filters: FeedFilters): SQL[] {
   if (filters.agencyId) c.push(eq(posts.agencyId, filters.agencyId));
   // Demo work only in the demo view (an agency's own page always shows its posts).
   else if (!filters.includeDemo) c.push(eq(agencies.isDemo, false));
+  if (filters.clientId) c.push(eq(posts.clientId, filters.clientId));
+  if (filters.standalone) c.push(sql`${posts.clientId} is null`);
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
   if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));
@@ -233,6 +241,12 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     .from(postImages)
     .where(inArray(postImages.postId, rows.map((r) => r.post.id)))
     .orderBy(asc(postImages.position));
+  // The accounts the posts are filed under, for the "For {client}" line and link.
+  const clientIds = [...new Set(rows.map((r) => r.post.clientId).filter((id): id is string => Boolean(id)))];
+  const clientRows = clientIds.length
+    ? await db.select({ id: portfolioClients.id, name: portfolioClients.name, translation: portfolioClients.translation, logoKey: portfolioClients.logoKey }).from(portfolioClients).where(inArray(portfolioClients.id, clientIds))
+    : [];
+  const clientById = new Map(clientRows.map((c) => [c.id, { id: c.id, name: c.name, nameTranslation: c.translation?.name?.trim() || null, logoUrl: mediaUrl(c.logoKey) }]));
   const byPost = new Map<string, ImageView[]>();
   for (const i of images) {
     const list = byPost.get(i.postId) ?? [];
@@ -254,6 +268,7 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     industry: post.industry,
     result: post.result,
     clientId: post.clientId,
+    client: (post.clientId && clientById.get(post.clientId)) || null,
     likeCount: post.likeCount,
     saveCount: post.saveCount,
     viewCount: post.viewCount,

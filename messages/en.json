@@ -294,7 +294,13 @@
     "clientsEmpty": "This agency hasn't listed its clients yet.",
     "accountsManaged": "Accounts we run",
     "clientWork": "Work for this client",
-    "forClient": "For {name}"
+    "forClient": "For {name}",
+    "accountsTitle": "Accounts we handle",
+    "accountPosts": "{count, plural, =1 {1 post} other {# posts}}",
+    "openAccount": "See all the work",
+    "backToAgency": "Back to {name}",
+    "accountEmpty": "No work filed under this account yet.",
+    "otherWork": "Other work"
   },
   "Explore": {
     "title": "Explore",
@@ -2288,9 +2294,9 @@
     }
   },
   "PortfolioClients": {
-    "title": "Clients and accounts",
-    "intro": "Group your work by client business. Add the accounts you run for each client (Instagram, TikTok, website…), then tag your posts with the client.",
-    "add": "Add a client",
+    "title": "Accounts and clients",
+    "intro": "The accounts you handle: one per client business. Add its logo and the real accounts you run for it (Instagram, TikTok, website…), then file your posts under it. Visitors open an account to see all the work you did for it.",
+    "add": "Add an account",
     "name": "Business name",
     "industry": "Industry",
     "country": "Country",
@@ -2307,12 +2313,12 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "confirmDelete": "Delete this client? Its posts stay in your portfolio.",
-    "empty": "No clients yet. Add the businesses you work with.",
+    "empty": "No accounts yet. Add the businesses you work with.",
     "posts": "{count} posts",
-    "postClient": "Client (optional)",
-    "postClientNone": "Not linked to a client",
-    "postClientHint": "Groups this post under the client on your page.",
-    "manage": "Manage clients",
+    "postClient": "Account (optional)",
+    "postClientNone": "Standalone post (no account)",
+    "postClientHint": "Files this post under the account on your page. Visitors open the account to see all its posts together.",
+    "manage": "Manage accounts",
     "kinds": {
       "instagram": "Instagram",
       "tiktok": "TikTok",
@@ -2329,8 +2335,12 @@
       "name": "Add the business name.",
       "link": "Check account {n}: it doesn't look like a {kind} account or link.",
       "limit": "You can list up to 60 clients.",
-      "generic": "Could not save."
-    }
+      "generic": "Could not save.",
+      "logo": "The logo couldn't be read. Use a JPG, PNG or WebP under 15 MB."
+    },
+    "logo": "Logo",
+    "logoHint": "The client's logo or a square picture. Shown on your page and on every post filed under this account.",
+    "removeLogo": "Remove the logo"
   },
   "MatchWizard": {
     "placeholder": "Or type it: e.g. Instagram and TikTok for a restaurant in {city}, {budget} a month",
@@ -2743,7 +2753,7 @@
     "pageN": "Page {n}",
     "removePage": "Remove this page",
     "client": "Client",
-    "clientPh": "Client this work was for (groups the post under that client)",
+    "clientPh": "Account this work was for (groups it on your page)",
     "result": "Result",
     "resultPh": "Result, e.g. +40% orders (optional)",
     "removeService": "Remove service",
@@ -2777,7 +2787,7 @@
     "ocrHint": "Pages that are pictures only are read on your device. This can take a minute on a phone.",
     "useAvatar": "Use the logo from the cover as my page picture",
     "services": "Services your portfolio mentions that aren't on your page yet",
-    "clientsHint": "Logos found on your clients pages. Type or fix the name; unnamed ones aren't added.",
+    "clientsHint": "Each logo becomes an account on your page. Give it the business's name; posts filed under it are shown together.",
     "clientNamePh": "Client name",
     "imagesCount": "{count, plural, one {1 image} other {# images}}",
     "doneProfile": "Also added: {services, plural, =0 {no new services} one {1 service} other {# services}}{avatar, select, yes {, and your page picture} other {}}.",
@@ -2804,6 +2814,23 @@
       "makePost": "Add to post",
       "useAsLogo": "Use as my page logo",
       "asClientLogos": "Add as client logos"
+    },
+    "guide": {
+      "title": "What to do with what we found",
+      "logoStep": "Your page logo",
+      "logoDone": "Chosen",
+      "logoNone": "Not chosen yet",
+      "logoPick": "Pick from the pictures",
+      "accountsStep": "Accounts you handle",
+      "accountsFound": "{count, plural, =1 {1 logo found} other {# logos found}}, {unnamed, plural, =0 {all named} =1 {1 still needs a name} other {# still need a name}}",
+      "accountsNone": "No logos found. You can pick some from the pictures.",
+      "accountsPick": "Add logos from the pictures",
+      "accountsName": "Name them",
+      "postsStep": "Posts",
+      "postsCount": "{count, plural, =1 {1 post ready} other {# posts ready}}, {loose, plural, =0 {all filed under accounts} =1 {1 not filed under an account} other {# not filed under an account}}",
+      "postsHint": "Type the account under each post to group its work on your page. Posts without an account stay as standalone work.",
+      "postsGo": "Review the posts",
+      "postsPick": "Make posts from the pictures"
     }
   },
   "Intro": {
