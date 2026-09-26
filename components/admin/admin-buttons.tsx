@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import {
+  reactivateAgencyAction,
   removeDemoAction,
-  setDemoHiddenAction,
   resolveReportAction,
   setPostStatusAction,
   setPromotionStatusAction,
@@ -23,7 +23,7 @@ function ActionButton({ onRun, children, variant = "outline", testId }: { onRun:
   );
 }
 
-export function AgencyAdminButtons({ id, verified, status }: { id: string; verified: boolean; status: "active" | "suspended" }) {
+export function AgencyAdminButtons({ id, verified, status }: { id: string; verified: boolean; status: "active" | "suspended" | "deactivated" }) {
   const t = useTranslations("Admin");
   return (
     <div className="flex flex-wrap gap-2">
@@ -39,9 +39,11 @@ export function AgencyAdminButtons({ id, verified, status }: { id: string; verif
 
 export function RemoveDemoButton() {
   const t = useTranslations("Admin");
-  const [done, setDone] = useState<number | null>(null);
+  const [done, setDone] = useState<{ deleted: number; deactivated: number } | null>(null);
   return done !== null ? (
-    <p className="text-sm">{t("removedDemo", { count: done })}</p>
+    <p className="text-sm" data-testid="demo-removed">
+      {t("removedDemo", { count: done.deleted })} {done.deactivated > 0 && t("deactivatedDemo", { count: done.deactivated })}
+    </p>
   ) : (
     <ActionButton
       variant="destructive"
@@ -54,12 +56,11 @@ export function RemoveDemoButton() {
   );
 }
 
-/** Hides or shows the demo agencies on the main site; /demo keeps them either way (lib/demo.ts). */
-export function DemoOnMainButton({ hidden }: { hidden: boolean }) {
+export function ReactivateButton({ id }: { id: string }) {
   const t = useTranslations("Admin");
   return (
-    <ActionButton variant="outline" onRun={() => setDemoHiddenAction(!hidden)} testId="demo-on-main">
-      {t(hidden ? "showDemoOnMain" : "hideDemoOnMain")}
+    <ActionButton variant="secondary" onRun={() => reactivateAgencyAction(id)}>
+      {t("reactivate")}
     </ActionButton>
   );
 }

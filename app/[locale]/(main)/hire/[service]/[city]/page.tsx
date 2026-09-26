@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[se
     path: `/hire/${service}/${segment}`,
     title: capitalize(t("title", { service: search, place: name })),
     description:
-      price.min !== null
-        ? t("metaDescription", { count: price.agencies, service: search, place: name, min: price.min, currency })
+      price.range
+        ? t("metaDescription", { count: price.agencies, service: search, place: name, min: price.range.min, currency })
         : t("metaDescriptionNoPrice", { count: price.agencies, service: search, place: name }),
     // Country pages are indexed like service pages; a city page only when enough real agencies there make it different from its country page.
     noindex: real < (place.country ? INDEX_MIN_SERVICE : INDEX_MIN_CITY),

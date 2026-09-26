@@ -1,4 +1,6 @@
+import { EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
+import { demoMode } from "@/lib/demo-mode";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
@@ -39,7 +41,10 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   // A city in the link decides the country (e.g. ?city=riyadh from the landing page); otherwise the visitor's country.
   const country = countryOfCity(p.city) ?? (await currentCountry());
   const { tab, ...rest } = p;
-  const filters = { ...rest, country };
+  const filters = { ...rest, country, includeDemo: await demoMode() };
+  // What the browser sends back for "load more" (the demo choice stays server-side).
+  const { includeDemo: _demo, ...clientFilters } = filters;
+  void _demo;
   const currency = currencyOf(country);
   const t = await getTranslations("Explore");
   const tc = await getTranslations("Common");
@@ -92,9 +97,9 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
       <div className="pt-1 sm:px-4">
         {posts &&
           (posts.items.length ? (
-            <FeedList key={JSON.stringify(filters)} initial={posts} filters={filters} placement="explore" layout="grid" />
+            <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
           ) : (
-            <Empty text={tc("noResults")} clear={hasActiveFilters(p) ? tc("clearFilters") : null} />
+            hasActiveFilters(p) ? <Empty text={tc("noResults")} clear={tc("clearFilters")} /> : <EmptySupply />
           ))}
         {agencies &&
           (agencies.length ? (
@@ -104,7 +109,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
               ))}
             </div>
           ) : (
-            <Empty text={tc("noResults")} clear={hasActiveFilters(p) ? tc("clearFilters") : null} />
+            hasActiveFilters(p) ? <Empty text={tc("noResults")} clear={tc("clearFilters")} /> : <EmptySupply />
           ))}
       </div>
     </div>

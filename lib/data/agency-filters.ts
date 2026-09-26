@@ -1,4 +1,4 @@
-import { arrayOverlaps, sql, type SQL } from "drizzle-orm";
+import { arrayOverlaps, eq, sql, type SQL } from "drizzle-orm";
 import { agencies, packages } from "@/lib/db/schema";
 import { FULL_SERVICE_GROUPS } from "@/lib/full-service";
 
@@ -10,6 +10,11 @@ export type AgencyFilterInput = { platforms?: string[]; minPrice?: number; maxPr
  */
 export function inCountry(country: string): SQL {
   return sql`(${agencies.country} = ${country} or ${country} = any(${agencies.servesCountries}))`;
+}
+
+/** Demo agencies only appear when the visitor chose the demo view (lib/demo-mode.ts). */
+export function realUnless(includeDemo?: boolean): SQL | undefined {
+  return includeDemo ? undefined : eq(agencies.isDemo, false);
 }
 
 /** Conditions on the agencies table shared by the post feed and the agency list. */

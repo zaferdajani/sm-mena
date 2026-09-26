@@ -4,29 +4,27 @@ import { getDb } from "@/lib/db";
 import { agencies, packages } from "@/lib/db/schema";
 import { taxonomy } from "@/lib/taxonomy";
 import { suggestBudget } from "./score";
-import { agencyScope } from "@/lib/demo";
 
 /** Fewer prices than this and the budget question uses the currency's default ranges. */
 const MIN_PRICES = 4;
 
 /**
  * Monthly price quartiles per service group in one country (starting prices
- * and monthly packages of agencies based there, so one currency), for the
+ * and monthly packages of real agencies based there, so one currency), for the
  * guided matchmaker's budget question. Two queries for all groups.
  */
 export async function groupPriceStats(country: string) {
   const db = await getDb();
-  const scope = await agencyScope();
   const [starting, pkgs] = await Promise.all([
     db
       .select({ services: agencies.services, price: agencies.startingPriceJod })
       .from(agencies)
-      .where(and(eq(agencies.status, "active"), eq(agencies.country, country), scope)),
+      .where(and(eq(agencies.status, "active"), eq(agencies.country, country), eq(agencies.isDemo, false))),
     db
       .select({ service: packages.service, price: packages.priceJod })
       .from(packages)
       .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-      .where(and(eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), scope)),
+      .where(and(eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), eq(agencies.isDemo, false))),
   ]);
   const out: Record<string, ReturnType<typeof suggestBudget>> = {};
   for (const group of taxonomy.categories) {

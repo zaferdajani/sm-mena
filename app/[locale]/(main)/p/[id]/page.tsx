@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo/demo-banner";
 import { clientNames } from "@/lib/data/portfolio-clients";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -14,14 +15,13 @@ import { serviceLabel } from "@/lib/labels";
 import { isCrawlerRequest } from "@/lib/request";
 import { pageMeta, postIndexable } from "@/lib/seo";
 import { getVisitorId } from "@/lib/visitor";
-import { agencyVisible } from "@/lib/demo";
 
 const captionFits = (caption: string, locale: string) => (/[\u0600-\u06FF]/.test(caption) ? locale === "ar" : locale !== "ar");
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">): Promise<Metadata> {
   const { locale, id } = await params;
   const found = await getPost(id);
-  if (!found || !(await agencyVisible(found.agency))) return {};
+  if (!found) return {};
   const post = localizedPost(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
   const service = post.services[0] ? serviceLabel(post.services[0], locale) : "";
@@ -43,8 +43,7 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const { locale, id } = await params;
   setRequestLocale(locale);
   const found = await getPost(id);
-  // In the demo only demo agencies exist; on the main site, hidden demo agencies don't (lib/demo.ts).
-  if (!found || !(await agencyVisible(found.agency))) notFound();
+  if (!found) notFound();
   const post = localizedPost(found, locale);
   const t = await getTranslations("Post");
   const tSeo = await getTranslations("Seo");
@@ -62,6 +61,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
       <h1 className="sr-only">{tSeo("postTitle", { agency: post.agency.name, service: post.services[0] ? serviceLabel(post.services[0], locale) : "" })}</h1>
+      {post.agency.isDemo && (
+        <div className="px-3 pb-3 pt-3 sm:pt-0">
+          <DemoNotice kind="post" />
+        </div>
+      )}
       <PostCard post={item} priority linkToPost={false} />
       <div className="flex items-center justify-between gap-2 px-3 py-2">
         {clientName ? (

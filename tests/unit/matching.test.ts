@@ -70,7 +70,7 @@ describe("rank", () => {
 
 describe("suggestBudget", () => {
   it("returns the interquartile range and median", () => {
-    expect(suggestBudget([100, 200, 300, 400, 500])).toEqual({ min: 200, median: 300, max: 400 });
+    expect(suggestBudget([100, 200, 300, 400, 500])).toEqual({ min: 200, median: 300, max: 400, n: 5 });
     expect(suggestBudget([])).toBeNull();
   });
 });

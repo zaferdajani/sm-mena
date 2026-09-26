@@ -1,15 +1,25 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ContractBuilder, type BuilderInitial } from "@/components/contracts/contract-builder";
 import { requireAgency } from "@/lib/auth/guards";
+import { reviewDaysSetting } from "@/lib/contracts/rules";
+import { contractRequestFor, partnerAsClient } from "@/lib/data/contract-requests";
 import { feePercent, proposalForContract } from "@/lib/data/contracts";
 import { listPackages } from "@/lib/data/packages";
 import { countryName, currencyOf } from "@/lib/countries";
 import { PLATFORMS, serviceLabel } from "@/lib/labels";
+import { protectedPaymentsLive } from "@/lib/payments/readiness";
+import { featureOpen } from "@/lib/features";
+import { featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { notFound } from "next/navigation";
 
 export default async function NewContract({ params, searchParams }: PageProps<"/[locale]/studio/contracts/new">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const { agency } = await requireAgency();
+  const gate = await featureGate("contracts");
+  if (gate === "off") notFound();
+  if (gate === "soon") return <ComingSoon feature="contracts" />;
   const sp = await searchParams;
   const t = await getTranslations("Contracts.builder");
   const tp = await getTranslations("Platforms");
@@ -34,6 +44,18 @@ export default async function NewContract({ params, searchParams }: PageProps<"/
     if (pkg) {
       initial = { title: pkg.title, summary: pkg.description, items: pkg.items, totalJod: pkg.priceJod, packageId: pkg.id, months: pkg.billing === "monthly" ? 1 : Math.max(1, Math.round((pkg.deliveryDays ?? 30) / 30)), note: t("fromPackage", { name: pkg.title }) };
     }
+  } else if (typeof sp.partner === "string") {
+    // Partner contracts: the partner agency is the client (only accepted partners).
+    const partner = await partnerAsClient(agency.id, sp.partner);
+    if (partner) {
+      const request = typeof sp.request === "string" ? await contractRequestFor(agency.id, sp.request) : null;
+      const fromThisPartner = request && request.fromAgencyId === partner.id ? request : null;
+      initial = {
+        client: { name: partner.name, phone: partner.phone, email: partner.email },
+        partner: { id: partner.id, name: partner.name, requestId: fromThisPartner?.id ?? null },
+        ...(fromThisPartner ? { title: fromThisPartner.title, summary: fromThisPartner.brief, totalJod: fromThisPartner.budgetFils ? fromThisPartner.budgetFils / 1000 : undefined, note: t("fromRequest", { title: fromThisPartner.title }) } : {}),
+      };
+    }
   }
 
   return (
@@ -42,7 +64,17 @@ export default async function NewContract({ params, searchParams }: PageProps<"/
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="text-sm text-muted-foreground">{t("intro")}</p>
       </div>
-      <ContractBuilder initial={initial} agencyName={agency.name} platforms={PLATFORMS.map((p) => ({ key: p, label: tp(p) }))} feePercent={feePercent()} currency={currencyOf(agency.country)} countryName={countryName(agency.country, locale)} />
+      <ContractBuilder
+        initial={initial}
+        agencyName={agency.name}
+        platforms={PLATFORMS.map((p) => ({ key: p, label: tp(p) }))}
+        feePercent={feePercent()}
+        currency={currencyOf(agency.country)}
+        countryName={countryName(agency.country, locale)}
+        paymentsLive={protectedPaymentsLive()}
+        protectedOpen={await featureOpen("protected_payments", { agencyHandle: agency.handle })}
+        reviewDays={reviewDaysSetting()}
+      />
     </div>
   );
 }

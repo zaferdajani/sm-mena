@@ -75,6 +75,8 @@ export type TurnOptions = {
   need?: WizardNeed;
   /** The last message is a choice the guided chat tapped (already in `need`). */
   picked?: boolean;
+  /** The visitor chose the demo view: demo agencies may be recommended (labelled). */
+  includeDemo?: boolean;
 };
 
 /**
@@ -83,7 +85,7 @@ export type TurnOptions = {
  * `country` scopes every search and price.
  */
 export async function runMatchmaker(history: ChatMessage[], locale: string, visitorId: string | null, country?: string, options: TurnOptions = {}): Promise<MatchResponse> {
-  if (country && !scopedCountry()) return withCountry(country, () => runMatchmaker(history, locale, visitorId, country, options));
+  if (country && !scopedCountry()) return withCountry(country, () => runMatchmaker(history, locale, visitorId, country, options), options.includeDemo);
   let result: MatchResponse | null = null;
   const aiHistory = country ? withContext(history, country, options.need) : history;
   for (const provider of providerChain()) {

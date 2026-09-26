@@ -4,12 +4,18 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { resolveInvite } from "@/lib/data/reviews";
 import { mediaUrl } from "@/lib/storage";
+import { featureGate } from "@/lib/feature-gate";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function InviteReviewPage({ params }: PageProps<"/[locale]/review/[token]">) {
   const { locale, token } = await params;
   setRequestLocale(locale);
+  const gate = await featureGate("reviews");
+  if (gate === "off") notFound();
+  if (gate === "soon") return <ComingSoon feature="reviews" />;
   const t = await getTranslations("Reviews.form");
   const invite = await resolveInvite(token);
   if (!invite) {

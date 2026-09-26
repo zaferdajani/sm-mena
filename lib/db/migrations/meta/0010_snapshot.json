@@ -1,5 +1,5 @@
 {
-  "id": "e900e64b-b2cf-453f-9093-f58707066a0e",
+  "id": "467f8f79-4157-4172-9a20-02b3d9959e17",
   "prevId": "67b36e46-2e18-4380-b3d5-cbe9a0dbe5f9",
   "version": "7",
   "dialect": "postgresql",
@@ -59,6 +59,35 @@
           "primaryKey": false,
           "notNull": true
         },
+        "kind": {
+          "name": "kind",
+          "type": "agency_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'agency'"
+        },
+        "pending_services": {
+          "name": "pending_services",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::integer[]"
+        },
+        "team_roles": {
+          "name": "team_roles",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "seeks_roles": {
+          "name": "seeks_roles",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
         "serves_countries": {
           "name": "serves_countries",
           "type": "text[]",
@@ -107,20 +136,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{ar}'::text[]"
-        },
-        "content_lang": {
-          "name": "content_lang",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'ar'"
-        },
-        "translation": {
-          "name": "translation",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
         },
         "starting_price_jod": {
           "name": "starting_price_jod",
@@ -3015,13 +3030,6 @@
           "notNull": true,
           "default": "'{}'::text[]"
         },
-        "translation": {
-          "name": "translation",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
-        },
         "items": {
           "name": "items",
           "type": "jsonb",
@@ -3215,6 +3223,165 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.partner_requests": {
+      "name": "partner_requests",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "from_agency_id": {
+          "name": "from_agency_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_agency_id": {
+          "name": "to_agency_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roles": {
+          "name": "roles",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "status": {
+          "name": "status",
+          "type": "partner_request_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "responded_at": {
+          "name": "responded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "partner_requests_to_idx": {
+          "name": "partner_requests_to_idx",
+          "columns": [
+            {
+              "expression": "to_agency_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partner_requests_from_idx": {
+          "name": "partner_requests_from_idx",
+          "columns": [
+            {
+              "expression": "from_agency_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partner_requests_open_pair_idx": {
+          "name": "partner_requests_open_pair_idx",
+          "columns": [
+            {
+              "expression": "from_agency_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "to_agency_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"partner_requests\".\"status\" = 'pending'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partner_requests_from_agency_id_agencies_id_fk": {
+          "name": "partner_requests_from_agency_id_agencies_id_fk",
+          "tableFrom": "partner_requests",
+          "tableTo": "agencies",
+          "columnsFrom": [
+            "from_agency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "partner_requests_to_agency_id_agencies_id_fk": {
+          "name": "partner_requests_to_agency_id_agencies_id_fk",
+          "tableFrom": "partner_requests",
+          "tableTo": "agencies",
+          "columnsFrom": [
+            "to_agency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -3588,13 +3755,6 @@
           "notNull": true,
           "default": "''"
         },
-        "translation": {
-          "name": "translation",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
-        },
         "links": {
           "name": "links",
           "type": "jsonb",
@@ -3823,13 +3983,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "translation": {
-          "name": "translation",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'::jsonb"
         },
         "client_id": {
           "name": "client_id",
@@ -5171,6 +5324,180 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.service_tags": {
+      "name": "service_tags",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_ar": {
+          "name": "name_ar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name_en": {
+          "name": "name_en",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group": {
+          "name": "group",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'other'"
+        },
+        "parent": {
+          "name": "parent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aliases": {
+          "name": "aliases",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "roles": {
+          "name": "roles",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "status": {
+          "name": "status",
+          "type": "service_tag_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "builtin": {
+          "name": "builtin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "proposed_text": {
+          "name": "proposed_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "proposed_by_agency_id": {
+          "name": "proposed_by_agency_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "merged_into_id": {
+          "name": "merged_into_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_by": {
+          "name": "reviewed_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "search_text": {
+          "name": "search_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "service_tags_status_idx": {
+          "name": "service_tags_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "service_tags_proposed_by_agency_id_agencies_id_fk": {
+          "name": "service_tags_proposed_by_agency_id_agencies_id_fk",
+          "tableFrom": "service_tags",
+          "tableTo": "agencies",
+          "columnsFrom": [
+            "proposed_by_agency_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "service_tags_reviewed_by_users_id_fk": {
+          "name": "service_tags_reviewed_by_users_id_fk",
+          "tableFrom": "service_tags",
+          "tableTo": "users",
+          "columnsFrom": [
+            "reviewed_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "service_tags_key_unique": {
+          "name": "service_tags_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.sessions": {
       "name": "sessions",
       "schema": "",
@@ -5622,6 +5949,14 @@
     }
   },
   "enums": {
+    "public.agency_kind": {
+      "name": "agency_kind",
+      "schema": "public",
+      "values": [
+        "agency",
+        "freelancer"
+      ]
+    },
     "public.agency_status": {
       "name": "agency_status",
       "schema": "public",
@@ -5751,6 +6086,16 @@
         "cancelled"
       ]
     },
+    "public.partner_request_status": {
+      "name": "partner_request_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "accepted",
+        "declined",
+        "cancelled"
+      ]
+    },
     "public.payment_kind": {
       "name": "payment_kind",
       "schema": "public",
@@ -5865,6 +6210,15 @@
       "values": [
         "published",
         "hidden"
+      ]
+    },
+    "public.service_tag_status": {
+      "name": "service_tag_status",
+      "schema": "public",
+      "values": [
+        "approved",
+        "pending",
+        "rejected"
       ]
     },
     "public.support_kind": {

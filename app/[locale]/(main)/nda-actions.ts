@@ -1,5 +1,6 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
@@ -30,6 +31,8 @@ const ndaSchema = z.object({
 });
 
 export async function createNdaAction(_: NdaActionState, formData: FormData): Promise<NdaActionState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("ndas"))) return { error: "unavailable" };
   const { agency } = await requireAgency();
   const locale = await getLocale();
   if (!rateLimit(`nda:${agency.id}`, 20, 60 * 60 * 1000)) return { error: "rateLimited" };

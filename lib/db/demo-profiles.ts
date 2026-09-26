@@ -122,3 +122,18 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
     strengths: ["Google Ads for real-estate leads", "Arabic and English SEO", "Landing pages that convert"],
   },
 };
+
+/**
+ * Who's on each demo team and which roles it looks for partners for, plus demo
+ * freelancers (docs/30). Role keys come from data/service-catalog.json.
+ */
+export const DEMO_ROLES: Record<string, { kind?: "agency" | "freelancer"; team: string[]; seeks?: string[] }> = {
+  "nakhla.studio": { team: ["photographer", "graphic_designer", "content_writer_ar", "social_media_manager"], seeks: ["videographer", "video_editor", "media_buyer"] },
+  "reel.house.jo": { team: ["videographer", "video_editor", "motion_designer"], seeks: ["photographer"] },
+  "petra.growth": { team: ["media_buyer", "strategist"], seeks: ["graphic_designer", "video_editor"] },
+  "madaba.pixels": { kind: "freelancer", team: ["photographer"] },
+  "salt.stories": { kind: "freelancer", team: ["videographer", "video_editor"] },
+  "najd.creative": { team: ["social_media_manager", "content_writer_ar", "media_buyer"], seeks: ["photographer", "videographer"] },
+  "abha.trails": { kind: "freelancer", team: ["videographer", "photographer", "drone_operator"] },
+  "search.first.jo": { team: ["seo_specialist", "web_developer"], seeks: ["content_writer_ar"] },
+};

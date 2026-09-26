@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo/demo-banner";
 import { Briefcase, Check, Grid3x3, Info, Star } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { currentCountry } from "@/lib/country-choice";
@@ -30,12 +31,12 @@ import { mediaUrl } from "@/lib/storage";
 import { agencyLd, breadcrumbLd } from "@/lib/structured-data";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
-import { agencyVisible } from "@/lib/demo";
+import { canUse } from "@/lib/feature-gate";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
   const { locale, handle } = await params;
   const found = await getAgencyByHandle(handle);
-  if (!found || !(await agencyVisible(found))) return {};
+  if (!found) return {};
   const agency = localizedAgency(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
   const city = (await getTranslations({ locale, namespace: "Cities" }))(agency.city);
@@ -60,8 +61,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const rawTab = (await searchParams).tab;
   const tab = rawTab === "about" || rawTab === "reviews" || rawTab === "clients" ? rawTab : "work";
   const found = await getAgencyByHandle(handle);
-  // In the demo only demo agencies exist; on the main site, hidden demo agencies don't (lib/demo.ts).
-  if (!found || !(await agencyVisible(found))) notFound();
+  if (!found) notFound();
   // Name, bio, about and strengths in the reader's language when the agency wrote both (lib/content-lang.ts).
   const agency = localizedAgency(found, locale);
 
@@ -110,7 +110,13 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <JsonLd
+      {agency.isDemo && (
+        <div className="px-4 pt-4">
+          <DemoNotice kind="agency" />
+        </div>
+      )}
+      {/* No structured data for sample agencies: search engines only hear about real ones. */}
+      {!agency.isDemo && <JsonLd
         data={[
           agencyLd(agency, { locale, cityName: tCity(agency.city), image: avatarUrl, reviews: latestReviews, packages: pkgs ?? [] }),
           breadcrumbLd([
@@ -119,12 +125,12 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
             { name: agency.name, path: `/${locale}/a/${agency.handle}` },
           ]),
         ]}
-      />
+      />}
       <ProfileHeader
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
         following={following}
         servesNote={note}
-        inquirySlot={<InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
+        inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />
       <div className="mt-5 flex border-t text-xs font-semibold uppercase tracking-wide" role="tablist">
         {([["work", Grid3x3], ...(clients.length ? [["clients", Briefcase] as const] : []), ["reviews", Star], ["about", Info]] as const).map(([key, Icon]) => (

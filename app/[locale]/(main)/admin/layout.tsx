@@ -6,26 +6,31 @@ import { StudioNav } from "@/components/studio/studio-nav";
 import { requireAdmin } from "@/lib/auth/guards";
 import { can, type Permission } from "@/lib/auth/permissions";
 import { bugBadge } from "@/lib/data/bugs";
+import { pendingTagCount } from "@/lib/services/tags";
 
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // allowEnroll: the layout renders for /admin/security too; every page and action checks again.
   const user = await requireAdmin({ allowEnroll: true });
-  const bugs = await bugBadge();
+  const [bugs, pendingServices] = await Promise.all([bugBadge(), pendingTagCount()]);
   const t = await getTranslations("Admin");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
   const tt = await getTranslations("AdminTeam");
   const tp = await getTranslations("Appearance");
   const tchat = await getTranslations("Chat");
+  const ts = await getTranslations("AdminServices");
+  const tf = await getTranslations("Features");
   // Each person sees only the sections their role allows (pages check again on the server).
   const nav: { href: string; label: string; badge?: number; perm: Permission }[] = [
     { href: "/admin", label: t("dashboard"), perm: "dashboard.view" },
     { href: "/admin/stats", label: t("statistics"), perm: "stats.view" },
     { href: "/admin/payments", label: t("payments"), perm: "payments.view" },
+    { href: "/admin/features", label: tf("nav"), perm: "features.manage" },
     { href: "/admin/bugs", label: t("bugs"), badge: bugs, perm: "support.manage" },
     { href: "/admin/agencies", label: t("agencies"), perm: "agencies.view" },
+    { href: "/admin/services", label: ts("nav"), badge: pendingServices, perm: "agencies.moderate" },
     { href: "/admin/reports", label: t("reports"), perm: "content.moderate" },
     { href: "/admin/reviews", label: tr("admin.title"), perm: "content.moderate" },
     { href: "/admin/conversations", label: tchat("admin.nav"), perm: "conversations.view" },

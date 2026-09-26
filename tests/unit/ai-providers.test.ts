@@ -56,6 +56,11 @@ const text = (t: string) => ({ type: "message", id: "msg", role: "assistant", st
 const env = { ...process.env };
 beforeAll(async () => {
   await seed({ quiet: true });
+  // The matchmaker only recommends real agencies outside the demo view (docs/31);
+  // these tests are about the providers, so the seeded agencies stand in as real ones.
+  const { getDb } = await import("@/lib/db");
+  const { agencies } = await import("@/lib/db/schema");
+  await (await getDb()).update(agencies).set({ isDemo: false });
 }, 600_000); // the demo seed encodes every demo photo (quality search)
 afterAll(async () => {
   process.env = env;

@@ -10,6 +10,7 @@ import { formatFils, isTestPayments, paymentProvider } from "@/lib/payments/prov
 import { cn } from "@/lib/utils";
 import { refundPaymentAction } from "../payment-actions";
 import { EscrowOverview } from "./escrow-overview";
+import { testLedgerCount } from "@/lib/data/deactivation";
 
 const STATUSES = ["all", "paid", "pending", "failed", "refunded"] as const;
 const STYLE: Record<string, string> = {
@@ -29,7 +30,8 @@ export default async function AdminPayments({ params, searchParams }: PageProps<
   const status = STATUSES.find((s) => s === sp.status) ?? "all";
   const t = await getTranslations("AdminPayments");
   const tb = await getTranslations("Billing");
-  const [summary, rows] = await Promise.all([paymentSummary(), listPayments(status)]);
+  const ta = await getTranslations("Admin");
+  const [summary, rows, testEntries] = await Promise.all([paymentSummary(), listPayments(status), tab === "protected" ? testLedgerCount() : Promise.resolve(0)]);
   const money = (f: number) => formatFils(f, locale);
 
   return (
@@ -47,7 +49,20 @@ export default async function AdminPayments({ params, searchParams }: PageProps<
         ]}
       />
       {tab === "protected" ? (
-        <EscrowOverview locale={locale} />
+        <>
+          <EscrowOverview locale={locale} />
+          {/* Test-mode money, kept for good (docs/32): proof the flows ran, never counted as real. */}
+          <section className="rounded-xl border p-4" data-testid="test-ledger">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <FlaskConical className="size-4 text-amber-600" />
+              {ta("testLedgerTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{ta("testLedgerBody", { count: testEntries })}</p>
+            <a href="/api/admin/payments?kind=test-ledger" className="mt-3 inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm hover:bg-muted" download data-testid="test-ledger-export">
+              {ta("testLedgerExport")}
+            </a>
+          </section>
+        </>
       ) : (
         <>
           <StatTiles

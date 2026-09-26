@@ -16,6 +16,7 @@ export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary
   const tc = await getTranslations("Common");
   const tCity = await getTranslations("Cities");
   const tp = await getTranslations("Profile");
+  const tpart = await getTranslations("Partners");
   const note = viewCountry ? await servesNote(agency, viewCountry) : null;
   return (
     <Link href={`/a/${agency.handle}`} className="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted" data-testid="agency-row">
@@ -24,6 +25,7 @@ export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary
         <p className="flex items-center gap-1 font-semibold">
           <span className="truncate">{agencyName(agency, locale)}</span>
           {agency.isVerified && <VerifiedBadge label={tc("verified")} />}
+          {agency.kind === "freelancer" && <span className="shrink-0 rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand">{tpart("kinds.freelancer")}</span>}
         </p>
         <p className="truncate text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)} · {agency.postCount} {tp("posts")}

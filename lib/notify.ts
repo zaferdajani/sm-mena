@@ -52,3 +52,27 @@ export async function notifyNewMessage(agency: Agency, conversation: Pick<Conver
     body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
   });
 }
+
+/**
+ * A contract or payment event (docs/14): a short bilingual line and a link to
+ * the contract. Sent only where the party gave an address; logs a mock line
+ * without RESEND_API_KEY. The address is never logged.
+ */
+export async function sendContractEmail(to: string | null | undefined, subject: string, lines: string[], link: string) {
+  const key = process.env.RESEND_API_KEY;
+  if (!to) return;
+  const text = [...lines, "", link].join("\n");
+  if (!key) {
+    if (process.env.NODE_ENV !== "test") console.info(`[notify:mock] contract email: ${subject.slice(0, 80)}`);
+    return;
+  }
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
+    });
+  } catch {
+    // Email is a courtesy copy; the in-app notification and the contract page are the record.
+  }
+}

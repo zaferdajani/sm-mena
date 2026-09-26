@@ -8,11 +8,11 @@ Modelled on the OneClickConvert admin (bug board, traffic page, owner sign-in wi
 |---|---|
 | Platform | Headline numbers, revenue switch-on readiness, system panel (database, storage, AI provider order, Google, payments, 2FA) and a warning when your own account has no 2FA |
 | Statistics | Visitors, visits, page views per day/week, how far visitors get (visited → opened an agency → contacted → sent a request → accepted a quote), marketplace activity, where visits come from, how they arrived (landing page × source), top pages, devices, language, time zones, AI answers by provider. Ranges: 7 / 30 / 90 days / year |
-| Payments | Agency plans tab: revenue this month and last month, monthly recurring revenue, paying agencies, pending payments, list with filters, record a CliQ / bank / cash payment, refund (optionally ending the plan), CSV export. Protected client payments tab: see `14-contracts-and-milestones.md` |
+| Payments | Agency plans tab: revenue this month and last month, monthly recurring revenue, paying agencies, pending payments, list with filters, record a CliQ / bank / cash payment, refund (optionally ending the plan), CSV export. Protected client payments tab: money held, paid in, paid out, refunded and fees; each disputed contract with its milestone disputes (statement, both sides' evidence, checklist, history) and a decision form (release all, refund all, or split with written reasons; a decision after an appeal is final). See `14-contracts-and-milestones.md` |
 | Bugs | Error journal (browser and server errors, grouped, counted, re-opened if a fixed error returns; notes and fix commit) and user reports from "Report a problem" (new → planned → done / declined). Badge in the nav = open errors + new reports |
 | Agencies, Reports, Reviews, Promotions | As before |
 | Users | Every account with role, agency, 2FA state, last sign-in; admin reset of someone's 2FA (after confirming identity) |
-| Audit log | Admin actions, admin sign-ins (with or without 2FA), 2FA changes, payments and refunds |
+| Audit log | Admin actions, admin sign-ins (with or without 2FA), 2FA changes, payments and refunds, dispute decisions (`escrow.dispute_decision`), automatic releases after the review period (`escrow.auto_release`, no actor), staff receipt downloads |
 | Security | Your own 2FA |
 
 ## Two-factor sign-in

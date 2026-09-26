@@ -1,6 +1,6 @@
-import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, ne, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, appSettings, auditLogs, events, inquiries, postImages, posts, projectRequests, promotions, reports, users } from "@/lib/db/schema";
+import { agencies, appSettings, auditLogs, contracts, events, inquiries, postImages, posts, projectRequests, promotions, reports, users } from "@/lib/db/schema";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -71,20 +71,43 @@ export async function setAgencyFlags(agencyId: string, patch: Partial<{ isVerifi
   await db.update(agencies).set({ ...patch, updatedAt: new Date() }).where(eq(agencies.id, agencyId));
 }
 
-/** Deletes every demo agency (and, via cascade, its posts, users and activity). */
-export async function removeDemoData() {
+/**
+ * Removes every demo agency (docs/32). Demo agencies that took part in any
+ * contract are deactivated instead of deleted, so contracts and the test-mode
+ * ledger stay as a permanent, labelled record; the rest are deleted (with
+ * their posts, users and activity, via cascade).
+ */
+export async function removeDemoData(actorUserId: string | null = null) {
   const db = await getDb();
-  const demo = await db.select({ id: agencies.id, owner: agencies.ownerUserId, avatarKey: agencies.avatarKey }).from(agencies).where(eq(agencies.isDemo, true));
-  if (!demo.length) return 0;
+  const demo = await db
+    .select({ id: agencies.id, owner: agencies.ownerUserId, avatarKey: agencies.avatarKey, status: agencies.status })
+    .from(agencies)
+    .where(and(eq(agencies.isDemo, true), ne(agencies.status, "deactivated")));
+  if (!demo.length) return { deleted: 0, deactivated: 0 };
   const ids = demo.map((d) => d.id);
-  const images = await db.select({ key: postImages.key, thumbKey: postImages.thumbKey }).from(postImages).innerJoin(posts, eq(postImages.postId, posts.id)).where(inArray(posts.agencyId, ids));
-  await db.delete(users).where(inArray(users.id, demo.map((d) => d.owner)));
-  // Seeded demo client requests go with them.
+  const inContracts = new Set(
+    (
+      await db
+        .select({ a: contracts.agencyId, b: contracts.clientAgencyId })
+        .from(contracts)
+        .where(or(inArray(contracts.agencyId, ids), inArray(contracts.clientAgencyId, ids)))
+    ).flatMap((r) => [r.a, r.b].filter((x): x is string => Boolean(x))),
+  );
+  const keep = demo.filter((d) => inContracts.has(d.id));
+  const remove = demo.filter((d) => !inContracts.has(d.id));
+  const { deactivateAgency } = await import("./deactivation");
+  for (const d of keep) await deactivateAgency(d.id, "demo_cleanup", actorUserId, "demo data removed; kept because it took part in contracts");
+  const removeIds = remove.map((d) => d.id);
+  const images = removeIds.length
+    ? await db.select({ key: postImages.key, thumbKey: postImages.thumbKey }).from(postImages).innerJoin(posts, eq(postImages.postId, posts.id)).where(inArray(posts.agencyId, removeIds))
+    : [];
+  if (remove.length) await db.delete(users).where(inArray(users.id, remove.map((d) => d.owner)));
+  // Seeded demo client requests go with them (contracts keep their own copy of the terms).
   await db.delete(projectRequests).where(eq(projectRequests.source, "demo"));
   // Remembered so the demo seed (npm run db:seed, Maintenance → seed-demo) never brings it back.
   await db.insert(appSettings).values({ key: "demo_removed", value: true }).onConflictDoUpdate({ target: appSettings.key, set: { value: true, updatedAt: new Date() } });
-  await storage().remove([...images.flatMap((i) => [i.key, i.thumbKey]), ...demo.flatMap((d) => (d.avatarKey ? [d.avatarKey] : []))]).catch(() => {});
-  return demo.length;
+  await storage().remove([...images.flatMap((i) => [i.key, i.thumbKey]), ...remove.flatMap((d) => (d.avatarKey ? [d.avatarKey] : []))]).catch(() => {});
+  return { deleted: remove.length, deactivated: keep.length };
 }
 
 export async function listOpenReports() {

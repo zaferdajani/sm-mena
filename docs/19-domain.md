@@ -20,7 +20,7 @@ No `AAAA` record on `@`. Actions → Vercel → **status** checks these and prin
 ## After it's live
 
 1. Search Console and Bing Webmaster Tools: add the domain (DNS verification), submit `https://sawwiq.org/sitemap.xml` (docs/18-seo.md).
-2. Replace the `privacy@sawwiq.jo` address on the Contact and Terms pages with an address on your domain (ask Claude, or edit `messages/*.json` and `app/[locale]/(main)/contact/page.tsx`).
+2. The Contact and Terms pages list `privacy@sawwiq.org`: set up forwarding for that address at your DNS host (Namecheap → Domain → Redirect Email) so messages reach you.
 3. Optional: an email service for the domain (Google Workspace, Zoho) for `hello@` and `privacy@`.
 
 ## Keeping the landing site private

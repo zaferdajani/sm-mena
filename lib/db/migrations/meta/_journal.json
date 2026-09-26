@@ -75,8 +75,29 @@
     {
       "idx": 10,
       "version": "7",
-      "when": 1790355492111,
-      "tag": "0010_agency_translations",
+      "when": 1790345109202,
+      "tag": "0010_services_and_partners",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790351192985,
+      "tag": "0011_milestone_system",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790356379833,
+      "tag": "0012_deactivation_and_test_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790412540179,
+      "tag": "0013_agency_translations",
       "breakpoints": true
     }
   ]

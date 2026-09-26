@@ -16,7 +16,7 @@ export default async function HireIndex({ params }: PageProps<"/[locale]/hire">)
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Hire");
-  const { services } = await serviceCounts();
+  const { services } = await serviceCounts({ realOnly: true });
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-6 sm:py-10">
       <header>

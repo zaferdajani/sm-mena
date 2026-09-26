@@ -1,12 +1,14 @@
 "use server";
 
+import { canUse } from "@/lib/feature-gate";
+import { demoMode } from "@/lib/demo-mode";
+import { withCountry } from "@/lib/matching/scope";
 import { revalidatePath } from "next/cache";
 import { countryOfCity } from "@/lib/countries";
 import { currentCountry } from "@/lib/country-choice";
 import { z } from "zod";
 import { closeRequest, createProjectRequest, getRequestByToken, getRequestForVisitor, INVITED, setProposalStatus } from "@/lib/data/requests";
 import { CITIES, PLATFORMS } from "@/lib/labels";
-import { isDemoMode } from "@/lib/demo";
 import { findMatches } from "@/lib/matching";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -32,6 +34,8 @@ const schema = z.object({
 });
 
 export async function createRequestAction(_: RequestState, formData: FormData): Promise<RequestState> {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("quote_requests"))) return { error: "unavailable" };
   if (formData.get("consent") !== "on") return { error: "consent" };
   const services = [...new Set(formData.getAll("services").map(String))].filter(isServiceKey).slice(0, 6);
   const platforms = [...new Set(formData.getAll("platforms").map(String))].filter((p) => (PLATFORMS as readonly string[]).includes(p));
@@ -48,7 +52,10 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
   const budgetMax = d.budgetMax && d.budgetMin && d.budgetMax < d.budgetMin ? d.budgetMin : d.budgetMax;
   const fullService = formData.get("fullService") === "on";
   const country = countryOfCity(city) ?? (await currentCountry());
-  const matches = await findMatches({ services, city, budgetMaxJod: budgetMax, platforms, fullService, country }, 8);
+  // In the demo view a request goes to sample agencies only (and is stored as a demo request);
+  // otherwise only real agencies are matched (docs/31).
+  const includeDemo = await demoMode();
+  const matches = await withCountry(country, () => findMatches({ services, city, budgetMaxJod: budgetMax, platforms, fullService, country }, 8), includeDemo);
   const { token, request } = await createProjectRequest(
     {
       clientName: d.name,
@@ -64,8 +71,7 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
       description: d.description,
       fullService,
       brands: d.brands || null,
-      // In the demo (lib/demo.ts) requests only ever reach demo agencies.
-      source: (await isDemoMode()) ? "demo" : d.source,
+      source: includeDemo ? "demo" : d.source,
       visitorId,
     },
     matches.map((m) => ({ agencyId: m.id, score: m.score })),

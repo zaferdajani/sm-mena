@@ -32,6 +32,9 @@ export async function ReviewSummary({ average, count, sub }: { average: number |
   );
 }
 
+/** The three verification labels (About → "What our three labels mean"). */
+export const REVIEW_LABEL = { invite: "verifiedClient", inquiry: "viaSawwiq", contract: "completedProject" } as const;
+
 export async function ReviewList({ reviews, agencyName }: { reviews: Review[]; agencyName: string }) {
   const t = await getTranslations("Reviews");
   const locale = await getLocale();
@@ -45,7 +48,7 @@ export async function ReviewList({ reviews, agencyName }: { reviews: Review[]; a
             {r.reviewerBusiness && <span className="text-muted-foreground">· {r.reviewerBusiness}</span>}
             <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] text-accent-foreground">
               <BadgeCheck className="size-3" />
-              {r.source === "invite" ? t("verifiedClient") : t("viaSawwiq")}
+              {t(REVIEW_LABEL[r.source])}
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">

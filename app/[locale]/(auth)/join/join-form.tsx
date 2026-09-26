@@ -8,10 +8,11 @@ import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
-import { ChipGroup } from "@/components/studio/chips";
+import { ServicePicker } from "@/components/service-picker";
+import { TeamFields } from "@/components/studio/team-fields";
 import { join } from "../actions";
 
-export function JoinForm({ countries, defaultCountry, services }: { countries: CountryOption[]; defaultCountry: string; services: { key: string; label: string }[] }) {
+export function JoinForm({ countries, defaultCountry, popular, roles }: { countries: CountryOption[]; defaultCountry: string; popular: string[]; roles: { key: string; label: string }[] }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
@@ -49,12 +50,13 @@ export function JoinForm({ countries, defaultCountry, services }: { countries: C
           className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm"
         />
       </div>
-      {/* One tap question so a new agency is matched from day one; the rest waits for the studio. */}
-      <fieldset className="grid gap-1.5">
-        <legend className="mb-1.5 text-sm font-medium">{t("joinServices")}</legend>
-        <ChipGroup name="services" options={services} />
+      {/* Agency or freelancer, who's on the team, and what they offer: enough to match them from day one. */}
+      <TeamFields kind="agency" roles={roles} teamRoles={[]} seeksRoles={[]} compact />
+      <div className="grid gap-1.5">
+        <p className="text-sm font-medium">{t("joinServices")}</p>
+        <ServicePicker popular={popular} />
         <p className="text-xs text-muted-foreground">{t("joinServicesHint")}</p>
-      </fieldset>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="grid gap-1.5">
           <Label htmlFor="whatsapp">{t("whatsapp")}</Label>

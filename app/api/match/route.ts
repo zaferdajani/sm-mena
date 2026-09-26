@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { canUse } from "@/lib/feature-gate";
 import { currentCountry } from "@/lib/country-choice";
+import { demoMode } from "@/lib/demo-mode";
 import { runMatchmaker } from "@/lib/ai/agent";
 import { wizardNeedSchema } from "@/lib/match-wizard-schema";
 import { rateLimit } from "@/lib/rate-limit";
@@ -20,6 +22,8 @@ const body = z.object({
 });
 
 export async function POST(request: Request) {
+  // Switched off or coming soon (Admin → Features).
+  if (!(await canUse("ai_matchmaker"))) return Response.json({ error: "unavailable" }, { status: 404 });
   const parsed = body.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid" }, { status: 400 });
   const visitorId = await getVisitorId({ create: true });
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
   }
   try {
     const { messages, locale, need, picked } = parsed.data;
-    const result = await runMatchmaker(messages, locale, visitorId, await currentCountry(), { need, picked });
+    const result = await runMatchmaker(messages, locale, visitorId, await currentCountry(), { need, picked, includeDemo: await demoMode() });
     return Response.json(result);
   } catch (error) {
     console.error("[api/match]", error);

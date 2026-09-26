@@ -6,13 +6,13 @@ import { z } from "zod";
 import { requireStaff } from "@/lib/auth/guards";
 import { adminResetMfa } from "@/lib/auth/mfa";
 import { audit, getAgencyByHandle } from "@/lib/data/agencies";
+import { reactivateAgency } from "@/lib/data/deactivation";
 import { createPromotion, removeDemoData, resolveReport, setAgencyFlags, setPostStatus, setPromotionStatus } from "@/lib/data/admin";
 import { getDb } from "@/lib/db";
 import { posts, users } from "@/lib/db/schema";
 import { setReviewStatus } from "@/lib/data/reviews";
 import { CITIES } from "@/lib/labels";
 import { isServiceKey } from "@/lib/taxonomy";
-import { setDemoHiddenOnMain } from "@/lib/demo";
 
 const uuid = z.string().uuid();
 const refresh = () => revalidatePath("/[locale]", "layout");
@@ -41,20 +41,19 @@ export async function setPlanAction(formData: FormData) {
   refresh();
 }
 
-/** Hides the demo agencies from the main site (they stay at /demo), or shows them again. */
-export async function setDemoHiddenAction(hidden: boolean) {
-  const admin = await requireStaff("demo.remove");
-  await setDemoHiddenOnMain(hidden === true, admin.id);
-  await audit(admin.id, hidden ? "demo.hide_on_main" : "demo.show_on_main", "agency");
-  refresh();
-}
-
 export async function removeDemoAction() {
   const admin = await requireStaff("demo.remove");
-  const count = await removeDemoData();
-  await audit(admin.id, "demo.remove", "agency", undefined, { count });
+  const result = await removeDemoData(admin.id);
+  await audit(admin.id, "demo.remove", "agency", undefined, result);
   refresh();
-  return count;
+  return result;
+}
+
+/** Admin: brings back an agency that closed its account (never a demo one). */
+export async function reactivateAgencyAction(agencyId: string) {
+  const admin = await requireStaff("agencies.moderate");
+  await reactivateAgency(uuid.parse(agencyId), admin.id);
+  refresh();
 }
 
 export async function resolveReportAction(reportId: string, decision: "hide" | "dismiss") {

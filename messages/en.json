@@ -59,7 +59,7 @@
     "joinSubtitle": "A free page for social media agencies and freelancers in Jordan. Businesses browse your work and contact you directly.",
     "agencyName": "Agency name",
     "handle": "Username",
-    "handleHint": "Your page link will look like this: sawwiq.jo/a/{handle}",
+    "handleHint": "Your page link will look like this: sawwiq.org/a/{handle}",
     "city": "City",
     "whatsapp": "WhatsApp number",
     "consent": "I agree to the terms and privacy policy, and to showing my contact details on my public page.",
@@ -84,7 +84,8 @@
     },
     "country": "Country",
     "joinServices": "What do you offer?",
-    "joinServicesHint": "Pick what applies; you can add more later from your page."
+    "joinServicesHint": "Pick what applies; you can add more later from your page.",
+    "closed": "Your account is closed. Thank you for being part of Sawwiq."
   },
   "Cities": {
     "amman": "Amman",
@@ -216,10 +217,11 @@
     "menu": "Menu",
     "newPost": "New post",
     "hire": "Hire an agency",
-    "match": "AI assistant"
+    "match": "AI assistant",
+    "login": "Sign in"
   },
   "Common": {
-    "verified": "Verified",
+    "verified": "Business identity verified",
     "sponsored": "Sponsored",
     "loadMore": "Load more",
     "loading": "Loading…",
@@ -362,7 +364,8 @@
       "phone": "Enter a valid phone number.",
       "consent": "You need to agree before sending.",
       "rateLimited": "Too many messages. Try again later.",
-      "generic": "Could not send. Please try again."
+      "generic": "Could not send. Please try again.",
+      "unavailable": "Messaging agencies through Sawwiq isn't available right now."
     }
   },
   "Report": {
@@ -389,10 +392,11 @@
     "s3t": "Agencies",
     "s3": "You are responsible for the accuracy of your page and for having the right to publish the work you show. Sponsored posts are always labelled \"Sponsored\". We may hide content that breaks these rules or suspend accounts.",
     "s4t": "Your rights",
-    "s4": "Under Jordan's Personal Data Protection Law No. 24 of 2023 you can ask to access, correct or delete your data, or withdraw consent. Write to privacy@sawwiq.jo.",
+    "s4": "Under Jordan's Personal Data Protection Law No. 24 of 2023 you can ask to access, correct or delete your data, or withdraw consent. Write to privacy@sawwiq.org.",
     "s5t": "Pricing",
-    "s5": "Browsing, contacting agencies and asking for quotes are free. Every contract signed on Sawwiq is guaranteed: the client pays each milestone to a trusted third party, and it is released to the agency when the client confirms the work. For this guarantee Sawwiq takes 10% of each released payment, deducted from what the agency receives; the client never pays more than the contract amount.",
-    "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for."
+    "s5": "Browsing, contacting agencies and asking for quotes are free. On contracts with protected payments, the client pays each milestone to Sawwiq's licensed payment partner, which pays it to the agency when the milestone is accepted. Sawwiq takes 10% of each released payment, deducted from what the agency receives; the client never pays more than the contract amount. Sawwiq never holds client money in its own accounts.",
+    "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for.",
+    "s5Test": "Browsing, contacting agencies and asking for quotes are free. Protected payments are in test mode: until Sawwiq's licensed payment partner is connected, no real money is collected or held through Sawwiq, the parties pay each other directly, and Sawwiq charges no fee. We will update these terms and tell users before protected payments go live."
   },
   "Studio": {
     "title": "Studio",
@@ -518,6 +522,7 @@
       "servesGulf": "All Gulf",
       "servesAll": "All countries",
       "servesNone": "Clear",
+      "servicesHint": "Type part of a service name and pick it. If it's not in the list, add it: Sawwiq reviews new services.",
       "contentLang": "Main language of your page",
       "contentLangHint": "Write the name, bio and introduction below in this language, and add the other language if you like. Switching moves your texts between the two versions.",
       "langAr": "العربية",
@@ -590,10 +595,8 @@
     "plan": "Plan",
     "planUntil": "Until",
     "setPlan": "Update plan",
-    "hideDemoOnMain": "Hide demo agencies from the main site",
-    "showDemoOnMain": "Show demo agencies on the main site",
     "removeDemo": "Remove all demo data",
-    "removeDemoConfirm": "All demo agencies and their posts will be permanently deleted, and the demo at /demo will be empty. To keep the demo, use “Hide demo agencies from the main site” instead. Continue?",
+    "removeDemoConfirm": "All demo agencies and their posts will be permanently deleted. Continue?",
     "removedDemo": "Removed {count} demo agencies.",
     "noReports": "No open reports.",
     "reason": "Reason",
@@ -654,7 +657,13 @@
       "mfaMissingKey": "MFA_ENCRYPTION_KEY is not set: admins can't use two-factor sign-in.",
       "mfaYouOff": "Your account has no two-factor sign-in.",
       "turnOn": "Turn it on"
-    }
+    },
+    "deactivated": "Deactivated",
+    "reactivate": "Reactivate",
+    "deactivatedDemo": "{count, plural, one {# demo agency that took part in contracts was deactivated instead; its test transactions stay on record.} other {# demo agencies that took part in contracts were deactivated instead; their test transactions stay on record.}}",
+    "testLedgerTitle": "Test transactions",
+    "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
+    "testLedgerExport": "Download test transactions (CSV)"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -662,19 +671,19 @@
     "title": "{service} agencies in {place}: work and prices",
     "metaDescription": "Compare {count, plural, =0 {agencies} one {# agency} other {# agencies}} for {service} in {place}: real work, packages from {min} {currency}, verified client reviews and direct contact on WhatsApp.",
     "jordan": "Jordan",
-    "summary": "{count, plural, =0 {No agencies yet} one {1 agency} other {# agencies}} · {verified} verified",
+    "summary": "{count, plural, =0 {No agencies yet} one {1 agency} other {# agencies}} · {verified} with verified business identity",
     "browseWork": "Browse the work",
     "agencies": "{count, plural, one {agency} other {agencies}}",
     "viewProfile": "View page",
     "posts": "{count} posts",
-    "noAgencies": "No agencies for this service in this city yet.",
+    "noAgencies": "No real agencies offer this here yet.",
     "seeAllJordan": "See all of Jordan",
     "howTitle": "How to hire an agency on Sawwiq",
     "how1": "Browse real agency work and filter by service, city and budget.",
     "how2": "Compare starting prices, verification and followers, and save what you like.",
     "how3": "Contact them directly on WhatsApp or send a message. Free for you, no sign-up.",
     "priceTitle": "How much does {service} cost in {place}?",
-    "priceBody": "Based on starting prices published by {count} agencies on Sawwiq, monthly packages start from {min} {currency} and go up to {max} {currency}, with a median of {median} {currency}. The final price depends on the number of posts, platforms and paid ads.",
+    "priceBody": "Starting prices run from {min} to {max} {currency}; half the agencies start at {median} {currency} or less. The final price depends on the number of posts, platforms and the scope of work.",
     "priceNone": "Agencies haven't published prices for this service yet. Contact them directly for a quote.",
     "priceMin": "Lowest starting price",
     "priceMedian": "Median",
@@ -686,7 +695,7 @@
     "faq2q": "What does the \"Verified\" badge mean?",
     "faq2a": "It means the Sawwiq team checked the agency's commercial registration. It is not a guarantee of work quality, so review their work and talk to them before agreeing.",
     "faq3q": "Do I pay Sawwiq a commission?",
-    "faq3a": "No. Browsing, contacting agencies and getting quotes are free. If you sign a contract on Sawwiq, your money is held by a trusted third party and released to the agency only when you confirm each milestone; the 10% guarantee fee comes out of the agency's payment, so you never pay more than the contract amount.",
+    "faq3a": "No. Browsing, contacting agencies and getting quotes are free. If you sign a contract with protected payments, you pay each milestone to Sawwiq's licensed payment partner, and it reaches the agency only when you accept the milestone. Sawwiq's fee comes out of the agency's payment, so you never pay more than the contract amount.",
     "faq4q": "Can I work with an agency from another city?",
     "faq4a": "Yes. Most social media services are delivered remotely, though photo and video production is easier with an agency near you.",
     "relatedCities": "{service} in other cities",
@@ -699,7 +708,10 @@
     "packagesOneOff": "One-off work runs from {min} to {max} {currency}.",
     "packagesDelivery": "Typical delivery is {days} days.",
     "region": "Jordan, the Gulf and Egypt",
-    "pickCountry": "{service}: pick a country"
+    "pickCountry": "{service}: pick a country",
+    "priceLabel": "Starting prices from {count, plural, one {# eligible agency} other {# eligible agencies}}, updated {date}. Agency service fees only; advertising spend excluded.",
+    "priceTooFew": "Fewer than 3 real agencies here have published a starting price, so we don't show a price range yet. Ask for quotes to compare.",
+    "faq3aTest": "No. Browsing, contacting agencies, getting quotes and signing a contract on Sawwiq are free. Protected payments through a licensed payment partner are coming; until they are live you pay the agency directly and Sawwiq charges nothing."
   },
   "Reviews": {
     "tab": "Reviews",
@@ -709,8 +721,8 @@
     "google": "on Google",
     "googleReviews": "{count} Google reviews",
     "fromGoogle": "Rating from Google",
-    "verifiedClient": "Verified client",
-    "viaSawwiq": "Contacted via Sawwiq",
+    "verifiedClient": "Contact confirmed · invited by the agency",
+    "viaSawwiq": "Contact confirmed · contacted via Sawwiq",
     "reply": "Agency reply",
     "write": "Write a review",
     "sub": {
@@ -741,7 +753,8 @@
         "name": "Your name is required.",
         "consent": "Please confirm to continue.",
         "rateLimited": "Too many attempts. Try again later.",
-        "generic": "Could not publish the review."
+        "generic": "Could not publish the review.",
+        "unavailable": "Writing reviews isn't available right now."
       }
     },
     "studio": {
@@ -772,7 +785,8 @@
       "hide": "Hide",
       "show": "Show",
       "hidden": "Hidden"
-    }
+    },
+    "completedProject": "Completed-project review"
   },
   "Packages": {
     "title": "Packages",
@@ -847,7 +861,7 @@
   },
   "Requests": {
     "formTitle": "Send your project and get quotes",
-    "formSubtitle": "We send your project to the 5 best-matched agencies, and any specialised agency can send a quote. Quotes arrive on your private page.",
+    "formSubtitle": "We send your project to up to 5 well-matched agencies, and other specialised agencies can quote. Your name and phone stay private: an agency sees them only after you shortlist or accept its quote.",
     "name": "Your name",
     "phone": "Phone (WhatsApp)",
     "business": "Business name (optional)",
@@ -871,7 +885,8 @@
       "phone": "Invalid phone number.",
       "consent": "Please agree to continue.",
       "rateLimited": "Too many projects sent. Try again later.",
-      "generic": "Could not send."
+      "generic": "Could not send.",
+      "unavailable": "Sending projects for quotes isn't available right now."
     },
     "created": "Your project was sent! We invited {count} agencies to send quotes.",
     "saveLink": "Save this link to follow quotes from any device:",
@@ -939,13 +954,14 @@
       }
     },
     "client": "Client",
-    "clientHidden": "Contact details appear after you send a quote.",
+    "clientHidden": "The client's name and phone stay private until they shortlist or accept your quote.",
     "yourProposal": "Your quote",
     "status": "Status",
     "new": "New",
     "quoteNow": "Quote now",
     "anyCity": "Any city",
-    "feedEmptyHint": "New projects appear here as soon as clients post them."
+    "feedEmptyHint": "New projects appear here as soon as clients post them.",
+    "clientAfterShortlist": "Quote sent. The client's contact details appear once they shortlist or accept your quote; until then you can message them here."
   },
   "Security": {
     "title": "Two-factor sign-in",
@@ -982,10 +998,10 @@
       "badPassword": "Wrong password.",
       "rateLimited": "Too many attempts. Wait a few minutes and try again.",
       "noPending": "Start again: the setup expired.",
-      "demo": "Two-factor sign-in is off for demo accounts.",
       "alreadyOn": "Two-factor sign-in is already on.",
       "notConfigured": "Two-factor sign-in isn't available: the server has no MFA_ENCRYPTION_KEY.",
-      "requiredForAdmins": "Admins can't turn off two-factor sign-in."
+      "requiredForAdmins": "Admins can't turn off two-factor sign-in.",
+      "demo": "Two-factor sign-in is off for demo accounts."
     }
   },
   "Support": {
@@ -1197,6 +1213,16 @@
     "errors": {
       "agency": "No agency with that username.",
       "invalid": "Check the fields and try again."
+    },
+    "stuckTitle": "Payouts and refunds needing attention",
+    "stuckBody": "The payment partner hasn't completed these. Failed ones are retried daily with the same reference (it can't pay twice); after 5 tries, contact the partner.",
+    "stuckType": {
+      "payout": "Payout to agency",
+      "refund": "Refund to client"
+    },
+    "stuckStatus": {
+      "failed": "Failed",
+      "pending": "Waiting for partner"
     }
   },
   "AdminUsers": {
@@ -1463,7 +1489,10 @@
         "title": "Give the project a title.",
         "invalid": "Check the form and try again.",
         "kpis": "Complete each target (name and number), up to six.",
-        "signature": "Draw your signature to sign."
+        "signature": "Draw your signature to sign.",
+        "rounds": "Pick the number of revision rounds (0 to 10).",
+        "partner": "You can contract with a partner agency only after the partnership was accepted.",
+        "unavailable": "Creating contracts isn't available right now."
       },
       "results": {
         "title": "Results and reporting",
@@ -1483,7 +1512,12 @@
         "mediaHint": "The client pays the ad platforms directly; it isn't part of the agency's fee.",
         "ownership": "All accounts, pages, files and designs belong to the client and are handed over in full when the contract ends or is cancelled.",
         "noSurprises": "No extra charges after signing unless the client approves a change request on the platform."
-      }
+      },
+      "rounds": "Revision rounds per milestone",
+      "roundsHint": "Each time the client asks for changes uses a round. After that you give an extra round free or propose a paid change request.",
+      "reviewNote": "The client has {days} days to review each delivery; after that it is accepted automatically.",
+      "partnerNote": "This contract is for your partner {name}: they sign, pay and approve from their own Sawwiq studio.",
+      "fromRequest": "From your partner's request: {title}"
     },
     "share": {
       "title": "Send this link to the client",
@@ -1497,7 +1531,7 @@
       "number": "Contract {number}",
       "period": "{start} → {end}",
       "total": "Total",
-      "held": "Held by Sawwiq",
+      "held": "Held for milestones",
       "released": "Paid out",
       "client": "Client",
       "agency": "Agency",
@@ -1505,7 +1539,8 @@
       "readFull": "Read the full contract",
       "print": "Print / save as PDF",
       "timeline": "History",
-      "milestones": "Milestones"
+      "milestones": "Milestones",
+      "receipts": "Receipts"
     },
     "ms": {
       "status": {
@@ -1516,7 +1551,8 @@
         "approved": "Approved",
         "released": "Approved and paid out",
         "refunded": "Refunded to client",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "split": "Settled by decision (split)"
       },
       "due": "Due {date}",
       "special": "Special request",
@@ -1528,7 +1564,7 @@
       "changes": "Client asked for changes: {note}",
       "delivered": "Agency's note: {note}",
       "fund": "Pay {amount} into protection",
-      "fundHint": "Your money stays with Sawwiq until you confirm this milestone's checklist.",
+      "fundHint": "The amount stays in protection until you accept this milestone or its review period ends.",
       "confirmAll": "Tick each item you've checked, then approve.",
       "approveRelease": "Approve and release {amount}",
       "approve": "Approve",
@@ -1543,8 +1579,21 @@
         "notFunded": "This milestone isn't paid in yet.",
         "locked": "This can't be changed now.",
         "note": "Write a short note.",
-        "notFound": "Not found."
-      }
+        "notFound": "Not found.",
+        "noRounds": "No revision rounds left. Ask for an extra round, approve, or report a problem.",
+        "roundsLeft": "You still have revision rounds left."
+      },
+      "reviewBy": "Review by {date}",
+      "daysLeft": "{days, plural, =0 {ends today} one {1 day left} other {# days left}}",
+      "deemedClient": "If you don't approve, ask for changes or report a problem by then, the milestone counts as accepted and its payment is released.",
+      "deemedAgency": "The client has until {date} to review; after that the milestone is accepted automatically.",
+      "rounds": "Revision rounds: {left} of {total} left",
+      "noRounds": "The revision rounds included in this milestone are used up.",
+      "askRound": "Ask the agency for an extra round",
+      "roundAsked": "You asked for an extra round; waiting for the agency.",
+      "grantRound": "Give an extra round of changes (free)",
+      "clientAskedRound": "The client asks for an extra round of changes. Give it free, or propose a paid change request below.",
+      "autoApproved": "Accepted automatically when the review period ended."
     },
     "client": {
       "title": "Contract with {agency}",
@@ -1571,7 +1620,54 @@
       "hint": "Our team steps in, looks at the contract, checklists and history, and decides what happens to money held for this contract.",
       "note": "What went wrong?",
       "send": "Send to Sawwiq",
-      "active": "In dispute: our team is reviewing it. Money held stays safe until then."
+      "active": "In dispute: our team is reviewing it. Money held stays safe until then.",
+      "title": "Disputes",
+      "milestone": "Which milestone?",
+      "noHeld": "No milestone has money held right now; Sawwiq's team will review the contract.",
+      "on": "Dispute on “{milestone}”",
+      "openedBy": "Opened by {side} on {date}",
+      "evidence": "Evidence",
+      "noEvidence": "No evidence yet.",
+      "addEvidence": "Add evidence",
+      "evidencePh": "What happened? What was or wasn't delivered?",
+      "linksPh": "Links (one per line): files, posts, messages",
+      "sendEvidence": "Send evidence",
+      "decision": "Sawwiq's decision",
+      "firstDecision": "First decision (before the appeal)",
+      "finalDecision": "Final decision",
+      "release": "Release all {amount} to the agency",
+      "refund": "Refund all {amount} to the client",
+      "split": "Split: {release} to the agency, {refund} refunded to the client",
+      "reason": "Reasons: {reason}",
+      "appealUntil": "Either side may appeal once until {date}. After that the decision is final and carried out.",
+      "appeal": "Appeal the decision",
+      "appealPh": "Why are you appealing? What wasn't taken into account?",
+      "appealSend": "Send appeal",
+      "appealed": "{side} appealed: {note}",
+      "appealReview": "Sawwiq's team is reviewing the appeal; the next decision is final.",
+      "accept": "Accept the decision",
+      "accepted": "You accepted this decision.",
+      "otherAccepted": "The other side accepted the decision.",
+      "closedNote": "Closed without a money decision: {reason}",
+      "state": {
+        "open": "Under review",
+        "decided": "Decided (can be appealed)",
+        "appealed": "Appealed",
+        "final": "Final",
+        "closed": "Closed"
+      },
+      "sides": {
+        "agency": "the agency",
+        "client": "the client",
+        "admin": "Sawwiq"
+      },
+      "errors": {
+        "exists": "There's already an open dispute on this milestone.",
+        "notHeld": "No money is held for this milestone.",
+        "locked": "This can't be done now.",
+        "note": "Write at least a few words.",
+        "tooMany": "You've added a lot of evidence. Sum up the rest in one entry."
+      }
     },
     "cancel": {
       "button": "Cancel contract",
@@ -1604,7 +1700,20 @@
       "change_declined": "Client declined a change: {note}",
       "change_accepted": "Client accepted a change: {note}",
       "update": "Progress update from the agency",
-      "amend_requested": "Client asked for a change: {note}"
+      "amend_requested": "Client asked for a change: {note}",
+      "extra_round_asked": "Client asked for an extra round: {note}",
+      "extra_round_granted": "Agency gave an extra round: {note}",
+      "evidence": "{actor} added evidence: {note}",
+      "dispute_decided": "Sawwiq's decision: {note}",
+      "dispute_appealed": "{actor} appealed the decision: {note}",
+      "dispute_final": "The decision became final and was carried out: {note}",
+      "dispute_final_on_appeal": "Final decision on appeal: {note}",
+      "decision_accepted": "{actor} accepted the decision: {note}",
+      "auto_approved": "Accepted automatically when the review period ended: {note}",
+      "cancel_proposed": "{actor} proposed cancelling by agreement",
+      "cancel_accepted": "{actor} agreed to cancel",
+      "cancel_declined": "{actor} declined to cancel",
+      "cancel_withdrawn": "{actor} withdrew the cancellation proposal"
     },
     "actors": {
       "agency": "Agency",
@@ -1665,7 +1774,28 @@
       "refund": "Refund to client",
       "decisionNote": "Decision note (shown in the history)",
       "closeDispute": "Close dispute",
-      "counts": "Contracts by payment mode and status"
+      "counts": "Contracts by payment mode and status",
+      "statement": "Statement: {text}",
+      "checklist": "Checklist",
+      "history": "Contract history",
+      "held": "Held: {amount}",
+      "decide": "Decision",
+      "optRelease": "Release all to the agency",
+      "optRefund": "Refund all to the client",
+      "optSplit": "Split",
+      "toAgency": "To the agency",
+      "toClient": "Refunded to the client",
+      "reasonPh": "Written reasons (both parties see them)",
+      "submitFirst": "Issue decision (appealable for 7 days)",
+      "submitFinal": "Issue the final decision",
+      "appealWindow": "Appeal window until {date}",
+      "decided": "Decision issued",
+      "errors": {
+        "sum": "The two parts must add up exactly to what is held.",
+        "reason": "Write clear reasons (at least 10 characters).",
+        "locked": "This dispute can't be decided now.",
+        "invalid": "Check the fields."
+      }
     },
     "fromPackage": "Create a contract from this package",
     "commit": {
@@ -1725,6 +1855,74 @@
       "send": "Post update",
       "posted": "Update posted.",
       "error": "Write at least 10 characters."
+    },
+    "readiness": {
+      "testTitle": "Protected payments are in test mode",
+      "testBody": "No real money is collected or held through Sawwiq until Sawwiq's licensed payment partner is connected. The pay-in and release steps here are a test; the parties settle real payments directly between themselves.",
+      "liveTitle": "Protected through Sawwiq's licensed payment partner",
+      "liveBody": "The client pays each milestone to Sawwiq's licensed payment partner, which holds it until the milestone is accepted and then pays the agency. Sawwiq never holds the money in its own accounts.",
+      "builderFeeLive": "Sawwiq's fee: {fee}% of each amount released to you; nothing refunded carries a fee.",
+      "builderFeeTest": "No fee in test mode. Once live: {fee}% of each amount released to the agency.",
+      "checkoutTest": "Test checkout: no real money is charged.",
+      "soonTitle": "Protected payments: coming soon",
+      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee."
+    },
+    "cancelMutual": {
+      "title": "Cancel by agreement",
+      "hint": "Money is held. Propose how much of each milestone goes to the agency; the rest is refunded to the client. If the other side agrees, it is carried out and the contract closes.",
+      "releaseFor": "To the agency from “{milestone}” (held {held})",
+      "note": "Why cancel? (optional)",
+      "propose": "Propose cancelling",
+      "proposedBy": "{side} proposes cancelling the contract",
+      "line": "“{milestone}”: {release} to the agency, {refund} refunded",
+      "accept": "Agree to cancel",
+      "decline": "Decline",
+      "withdraw": "Withdraw",
+      "waiting": "Waiting for the other side.",
+      "declined": "The cancellation was declined. You can report a problem for Sawwiq's team to decide.",
+      "errors": {
+        "split": "Check the amounts: none may exceed what is held for its milestone.",
+        "exists": "A cancellation proposal is already waiting for an answer.",
+        "nothingHeld": "Nothing is held; use the normal cancel.",
+        "stale": "What is held changed since the proposal. Propose again."
+      }
+    },
+    "receipts": {
+      "title": "Receipts",
+      "none": "No receipts yet.",
+      "kind": {
+        "deposit": "Milestone paid in",
+        "payout": "Paid out to the agency",
+        "refund": "Refunded to the client"
+      },
+      "amounts": "Gross {gross} · Sawwiq fee {fee} · Net to agency {net}",
+      "refunded": "{amount} refunded to the client, no fee",
+      "test": "Test",
+      "pdfAr": "PDF (Arabic)",
+      "pdfEn": "PDF (English)"
+    },
+    "buying": {
+      "title": "Contracts you're buying",
+      "badge": "You're the client",
+      "from": "From {agency}",
+      "intro": "A contract from your partner {agency}. You're the client: sign, pay and approve milestones here."
+    },
+    "requests": {
+      "title": "Contract requests from partners",
+      "from": "{name} asks for: {title}",
+      "budget": "Budget: {amount}",
+      "create": "Create the contract",
+      "decline": "Decline",
+      "outgoing": "Contracts you asked partners for",
+      "waiting": "Waiting for {name}",
+      "cancel": "Cancel request",
+      "contracted": "Contract sent",
+      "declined": "The partner declined"
+    },
+    "review": {
+      "title": "The contract is complete",
+      "body": "Share how it went with {agency}; your review helps other businesses choose.",
+      "cta": "Rate {agency}"
     }
   },
   "LangOffer": {
@@ -1734,7 +1932,7 @@
   },
   "Seo": {
     "homeTitle": "Sawwiq | The first Arabic marketplace for marketing agencies",
-    "homeDescription": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices, verified reviews and milestone-protected payments.",
+    "homeDescription": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices, verified reviews and milestone-based contracts.",
     "popularServices": "Most requested services",
     "agencyTitle": "{name}: {service} in {city}",
     "agencyDescription": "{name} is an agency in {city} offering {services}. See its work, package prices and client reviews, and contact it directly on Sawwiq.",
@@ -1756,8 +1954,8 @@
       "body": "A page for every agency with its work and priced packages, hire pages for every service and city, an AI assistant that asks about your project and suggests the best-suited agencies with a realistic budget, and project requests where several agencies send you quotes."
     },
     "verify": {
-      "title": "What \"Verified\" means",
-      "body": "We check an agency's commercial registration before giving it the badge. It confirms the agency is registered; it does not guarantee the quality of its work, which is why we show the work and the reviews so you can judge."
+      "title": "What our three labels mean",
+      "body": "\"Business identity verified\": we checked the agency's commercial registration. It confirms the business is registered, not the quality of its work. \"Contact confirmed\": the reviewer was invited by the agency with a single-use link or contacted it through Sawwiq, so we know the two were in touch. \"Completed-project review\": the review comes from a client whose contract on Sawwiq was completed."
     },
     "reviews": {
       "title": "How we keep reviews real",
@@ -1765,7 +1963,8 @@
     },
     "payments": {
       "title": "Protected payments",
-      "body": "When you contract through Sawwiq, the work is split into milestones with dates, amounts and a checklist of deliverables. The client pays each milestone into Sawwiq, and it is released to the agency only after the client confirms every item. If the two sides disagree, our team reviews the case and decides."
+      "body": "When you contract through Sawwiq, the work is split into milestones with dates, amounts and a checklist of deliverables. The client pays each milestone to Sawwiq's licensed payment partner, never into Sawwiq's own accounts, and the partner pays the agency only after the milestone is accepted. If the two sides disagree, our team reviews the evidence from both and decides, with one appeal.",
+      "bodyTest": "When you contract through Sawwiq, the work is split into milestones with dates, amounts and a checklist of deliverables that the client confirms before a milestone is accepted. Protected payments are not live yet: until Sawwiq's licensed payment partner is connected and our legal review is complete, the payment steps run in test mode with no real money, and the two sides pay each other directly. Sawwiq holds no money and charges no fee in the meantime."
     },
     "demo": {
       "title": "Demo accounts",
@@ -1773,7 +1972,8 @@
     },
     "money": {
       "title": "How Sawwiq makes money",
-      "body": "Browsing, contacting agencies and asking for quotes are free for everyone. Contracts signed on Sawwiq are guaranteed: the client's payments are held by a trusted third party and released when the client confirms each milestone, and Sawwiq takes 10% of each released payment from the agency for that guarantee. Later we may offer agencies subscriptions for priority placement; these are always clearly labelled and never change how reviews rank."
+      "body": "Browsing, contacting agencies and asking for quotes are free for everyone. On contracts paid through Sawwiq's licensed payment partner, Sawwiq takes 10% of each payment released to the agency; the client never pays more than the contract amount. Later we may offer agencies clearly labelled subscriptions for priority placement; they never change how reviews rank.",
+      "bodyTest": "Browsing, contacting agencies and asking for quotes are free for everyone. Once protected payments go live through a licensed payment partner, Sawwiq will take a fee from each payment released to the agency (planned at 10%), never added to what the client pays. Until then Sawwiq charges no fees. Later we may offer agencies clearly labelled subscriptions for priority placement; they never change how reviews rank."
     },
     "ctaHire": "Start looking for an agency",
     "ctaContact": "Contact us"
@@ -1825,10 +2025,10 @@
     "agencyTermsPh": "e.g. two rounds of revisions per design; content approval within 3 working days",
     "agencyTermsHint": "Both parties sign them. They can't reduce the client's ownership of its accounts, the no-extra-charges rule or data protection.",
     "totalPrice": "Total price ({currency})",
-    "paymentTitle": "Guaranteed payment",
+    "paymentTitle": "Protected milestone payments",
     "paymentHeading": "Protected by Sawwiq",
-    "paymentBody": "Every contract on Sawwiq is guaranteed: the client pays each milestone to a trusted third party before you start it, so the money is there; it's released to you as soon as the client confirms the milestone.",
-    "paymentFee": "Sawwiq's guarantee fee: {fee}% of each released payment.",
+    "paymentBody": "Each milestone is paid before work on it starts and released to you when the client accepts it. Payments go through Sawwiq's licensed payment partner, never Sawwiq's own accounts; the note on this contract says whether that is live or still in test mode.",
+    "paymentFee": "Sawwiq's fee once protected payments are live: {fee}% of each released payment.",
     "ndaYears": "Confidentiality lasts for",
     "years": "{n, plural, one {# year} other {# years}}",
     "amendTitle": "Ask for a change before signing",
@@ -1883,7 +2083,8 @@
         "signature": "Draw your signature to sign.",
         "agree": "Tick the box to agree.",
         "rateLimited": "Too many attempts. Try again later.",
-        "invalid": "Check the form and try again."
+        "invalid": "Check the form and try again.",
+        "unavailable": "NDAs aren't available right now."
       }
     },
     "ndaClient": {
@@ -2049,7 +2250,30 @@
       "proposal_accepted": "{name} accepted your quote. Time to agree the contract.",
       "proposal_declined": "{name} declined your quote",
       "request_invited": "You were invited to quote on a new project: {services}",
-      "inquiry": "{name} sent you an inquiry"
+      "inquiry": "{name} sent you an inquiry",
+      "partner_request": "{name} wants to work with you as a partner",
+      "partner_accepted": "{name} accepted your partnership request",
+      "contract_signed": "{name} signed the contract “{title}”",
+      "contract_funded": "“{milestone}” is paid in. You can start the work.",
+      "milestone_submitted": "{name} delivered “{milestone}”. Review it by {date}.",
+      "milestone_changes": "{name} asked for changes to “{milestone}”",
+      "milestone_approved": "{name} accepted “{milestone}” and its payment was released",
+      "milestone_auto_approved": "“{milestone}” was accepted automatically when the review period ended",
+      "review_reminder": "{days, plural, =0 {Due today} one {1 day left} other {# days left}} to review “{milestone}” (by {date})",
+      "extra_round_asked": "{name} asks for an extra round of changes on “{milestone}”",
+      "extra_round_granted": "{name} gave you an extra round of changes on “{milestone}”",
+      "dispute_opened": "{name} opened a dispute on “{milestone}”",
+      "dispute_evidence": "New evidence in the dispute on “{milestone}”",
+      "dispute_decided": "Sawwiq decided the dispute on “{milestone}”. You can appeal once until {date}.",
+      "dispute_appealed": "{name} appealed the decision on “{milestone}”",
+      "dispute_final": "The decision on “{milestone}” is final and the money was settled",
+      "cancel_proposed": "{name} proposes cancelling “{title}” by agreement",
+      "cancel_accepted": "{name} agreed to cancel “{title}”",
+      "cancel_declined": "{name} declined to cancel “{title}”",
+      "contract_request": "{name} asks you for a contract: {title}",
+      "contract_received": "{name} sent you a contract to sign: {title}",
+      "contract_completed": "“{title}” is complete",
+      "review_invite": "How was working with {name}? Leave a review"
     }
   },
   "PortfolioClients": {
@@ -2182,14 +2406,117 @@
     "browse": "Just browsing",
     "close": "Close"
   },
-  "Intro": {
-    "label": "Sawwiq intro",
-    "skip": "Skip",
-    "soundOn": "Sound on"
+  "Services": {
+    "search": "Search services",
+    "placeholder": "Type a service, e.g. photography, reels, SEO…",
+    "full": "That's the maximum number of services",
+    "remove": "Remove {name}",
+    "new": "new",
+    "addNew": "Add “{name}” as a new service",
+    "needsReview": "reviewed by Sawwiq",
+    "popular": "Popular:",
+    "pendingHint": "Waiting for Sawwiq to review this service"
+  },
+  "AdminServices": {
+    "nav": "Services",
+    "title": "New services to review",
+    "intro": "Services agencies typed that aren't tags yet. Approve one as a new tag (it becomes searchable and matchable), merge it into an existing tag, or reject it. Agencies that used it are updated automatically.",
+    "none": "Nothing to review.",
+    "usedBy": "{count, plural, =0 {Not used} one {Used by 1 agency} other {Used by # agencies}}",
+    "approve": "Approve as new tag",
+    "merge": "Merge into existing",
+    "nameAr": "Arabic name",
+    "nameEn": "English name",
+    "group": "Group",
+    "parent": "Closest main service",
+    "roles": "Roles that deliver it",
+    "aliases": "Other spellings",
+    "aliasesHint": "Comma separated, e.g. ريلز، reels",
+    "approveButton": "Approve",
+    "reject": "Reject",
+    "mergeSearch": "Find the tag to merge into",
+    "mergeInto": "Merge into “{name}”",
+    "done": {
+      "approve": "“{name}” is now a tag.",
+      "merge": "“{name}” was merged.",
+      "reject": "“{name}” was rejected."
+    },
+    "errors": {
+      "invalid": "Check the fields.",
+      "names": "Both names are needed.",
+      "exists": "A tag with this name already exists: merge instead.",
+      "target": "Pick a tag to merge into.",
+      "notFound": "Already reviewed."
+    }
+  },
+  "Partners": {
+    "tab": "Partners",
+    "title": "Partners and freelancers",
+    "intro": "Missing a photographer, videographer or designer? Sawwiq suggests freelancers and agencies that fill the gap, and you work together on your clients' projects.",
+    "introFreelancer": "Agencies looking for your skills can send you partnership requests. Accept to share contacts and start working together.",
+    "have": "In your team",
+    "lookingFor": "Looking for",
+    "notSet": "not set",
+    "editRoles": "Edit",
+    "allRoles": "All roles",
+    "incoming": "Requests to you",
+    "partners": "Your partners",
+    "outgoing": "Requests you sent",
+    "suggestions": "Suggested for you",
+    "waiting": "waiting for an answer",
+    "noSeeks": "Tell us which roles you'd like partners for.",
+    "noSuggestions": "No one covers these roles in your country yet. We'll suggest partners as they join.",
+    "request": "Request partnership",
+    "requestTitle": "Work with {name} on:",
+    "messagePlaceholder": "A short note: the project, the timing, how you'd like to work together",
+    "send": "Send request",
+    "cancel": "Cancel",
+    "sent": "Request sent",
+    "withdraw": "Withdraw",
+    "accept": "Accept",
+    "decline": "Decline",
+    "forRoles": "For",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "waHello": "Hi {name}, we're partners on Sawwiq.",
+    "contractHint": "Agree the work in writing: from Studio → Contracts you can send a contract with milestones to a partner.",
+    "kinds": {
+      "agency": "Agency",
+      "freelancer": "Freelancer"
+    },
+    "errors": {
+      "self": "That's your own page.",
+      "notFound": "This page isn't available.",
+      "exists": "There's already an open request between you.",
+      "generic": "Could not send.",
+      "unavailable": "The partner network isn't available right now."
+    },
+    "form": {
+      "kind": "You are",
+      "agency": "An agency or company",
+      "agencyHint": "A team offering marketing services to clients",
+      "freelancer": "A freelancer or creator",
+      "freelancerHint": "Photographer, videographer, designer, writer, creator…",
+      "teamQuestion": "Who do you have in your team?",
+      "seeksQuestion": "Which roles would you like partners for?",
+      "seeksHint": "Missing a component? Sawwiq finds trusted freelancers and agencies to fill it, so you can take on the full project.",
+      "gapHint": "Don't have one of these in house? That's fine: Sawwiq will suggest freelancers and partner agencies for the missing roles.",
+      "doQuestion": "What do you do?"
+    }
   },
   "Demo": {
+    "badge": "Demo",
+    "bannerOn": "You're viewing the demo. Agencies marked Demo are samples, not real businesses. Prices and counts elsewhere come only from real agencies.",
+    "exit": "Leave the demo",
+    "enter": "Explore the demo",
+    "emptyReal": "No real agencies here yet.",
+    "emptyHint": "Sawwiq is new. Look around with sample agencies, or be one of the first real ones.",
+    "join": "Join as an agency",
+    "sampleAgency": "Sample agency: made up to show how Sawwiq works. It is not a real business and can't take on work.",
+    "samplePost": "Sample work from a demo agency, not a real business.",
+    "requestNote": "You're in the demo: this request goes only to sample agencies. Leave the demo to reach real agencies.",
     "title": "Sawwiq demo",
-    "intro": "Explore Sawwiq with sample agencies, work and requests. Everything here is fictional, and nothing reaches real agencies or clients.",
+    "intro": "Explore Sawwiq with sample agencies, work and requests. They are made up to show how Sawwiq works; nothing here reaches real agencies or clients.",
     "asClient": {
       "title": "Browse as a client",
       "body": "See the work, search agencies and try the AI matchmaker. No sign-in needed."
@@ -2199,8 +2526,148 @@
       "body": "Edit the page, post work, answer requests and send quotes. No sign-in needed."
     },
     "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
-    "banner": "You're in the demo: sample agencies and data.",
-    "exit": "Leave demo",
-    "blocked": "Not available in the demo."
+    "off": "The demo is switched off right now."
+  },
+  "PartnerContracts": {
+    "request": "Ask this partner for a contract",
+    "requestHint": "The one doing the work sends the contract. Describe what you need and your partner sends you a contract to sign and pay from your studio.",
+    "title": "What's the work?",
+    "brief": "Details",
+    "budget": "Approximate budget (optional)",
+    "send": "Send request",
+    "sent": "Request sent to your partner.",
+    "createFor": "Create a contract for this partner",
+    "errors": {
+      "notPartner": "The partnership isn't accepted yet.",
+      "invalid": "Give the work a clear title.",
+      "tooMany": "You already have three requests waiting with this partner.",
+      "rateLimited": "Too many attempts. Try again later."
+    }
+  },
+  "CloseAccount": {
+    "title": "Close your account",
+    "body": "Your page, posts and packages disappear from Sawwiq and you can no longer sign in. Contracts and payment records are kept, as the law and your clients need them; contact support if you want to come back. You can't close the account while a real contract is running or money is held for it.",
+    "start": "Close my account",
+    "confirmHandle": "Type your handle ({handle}) to confirm",
+    "password": "Your password",
+    "submit": "Close my account now",
+    "cancel": "Keep my account",
+    "errors": {
+      "badPassword": "That password isn't right.",
+      "confirm": "The handle doesn't match.",
+      "openContracts": "Finish or cancel these contracts first: {contracts}.",
+      "rateLimited": "Too many attempts. Try again in a few minutes."
+    }
+  },
+  "Features": {
+    "nav": "Features",
+    "title": "Platform features",
+    "intro": "Choose what is live on Sawwiq. Changes apply within seconds and are recorded in the audit log. Contracts and records that already exist keep working whatever you choose.",
+    "states": {
+      "on": "On",
+      "soon": "Coming soon",
+      "off": "Off"
+    },
+    "stateHints": {
+      "on": "everyone can use it",
+      "soon": "shown as under construction; pilot agencies and staff can use it",
+      "off": "hidden everywhere"
+    },
+    "pilots": "Pilot agencies (handles, separated by commas) who can use it now",
+    "save": "Save",
+    "saved": "Saved",
+    "error": "Couldn't save. Check the values and try again.",
+    "groups": {
+      "money": "Money",
+      "work": "Contracts and work",
+      "discovery": "Finding agencies",
+      "trust": "Trust",
+      "network": "Agency network"
+    },
+    "soonTitle": "Coming soon",
+    "soonShort": "coming soon",
+    "back": "Back to Sawwiq",
+    "items": {
+      "protected_payments": {
+        "name": "Protected milestone payments",
+        "desc": "The client pays each milestone to Sawwiq's licensed payment partner, which pays the agency when the milestone is accepted. While not on, contracts are signed with direct payment between the two sides.",
+        "soon": "Protected payments through a licensed payment partner are under construction. For now, contracts on Sawwiq record milestones and checklists, and the client pays the agency directly."
+      },
+      "paid_plans": {
+        "name": "Paid plans for agencies",
+        "desc": "Pro and Business subscriptions with priority placement, always labelled.",
+        "soon": "Paid plans are coming soon. Every agency uses Sawwiq for free during the launch."
+      },
+      "contracts": {
+        "name": "Contracts",
+        "desc": "Agencies send milestone contracts that clients sign by private link.",
+        "soon": "Creating new contracts is coming soon. Contracts already sent keep working."
+      },
+      "ndas": {
+        "name": "NDAs",
+        "desc": "Non-disclosure agreements signed on Sawwiq.",
+        "soon": "NDAs are coming soon."
+      },
+      "quote_requests": {
+        "name": "Quote requests",
+        "desc": "Businesses send a project to matched agencies and compare quotes.",
+        "soon": "Sending a project for quotes is coming soon. Meanwhile, browse agencies and contact them directly."
+      },
+      "ai_matchmaker": {
+        "name": "AI matchmaker",
+        "desc": "A guided chat that recommends agencies and a realistic budget.",
+        "soon": "The AI matchmaker is under construction. Meanwhile, browse agencies by service and city."
+      },
+      "messaging": {
+        "name": "Messages to agencies",
+        "desc": "Visitors message an agency through Sawwiq without an account.",
+        "soon": "Messaging agencies through Sawwiq is coming soon. Use WhatsApp from the agency's page."
+      },
+      "reviews": {
+        "name": "Writing reviews",
+        "desc": "Invited clients and clients who contacted an agency can review it.",
+        "soon": "Writing reviews is coming soon."
+      },
+      "partners": {
+        "name": "Partner network",
+        "desc": "Agencies and freelancers find each other to fill gaps in their teams.",
+        "soon": "The partner network is under construction."
+      },
+      "demo_view": {
+        "name": "Demo view",
+        "desc": "Visitors can explore sample agencies, clearly labelled, when real ones are few.",
+        "soon": "The demo view is being prepared."
+      }
+    },
+    "golive": {
+      "title": "Protected payments: go-live checklist",
+      "intro": "Real money moves only when every step is done and the live switch is set in the deployment (PROTECTED_PAYMENTS_LIVE=true with the partner connected). Tick the steps you finish outside the platform; the others are checked automatically.",
+      "statusNotReady": "Not ready: payments stay in test mode and the feature stays \"Coming soon\" for clients.",
+      "statusReady": "Ready: every step is done. Ask Claude to set the live switch, then turn the feature on (or pilots first).",
+      "statusLive": "Live: real protected payments are running.",
+      "auto": "checked automatically",
+      "doneOn": "Done on {date}",
+      "docs": "The full go-live pack (partner letter in Arabic and English, lawyer brief, step-by-step) is in docs/33-protected-payments-go-live.md.",
+      "steps": {
+        "partnerChosen": "Payment partner chosen (PayTabs, HyperPay or a bank escrow service)",
+        "partnerSigned": "Partner contract signed; agencies' onboarding (KYC) agreed",
+        "lawyerReviewed": "A Jordanian lawyer reviewed the contract terms, the payment section and the privacy notice",
+        "feeAccount": "Sawwiq's own bank account set up with the partner to receive the fee",
+        "adapterConnected": "Partner connected in the code (sandbox keys in GitHub secrets)",
+        "webhookSecret": "Webhook signing secret set",
+        "dailyJob": "Daily job secret set (reminders, deemed acceptance, payout retries)",
+        "email": "Email notifications configured",
+        "staff2fa": "Two-factor sign-in available for staff",
+        "sandboxTested": "Full milestone flow tested in the partner's sandbox (pay, release, refund, dispute, chargeback)",
+        "pilotsChosen": "Pilot agencies chosen and added under \"Coming soon\"",
+        "disputeCover": "Someone assigned to review disputes and stuck payouts every day",
+        "liveSwitch": "Live switch set in the deployment"
+      }
+    }
+  },
+  "Intro": {
+    "label": "Sawwiq intro",
+    "skip": "Skip",
+    "soundOn": "Sound on"
   }
 }

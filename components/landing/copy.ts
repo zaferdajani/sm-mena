@@ -25,7 +25,7 @@ export interface SiteCopy {
   cta: { match: string; browse: string; join: string; reviews: string };
   chapters: Chapter[];
   payments: {
-    eyebrow: string; title: string; body: string; direct: string;
+    eyebrow: string; eyebrowSoon: string; soon: string; title: string; body: string; direct: string;
     points: { icon: IconName; title: string; body: string }[];
     ledger: {
       project: string; ref: string; hint: string; reset: string;
@@ -69,27 +69,29 @@ const ar: SiteCopy = {
     { id: "how", label: "أعمال حقيقية", title: "شاهد الشغل قبل الكلام", body: "منشورات وحملات حقيقية نفّذتها الوكالات لمطاعم وعيادات ومتاجر في الأردن، ومعها تقييمات \u2068Google\u2069 ومراجعات موثّقة.", tags: ["منشورات حقيقية", "تقييمات \u2068Google\u2069"] },
     { id: "ask", label: "اسأل", title: "اسأل الذكاء الاصطناعي أو تصفّح بنفسك", body: "اكتب ما تحتاجه بالعربي أو الإنجليزي، فيرتّب لك المطابق الوكالات الأنسب ويشرح السبب ويقترح ميزانية واقعية.", tags: ["عربي أو إنجليزي", "ميزانية واقعية"] },
     { id: "quotes", label: "العروض", title: "استلم عروضاً وقارن بهدوء", body: "أرسل مشروعك لأفضل الوكالات المطابقة، واستلم عروض أسعار واضحة تقارنها جنباً إلى جنب.", tags: ["دعوة أفضل المطابقين", "مقارنة العروض"] },
-    { id: "sign", label: "العقد والدفع", title: "وقّع وادفع على مراحل", body: "عقد فيه مراحل وتواريخ ومبالغ وقوائم تسليم، يُوقَّع برابط خاص. ودفعتك محفوظة لدى سوّق حتى تؤكد العمل.", tags: ["اتفاقية عدم إفصاح اختيارية", "دفعات محمية"] },
+    { id: "sign", label: "العقد والدفع", title: "وقّع وادفع على مراحل", body: "عقد فيه مراحل وتواريخ ومبالغ وقوائم تسليم، يُوقَّع برابط خاص. وتُدفع كل مرحلة عبر شريك دفع مرخّص ولا تصل للوكالة إلا بعد أن تؤكد العمل.", tags: ["اتفاقية عدم إفصاح اختيارية", "دفعات محمية"] },
   ],
   payments: {
     eyebrow: "الدفع المحمي",
+    eyebrowSoon: "الدفع المحمي · قريباً",
+    soon: "قريباً: يُفعَّل الدفع المحمي عند ربط شريك الدفع المرخّص واكتمال المراجعة القانونية. حتى ذلك الحين لا تمر أي أموال حقيقية عبر سوّق؛ جرّب الخطوات هنا كعرض توضيحي.",
     title: "المال ينتظر حتى تؤكد العمل",
-    body: "تدفع كل مرحلة إلى سوّق، ولا تصل الدفعة إلى الوكالة إلا بعد أن تؤكد كل بند في قائمة التسليم.",
-    direct: "تفضّل الدفع المباشر للوكالة؟ متاح أيضاً، لكن بدون ضمان سوّق.",
+    body: "تدفع كل مرحلة إلى شريك الدفع المرخّص لدى سوّق، لا إلى حسابات سوّق، ولا تصل الدفعة إلى الوكالة إلا بعد أن تؤكد كل بند في قائمة التسليم.",
+    direct: "تفضّل الدفع المباشر للوكالة؟ متاح أيضاً، ويبقى العقد وقوائم التسليم على سوّق، لكن الدفعة لا تكون محمية.",
     points: [
       { icon: "contract", title: "مراحل واضحة", body: "كل دفعة مربوطة بتسليمات وتاريخ ومبلغ متفق عليه." },
-      { icon: "shield", title: "محفوظة لدى سوّق", body: "المبلغ لا يتحرك قبل موافقتك على كل البنود." },
-      { icon: "review", title: "فريق للنزاعات", body: "إذا اختلفتما، يراجع فريقنا التسليمات مع الطرفين ويحسم." },
+      { icon: "shield", title: "محفوظة لدى شريك مرخّص", body: "المبلغ لا يتحرك قبل موافقتك على كل البنود." },
+      { icon: "review", title: "فريق للنزاعات", body: "إذا اختلفتما، يراجع فريقنا أدلة الطرفين ويقرّر، مع حق استئناف واحد." },
     ],
     ledger: {
       project: "حملة إطلاق مطعم، عمّان",
       ref: "SWQ-2410",
       hint: "جرّب بنفسك: أكّد بنود المرحلة الثانية",
       reset: "إعادة التجربة",
-      held: "محفوظة لدى سوّق",
+      held: "لدى شريك الدفع",
       released: "وصلت للوكالة",
       locked: "لم تبدأ بعد",
-      totalHeld: "محفوظ لدى سوّق",
+      totalHeld: "لدى شريك الدفع",
       totalReleased: "وصل للوكالة",
       money: (n) => `${n} د.أ`,
       milestones: [
@@ -195,27 +197,29 @@ const en: SiteCopy = {
     { id: "how", label: "Real work", title: "See the work before the pitch", body: "Real posts and campaigns agencies made for restaurants, clinics and shops across Jordan, with Google ratings and verified reviews.", tags: ["Real posts", "Google ratings"] },
     { id: "ask", label: "Ask", title: "Ask the AI, or browse yourself", body: "Describe your project in Arabic or English. The matchmaker ranks agencies, explains why, and suggests a realistic budget.", tags: ["Arabic or English", "Realistic budgets"] },
     { id: "quotes", label: "Quotes", title: "Get quotes, compare calmly", body: "Send your project to your top matches and compare clear quotes side by side.", tags: ["Top matches invited", "Side-by-side quotes"] },
-    { id: "sign", label: "Sign & pay", title: "Sign, then pay by milestone", body: "A contract with milestones, dates, amounts and checklists, signed by private link. Your money waits with Sawwiq until you confirm the work.", tags: ["Optional NDA", "Protected payments"] },
+    { id: "sign", label: "Sign & pay", title: "Sign, then pay by milestone", body: "A contract with milestones, dates, amounts and checklists, signed by private link. Each milestone is paid through a licensed payment partner and reaches the agency only after you confirm the work.", tags: ["Optional NDA", "Protected payments"] },
   ],
   payments: {
     eyebrow: "Protected payments",
+    eyebrowSoon: "Protected payments · coming soon",
+    soon: "Coming soon: protected payments go live once our licensed payment partner is connected and the legal review is complete. Until then no real money moves through Sawwiq; try the steps here as a demo.",
     title: "The money waits until you confirm the work",
-    body: "You pay each milestone into Sawwiq. It reaches the agency only after you confirm every item on the checklist.",
-    direct: "Prefer paying the agency directly? You can, without the Sawwiq guarantee.",
+    body: "You pay each milestone to Sawwiq's licensed payment partner, never into Sawwiq's own accounts. It reaches the agency only after you confirm every item on the checklist.",
+    direct: "Prefer paying the agency directly? You can; Sawwiq still keeps the contract and checklists, but the payment isn't protected.",
     points: [
       { icon: "contract", title: "Clear milestones", body: "Every payment is tied to deliverables, a date and an agreed amount." },
-      { icon: "shield", title: "Held by Sawwiq", body: "The amount does not move until you approve every item." },
-      { icon: "review", title: "A team for disputes", body: "If you disagree, our team reviews the deliverables with both sides and decides." },
+      { icon: "shield", title: "Held by a licensed partner", body: "The amount does not move until you approve every item." },
+      { icon: "review", title: "A team for disputes", body: "If you disagree, our team reviews the evidence from both sides and decides, with one appeal." },
     ],
     ledger: {
       project: "Restaurant launch campaign, Amman",
       ref: "SWQ-2410",
       hint: "Try it: confirm the second milestone",
       reset: "Reset the demo",
-      held: "Held by Sawwiq",
+      held: "With payment partner",
       released: "Paid to agency",
       locked: "Not started",
-      totalHeld: "Held by Sawwiq",
+      totalHeld: "With payment partner",
       totalReleased: "Paid to agency",
       money: (n) => `JOD ${n}`,
       milestones: [

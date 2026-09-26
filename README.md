@@ -118,6 +118,7 @@ Other buttons in **Actions → Vercel**: `status` (latest deployments, build log
 | `docs/27-vercel.md` | Hosting on Vercel, the GitHub Actions buttons, first-time setup |
 | `docs/28-portfolio-clients.md` | Agency introduction and strengths, countries served, portfolio clients and their accounts |
 | `docs/29-email.md` | Email to agencies with Resend: DNS at Namecheap, API key, setup |
+| `docs/30-services-and-partners.md` | Services as tags (researched catalog, type-ahead, admin review), freelancers, partner network |
 | `docs/17-team-access.md` | Staff roles, owner protections, GitHub and Vercel access for the team, break-glass, sites directory |
 | `CLAUDE.md` | Build rules for Claude Code |
 

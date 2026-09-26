@@ -5,7 +5,6 @@ import { agencies, events, promotions } from "@/lib/db/schema";
 import { inCountry } from "@/lib/data/agency-filters";
 import { getPostsByIds, type FeedFilters, type PostView } from "@/lib/data/posts";
 import { PROMOTION_RULES } from "./plans";
-import { agencyScope } from "@/lib/demo";
 
 type Placement = "feed" | "strip" | "explore";
 
@@ -24,9 +23,9 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         lte(promotions.startsAt, now),
         gt(promotions.endsAt, now),
         eq(agencies.status, "active"),
+        filters.includeDemo ? undefined : eq(agencies.isDemo, false),
         // Sponsored slots stay in the visitor's country.
         filters.country ? inCountry(filters.country) : undefined,
-        await agencyScope(),
       ),
     );
   return rows

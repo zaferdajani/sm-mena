@@ -7,9 +7,9 @@ import { PROMOTION_RULES } from "@/lib/monetization/plans";
 import { inArray } from "drizzle-orm";
 
 /** Strip agencies with at most one sponsored agency after the first organic ones. */
-export async function stripAgencies(country?: string): Promise<(AgencySummary & { sponsored?: boolean })[]> {
-  const organic = await listStripAgencies(20, country);
-  const promos = await activePromotions("strip", { country });
+export async function stripAgencies(country?: string, includeDemo = false): Promise<(AgencySummary & { sponsored?: boolean })[]> {
+  const organic = await listStripAgencies(20, country, includeDemo);
+  const promos = await activePromotions("strip", { country, includeDemo });
   if (!promos.length) return organic;
   const pick = promos[Math.floor(Math.random() * promos.length)];
   const db = await getDb();

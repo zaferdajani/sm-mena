@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { Construction, FlaskConical, Handshake, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useMemo, useState } from "react";
 import { createContractAction } from "@/app/[locale]/(main)/contract-actions";
@@ -29,6 +29,8 @@ export type BuilderInitial = {
   kpis?: { label: string; target: string }[];
   clientTerms?: string;
   agencyLegalName?: string;
+  /** Partner contracts: the agency buying the work, and the request this answers. */
+  partner?: { id: string; name: string; requestId?: string | null };
 };
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
@@ -55,6 +57,9 @@ export function ContractBuilder({
   feePercent,
   currency,
   countryName,
+  paymentsLive,
+  protectedOpen,
+  reviewDays,
 }: {
   initial: BuilderInitial;
   agencyName: string;
@@ -62,10 +67,16 @@ export function ContractBuilder({
   feePercent: number;
   currency: string;
   countryName: string;
+  /** Whether protected payments are live (lib/payments/readiness.ts); new contracts record it. */
+  paymentsLive: boolean;
+  /** Protected payments available to this agency (Admin → Features); otherwise the contract is direct. */
+  protectedOpen: boolean;
+  reviewDays: number;
 }) {
   const t = useTranslations("Contracts.builder");
   const tl = useTranslations("Agreements");
   const td = useTranslations("Deliverables");
+  const tr = useTranslations("Contracts.readiness");
   const [state, action] = useActionState(createContractAction, undefined);
   const today = iso(new Date());
   const months = Math.max(1, initial.months ?? 1);
@@ -89,6 +100,7 @@ export function ContractBuilder({
   const [agencyTerms, setAgencyTerms] = useState("");
   const [clientTerms, setClientTerms] = useState(initial.clientTerms ?? "");
   const [signer, setSigner] = useState("");
+  const [rounds, setRounds] = useState(2);
   const [agree, setAgree] = useState(false);
 
   const platformName = (k?: string | null) => platforms.find((p) => p.key === k)?.label ?? "";
@@ -130,7 +142,7 @@ export function ContractBuilder({
     specialRequests: requests.filter((r) => r.text.trim()),
     startDate: start,
     endDate: end,
-    paymentMode: "protected",
+    paymentMode: protectedOpen ? "protected" : "direct",
     nda,
     ndaExtra: nda ? ndaExtra : null,
     ndaYears: nda ? ndaYears : null,
@@ -142,6 +154,9 @@ export function ContractBuilder({
     kpis: kpis.filter((k) => k.label.trim() || k.target.trim()),
     reportingCadence: cadence || null,
     mediaBudgetJod: Number(mediaBudget) || null,
+    revisionRounds: rounds,
+    clientAgencyId: initial.partner?.id ?? null,
+    contractRequestId: initial.partner?.requestId ?? null,
     signerName: signer,
     agree,
     requestId: initial.requestId ?? null,
@@ -153,6 +168,11 @@ export function ContractBuilder({
     <form action={action} className="space-y-4" data-testid="contract-builder">
       <input type="hidden" name="payload" value={payload} />
       {initial.note && <p className="rounded-xl bg-brand/10 p-3 text-sm">{initial.note}</p>}
+      {initial.partner && (
+        <p className="flex items-center gap-2 rounded-xl bg-muted p-3 text-sm" data-testid="partner-contract-note">
+          <Handshake className="size-4 shrink-0 text-brand" /> {t("partnerNote", { name: initial.partner.name })}
+        </p>
+      )}
 
       <Step n={1} title={t("s1")}>
         <div className="grid gap-3 sm:grid-cols-3">
@@ -254,6 +274,18 @@ export function ContractBuilder({
             </li>
           ))}
         </ol>
+        <div className="grid gap-1.5 rounded-xl bg-muted/40 p-3 text-sm">
+          <label className="flex flex-wrap items-center gap-2 font-medium">
+            {t("rounds")}
+            <select value={rounds} onChange={(e) => setRounds(Number(e.target.value))} className="h-9 rounded-md border bg-background px-2" data-testid="revision-rounds">
+              {Array.from({ length: 11 }, (_, n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <span className="text-xs text-muted-foreground">{t("roundsHint")}</span>
+          <span className="text-xs text-muted-foreground">{t("reviewNote", { days: reviewDays })}</span>
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <button
             type="button"
@@ -333,13 +365,22 @@ export function ContractBuilder({
       </Step>
 
       <Step n={8} title={tl("paymentTitle")}>
-        <div className="space-y-1 rounded-xl border-2 border-brand bg-brand/5 p-4" data-testid="guaranteed-payment">
+        {!protectedOpen ? (
+          <div className="space-y-1 rounded-xl border-2 border-dashed p-4" data-testid="direct-payment">
+            <span className="flex items-center gap-2 font-semibold">
+              <Construction className="size-5 text-muted-foreground" /> {tr("soonTitle")}
+            </span>
+            <span className="block text-sm text-muted-foreground">{tr("soonBody")}</span>
+          </div>
+        ) : (
+        <div className={paymentsLive ? "space-y-1 rounded-xl border-2 border-brand bg-brand/5 p-4" : "space-y-1 rounded-xl border-2 border-amber-500/50 bg-amber-500/10 p-4"} data-testid="guaranteed-payment" data-live={paymentsLive ? "true" : "false"}>
           <span className="flex items-center gap-2 font-semibold">
-            <ShieldCheck className="size-5 text-brand" /> {tl("paymentHeading")}
+            {paymentsLive ? <ShieldCheck className="size-5 text-brand" /> : <FlaskConical className="size-5 text-amber-600" />} {tr(paymentsLive ? "liveTitle" : "testTitle")}
           </span>
-          <span className="block text-sm text-muted-foreground">{tl("paymentBody")}</span>
-          <span className="block text-xs text-muted-foreground">{tl("paymentFee", { fee: feePercent })}</span>
+          <span className="block text-sm text-muted-foreground">{tr(paymentsLive ? "liveBody" : "testBody")}</span>
+          <span className="block text-xs text-muted-foreground">{tr(paymentsLive ? "builderFeeLive" : "builderFeeTest", { fee: feePercent })}</span>
         </div>
+        )}
         <div className="grid gap-1.5">
           <Label htmlFor="a-terms">{tl("agencyTerms")}</Label>
           <Textarea id="a-terms" value={agencyTerms} onChange={(e) => setAgencyTerms(e.target.value)} placeholder={tl("agencyTermsPh")} rows={3} maxLength={3000} dir="auto" data-testid="agency-terms" />

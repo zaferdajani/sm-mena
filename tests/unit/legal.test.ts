@@ -92,7 +92,14 @@ describe("contract under Saudi law", () => {
     expect(en).toMatch(/No work for competing cafés/);
     expect(en).toMatch(/★ Owner approves every post/);
     expect(en).toMatch(/3 years after/);
-    expect(en).toMatch(/10% of each released payment/);
+    // Terms v4 in test mode: no real money, no fee, and they say so.
+    expect(en).toMatch(/Protected payments on Sawwiq are in test mode/);
+    expect(en).toMatch(/Sawwiq charges no fee on this contract in test mode/);
+    expect(en).toMatch(/Review period for each delivery: 7 days\. Revision rounds included in each milestone: 2 rounds of changes/);
+    expect(en).toMatch(/deemed accepted/);
+    expect(en).toMatch(/appeal the decision once, within 7 days/);
+    expect(en).toMatch(/Chargebacks/);
+    expect(en).toMatch(/does not guarantee business results/);
     const ar = contractDocument(v, "ar");
     expect(ar.dir).toBe("rtl");
     expect(ar.timeZone).toBe("Asia/Riyadh");

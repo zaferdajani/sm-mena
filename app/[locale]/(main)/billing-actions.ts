@@ -1,11 +1,11 @@
 "use server";
 
+import { featureOpen } from "@/lib/features";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { applyProviderEvent, getPayment, PLAN_MONTHS, startPlanCheckout } from "@/lib/data/payments";
-import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isTestPayments, paymentProvider, type ProviderEvent } from "@/lib/payments/provider";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -15,9 +15,8 @@ export async function checkoutPlanAction(formData: FormData) {
   const data = z
     .object({ plan: z.enum(["pro", "business"]), months: z.coerce.number().refine((m) => (PLAN_MONTHS as readonly number[]).includes(m)) })
     .parse(Object.fromEntries(formData));
-  // Checkout is open once revenue is switched on; the test provider also allows it for trying the flow.
-  // Demo agencies (lib/demo.ts) never pay.
-  if (agency.isDemo || (!monetizationEnabled() && !isTestPayments())) return redirect({ href: "/studio/billing", locale });
+  // Checkout follows Admin → Features → "Paid plans" (on, or this agency is a pilot).
+  if (!(await featureOpen("paid_plans", { agencyHandle: agency.handle }))) return redirect({ href: "/studio/billing", locale });
   if (!rateLimit(`checkout:${agency.id}`, 10, 60 * 60 * 1000)) return redirect({ href: "/studio/billing?error=rate", locale });
   const { redirectPath } = await startPlanCheckout(agency.id, data.plan, data.months, user.id);
   return redirect({ href: redirectPath, locale });

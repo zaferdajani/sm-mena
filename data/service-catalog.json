@@ -1,0 +1,4488 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "key": "social_media",
+      "name_ar": "السوشيال ميديا",
+      "name_en": "Social media"
+    },
+    {
+      "key": "paid_media",
+      "name_ar": "الإعلانات المدفوعة",
+      "name_en": "Paid advertising"
+    },
+    {
+      "key": "creative",
+      "name_ar": "الإنتاج الإبداعي",
+      "name_en": "Creative production"
+    },
+    {
+      "key": "branding",
+      "name_ar": "الهوية والعلامة التجارية",
+      "name_en": "Branding"
+    },
+    {
+      "key": "digital",
+      "name_ar": "التسويق الرقمي والمتاجر",
+      "name_en": "Digital marketing and e-commerce"
+    },
+    {
+      "key": "offline",
+      "name_ar": "الفعاليات والإعلانات على أرض الواقع",
+      "name_en": "Events and offline advertising"
+    },
+    {
+      "key": "strategy",
+      "name_ar": "الاستراتيجية والأبحاث",
+      "name_en": "Strategy and research"
+    },
+    {
+      "key": "web_dev",
+      "name_ar": "تطوير المواقع والتطبيقات",
+      "name_en": "Web and app development"
+    },
+    {
+      "key": "pr_comms",
+      "name_ar": "العلاقات العامة والاتصال",
+      "name_en": "PR and communications"
+    }
+  ],
+  "roles": [
+    {
+      "key": "strategist",
+      "name_ar": "مخطط استراتيجي",
+      "name_en": "Strategist"
+    },
+    {
+      "key": "social_media_manager",
+      "name_ar": "مدير حسابات التواصل الاجتماعي",
+      "name_en": "Social media manager"
+    },
+    {
+      "key": "community_manager",
+      "name_ar": "مدير مجتمع / مشرف ردود",
+      "name_en": "Community manager"
+    },
+    {
+      "key": "content_writer_ar",
+      "name_ar": "كاتب محتوى عربي",
+      "name_en": "Arabic content writer"
+    },
+    {
+      "key": "content_writer_en",
+      "name_ar": "كاتب محتوى إنجليزي",
+      "name_en": "English content writer"
+    },
+    {
+      "key": "graphic_designer",
+      "name_ar": "مصمم جرافيك",
+      "name_en": "Graphic designer"
+    },
+    {
+      "key": "motion_designer",
+      "name_ar": "مصمم موشن جرافيك",
+      "name_en": "Motion designer"
+    },
+    {
+      "key": "animator",
+      "name_ar": "رسام أنيميشن",
+      "name_en": "Animator"
+    },
+    {
+      "key": "3d_artist",
+      "name_ar": "مصمم ثلاثي الأبعاد",
+      "name_en": "3D artist"
+    },
+    {
+      "key": "photographer",
+      "name_ar": "مصور فوتوغرافي",
+      "name_en": "Photographer"
+    },
+    {
+      "key": "videographer",
+      "name_ar": "مصور فيديو",
+      "name_en": "Videographer"
+    },
+    {
+      "key": "video_editor",
+      "name_ar": "مونتير / محرر فيديو",
+      "name_en": "Video editor"
+    },
+    {
+      "key": "drone_operator",
+      "name_ar": "مصور درون",
+      "name_en": "Drone operator"
+    },
+    {
+      "key": "voice_over",
+      "name_ar": "معلق صوتي",
+      "name_en": "Voice-over artist"
+    },
+    {
+      "key": "model_talent",
+      "name_ar": "موديل / ممثل",
+      "name_en": "Model and on-camera talent"
+    },
+    {
+      "key": "content_creator",
+      "name_ar": "صانع محتوى (UGC)",
+      "name_en": "Content creator (UGC)"
+    },
+    {
+      "key": "media_buyer",
+      "name_ar": "مختص إعلانات ممولة (ميديا باير)",
+      "name_en": "Media buyer"
+    },
+    {
+      "key": "seo_specialist",
+      "name_ar": "مختص سيو",
+      "name_en": "SEO specialist"
+    },
+    {
+      "key": "web_developer",
+      "name_ar": "مطور مواقع وتطبيقات",
+      "name_en": "Web and app developer"
+    },
+    {
+      "key": "ui_ux_designer",
+      "name_ar": "مصمم واجهات وتجربة مستخدم",
+      "name_en": "UI/UX designer"
+    },
+    {
+      "key": "data_analyst",
+      "name_ar": "محلل بيانات تسويقية",
+      "name_en": "Marketing data analyst"
+    },
+    {
+      "key": "influencer_manager",
+      "name_ar": "مدير علاقات المؤثرين",
+      "name_en": "Influencer manager"
+    },
+    {
+      "key": "pr_specialist",
+      "name_ar": "مختص علاقات عامة",
+      "name_en": "PR specialist"
+    },
+    {
+      "key": "event_manager",
+      "name_ar": "منظم فعاليات",
+      "name_en": "Event manager"
+    },
+    {
+      "key": "printing_production",
+      "name_ar": "مسؤول الطباعة والإنتاج",
+      "name_en": "Print and production manager"
+    }
+  ],
+  "services": [
+    {
+      "key": "smm_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة حسابات التواصل الاجتماعي",
+      "name_en": "Social media account management",
+      "aliases": [
+        "سوشيال ميديا",
+        "إدارة صفحات",
+        "ادارة سوشيال",
+        "SMM",
+        "سوشال",
+        "جدولة ونشر"
+      ],
+      "roles": [
+        "social_media_manager",
+        "graphic_designer",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "smm_content",
+      "group": "social_media",
+      "parent": "smm_content",
+      "name_ar": "صناعة محتوى السوشيال ميديا",
+      "name_en": "Social media content creation",
+      "aliases": [
+        "كونتنت",
+        "محتوى سوشيال",
+        "صناعة محتوى",
+        "content creation",
+        "بوستات"
+      ],
+      "roles": [
+        "social_media_manager",
+        "graphic_designer",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "smm_community",
+      "group": "social_media",
+      "parent": "smm_community",
+      "name_ar": "إدارة المجتمع والتفاعل",
+      "name_en": "Community management",
+      "aliases": [
+        "الرد على التعليقات",
+        "كوميونتي",
+        "مودريشن",
+        "community",
+        "moderation"
+      ],
+      "roles": [
+        "community_manager"
+      ]
+    },
+    {
+      "key": "smm_strategy",
+      "group": "social_media",
+      "parent": "smm_strategy",
+      "name_ar": "استراتيجية السوشيال ميديا",
+      "name_en": "Social media strategy",
+      "aliases": [
+        "خطة سوشيال",
+        "استراتيجية سوشيال",
+        "social strategy",
+        "خطة تواصل"
+      ],
+      "roles": [
+        "strategist",
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "smm_influencer",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "التسويق عبر المؤثرين",
+      "name_en": "Influencer marketing campaigns",
+      "aliases": [
+        "مؤثرين",
+        "مشاهير",
+        "انفلونسر",
+        "influencers",
+        "إعلانات المشاهير",
+        "بلوقرز"
+      ],
+      "roles": [
+        "influencer_manager"
+      ]
+    },
+    {
+      "key": "content_calendar",
+      "group": "social_media",
+      "parent": "smm_strategy",
+      "name_ar": "خطة المحتوى الشهرية",
+      "name_en": "Monthly content calendar",
+      "aliases": [
+        "كالندر",
+        "خطة محتوى",
+        "content plan",
+        "جدول النشر",
+        "content calendar"
+      ],
+      "roles": [
+        "social_media_manager",
+        "strategist"
+      ]
+    },
+    {
+      "key": "instagram_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة حساب إنستغرام",
+      "name_en": "Instagram account management",
+      "aliases": [
+        "انستا",
+        "انستقرام",
+        "إنستجرام",
+        "IG",
+        "Instagram"
+      ],
+      "roles": [
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "tiktok_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة حساب تيك توك",
+      "name_en": "TikTok account management",
+      "aliases": [
+        "تيك توك",
+        "تك توك",
+        "تيكتوك",
+        "TikTok",
+        "TT"
+      ],
+      "roles": [
+        "social_media_manager",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "snapchat_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة حساب سناب شات",
+      "name_en": "Snapchat account management",
+      "aliases": [
+        "سناب",
+        "سنابات",
+        "Snap",
+        "Snapchat",
+        "بروفايل عام"
+      ],
+      "roles": [
+        "social_media_manager",
+        "content_creator"
+      ]
+    },
+    {
+      "key": "facebook_page_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة صفحة فيسبوك",
+      "name_en": "Facebook page management",
+      "aliases": [
+        "فيس",
+        "فيسبوك",
+        "فيس بوك",
+        "FB",
+        "Facebook"
+      ],
+      "roles": [
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "x_twitter_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة حساب إكس (تويتر)",
+      "name_en": "X (Twitter) account management",
+      "aliases": [
+        "تويتر",
+        "إكس",
+        "تغريدات",
+        "Twitter",
+        "X"
+      ],
+      "roles": [
+        "social_media_manager",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "linkedin_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة صفحة لينكدإن",
+      "name_en": "LinkedIn page management",
+      "aliases": [
+        "لينكد ان",
+        "لينكدإن",
+        "LinkedIn",
+        "B2B"
+      ],
+      "roles": [
+        "social_media_manager",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "youtube_channel_management",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة قناة يوتيوب",
+      "name_en": "YouTube channel management",
+      "aliases": [
+        "يوتيوب",
+        "قناة يوتيوب",
+        "YouTube",
+        "يوتيوبر",
+        "YouTube SEO"
+      ],
+      "roles": [
+        "social_media_manager",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "social_account_setup",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إنشاء وتجهيز الحسابات",
+      "name_en": "Social account setup and profile optimization",
+      "aliases": [
+        "فتح حسابات",
+        "إنشاء حساب",
+        "تجهيز البروفايل",
+        "bio",
+        "بايو"
+      ],
+      "roles": [
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "account_verification",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "توثيق الحسابات (العلامة الزرقاء)",
+      "name_en": "Account verification (blue badge)",
+      "aliases": [
+        "توثيق",
+        "توثيق حساب",
+        "بلو تك",
+        "blue tick",
+        "verified"
+      ],
+      "roles": [
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "account_recovery",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "استرجاع الحسابات المسروقة أو المعطلة",
+      "name_en": "Hacked or disabled account recovery",
+      "aliases": [
+        "استرجاع حساب",
+        "حساب مهكر",
+        "فك حظر",
+        "account recovery",
+        "hacked"
+      ],
+      "roles": [
+        "social_media_manager",
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "social_audit",
+      "group": "social_media",
+      "parent": "smm_strategy",
+      "name_ar": "تقييم وتدقيق حسابات السوشيال",
+      "name_en": "Social media audit",
+      "aliases": [
+        "تدقيق حسابات",
+        "تقييم الحساب",
+        "audit",
+        "social audit"
+      ],
+      "roles": [
+        "strategist",
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "social_listening",
+      "group": "social_media",
+      "parent": "smm_community",
+      "name_ar": "الرصد الاجتماعي وتحليل الانطباعات",
+      "name_en": "Social listening and sentiment analysis",
+      "aliases": [
+        "رصد",
+        "مراقبة السوشيال",
+        "social listening",
+        "sentiment",
+        "رصد إعلامي",
+        "media monitoring"
+      ],
+      "roles": [
+        "data_analyst",
+        "community_manager"
+      ]
+    },
+    {
+      "key": "social_customer_service",
+      "group": "social_media",
+      "parent": "smm_community",
+      "name_ar": "خدمة العملاء عبر السوشيال ميديا",
+      "name_en": "Customer service on social media",
+      "aliases": [
+        "الرد على الرسائل",
+        "انبوكس",
+        "الخاص",
+        "DMs",
+        "customer care"
+      ],
+      "roles": [
+        "community_manager"
+      ]
+    },
+    {
+      "key": "chatbot_setup",
+      "group": "social_media",
+      "parent": "smm_community",
+      "name_ar": "الردود الآلية والشات بوت",
+      "name_en": "Chatbot and auto-reply setup",
+      "aliases": [
+        "شات بوت",
+        "ردود آلية",
+        "ManyChat",
+        "chatbot",
+        "auto reply"
+      ],
+      "roles": [
+        "web_developer",
+        "community_manager"
+      ]
+    },
+    {
+      "key": "ugc_content",
+      "group": "social_media",
+      "parent": "smm_content",
+      "name_ar": "محتوى صناع المحتوى (UGC)",
+      "name_en": "UGC content (user-generated style videos)",
+      "aliases": [
+        "يو جي سي",
+        "UGC",
+        "محتوى مستخدمين",
+        "فيديو تجربة منتج",
+        "UGC ads"
+      ],
+      "roles": [
+        "content_creator",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "trend_content",
+      "group": "social_media",
+      "parent": "smm_content",
+      "name_ar": "محتوى الترندات والتفاعل اللحظي",
+      "name_en": "Trend and real-time content",
+      "aliases": [
+        "ترند",
+        "ترندات",
+        "trends",
+        "real-time",
+        "ميمز"
+      ],
+      "roles": [
+        "social_media_manager",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "social_contests",
+      "group": "social_media",
+      "parent": "smm_content",
+      "name_ar": "المسابقات والسحوبات على السوشيال",
+      "name_en": "Social contests and giveaways",
+      "aliases": [
+        "مسابقات",
+        "سحب",
+        "قيف اواي",
+        "giveaway",
+        "هدايا"
+      ],
+      "roles": [
+        "social_media_manager",
+        "community_manager"
+      ]
+    },
+    {
+      "key": "social_live_streaming",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "إدارة البث المباشر على المنصات",
+      "name_en": "Social live streaming (Instagram, TikTok, YouTube Live)",
+      "aliases": [
+        "لايف",
+        "بث مباشر",
+        "لايف تيك توك",
+        "live",
+        "Instagram Live"
+      ],
+      "roles": [
+        "social_media_manager",
+        "videographer"
+      ]
+    },
+    {
+      "key": "organic_growth",
+      "group": "social_media",
+      "parent": "smm_management",
+      "name_ar": "نمو الحسابات العضوي",
+      "name_en": "Organic account growth",
+      "aliases": [
+        "زيادة متابعين",
+        "نمو الحساب",
+        "growth",
+        "تفاعل",
+        "reach"
+      ],
+      "roles": [
+        "social_media_manager",
+        "strategist"
+      ]
+    },
+    {
+      "key": "social_reporting",
+      "group": "social_media",
+      "parent": "analytics",
+      "name_ar": "تقارير أداء السوشيال ميديا",
+      "name_en": "Social media performance reports",
+      "aliases": [
+        "تقرير شهري",
+        "تقارير سوشيال",
+        "insights",
+        "reporting"
+      ],
+      "roles": [
+        "social_media_manager",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "influencer_sourcing",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "البحث عن المؤثرين واختيارهم",
+      "name_en": "Influencer sourcing and vetting",
+      "aliases": [
+        "اختيار مؤثرين",
+        "ترشيح مشاهير",
+        "sourcing",
+        "vetting",
+        "قائمة مؤثرين"
+      ],
+      "roles": [
+        "influencer_manager"
+      ]
+    },
+    {
+      "key": "micro_influencer_campaigns",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "حملات المؤثرين الصغار (مايكرو ونانو)",
+      "name_en": "Micro and nano influencer campaigns",
+      "aliases": [
+        "مايكرو",
+        "نانو",
+        "micro influencers",
+        "نانو انفلونسر"
+      ],
+      "roles": [
+        "influencer_manager"
+      ]
+    },
+    {
+      "key": "celebrity_endorsements",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "التعاقد مع المشاهير",
+      "name_en": "Celebrity endorsements",
+      "aliases": [
+        "سنابات مشاهير",
+        "إعلان مشهور",
+        "celebrity",
+        "مشهور",
+        "سفير العلامة"
+      ],
+      "roles": [
+        "influencer_manager",
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "influencer_seeding",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "إرسال المنتجات للمؤثرين (Seeding)",
+      "name_en": "Influencer seeding and gifting",
+      "aliases": [
+        "سيدنق",
+        "هدايا المؤثرين",
+        "PR box",
+        "gifting",
+        "seeding"
+      ],
+      "roles": [
+        "influencer_manager",
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "creator_talent_management",
+      "group": "social_media",
+      "parent": "smm_influencer",
+      "name_ar": "إدارة أعمال صناع المحتوى",
+      "name_en": "Creator and talent management",
+      "aliases": [
+        "إدارة مشاهير",
+        "مدير أعمال",
+        "talent management",
+        "إدارة مؤثر"
+      ],
+      "roles": [
+        "influencer_manager"
+      ]
+    },
+    {
+      "key": "ads_meta",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "إعلانات فيسبوك وإنستغرام (ميتا)",
+      "name_en": "Meta ads (Facebook and Instagram)",
+      "aliases": [
+        "ميتا",
+        "إعلانات ممولة",
+        "تمويل",
+        "بوست ممول",
+        "FB ads",
+        "sponsored"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_tiktok",
+      "group": "paid_media",
+      "parent": "ads_tiktok",
+      "name_ar": "إعلانات تيك توك",
+      "name_en": "TikTok ads",
+      "aliases": [
+        "اعلان تيك توك",
+        "TikTok Ads",
+        "Spark Ads",
+        "سبارك",
+        "ترويج تيك توك"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_snapchat",
+      "group": "paid_media",
+      "parent": "ads_snapchat",
+      "name_ar": "إعلانات سناب شات",
+      "name_en": "Snapchat ads",
+      "aliases": [
+        "اعلان سناب",
+        "Snap Ads",
+        "Snapchat Ads",
+        "سناب ادز"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_google",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات جوجل (البحث)",
+      "name_en": "Google Ads (Search)",
+      "aliases": [
+        "قوقل ادز",
+        "جوجل ادز",
+        "Google Ads",
+        "PPC",
+        "SEM",
+        "adwords"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_linkedin",
+      "group": "paid_media",
+      "parent": "ads_linkedin",
+      "name_ar": "إعلانات لينكدإن",
+      "name_en": "LinkedIn ads",
+      "aliases": [
+        "اعلان لينكد ان",
+        "LinkedIn Ads",
+        "B2B ads",
+        "InMail"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_x",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "إعلانات إكس (تويتر)",
+      "name_en": "X (Twitter) ads",
+      "aliases": [
+        "اعلان تويتر",
+        "X Ads",
+        "Twitter Ads",
+        "ترويج تغريدة"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ads_youtube",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات يوتيوب",
+      "name_en": "YouTube ads",
+      "aliases": [
+        "اعلان يوتيوب",
+        "YouTube Ads",
+        "TrueView",
+        "Shorts ads"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "google_display_ads",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات الشبكة الإعلانية (بانرات جوجل)",
+      "name_en": "Google Display Network ads",
+      "aliases": [
+        "GDN",
+        "Display",
+        "بانرات",
+        "ديسبلاي",
+        "Demand Gen"
+      ],
+      "roles": [
+        "media_buyer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "google_shopping_pmax",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات جوجل للتسوق وPerformance Max",
+      "name_en": "Google Shopping and Performance Max",
+      "aliases": [
+        "شوبينج",
+        "PMax",
+        "Performance Max",
+        "Google Shopping",
+        "Merchant Center"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "app_install_campaigns",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "حملات تحميل التطبيقات",
+      "name_en": "App install campaigns (Google App, Apple Search Ads)",
+      "aliases": [
+        "تحميل تطبيق",
+        "App campaigns",
+        "UAC",
+        "Apple Search Ads",
+        "installs"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "programmatic_ads",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "الإعلانات البرمجية",
+      "name_en": "Programmatic advertising (DSP)",
+      "aliases": [
+        "برمجية",
+        "programmatic",
+        "DV360",
+        "DSP",
+        "بروجراماتيك"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "native_publisher_ads",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "الإعلانات المحلية في المواقع الإخبارية",
+      "name_en": "Native and publisher ads (Taboola, Outbrain)",
+      "aliases": [
+        "تابولا",
+        "Taboola",
+        "Outbrain",
+        "native ads",
+        "مواقع إخبارية"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "marketplace_ads",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات المنصات والمتاجر (أمازون، نون، طلبات)",
+      "name_en": "Marketplace and retail media ads",
+      "aliases": [
+        "اعلانات أمازون",
+        "اعلانات نون",
+        "طلبات",
+        "sponsored products",
+        "retail media"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "audio_streaming_ads",
+      "group": "paid_media",
+      "parent": "ads_google",
+      "name_ar": "إعلانات أنغامي وسبوتيفاي",
+      "name_en": "Audio streaming ads (Anghami, Spotify)",
+      "aliases": [
+        "أنغامي",
+        "سبوتيفاي",
+        "Anghami",
+        "Spotify",
+        "إعلان صوتي"
+      ],
+      "roles": [
+        "media_buyer",
+        "voice_over"
+      ]
+    },
+    {
+      "key": "media_planning",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "التخطيط الإعلامي وتوزيع الميزانية",
+      "name_en": "Media planning and budget allocation",
+      "aliases": [
+        "ميديا بلان",
+        "media plan",
+        "توزيع الميزانية",
+        "خطة إعلانية"
+      ],
+      "roles": [
+        "media_buyer",
+        "strategist"
+      ]
+    },
+    {
+      "key": "media_buying",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "شراء المساحات الإعلانية",
+      "name_en": "Media buying",
+      "aliases": [
+        "ميديا باينج",
+        "media buying",
+        "شراء إعلاني",
+        "حجز إعلانات"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "performance_marketing",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "التسويق بالأداء",
+      "name_en": "Performance marketing",
+      "aliases": [
+        "بيرفورمانس",
+        "performance",
+        "ROAS",
+        "حملات مبيعات",
+        "conversion ads"
+      ],
+      "roles": [
+        "media_buyer",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "lead_generation_ads",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "حملات جمع العملاء المحتملين",
+      "name_en": "Lead generation campaigns",
+      "aliases": [
+        "ليدز",
+        "leads",
+        "عملاء محتملين",
+        "جمع بيانات",
+        "lead gen"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "click_to_whatsapp_ads",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "إعلانات الرسائل والواتساب",
+      "name_en": "Click-to-WhatsApp and messaging ads",
+      "aliases": [
+        "اعلان واتساب",
+        "إعلان رسائل",
+        "CTWA",
+        "messages ads",
+        "ماسنجر"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "retargeting",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "إعادة الاستهداف",
+      "name_en": "Retargeting and remarketing",
+      "aliases": [
+        "ريتارجت",
+        "إعادة استهداف",
+        "retargeting",
+        "remarketing",
+        "ريماركتنج"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "ad_account_setup",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "إنشاء وإعداد الحسابات الإعلانية",
+      "name_en": "Ad account and Business Manager setup",
+      "aliases": [
+        "بيزنس مانجر",
+        "Business Manager",
+        "حساب إعلاني",
+        "إدارة الأعمال",
+        "ad account"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "pixel_tracking_setup",
+      "group": "paid_media",
+      "parent": "analytics",
+      "name_ar": "ربط البكسل وتتبع التحويلات",
+      "name_en": "Pixel and conversion tracking setup",
+      "aliases": [
+        "بكسل",
+        "pixel",
+        "CAPI",
+        "API التحويلات",
+        "تتبع التحويلات",
+        "conversion tracking"
+      ],
+      "roles": [
+        "media_buyer",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "ad_creatives",
+      "group": "paid_media",
+      "parent": "graphic_design",
+      "name_ar": "تصميم الإعلانات الممولة (صور وفيديو)",
+      "name_en": "Ad creatives (static and video)",
+      "aliases": [
+        "كريتيف",
+        "تصاميم إعلانية",
+        "ad creatives",
+        "بانر إعلاني",
+        "كريتفز"
+      ],
+      "roles": [
+        "graphic_designer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "ads_audit",
+      "group": "paid_media",
+      "parent": "ads_meta",
+      "name_ar": "تدقيق وتحسين الحملات الإعلانية",
+      "name_en": "Paid ads audit and optimization",
+      "aliases": [
+        "تدقيق إعلانات",
+        "تحسين الحملات",
+        "ads audit",
+        "optimization",
+        "A/B",
+        "اختبار إعلانات"
+      ],
+      "roles": [
+        "media_buyer",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "video_production",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "إنتاج الفيديو",
+      "name_en": "Video production",
+      "aliases": [
+        "فيديو",
+        "تصوير فيديو",
+        "برومو",
+        "بروموشن",
+        "production",
+        "إنتاج"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "التصوير الفوتوغرافي",
+      "name_en": "Photography",
+      "aliases": [
+        "تصوير",
+        "مصور",
+        "فوتوغرافي",
+        "photo",
+        "فوتو",
+        "photoshoot"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "graphic_design",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "التصميم الجرافيكي",
+      "name_en": "Graphic design",
+      "aliases": [
+        "تصميم",
+        "جرافيك",
+        "ديزاين",
+        "design",
+        "فوتوشوب",
+        "مصمم"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "copywriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة المحتوى الإعلاني",
+      "name_en": "Copywriting",
+      "aliases": [
+        "كوبي رايتنج",
+        "كتابة إعلانية",
+        "copy",
+        "كتابة محتوى",
+        "كوبي"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "motion_graphics",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "الموشن جرافيك",
+      "name_en": "Motion graphics",
+      "aliases": [
+        "موشن",
+        "موشن جرافيك",
+        "motion",
+        "فيديو متحرك",
+        "After Effects"
+      ],
+      "roles": [
+        "motion_designer"
+      ]
+    },
+    {
+      "key": "reels_editing",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "مونتاج الريلز وفيديوهات تيك توك",
+      "name_en": "Reels and TikTok video editing",
+      "aliases": [
+        "ريلز",
+        "ريل",
+        "شورتس",
+        "مونتاج ريلز",
+        "Shorts",
+        "short-form"
+      ],
+      "roles": [
+        "video_editor"
+      ]
+    },
+    {
+      "key": "reels_shooting",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "تصوير الريلز والفيديوهات القصيرة",
+      "name_en": "Reels and short-form video shooting",
+      "aliases": [
+        "تصوير ريلز",
+        "تصوير تيك توك",
+        "short video",
+        "فيديو قصير"
+      ],
+      "roles": [
+        "videographer",
+        "content_creator"
+      ]
+    },
+    {
+      "key": "video_editing",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "مونتاج الفيديو",
+      "name_en": "Video editing",
+      "aliases": [
+        "مونتاج",
+        "ايديت",
+        "مونتير",
+        "تعديل فيديو",
+        "editing",
+        "تلوين"
+      ],
+      "roles": [
+        "video_editor"
+      ]
+    },
+    {
+      "key": "tvc_production",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "إنتاج الإعلانات التلفزيونية",
+      "name_en": "TV commercial (TVC) production",
+      "aliases": [
+        "TVC",
+        "إعلان تلفزيوني",
+        "كومرشال",
+        "commercial",
+        "إعلان سينمائي"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor",
+        "model_talent"
+      ]
+    },
+    {
+      "key": "corporate_video",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "الفيديو التعريفي للشركات",
+      "name_en": "Corporate and company profile video",
+      "aliases": [
+        "فيديو تعريفي",
+        "فيديو بروفايل",
+        "corporate video",
+        "فيلم تعريفي"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "brand_documentary",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "الأفلام الوثائقية وأفلام العلامة",
+      "name_en": "Documentaries and brand films",
+      "aliases": [
+        "وثائقي",
+        "فيلم قصير",
+        "documentary",
+        "brand film"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "product_video",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "فيديوهات المنتجات",
+      "name_en": "Product videos and demos",
+      "aliases": [
+        "فيديو منتج",
+        "انبوكسنق",
+        "unboxing",
+        "product demo",
+        "ديمو"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "testimonial_videos",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "فيديوهات آراء العملاء",
+      "name_en": "Customer testimonial videos",
+      "aliases": [
+        "آراء العملاء",
+        "تجارب العملاء",
+        "testimonials",
+        "ريفيو"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "youtube_video_production",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "إنتاج فيديوهات يوتيوب الطويلة",
+      "name_en": "YouTube long-form video production",
+      "aliases": [
+        "فيديو يوتيوب",
+        "حلقات",
+        "برنامج يوتيوب",
+        "long-form"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "educational_video",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "الفيديوهات التعليمية والدورات",
+      "name_en": "Educational and e-learning videos",
+      "aliases": [
+        "كورس",
+        "دورة مصورة",
+        "تعليمي",
+        "e-learning",
+        "شرح"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "podcast_production",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "إنتاج البودكاست",
+      "name_en": "Podcast production (audio and video)",
+      "aliases": [
+        "بودكاست",
+        "podcast",
+        "فودكاست",
+        "vodcast",
+        "استوديو بودكاست"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor",
+        "voice_over"
+      ]
+    },
+    {
+      "key": "drone_videography",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "التصوير الجوي بالدرون",
+      "name_en": "Drone aerial photography and video",
+      "aliases": [
+        "درون",
+        "طائرة تصوير",
+        "تصوير جوي",
+        "aerial",
+        "drone"
+      ],
+      "roles": [
+        "drone_operator"
+      ]
+    },
+    {
+      "key": "construction_timelapse",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "توثيق المشاريع والتايم لابس",
+      "name_en": "Construction progress and time-lapse filming",
+      "aliases": [
+        "تايم لابس",
+        "time-lapse",
+        "توثيق مشاريع",
+        "توثيق إنشائي"
+      ],
+      "roles": [
+        "videographer",
+        "drone_operator"
+      ]
+    },
+    {
+      "key": "video_scriptwriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة سكربت الفيديو",
+      "name_en": "Video scriptwriting",
+      "aliases": [
+        "سكربت",
+        "سيناريو",
+        "اسكريبت",
+        "script",
+        "كتابة سيناريو",
+        "ستوري بورد"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "vfx_compositing",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "المؤثرات البصرية",
+      "name_en": "VFX and compositing",
+      "aliases": [
+        "مؤثرات",
+        "VFX",
+        "كروما",
+        "green screen",
+        "مؤثرات بصرية"
+      ],
+      "roles": [
+        "video_editor",
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "subtitling",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "ترجمة الفيديو والسبتايتل",
+      "name_en": "Subtitling and video captions",
+      "aliases": [
+        "سبتايتل",
+        "ترجمة فيديو",
+        "subtitles",
+        "SRT",
+        "كابشن فيديو"
+      ],
+      "roles": [
+        "video_editor",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "voice_over_arabic",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "التعليق الصوتي بالعربية",
+      "name_en": "Arabic voice-over",
+      "aliases": [
+        "فويس اوفر",
+        "تعليق صوتي",
+        "صوت خليجي",
+        "VO",
+        "لهجة سعودية",
+        "صوت فصحى"
+      ],
+      "roles": [
+        "voice_over"
+      ]
+    },
+    {
+      "key": "voice_over_english",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "التعليق الصوتي بالإنجليزية",
+      "name_en": "English voice-over",
+      "aliases": [
+        "فويس انجليزي",
+        "English VO",
+        "voice over",
+        "voiceover"
+      ],
+      "roles": [
+        "voice_over"
+      ]
+    },
+    {
+      "key": "dubbing",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "الدبلجة",
+      "name_en": "Dubbing and audio localization",
+      "aliases": [
+        "دبلجة",
+        "dubbing",
+        "lip sync",
+        "تعريب صوتي"
+      ],
+      "roles": [
+        "voice_over",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "music_jingles",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "الموسيقى والجنجل الإعلاني",
+      "name_en": "Music, jingles and sound design",
+      "aliases": [
+        "جنجل",
+        "موسيقى",
+        "jingle",
+        "هندسة صوت",
+        "شيلة",
+        "هوية صوتية"
+      ],
+      "roles": [
+        "video_editor",
+        "voice_over"
+      ]
+    },
+    {
+      "key": "model_casting",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "توفير الموديلز والممثلين",
+      "name_en": "Model and actor casting",
+      "aliases": [
+        "موديل",
+        "مودل",
+        "كاستنج",
+        "ممثلين",
+        "casting",
+        "موديلز"
+      ],
+      "roles": [
+        "model_talent"
+      ]
+    },
+    {
+      "key": "presenter_talent",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "مقدمو المحتوى والمذيعون",
+      "name_en": "Presenters and on-camera hosts",
+      "aliases": [
+        "مقدم",
+        "مذيع",
+        "بريزنتر",
+        "presenter",
+        "host",
+        "مقدمة"
+      ],
+      "roles": [
+        "model_talent",
+        "content_creator"
+      ]
+    },
+    {
+      "key": "equipment_rental",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "تأجير معدات التصوير",
+      "name_en": "Camera and production equipment rental",
+      "aliases": [
+        "تأجير كاميرات",
+        "معدات تصوير",
+        "إضاءة",
+        "rental",
+        "gear"
+      ],
+      "roles": [
+        "videographer"
+      ]
+    },
+    {
+      "key": "studio_rental",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تأجير استوديو التصوير",
+      "name_en": "Photo and video studio rental",
+      "aliases": [
+        "استوديو",
+        "studio",
+        "تأجير استوديو",
+        "سايكلوراما"
+      ],
+      "roles": [
+        "photographer",
+        "videographer"
+      ]
+    },
+    {
+      "key": "ai_video",
+      "group": "creative",
+      "parent": "video_production",
+      "name_ar": "فيديوهات الذكاء الاصطناعي",
+      "name_en": "AI-generated video and avatars",
+      "aliases": [
+        "فيديو AI",
+        "ذكاء اصطناعي",
+        "افاتار",
+        "AI video",
+        "Veo",
+        "Sora"
+      ],
+      "roles": [
+        "video_editor",
+        "motion_designer"
+      ]
+    },
+    {
+      "key": "animation_2d",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "الأنيميشن ثنائي الأبعاد",
+      "name_en": "2D animation",
+      "aliases": [
+        "2D",
+        "كرتون",
+        "رسوم متحركة",
+        "انيميشن",
+        "animation",
+        "تحريك شخصيات"
+      ],
+      "roles": [
+        "animator"
+      ]
+    },
+    {
+      "key": "animation_3d",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "الأنيميشن ثلاثي الأبعاد",
+      "name_en": "3D animation",
+      "aliases": [
+        "3D",
+        "ثري دي",
+        "ثلاثي الأبعاد",
+        "Blender",
+        "Cinema 4D"
+      ],
+      "roles": [
+        "3d_artist",
+        "animator"
+      ]
+    },
+    {
+      "key": "explainer_video",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "فيديوهات الشرح (إكسبلينر)",
+      "name_en": "Explainer videos",
+      "aliases": [
+        "فيديو شرح",
+        "اكسبلينر",
+        "explainer",
+        "انفوجرافيك متحرك",
+        "وايت بورد",
+        "whiteboard"
+      ],
+      "roles": [
+        "motion_designer",
+        "voice_over"
+      ]
+    },
+    {
+      "key": "logo_animation",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "تحريك الشعار والمقدمات",
+      "name_en": "Logo animation and intros",
+      "aliases": [
+        "انترو",
+        "intro",
+        "تحريك لوجو",
+        "لوجو موشن",
+        "outro"
+      ],
+      "roles": [
+        "motion_designer"
+      ]
+    },
+    {
+      "key": "animated_social_posts",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "التصاميم المتحركة للسوشيال",
+      "name_en": "Animated social posts",
+      "aliases": [
+        "بوست متحرك",
+        "موشن بوست",
+        "GIF",
+        "animated post",
+        "ستوري متحرك"
+      ],
+      "roles": [
+        "motion_designer"
+      ]
+    },
+    {
+      "key": "stickers_gifs",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "ملصقات وصور GIF مخصصة",
+      "name_en": "Custom stickers and GIFs",
+      "aliases": [
+        "ستيكرات واتساب",
+        "ملصقات",
+        "GIPHY",
+        "stickers",
+        "جيف"
+      ],
+      "roles": [
+        "motion_designer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "e_invitations",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "الدعوات الإلكترونية وفيديوهات التهنئة",
+      "name_en": "E-invitations and greeting videos",
+      "aliases": [
+        "دعوة إلكترونية",
+        "بطاقة دعوة",
+        "دعوة زواج",
+        "تهنئة",
+        "invitation"
+      ],
+      "roles": [
+        "motion_designer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "cgi_fooh_ads",
+      "group": "creative",
+      "parent": "motion_graphics",
+      "name_ar": "إعلانات CGI والواقع المدمج (FOOH)",
+      "name_en": "CGI and FOOH ads",
+      "aliases": [
+        "CGI",
+        "FOOH",
+        "فوه",
+        "إعلان ثلاثي الأبعاد",
+        "fake out of home"
+      ],
+      "roles": [
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "product_3d_renders",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "المجسمات والرندر ثلاثي الأبعاد للمنتجات",
+      "name_en": "3D product renders and visualization",
+      "aliases": [
+        "رندر",
+        "ريندر",
+        "3D render",
+        "مجسم",
+        "موك اب 3D",
+        "CGI منتجات"
+      ],
+      "roles": [
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "architectural_visualization",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "الإظهار المعماري ثلاثي الأبعاد",
+      "name_en": "Architectural and interior 3D visualization",
+      "aliases": [
+        "إظهار معماري",
+        "رندر داخلي",
+        "archviz",
+        "3D عقاري",
+        "Lumion"
+      ],
+      "roles": [
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "ar_filters_lenses",
+      "group": "creative",
+      "parent": "ads_snapchat",
+      "name_ar": "فلاتر وعدسات الواقع المعزز",
+      "name_en": "AR filters and lenses (Snapchat, Instagram, TikTok)",
+      "aliases": [
+        "فلتر",
+        "عدسة سناب",
+        "لنس",
+        "AR filter",
+        "Lens Studio",
+        "Effect House"
+      ],
+      "roles": [
+        "3d_artist",
+        "motion_designer"
+      ]
+    },
+    {
+      "key": "product_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير المنتجات",
+      "name_en": "Product photography",
+      "aliases": [
+        "تصوير منتجات",
+        "باك شوت",
+        "packshot",
+        "خلفية بيضاء",
+        "ecommerce photos",
+        "تصوير 360"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "food_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير الأطعمة والمطاعم",
+      "name_en": "Food and restaurant photography",
+      "aliases": [
+        "تصوير أكل",
+        "تصوير منيو",
+        "تصوير مطاعم",
+        "food",
+        "كافيهات"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "fashion_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير الأزياء والموديلات",
+      "name_en": "Fashion and model photography",
+      "aliases": [
+        "فاشن",
+        "موديل",
+        "لوك بوك",
+        "lookbook",
+        "عبايات"
+      ],
+      "roles": [
+        "photographer",
+        "model_talent"
+      ]
+    },
+    {
+      "key": "perfume_jewelry_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير العطور والمجوهرات",
+      "name_en": "Perfume, jewelry and luxury photography",
+      "aliases": [
+        "عطور",
+        "مجوهرات",
+        "ساعات",
+        "بخور",
+        "luxury"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "lifestyle_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "التصوير الترويجي (لايف ستايل)",
+      "name_en": "Lifestyle and campaign photography",
+      "aliases": [
+        "لايف ستايل",
+        "lifestyle",
+        "حملة تصوير",
+        "campaign shoot"
+      ],
+      "roles": [
+        "photographer",
+        "model_talent"
+      ]
+    },
+    {
+      "key": "corporate_headshots",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "التصوير الرسمي والبورتريه للموظفين",
+      "name_en": "Corporate headshots and portraits",
+      "aliases": [
+        "هيدشوت",
+        "بورتريه",
+        "headshot",
+        "صور الموظفين",
+        "صورة رسمية"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "real_estate_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير العقارات والفنادق",
+      "name_en": "Real estate and hospitality photography",
+      "aliases": [
+        "عقارات",
+        "فنادق",
+        "تصوير داخلي",
+        "interiors",
+        "شاليهات"
+      ],
+      "roles": [
+        "photographer",
+        "drone_operator"
+      ]
+    },
+    {
+      "key": "virtual_tours_360",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "الجولات الافتراضية 360",
+      "name_en": "360 virtual tours",
+      "aliases": [
+        "جولة افتراضية",
+        "360 tour",
+        "ماتربورت",
+        "Matterport",
+        "virtual tour"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "automotive_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير السيارات",
+      "name_en": "Automotive photography",
+      "aliases": [
+        "سيارات",
+        "معارض سيارات",
+        "car shoot",
+        "automotive"
+      ],
+      "roles": [
+        "photographer",
+        "videographer"
+      ]
+    },
+    {
+      "key": "wedding_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير الأعراس والمناسبات الخاصة",
+      "name_en": "Wedding and private occasion photography",
+      "aliases": [
+        "أعراس",
+        "زفاف",
+        "ملكة",
+        "خطوبة",
+        "wedding"
+      ],
+      "roles": [
+        "photographer",
+        "videographer"
+      ]
+    },
+    {
+      "key": "womens_event_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "التصوير النسائي للمناسبات",
+      "name_en": "Female photographer for women-only events",
+      "aliases": [
+        "مصورة",
+        "تصوير نسائي",
+        "مصورة أعراس",
+        "female photographer"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "family_portrait_photography",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تصوير العائلات والأطفال والمواليد",
+      "name_en": "Family, kids and newborn photography",
+      "aliases": [
+        "مواليد",
+        "أطفال",
+        "عائلي",
+        "newborn",
+        "family"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "photo_styling",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "التنسيق والستايلنج للتصوير",
+      "name_en": "Food, product and fashion styling",
+      "aliases": [
+        "ستايلست",
+        "ستايلنج",
+        "food stylist",
+        "تنسيق",
+        "prop styling"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "photo_retouching",
+      "group": "creative",
+      "parent": "photography",
+      "name_ar": "تعديل الصور والريتاتش",
+      "name_en": "Photo retouching and editing",
+      "aliases": [
+        "ريتاتش",
+        "تعديل صور",
+        "قص خلفية",
+        "retouch",
+        "إزالة خلفية"
+      ],
+      "roles": [
+        "graphic_designer",
+        "photographer"
+      ]
+    },
+    {
+      "key": "social_post_design",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "تصميم منشورات وستوريات السوشيال",
+      "name_en": "Social post, story and carousel design",
+      "aliases": [
+        "تصاميم سوشيال",
+        "بوست",
+        "ستوري",
+        "كاروسيل",
+        "post design",
+        "carousel"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "infographic_design",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "تصميم الإنفوجرافيك",
+      "name_en": "Infographic design",
+      "aliases": [
+        "انفوجرافيك",
+        "infographic",
+        "رسوم بيانية",
+        "data viz"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "presentation_design",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "تصميم العروض التقديمية",
+      "name_en": "Presentation and pitch deck design",
+      "aliases": [
+        "بوربوينت",
+        "عرض تقديمي",
+        "pitch deck",
+        "PPT",
+        "كينوت",
+        "بريزنتيشن"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "company_profile",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "البروفايل التعريفي للشركة",
+      "name_en": "Company profile (writing and design)",
+      "aliases": [
+        "بروفايل",
+        "كومباني بروفايل",
+        "ملف تعريفي",
+        "company profile",
+        "بروفايل شركة"
+      ],
+      "roles": [
+        "graphic_designer",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "illustration",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "الرسم الرقمي والإليستريشن",
+      "name_en": "Illustration",
+      "aliases": [
+        "رسم",
+        "اليستريشن",
+        "illustration",
+        "رسومات",
+        "رسم رقمي"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "character_mascot_design",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "تصميم الشخصيات والتميمة (الماسكوت)",
+      "name_en": "Character and mascot design",
+      "aliases": [
+        "ماسكوت",
+        "شخصية كرتونية",
+        "mascot",
+        "character",
+        "تميمة"
+      ],
+      "roles": [
+        "graphic_designer",
+        "animator"
+      ]
+    },
+    {
+      "key": "arabic_calligraphy",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "الخط العربي والتايبوجرافي",
+      "name_en": "Arabic calligraphy and custom typography",
+      "aliases": [
+        "خط عربي",
+        "كاليغرافي",
+        "تايبوجرافي",
+        "خطاط",
+        "فونت عربي",
+        "calligraphy"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "youtube_thumbnails",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "تصميم الصور المصغرة ليوتيوب",
+      "name_en": "YouTube thumbnail design",
+      "aliases": [
+        "ثمبنيل",
+        "thumbnail",
+        "صورة مصغرة",
+        "غلاف فيديو"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "ai_image_generation",
+      "group": "creative",
+      "parent": "graphic_design",
+      "name_ar": "صور وتصاميم بالذكاء الاصطناعي",
+      "name_en": "AI image generation and visuals",
+      "aliases": [
+        "صور AI",
+        "ميدجورني",
+        "Midjourney",
+        "ذكاء اصطناعي",
+        "AI visuals"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "menu_design",
+      "group": "creative",
+      "parent": "print_design",
+      "name_ar": "تصميم المنيو",
+      "name_en": "Restaurant menu design",
+      "aliases": [
+        "منيو",
+        "قائمة طعام",
+        "menu",
+        "منيو مطعم"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "publication_design",
+      "group": "creative",
+      "parent": "print_design",
+      "name_ar": "تصميم التقارير السنوية والمجلات والكتيبات",
+      "name_en": "Annual report, magazine and booklet design",
+      "aliases": [
+        "تقرير سنوي",
+        "مجلة",
+        "كتيب",
+        "annual report",
+        "كتالوج"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "arabic_copywriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة المحتوى العربي",
+      "name_en": "Arabic copywriting",
+      "aliases": [
+        "كتابة عربي",
+        "كوبي عربي",
+        "محتوى عربي",
+        "فصحى",
+        "Arabic copy"
+      ],
+      "roles": [
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "english_copywriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة المحتوى الإنجليزي",
+      "name_en": "English copywriting",
+      "aliases": [
+        "كتابة انجليزي",
+        "English copy",
+        "copywriter",
+        "محتوى انجليزي"
+      ],
+      "roles": [
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "dialect_copywriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "الكتابة باللهجات المحلية",
+      "name_en": "Dialect copywriting (Saudi, Gulf, Egyptian, Levantine)",
+      "aliases": [
+        "لهجة",
+        "خليجي",
+        "سعودي",
+        "مصري",
+        "شامي",
+        "عامية"
+      ],
+      "roles": [
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "caption_writing",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة الكابشن والهاشتاقات",
+      "name_en": "Caption and hashtag writing",
+      "aliases": [
+        "كابشن",
+        "هاشتاق",
+        "caption",
+        "hashtags",
+        "وصف البوست"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "website_copywriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة محتوى المواقع",
+      "name_en": "Website copywriting",
+      "aliases": [
+        "محتوى موقع",
+        "نصوص الموقع",
+        "web copy",
+        "من نحن"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "product_descriptions",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة أوصاف المنتجات",
+      "name_en": "Product description writing",
+      "aliases": [
+        "وصف منتجات",
+        "product descriptions",
+        "وصف متجر",
+        "listing copy"
+      ],
+      "roles": [
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "slogans_taglines",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة السلوقن والعبارات التسويقية",
+      "name_en": "Slogans and taglines",
+      "aliases": [
+        "سلوقن",
+        "سلوجن",
+        "تاق لاين",
+        "slogan",
+        "tagline"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "strategist"
+      ]
+    },
+    {
+      "key": "speechwriting",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة الخطابات والكلمات الرسمية",
+      "name_en": "Speechwriting and ghostwriting",
+      "aliases": [
+        "خطاب",
+        "كلمة رسمية",
+        "كتابة بالنيابة",
+        "ghostwriting",
+        "speech"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "translation_localization",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "الترجمة والتعريب التسويقي",
+      "name_en": "Translation and marketing localization (AR/EN)",
+      "aliases": [
+        "ترجمة",
+        "تعريب",
+        "localization",
+        "ترانسكرييشن",
+        "transcreation"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "proofreading",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "التدقيق اللغوي والتحرير",
+      "name_en": "Proofreading and editing",
+      "aliases": [
+        "تدقيق",
+        "مراجعة لغوية",
+        "proofreading",
+        "تحرير",
+        "تدقيق إملائي"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "ai_content_writing",
+      "group": "creative",
+      "parent": "copywriting",
+      "name_ar": "كتابة المحتوى بمساعدة الذكاء الاصطناعي",
+      "name_en": "AI-assisted content writing",
+      "aliases": [
+        "ChatGPT",
+        "شات جي بي تي",
+        "كتابة AI",
+        "ذكاء اصطناعي",
+        "AI content"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "brand_identity",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "تصميم الهوية البصرية",
+      "name_en": "Brand identity design",
+      "aliases": [
+        "هوية",
+        "براندنج",
+        "هوية تجارية",
+        "branding",
+        "visual identity"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "brand_strategy",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "استراتيجية العلامة التجارية",
+      "name_en": "Brand strategy",
+      "aliases": [
+        "استراتيجية براند",
+        "brand strategy",
+        "بناء العلامة",
+        "استراتيجية العلامة"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "packaging_design",
+      "group": "branding",
+      "parent": "packaging_design",
+      "name_ar": "تصميم التغليف",
+      "name_en": "Packaging design",
+      "aliases": [
+        "تغليف",
+        "باكجنج",
+        "علب",
+        "packaging",
+        "عبوات"
+      ],
+      "roles": [
+        "graphic_designer",
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "logo_design",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "تصميم الشعار (اللوقو)",
+      "name_en": "Logo design",
+      "aliases": [
+        "لوقو",
+        "لوجو",
+        "لوغو",
+        "شعار",
+        "logo"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "brand_guidelines",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "دليل استخدام الهوية",
+      "name_en": "Brand guidelines (brand book)",
+      "aliases": [
+        "براند بوك",
+        "جايدلاين",
+        "دليل الهوية",
+        "brand book",
+        "guidelines"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "rebranding",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "إعادة بناء الهوية وتحديثها",
+      "name_en": "Rebranding and brand refresh",
+      "aliases": [
+        "ريبراند",
+        "تجديد الهوية",
+        "rebrand",
+        "brand refresh"
+      ],
+      "roles": [
+        "graphic_designer",
+        "strategist"
+      ]
+    },
+    {
+      "key": "stationery_design",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "تصميم القرطاسية وبطاقات العمل",
+      "name_en": "Stationery and business card design",
+      "aliases": [
+        "كروت شخصية",
+        "بزنس كارد",
+        "قرطاسية",
+        "ورق رسمي",
+        "stationery"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "label_design",
+      "group": "branding",
+      "parent": "packaging_design",
+      "name_ar": "تصميم الملصقات والليبل للمنتجات",
+      "name_en": "Product label and sticker design",
+      "aliases": [
+        "ليبل",
+        "ستيكر منتج",
+        "ملصق",
+        "label",
+        "sticker"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "retail_interior_branding",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "هوية المحلات والتصميم الداخلي التجاري",
+      "name_en": "Retail and interior branding",
+      "aliases": [
+        "واجهة محل",
+        "ديكور محل",
+        "جداريات",
+        "wall graphics",
+        "store design"
+      ],
+      "roles": [
+        "graphic_designer",
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "brand_naming",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "اختيار اسم العلامة التجارية",
+      "name_en": "Brand naming",
+      "aliases": [
+        "تسمية",
+        "اسم تجاري",
+        "اسم شركة",
+        "naming",
+        "اقتراح أسماء"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "brand_positioning",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "التموضع وقصة العلامة",
+      "name_en": "Brand positioning and storytelling",
+      "aliases": [
+        "تموضع",
+        "positioning",
+        "قصة العلامة",
+        "storytelling",
+        "رسالة العلامة"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "brand_voice",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "نبرة صوت العلامة",
+      "name_en": "Brand voice and tone guide",
+      "aliases": [
+        "نبرة",
+        "tone of voice",
+        "brand voice",
+        "شخصية العلامة"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "personal_branding",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "بناء العلامة الشخصية",
+      "name_en": "Personal branding for founders and executives",
+      "aliases": [
+        "براند شخصي",
+        "علامة شخصية",
+        "personal brand",
+        "بناء اسم",
+        "thought leadership"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "employer_branding",
+      "group": "branding",
+      "parent": "brand_strategy",
+      "name_ar": "العلامة التجارية لجهة العمل",
+      "name_en": "Employer branding",
+      "aliases": [
+        "employer branding",
+        "استقطاب المواهب",
+        "توظيف",
+        "بيئة العمل"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "trademark_registration",
+      "group": "branding",
+      "parent": "brand_identity",
+      "name_ar": "تسجيل العلامة التجارية",
+      "name_en": "Trademark registration support",
+      "aliases": [
+        "تسجيل علامة",
+        "حماية العلامة",
+        "trademark",
+        "براءة"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "seo",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "تحسين محركات البحث (السيو)",
+      "name_en": "SEO",
+      "aliases": [
+        "سيو",
+        "SEO",
+        "تصدر جوجل",
+        "تصدر قوقل",
+        "محركات البحث",
+        "أرشفة"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "arabic_seo",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "السيو العربي",
+      "name_en": "Arabic SEO",
+      "aliases": [
+        "سيو عربي",
+        "كلمات مفتاحية عربية",
+        "Arabic SEO",
+        "أرشفة عربية"
+      ],
+      "roles": [
+        "seo_specialist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "technical_seo",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "السيو التقني وسرعة الموقع",
+      "name_en": "Technical SEO and site speed",
+      "aliases": [
+        "سيو تقني",
+        "technical SEO",
+        "سرعة الموقع",
+        "Core Web Vitals",
+        "schema"
+      ],
+      "roles": [
+        "seo_specialist",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "local_seo",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "السيو المحلي",
+      "name_en": "Local SEO",
+      "aliases": [
+        "سيو محلي",
+        "Local SEO",
+        "ظهور بالمنطقة",
+        "near me",
+        "Apple Maps"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "google_business_profile",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "تحسين ملف النشاط التجاري على جوجل",
+      "name_en": "Google Business Profile optimization",
+      "aliases": [
+        "قوقل ماب",
+        "جوجل ماب",
+        "خرائط جوجل",
+        "GMB",
+        "Google Maps",
+        "تقييمات جوجل"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "seo_content_writing",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "كتابة مقالات السيو والمدونات",
+      "name_en": "SEO articles and blog writing",
+      "aliases": [
+        "مقالات سيو",
+        "مقالات",
+        "مدونة",
+        "blog",
+        "SEO content"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "link_building",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "بناء الروابط الخلفية",
+      "name_en": "Link building and backlinks",
+      "aliases": [
+        "باك لينك",
+        "روابط خلفية",
+        "backlinks",
+        "link building",
+        "مقالات ضيف"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "seo_audit",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "تدقيق السيو وتحليل الكلمات المفتاحية",
+      "name_en": "SEO audit and keyword research",
+      "aliases": [
+        "تدقيق سيو",
+        "كلمات مفتاحية",
+        "keyword research",
+        "SEO audit"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "app_store_optimization",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "تحسين الظهور في متاجر التطبيقات",
+      "name_en": "App store optimization (ASO)",
+      "aliases": [
+        "ASO",
+        "آب ستور",
+        "جوجل بلاي",
+        "App Store",
+        "متجر التطبيقات"
+      ],
+      "roles": [
+        "seo_specialist"
+      ]
+    },
+    {
+      "key": "ai_search_optimization",
+      "group": "digital",
+      "parent": "seo",
+      "name_ar": "تحسين الظهور في محركات الذكاء الاصطناعي",
+      "name_en": "AI search optimization (GEO/AEO)",
+      "aliases": [
+        "GEO",
+        "AEO",
+        "ظهور في ChatGPT",
+        "AI Overviews",
+        "سيو الذكاء الاصطناعي"
+      ],
+      "roles": [
+        "seo_specialist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "email_marketing",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "التسويق عبر البريد الإلكتروني",
+      "name_en": "Email marketing",
+      "aliases": [
+        "ايميل",
+        "إيميل ماركتنج",
+        "نشرة بريدية",
+        "newsletter",
+        "Mailchimp",
+        "email"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "email_automation",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "الرسائل البريدية الآلية",
+      "name_en": "Email automation flows",
+      "aliases": [
+        "فلو",
+        "Klaviyo",
+        "سلة متروكة",
+        "abandoned cart",
+        "automation"
+      ],
+      "roles": [
+        "web_developer",
+        "content_writer_en"
+      ]
+    },
+    {
+      "key": "email_template_design",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "تصميم قوالب البريد الإلكتروني",
+      "name_en": "Email template design",
+      "aliases": [
+        "قالب ايميل",
+        "تصميم نشرة",
+        "email template",
+        "HTML email"
+      ],
+      "roles": [
+        "graphic_designer",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "whatsapp_marketing",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "التسويق عبر واتساب للأعمال",
+      "name_en": "WhatsApp Business marketing and broadcasts",
+      "aliases": [
+        "واتساب",
+        "واتس",
+        "رسائل جماعية",
+        "برودكاست",
+        "WhatsApp Business",
+        "حملات واتساب"
+      ],
+      "roles": [
+        "social_media_manager",
+        "community_manager"
+      ]
+    },
+    {
+      "key": "whatsapp_api_setup",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "ربط واتساب API والكتالوج",
+      "name_en": "WhatsApp Business API and catalog setup",
+      "aliases": [
+        "واتساب API",
+        "WhatsApp API",
+        "كتالوج واتساب",
+        "رقم رسمي",
+        "green tick"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "sms_marketing",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "الرسائل النصية الدعائية",
+      "name_en": "SMS marketing",
+      "aliases": [
+        "SMS",
+        "رسائل نصية",
+        "مسجات",
+        "رسائل SMS",
+        "bulk SMS"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "push_notifications",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "الإشعارات الفورية للتطبيقات والمواقع",
+      "name_en": "Push notification campaigns",
+      "aliases": [
+        "اشعارات",
+        "push",
+        "نوتيفيكيشن",
+        "in-app"
+      ],
+      "roles": [
+        "content_writer_ar",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "marketing_automation_crm",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "أتمتة التسويق وأنظمة CRM",
+      "name_en": "Marketing automation and CRM setup",
+      "aliases": [
+        "CRM",
+        "هب سبوت",
+        "HubSpot",
+        "زوهو",
+        "Zoho",
+        "أتمتة"
+      ],
+      "roles": [
+        "web_developer",
+        "strategist"
+      ]
+    },
+    {
+      "key": "ai_automation_agents",
+      "group": "digital",
+      "parent": "email_marketing",
+      "name_ar": "الأتمتة ووكلاء الذكاء الاصطناعي",
+      "name_en": "AI agents and workflow automation",
+      "aliases": [
+        "AI agent",
+        "وكيل ذكي",
+        "n8n",
+        "Make",
+        "Zapier",
+        "أتمتة ذكية"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "analytics",
+      "group": "digital",
+      "parent": "analytics",
+      "name_ar": "التحليلات والتقارير",
+      "name_en": "Analytics and reporting",
+      "aliases": [
+        "تحليلات",
+        "تقارير",
+        "analytics",
+        "KPIs",
+        "قياس الأداء"
+      ],
+      "roles": [
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "ga4_gtm_setup",
+      "group": "digital",
+      "parent": "analytics",
+      "name_ar": "إعداد Google Analytics 4 وTag Manager",
+      "name_en": "GA4 and Google Tag Manager setup",
+      "aliases": [
+        "GA4",
+        "جوجل أناليتكس",
+        "GTM",
+        "تاق مانجر",
+        "Google Analytics"
+      ],
+      "roles": [
+        "data_analyst",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "marketing_dashboards",
+      "group": "digital",
+      "parent": "analytics",
+      "name_ar": "لوحات التقارير التسويقية",
+      "name_en": "Marketing dashboards (Looker Studio, Power BI)",
+      "aliases": [
+        "داشبورد",
+        "لوحة تحكم",
+        "Looker Studio",
+        "Power BI",
+        "dashboard"
+      ],
+      "roles": [
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "cro",
+      "group": "digital",
+      "parent": "analytics",
+      "name_ar": "تحسين معدل التحويل",
+      "name_en": "Conversion rate optimization (CRO)",
+      "aliases": [
+        "CRO",
+        "معدل التحويل",
+        "conversion",
+        "تحسين المبيعات",
+        "هيت ماب"
+      ],
+      "roles": [
+        "ui_ux_designer",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "web_design",
+      "group": "digital",
+      "parent": "web_design",
+      "name_ar": "تصميم المواقع الإلكترونية",
+      "name_en": "Website design",
+      "aliases": [
+        "موقع",
+        "ويب سايت",
+        "تصميم موقع",
+        "website",
+        "موقع شركة"
+      ],
+      "roles": [
+        "web_developer",
+        "ui_ux_designer"
+      ]
+    },
+    {
+      "key": "landing_pages",
+      "group": "digital",
+      "parent": "web_design",
+      "name_ar": "صفحات الهبوط",
+      "name_en": "Landing pages",
+      "aliases": [
+        "لاندنق بيج",
+        "لاندنج",
+        "صفحة هبوط",
+        "landing page",
+        "صفحة مبيعات"
+      ],
+      "roles": [
+        "web_developer",
+        "ui_ux_designer"
+      ]
+    },
+    {
+      "key": "web_maintenance",
+      "group": "digital",
+      "parent": "web_maintenance",
+      "name_ar": "صيانة المواقع والدعم الفني",
+      "name_en": "Website maintenance and support",
+      "aliases": [
+        "صيانة موقع",
+        "تحديث موقع",
+        "دعم فني",
+        "maintenance",
+        "support"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "hosting_domains",
+      "group": "digital",
+      "parent": "web_maintenance",
+      "name_ar": "الاستضافة والدومين والبريد الرسمي",
+      "name_en": "Hosting, domains and business email",
+      "aliases": [
+        "استضافة",
+        "دومين",
+        "نطاق",
+        "hosting",
+        "ايميل رسمي",
+        "Google Workspace"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "website_security",
+      "group": "digital",
+      "parent": "web_maintenance",
+      "name_ar": "حماية المواقع والنسخ الاحتياطي",
+      "name_en": "Website security and backups",
+      "aliases": [
+        "حماية",
+        "SSL",
+        "اختراق",
+        "backup",
+        "security"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "ecommerce_setup",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إنشاء المتاجر الإلكترونية",
+      "name_en": "Online store setup",
+      "aliases": [
+        "متجر",
+        "متجر إلكتروني",
+        "متجر الكتروني",
+        "online store",
+        "ecommerce",
+        "ExpandCart"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "salla_store_setup",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إنشاء وتصميم متجر سلة",
+      "name_en": "Salla store setup",
+      "aliases": [
+        "سلة",
+        "Salla",
+        "متجر سلة",
+        "ثيم سلة"
+      ],
+      "roles": [
+        "web_developer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "zid_store_setup",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إنشاء وتصميم متجر زد",
+      "name_en": "Zid store setup",
+      "aliases": [
+        "زد",
+        "Zid",
+        "متجر زد"
+      ],
+      "roles": [
+        "web_developer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "shopify_store_setup",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إنشاء متجر شوبيفاي",
+      "name_en": "Shopify store setup",
+      "aliases": [
+        "شوبيفاي",
+        "Shopify",
+        "متجر شوبيفاي",
+        "ثيم شوبيفاي"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "woocommerce_setup",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إنشاء متجر ووكومرس",
+      "name_en": "WooCommerce store setup",
+      "aliases": [
+        "ووكومرس",
+        "WooCommerce",
+        "ووردبريس متجر"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "store_management",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إدارة المتجر الإلكتروني الشهرية",
+      "name_en": "Monthly e-commerce store management",
+      "aliases": [
+        "إدارة متجر",
+        "store management",
+        "العروض والكوبونات",
+        "تشغيل متجر"
+      ],
+      "roles": [
+        "social_media_manager",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "product_upload",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "رفع وإدخال المنتجات",
+      "name_en": "Product upload and catalog entry",
+      "aliases": [
+        "رفع منتجات",
+        "إدخال منتجات",
+        "كتالوج",
+        "catalog",
+        "data entry"
+      ],
+      "roles": [
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "payment_shipping_integration",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "ربط بوابات الدفع والشحن",
+      "name_en": "Payment gateway and shipping integration",
+      "aliases": [
+        "بوابة دفع",
+        "مدى",
+        "تابي",
+        "تمارا",
+        "شحن",
+        "Apple Pay"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "marketplace_management",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إدارة المتاجر على أمازون ونون",
+      "name_en": "Amazon and Noon marketplace management",
+      "aliases": [
+        "أمازون",
+        "نون",
+        "Amazon",
+        "Noon",
+        "marketplace",
+        "بائع أمازون"
+      ],
+      "roles": [
+        "media_buyer",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "delivery_app_listing",
+      "group": "digital",
+      "parent": "ecommerce_setup",
+      "name_ar": "إدارة المطاعم على تطبيقات التوصيل",
+      "name_en": "Delivery app listing and optimization",
+      "aliases": [
+        "طلبات",
+        "هنقرستيشن",
+        "جاهز",
+        "كيتا",
+        "مرسول",
+        "Talabat"
+      ],
+      "roles": [
+        "social_media_manager",
+        "photographer"
+      ]
+    },
+    {
+      "key": "product_feeds_catalogs",
+      "group": "digital",
+      "parent": "ads_google",
+      "name_ar": "كتالوجات المنتجات وربط Merchant Center",
+      "name_en": "Product feeds and catalogs (Meta, Google Merchant)",
+      "aliases": [
+        "كتالوج ميتا",
+        "Meta catalog",
+        "product feed",
+        "فيد منتجات",
+        "DPA"
+      ],
+      "roles": [
+        "media_buyer",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "custom_web_development",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "برمجة المواقع المخصصة",
+      "name_en": "Custom website and web app development",
+      "aliases": [
+        "برمجة موقع",
+        "مبرمج",
+        "Laravel",
+        "React",
+        "Next.js",
+        "full stack"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "wordpress_development",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "مواقع ووردبريس",
+      "name_en": "WordPress website development",
+      "aliases": [
+        "ووردبريس",
+        "وردبريس",
+        "WordPress",
+        "Elementor",
+        "المنتور"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "nocode_websites",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "مواقع بدون برمجة (ويبفلو، ويكس، فريمر)",
+      "name_en": "No-code websites (Webflow, Wix, Framer)",
+      "aliases": [
+        "ويبفلو",
+        "ويكس",
+        "Webflow",
+        "Wix",
+        "Framer",
+        "no-code"
+      ],
+      "roles": [
+        "web_developer",
+        "ui_ux_designer"
+      ]
+    },
+    {
+      "key": "ui_ux_design",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "تصميم واجهات وتجربة المستخدم",
+      "name_en": "UI/UX design",
+      "aliases": [
+        "UI/UX",
+        "واجهات",
+        "فيجما",
+        "Figma",
+        "UX",
+        "تجربة المستخدم"
+      ],
+      "roles": [
+        "ui_ux_designer"
+      ]
+    },
+    {
+      "key": "mobile_app_development",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "تطوير تطبيقات الجوال",
+      "name_en": "Mobile app development",
+      "aliases": [
+        "تطبيق",
+        "ابلكيشن",
+        "برمجة تطبيق",
+        "iOS",
+        "Android",
+        "Flutter"
+      ],
+      "roles": [
+        "web_developer",
+        "ui_ux_designer"
+      ]
+    },
+    {
+      "key": "arabic_rtl_localization",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "تعريب المواقع ودعم الاتجاه من اليمين",
+      "name_en": "Arabic website localization and RTL",
+      "aliases": [
+        "RTL",
+        "تعريب موقع",
+        "موقع عربي انجليزي",
+        "ثنائي اللغة",
+        "bilingual"
+      ],
+      "roles": [
+        "web_developer",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "booking_systems",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "أنظمة الحجز والمواعيد",
+      "name_en": "Booking and appointment systems",
+      "aliases": [
+        "نظام حجز",
+        "مواعيد",
+        "booking",
+        "حجوزات"
+      ],
+      "roles": [
+        "web_developer"
+      ]
+    },
+    {
+      "key": "digital_menu_qr",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "المنيو الإلكتروني وQR",
+      "name_en": "Digital QR menus",
+      "aliases": [
+        "منيو QR",
+        "منيو إلكتروني",
+        "QR",
+        "باركود",
+        "digital menu"
+      ],
+      "roles": [
+        "web_developer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "ar_vr_experiences",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "تجارب الواقع المعزز والافتراضي",
+      "name_en": "AR/VR and immersive experiences",
+      "aliases": [
+        "واقع معزز",
+        "واقع افتراضي",
+        "AR",
+        "VR",
+        "WebAR",
+        "ميتافيرس"
+      ],
+      "roles": [
+        "3d_artist",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "branded_games",
+      "group": "web_dev",
+      "parent": "web_design",
+      "name_ar": "الألعاب التسويقية والتلعيب",
+      "name_en": "Branded games and gamification",
+      "aliases": [
+        "لعبة",
+        "عجلة الحظ",
+        "gamification",
+        "تلعيب",
+        "كويز"
+      ],
+      "roles": [
+        "web_developer",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "marketing_strategy",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "الاستراتيجية والخطة التسويقية",
+      "name_en": "Marketing strategy and plan",
+      "aliases": [
+        "خطة تسويق",
+        "خطة تسويقية",
+        "استراتيجية تسويق",
+        "marketing plan",
+        "marketing strategy"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "digital_marketing_strategy",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "استراتيجية التسويق الرقمي",
+      "name_en": "Digital marketing strategy",
+      "aliases": [
+        "استراتيجية رقمية",
+        "digital strategy",
+        "خطة ديجيتال",
+        "ديجيتال"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "content_strategy",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "استراتيجية المحتوى",
+      "name_en": "Content strategy",
+      "aliases": [
+        "استراتيجية محتوى",
+        "content strategy",
+        "محاور المحتوى",
+        "content pillars"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "market_research",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "أبحاث ودراسات السوق",
+      "name_en": "Market research",
+      "aliases": [
+        "دراسة سوق",
+        "بحث سوق",
+        "market study",
+        "market research",
+        "دراسة السوق"
+      ],
+      "roles": [
+        "strategist",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "competitor_analysis",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "تحليل المنافسين",
+      "name_en": "Competitor analysis",
+      "aliases": [
+        "منافسين",
+        "تحليل منافسين",
+        "competitor analysis",
+        "benchmark"
+      ],
+      "roles": [
+        "strategist",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "surveys_focus_groups",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "الاستبيانات ومجموعات التركيز",
+      "name_en": "Consumer surveys and focus groups",
+      "aliases": [
+        "استبيان",
+        "فوكس جروب",
+        "survey",
+        "focus group",
+        "رأي العملاء"
+      ],
+      "roles": [
+        "strategist",
+        "data_analyst"
+      ]
+    },
+    {
+      "key": "personas_customer_journey",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "شخصية العميل ورحلته",
+      "name_en": "Buyer personas and customer journey",
+      "aliases": [
+        "بيرسونا",
+        "persona",
+        "رحلة العميل",
+        "customer journey",
+        "الجمهور المستهدف"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "go_to_market",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "خطة إطلاق المنتجات والعلامات",
+      "name_en": "Product launch and go-to-market",
+      "aliases": [
+        "إطلاق",
+        "لونش",
+        "launch",
+        "go-to-market",
+        "خطة إطلاق"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "campaign_concept",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "الفكرة الإبداعية للحملات",
+      "name_en": "Creative campaign concept (big idea)",
+      "aliases": [
+        "فكرة حملة",
+        "كونسبت",
+        "كريتف",
+        "concept",
+        "big idea"
+      ],
+      "roles": [
+        "strategist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "integrated_campaigns",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "الحملات التسويقية المتكاملة (360)",
+      "name_en": "Integrated 360 campaigns",
+      "aliases": [
+        "360",
+        "حملة متكاملة",
+        "IMC",
+        "حملة تسويقية",
+        "campaign"
+      ],
+      "roles": [
+        "strategist",
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "seasonal_campaigns",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "حملات المواسم (رمضان، العيد، اليوم الوطني)",
+      "name_en": "Seasonal campaigns (Ramadan, Eid, National Day, White Friday)",
+      "aliases": [
+        "رمضان",
+        "العيد",
+        "اليوم الوطني",
+        "الجمعة البيضاء",
+        "يوم التأسيس",
+        "مواسم"
+      ],
+      "roles": [
+        "strategist",
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "marketing_consulting",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "الاستشارات التسويقية",
+      "name_en": "Marketing consulting",
+      "aliases": [
+        "استشارة",
+        "استشارة تسويقية",
+        "consulting",
+        "كونسلتنق"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "fractional_cmo",
+      "group": "strategy",
+      "parent": "brand_strategy",
+      "name_ar": "مدير تسويق خارجي بدوام جزئي",
+      "name_en": "Fractional CMO / outsourced marketing team",
+      "aliases": [
+        "CMO",
+        "مدير تسويق",
+        "قسم تسويق خارجي",
+        "outsourced marketing",
+        "fractional"
+      ],
+      "roles": [
+        "strategist"
+      ]
+    },
+    {
+      "key": "marketing_training",
+      "group": "strategy",
+      "parent": "smm_strategy",
+      "name_ar": "التدريب وورش العمل التسويقية",
+      "name_en": "Marketing training and workshops",
+      "aliases": [
+        "دورة",
+        "تدريب",
+        "ورشة",
+        "كورس",
+        "workshop"
+      ],
+      "roles": [
+        "strategist",
+        "social_media_manager"
+      ]
+    },
+    {
+      "key": "loyalty_referral_programs",
+      "group": "strategy",
+      "parent": "email_marketing",
+      "name_ar": "برامج الولاء والإحالة",
+      "name_en": "Loyalty and referral programs",
+      "aliases": [
+        "ولاء",
+        "نقاط",
+        "إحالة",
+        "loyalty",
+        "referral",
+        "كاشباك"
+      ],
+      "roles": [
+        "strategist",
+        "web_developer"
+      ]
+    },
+    {
+      "key": "affiliate_marketing",
+      "group": "strategy",
+      "parent": "smm_influencer",
+      "name_ar": "التسويق بالعمولة",
+      "name_en": "Affiliate marketing",
+      "aliases": [
+        "أفلييت",
+        "عمولة",
+        "كود خصم",
+        "affiliate",
+        "كوبونات"
+      ],
+      "roles": [
+        "influencer_manager",
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "public_relations",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "العلاقات العامة",
+      "name_en": "Public relations",
+      "aliases": [
+        "علاقات عامة",
+        "PR",
+        "بي آر",
+        "public relations"
+      ],
+      "roles": [
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "press_releases",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "كتابة وتوزيع البيانات الصحفية",
+      "name_en": "Press release writing and distribution",
+      "aliases": [
+        "بيان صحفي",
+        "خبر صحفي",
+        "press release",
+        "نشر خبر"
+      ],
+      "roles": [
+        "pr_specialist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "media_relations",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "العلاقات الإعلامية والتغطية الصحفية",
+      "name_en": "Media relations and press coverage",
+      "aliases": [
+        "تغطية إعلامية",
+        "صحافة",
+        "إعلام",
+        "media coverage",
+        "مقابلات صحفية"
+      ],
+      "roles": [
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "crisis_communication",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "إدارة الأزمات الإعلامية",
+      "name_en": "Crisis communication",
+      "aliases": [
+        "أزمة",
+        "إدارة أزمات",
+        "crisis",
+        "أزمة سمعة"
+      ],
+      "roles": [
+        "pr_specialist",
+        "strategist"
+      ]
+    },
+    {
+      "key": "reputation_management",
+      "group": "pr_comms",
+      "parent": "smm_community",
+      "name_ar": "إدارة السمعة والتقييمات",
+      "name_en": "Online reputation and review management",
+      "aliases": [
+        "سمعة",
+        "تقييمات",
+        "ريفيوز",
+        "ORM",
+        "reviews"
+      ],
+      "roles": [
+        "pr_specialist",
+        "community_manager"
+      ]
+    },
+    {
+      "key": "press_conferences",
+      "group": "pr_comms",
+      "parent": "activations",
+      "name_ar": "تنظيم المؤتمرات الصحفية",
+      "name_en": "Press conferences and media events",
+      "aliases": [
+        "مؤتمر صحفي",
+        "press conference",
+        "لقاء إعلامي",
+        "حدث إعلامي"
+      ],
+      "roles": [
+        "pr_specialist",
+        "event_manager"
+      ]
+    },
+    {
+      "key": "media_training",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "التدريب الإعلامي للمتحدثين",
+      "name_en": "Media and spokesperson training",
+      "aliases": [
+        "تدريب إعلامي",
+        "متحدث رسمي",
+        "media training",
+        "spokesperson"
+      ],
+      "roles": [
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "corporate_communications",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "الاتصال المؤسسي والداخلي",
+      "name_en": "Corporate and internal communications",
+      "aliases": [
+        "اتصال مؤسسي",
+        "اتصال داخلي",
+        "internal comms",
+        "نشرة داخلية"
+      ],
+      "roles": [
+        "pr_specialist",
+        "content_writer_ar"
+      ]
+    },
+    {
+      "key": "csr_campaigns",
+      "group": "pr_comms",
+      "parent": "brand_strategy",
+      "name_ar": "حملات المسؤولية الاجتماعية",
+      "name_en": "CSR and social impact campaigns",
+      "aliases": [
+        "مسؤولية اجتماعية",
+        "CSR",
+        "حملة توعوية",
+        "تطوعي",
+        "استدامة"
+      ],
+      "roles": [
+        "pr_specialist",
+        "strategist"
+      ]
+    },
+    {
+      "key": "event_coverage",
+      "group": "offline",
+      "parent": "event_coverage",
+      "name_ar": "تغطية الفعاليات (تصوير وفيديو)",
+      "name_en": "Event coverage (photo and video)",
+      "aliases": [
+        "تغطية",
+        "تغطية فعالية",
+        "event coverage",
+        "فعاليات",
+        "مناسبات"
+      ],
+      "roles": [
+        "photographer",
+        "videographer"
+      ]
+    },
+    {
+      "key": "event_photography",
+      "group": "offline",
+      "parent": "event_coverage",
+      "name_ar": "تصوير الفعاليات والمؤتمرات",
+      "name_en": "Event and conference photography",
+      "aliases": [
+        "تصوير فعاليات",
+        "مؤتمرات",
+        "تخرج",
+        "event photography"
+      ],
+      "roles": [
+        "photographer"
+      ]
+    },
+    {
+      "key": "event_highlight_video",
+      "group": "offline",
+      "parent": "event_coverage",
+      "name_ar": "فيديو ملخص الفعالية",
+      "name_en": "Event highlight and aftermovie video",
+      "aliases": [
+        "هايلايت",
+        "افتر موفي",
+        "aftermovie",
+        "recap",
+        "ملخص فعالية"
+      ],
+      "roles": [
+        "videographer",
+        "video_editor"
+      ]
+    },
+    {
+      "key": "event_live_streaming",
+      "group": "offline",
+      "parent": "event_coverage",
+      "name_ar": "البث المباشر للفعاليات",
+      "name_en": "Event live streaming",
+      "aliases": [
+        "نقل مباشر",
+        "لايف ستريم",
+        "بث مباشر",
+        "streaming",
+        "multi-camera"
+      ],
+      "roles": [
+        "videographer"
+      ]
+    },
+    {
+      "key": "activations",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "التفعيلات التسويقية",
+      "name_en": "Brand activations",
+      "aliases": [
+        "اكتفيشن",
+        "تفعيل",
+        "activation",
+        "تسويق تجريبي",
+        "experiential"
+      ],
+      "roles": [
+        "event_manager"
+      ]
+    },
+    {
+      "key": "event_management",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "تنظيم وإدارة الفعاليات",
+      "name_en": "Event planning and management",
+      "aliases": [
+        "تنظيم فعاليات",
+        "ايفنت",
+        "event management",
+        "حفلات",
+        "مؤتمرات"
+      ],
+      "roles": [
+        "event_manager"
+      ]
+    },
+    {
+      "key": "launch_openings",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "حفلات الإطلاق والافتتاح",
+      "name_en": "Launch events and grand openings",
+      "aliases": [
+        "افتتاح",
+        "حفل إطلاق",
+        "grand opening",
+        "launch event",
+        "قص الشريط"
+      ],
+      "roles": [
+        "event_manager",
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "sampling_promoters",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "توزيع العينات والمروجين",
+      "name_en": "Sampling, promoters and hostesses",
+      "aliases": [
+        "بروموتر",
+        "مروجين",
+        "عينات",
+        "sampling",
+        "هوستس",
+        "مضيفات"
+      ],
+      "roles": [
+        "event_manager",
+        "model_talent"
+      ]
+    },
+    {
+      "key": "exhibition_booth_design",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "تصميم وتنفيذ أجنحة المعارض",
+      "name_en": "Exhibition booth design and build",
+      "aliases": [
+        "بوث",
+        "ستاند",
+        "جناح معرض",
+        "booth",
+        "exhibition",
+        "معارض"
+      ],
+      "roles": [
+        "3d_artist",
+        "printing_production"
+      ]
+    },
+    {
+      "key": "stage_event_decor",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "تجهيز المسارح وديكور الفعاليات",
+      "name_en": "Stage design and event decor",
+      "aliases": [
+        "مسرح",
+        "ديكور",
+        "كوشة",
+        "stage",
+        "تنسيق حفلات"
+      ],
+      "roles": [
+        "event_manager",
+        "3d_artist"
+      ]
+    },
+    {
+      "key": "av_led_rental",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "تأجير الصوتيات والشاشات للفعاليات",
+      "name_en": "AV, sound and LED screen rental",
+      "aliases": [
+        "شاشات LED",
+        "صوتيات",
+        "إضاءة مسرح",
+        "AV",
+        "LED"
+      ],
+      "roles": [
+        "event_manager"
+      ]
+    },
+    {
+      "key": "photo_booth",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "فوتو بوث والطباعة الفورية",
+      "name_en": "Photo booth and instant printing",
+      "aliases": [
+        "فوتو بوث",
+        "photo booth",
+        "360 booth",
+        "طباعة فورية",
+        "بوث 360"
+      ],
+      "roles": [
+        "photographer",
+        "event_manager"
+      ]
+    },
+    {
+      "key": "sponsorship_management",
+      "group": "offline",
+      "parent": "activations",
+      "name_ar": "إدارة الرعايات",
+      "name_en": "Sponsorship management",
+      "aliases": [
+        "رعاية",
+        "رعايات",
+        "sponsorship",
+        "راعي"
+      ],
+      "roles": [
+        "event_manager",
+        "pr_specialist"
+      ]
+    },
+    {
+      "key": "print_design",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "التصميم الطباعي والمطبوعات",
+      "name_en": "Print design",
+      "aliases": [
+        "مطبوعات",
+        "تصميم طباعي",
+        "print",
+        "طباعة"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "flyers_brochures",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "تصميم البروشورات والفلايرات",
+      "name_en": "Flyer and brochure design",
+      "aliases": [
+        "فلاير",
+        "بروشور",
+        "مطوية",
+        "flyer",
+        "brochure",
+        "بوستر"
+      ],
+      "roles": [
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "printing_services",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "الطباعة وتنفيذ المطبوعات",
+      "name_en": "Printing and print production",
+      "aliases": [
+        "مطبعة",
+        "طباعة أوفست",
+        "طباعة ديجيتال",
+        "printing",
+        "offset"
+      ],
+      "roles": [
+        "printing_production"
+      ]
+    },
+    {
+      "key": "rollups_banners",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "الرول أب والبنرات والطباعة الكبيرة",
+      "name_en": "Roll-ups, banners and large-format printing",
+      "aliases": [
+        "رول اب",
+        "بنر",
+        "roll-up",
+        "فلكس",
+        "large format"
+      ],
+      "roles": [
+        "printing_production",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "posm_displays",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "مواد نقاط البيع والستاندات",
+      "name_en": "POS/POSM displays",
+      "aliases": [
+        "POSM",
+        "ستاند عرض",
+        "ديسبلاي",
+        "نقاط البيع",
+        "wobbler"
+      ],
+      "roles": [
+        "printing_production",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "promotional_merchandise",
+      "group": "offline",
+      "parent": "print_design",
+      "name_ar": "الهدايا الدعائية والزي الموحد",
+      "name_en": "Promotional merchandise and uniforms",
+      "aliases": [
+        "هدايا دعائية",
+        "ميرش",
+        "merch",
+        "يونيفورم",
+        "تيشيرتات",
+        "أكواب"
+      ],
+      "roles": [
+        "printing_production",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "outdoor_ads",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "الإعلانات الخارجية واللوحات",
+      "name_en": "Outdoor advertising (OOH)",
+      "aliases": [
+        "لوحات طرق",
+        "بيلبورد",
+        "OOH",
+        "billboard",
+        "ميجاكوم",
+        "يوني بول"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "dooh_screens",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "الشاشات الرقمية الخارجية",
+      "name_en": "Digital out-of-home (DOOH)",
+      "aliases": [
+        "شاشات",
+        "شاشات رقمية",
+        "DOOH",
+        "شاشات مولات"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "signage",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "اللوحات الإعلانية للمحلات",
+      "name_en": "Shop signage and 3D letters",
+      "aliases": [
+        "لوحات",
+        "يافطة",
+        "آرمة",
+        "حروف بارزة",
+        "نيون",
+        "signage"
+      ],
+      "roles": [
+        "printing_production",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "vehicle_branding",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "تغليف السيارات الدعائي",
+      "name_en": "Vehicle wraps and fleet branding",
+      "aliases": [
+        "تغليف سيارات",
+        "ستيكر سيارات",
+        "wrap",
+        "fleet",
+        "سيارات الشركة"
+      ],
+      "roles": [
+        "printing_production",
+        "graphic_designer"
+      ]
+    },
+    {
+      "key": "tv_radio_ads",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "الإعلانات في التلفزيون والإذاعة والسينما",
+      "name_en": "TV, radio and cinema advertising",
+      "aliases": [
+        "تلفزيون",
+        "راديو",
+        "إذاعة",
+        "سينما",
+        "TV",
+        "radio"
+      ],
+      "roles": [
+        "media_buyer"
+      ]
+    },
+    {
+      "key": "print_media_ads",
+      "group": "offline",
+      "parent": "outdoor_ads",
+      "name_ar": "إعلانات الصحف والمجلات",
+      "name_en": "Newspaper and magazine ads",
+      "aliases": [
+        "جريدة",
+        "صحف",
+        "مجلات",
+        "print ads",
+        "إعلان مطبوع"
+      ],
+      "roles": [
+        "media_buyer",
+        "graphic_designer"
+      ]
+    }
+  ]
+}

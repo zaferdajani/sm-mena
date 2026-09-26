@@ -11,6 +11,7 @@ import { and, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { countryOf, countryOfCity } from "../countries";
 import { updateAgency, createAgency } from "../data/agencies";
 import { saveClient } from "../data/portfolio-clients";
+import { syncServiceCatalog } from "../services/tags";
 import { createPostFromProcessed } from "../data/posts";
 import { createProjectRequest } from "../data/requests";
 import { ensureOwner, recoverOwner } from "../data/staff";
@@ -20,7 +21,8 @@ import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
 import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
-import { DEMO_PROFILES } from "./demo-profiles";
+import { DEMO_PROFILES, DEMO_ROLES } from "./demo-profiles";
+import { ROLE_KEYS } from "../services/catalog";
 import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, type DeliverableLine } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
@@ -202,6 +204,27 @@ async function addDemoProfiles(log: (...a: unknown[]) => void) {
   log(`Added demo introductions and ${clients} portfolio clients.`);
 }
 
+const ROLES_FLAG = "demo_roles_v1";
+
+/** Team roles, roles sought and freelancers among demo agencies (partners, docs/30). */
+async function addDemoRoles(log: (...a: unknown[]) => void) {
+  const db = await getDb();
+  const [done] = await db.select().from(appSettings).where(eq(appSettings.key, ROLES_FLAG));
+  if (done) return;
+  let n = 0;
+  for (const [handle, r] of Object.entries(DEMO_ROLES)) {
+    const team = r.team.filter((x) => ROLE_KEYS.includes(x));
+    const rows = await db
+      .update(agencies)
+      .set({ kind: r.kind ?? "agency", teamRoles: team, seeksRoles: (r.seeks ?? []).filter((x) => ROLE_KEYS.includes(x)) })
+      .where(and(eq(agencies.handle, handle), eq(agencies.isDemo, true)))
+      .returning({ id: agencies.id });
+    n += rows.length;
+  }
+  await db.insert(appSettings).values({ key: ROLES_FLAG, value: true }).onConflictDoNothing();
+  log(`Added team roles to ${n} demo agencies.`);
+}
+
 /** Keeps a few open demo client requests (they expire after 14 days) so the agency request feed is never empty. */
 async function addDemoRequests(log: (...a: unknown[]) => void) {
   const db = await getDb();
@@ -285,6 +308,8 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const log = quiet ? () => {} : console.log;
   const db = await getDb();
   if (doReset) await reset();
+  // Every built-in service gets its numbered tag (data/service-catalog.json).
+  await syncServiceCatalog();
   const production = process.env.NODE_ENV === "production";
   const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (production ? null : "admin@sawwiq.test");
   const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (production ? null : "admin-pass-123");
@@ -328,6 +353,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   if (!toCreate.length) {
     await addDemoPortfolio(log);
     await addDemoProfiles(log);
+    await addDemoRoles(log);
     await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
@@ -508,6 +534,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
 
   await addDemoPortfolio(log);
   await addDemoProfiles(log);
+  await addDemoRoles(log);
   await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
   if (!production) {

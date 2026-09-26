@@ -74,6 +74,7 @@ export function WizardChips({
   priceStats,
   aiMode,
   hasResults,
+  canRequest = true,
   switchTo,
   onAnswer,
   onShowNow,
@@ -88,6 +89,8 @@ export function WizardChips({
   priceStats: Record<string, PriceStats>;
   aiMode: boolean;
   hasResults: boolean;
+  /** Quote requests are available (Admin → Features). */
+  canRequest?: boolean;
   /** For "switch": the other country the message named. */
   switchTo?: CountryCode;
   onAnswer: (answer: Answer, label: string) => void;
@@ -228,7 +231,7 @@ export function WizardChips({
   } else if (step === "results") {
     body = (
       <>
-        {hasResults && (
+        {hasResults && canRequest && (
           <Chip primary onClick={() => onResult("send", tw("chips.sendProject"))} testId="send-project">
             <Sparkles className="me-1 inline size-3.5" aria-hidden />
             {tw("chips.sendProject")}

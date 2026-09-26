@@ -15,16 +15,18 @@ import { contentLang, type AgencyTranslation, type ContentLang } from "@/lib/con
 import { ChipGroup, Field } from "./chips";
 import { langAttrs, OtherLanguage } from "./other-language";
 import { ServesField } from "./serves-field";
+import { TeamFields } from "./team-fields";
+import { ServicePicker } from "@/components/service-picker";
 
 type Option = { key: string; label: string };
 
 export type ProfileFormProps = {
   agency: {
-    name: string; handle: string; bio: string; about: string; strengths: string[]; country: string; servesCountries: string[]; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
+    name: string; handle: string; bio: string; about: string; kind: "agency" | "freelancer"; teamRoles: string[]; seeksRoles: string[]; pendingTexts: string[]; strengths: string[]; country: string; servesCountries: string[]; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
     startingPriceJod: number | null; whatsapp: string | null; phone: string | null; email: string | null; website: string | null; instagram: string | null; foundedYear: number | null; teamSize: string | null;
     contentLang: string; translation: AgencyTranslation | null;
   };
-  options: { serviceGroups: { key: string; label: string; services: Option[] }[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
+  options: { roles: Option[]; popularServices: string[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
 };
 
 export function ProfileForm({ agency, options }: ProfileFormProps) {
@@ -147,15 +149,11 @@ export function ProfileForm({ agency, options }: ProfileFormProps) {
         />
       </Field>
 
-      <fieldset className="grid gap-3">
-        <legend className="mb-2 text-sm font-medium">{t("services")}</legend>
-        {options.serviceGroups.map((g) => (
-          <div key={g.key}>
-            <p className="mb-1.5 text-xs text-muted-foreground">{g.label}</p>
-            <ChipGroup name="services" options={g.services} defaultValues={agency.services} />
-          </div>
-        ))}
-      </fieldset>
+      <Field label={t("services")} hint={t("servicesHint")}>
+        <ServicePicker defaultKeys={agency.services} pending={agency.pendingTexts} popular={options.popularServices} />
+      </Field>
+
+      <TeamFields kind={agency.kind} roles={options.roles} teamRoles={agency.teamRoles} seeksRoles={agency.seeksRoles} />
       <Field label={t("platforms")}><ChipGroup name="platforms" options={options.platforms} defaultValues={agency.platforms} /></Field>
       <Field label={t("industries")}><ChipGroup name="industries" options={options.industries} defaultValues={agency.industries} /></Field>
       <Field label={t("languages")}><ChipGroup name="languages" options={options.languages} defaultValues={agency.languages} /></Field>

@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SignaturePad } from "./signature-pad";
 
-export function ClientSign({ token }: { token: string }) {
+/** `hidden` is the client's token, or the contract id with as=buyer for a buying agency. */
+export function ClientSign({ hidden }: { hidden: Record<string, string> }) {
+  const hiddenInputs = Object.entries(hidden).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />);
   const t = useTranslations("Contracts.client");
   const tl = useTranslations("Agreements");
   const [state, action] = useActionState(clientSignAction, undefined);
@@ -22,7 +24,7 @@ export function ClientSign({ token }: { token: string }) {
         <PenLine className="size-5 text-brand" /> {t("sign")}
       </h2>
       <form action={action} className="space-y-3">
-        <input type="hidden" name="token" value={token} />
+        {hiddenInputs}
         <div className="grid gap-1.5">
           <Label htmlFor="signer">{t("signer")}</Label>
           <Input id="signer" name="signer" required minLength={3} className="bg-background font-serif text-lg italic" dir="auto" />
@@ -43,7 +45,7 @@ export function ClientSign({ token }: { token: string }) {
           <p className="mt-2 rounded-lg bg-background p-2" role="status">{tl("amendSent")}</p>
         ) : (
           <form action={amendAction} className="mt-2 space-y-2">
-            <input type="hidden" name="token" value={token} />
+            {hiddenInputs}
             <Textarea name="note" required minLength={5} rows={3} placeholder={tl("amendPh")} className="bg-background" dir="auto" />
             <FormError message={amend?.error ? tl("amendError") : undefined} />
             <SubmitButton variant="outline">{tl("amendSend")}</SubmitButton>
@@ -53,7 +55,7 @@ export function ClientSign({ token }: { token: string }) {
       <details className="text-sm">
         <summary className="cursor-pointer text-muted-foreground">{t("decline")}</summary>
         <form action={clientDeclineAction} className="mt-2 flex gap-2">
-          <input type="hidden" name="token" value={token} />
+          {hiddenInputs}
           <Input name="reason" placeholder={t("declineReason")} className="bg-background" dir="auto" />
           <SubmitButton variant="outline">{t("decline")}</SubmitButton>
         </form>

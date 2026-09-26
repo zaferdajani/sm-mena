@@ -18,7 +18,11 @@ export function fill(text: string, vars: Record<string, string | number>) {
   return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 }
 
-export const SERVICE_CLAUSES: Clause[] = [
+/**
+ * Service contract conditions as signed under LEGAL_VERSION "2026-09" (terms
+ * v3). Kept word for word so contracts signed then render as signed.
+ */
+export const SERVICE_CLAUSES_2026_09: Clause[] = [
   {
     id: "relationship",
     title: { ar: "العلاقة بين الطرفين ودور المنصة", en: "Relationship and the platform's role" },
@@ -152,6 +156,158 @@ export const SERVICE_CLAUSES: Clause[] = [
     ],
   },
 ];
+
+const clause = (id: string) => SERVICE_CLAUSES_2026_09.find((c) => c.id === id)!;
+
+/**
+ * Service contract conditions, LEGAL_VERSION "2026-10" (terms v4). Adds who
+ * holds the money ({holder}: live payment partner or test mode), the review
+ * deadline and deemed acceptance, revision rounds, partial delivery and split
+ * decisions, mutual cancellation, dispute evidence and one appeal,
+ * chargebacks, IP per milestone and the limits of protection.
+ *
+ * Placeholders: {holder} {reviewDays} {rounds} {appealDays} {fee} {vat}
+ * {copyrightLaw} {dataLaw}.
+ *
+ * A lawyer licensed in each country must review this text before real money
+ * moves through the platform (docs/22-legal-documents.md).
+ */
+export const SERVICE_CLAUSES_2026_10: Clause[] = [
+  {
+    id: "relationship",
+    title: { ar: "العلاقة بين الطرفين ودور المنصة", en: "Relationship and the platform's role" },
+    body: [
+      {
+        ar: "تقدّم الوكالة الخدمات بصفتها مقاولًا مستقلًا، ولا ينشئ هذا العقد شراكة أو وكالة قانونية أو علاقة عمل بين الطرفين. سوّق ليست طرفًا في تقديم الخدمات: تحفظ العقد وسجلّ التوقيع وقوائم التسليم ومواعيد المراجعة، وتدير الدفع المحمي وتسوية الخلافات على المراحل كما تبيّن هذه الشروط.",
+        en: "The agency provides the services as an independent contractor; this contract creates no partnership, legal agency or employment between the parties. Sawwiq does not provide the services: it keeps the contract, the signature record, the delivery checklists and the review deadlines, and runs protected payments and milestone disputes as these conditions describe.",
+      },
+      { ar: "{holder}", en: "{holder}" },
+    ],
+  },
+  {
+    id: "delivery",
+    title: { ar: "التسليم ومدة المراجعة والقبول الضمني", en: "Delivery, review period and deemed acceptance" },
+    body: [
+      {
+        ar: "تُسلَّم الأعمال على مراحل كما هو مبيّن أعلاه، ولكل مرحلة قائمة بنود. عند انتهاء المرحلة تعلّم الوكالة بنودها المنجزة وترسلها للمراجعة، فتبدأ مدة مراجعة قدرها {reviewDays}. خلال هذه المدة يؤكد العميل كل بند ويقبل المرحلة، أو يطلب تعديلات مع ذكر السبب، أو يفتح خلافًا عليها. وتذكّر المنصة العميل قبل انتهاء المدة بيومين ثم بيوم.",
+        en: "Work is delivered in the milestones above, each with a checklist. When a milestone is done the agency marks its items and sends it for review, which starts a review period of {reviewDays}. Within it the client confirms each item and accepts the milestone, asks for changes giving the reason, or opens a dispute on it. The platform reminds the client two days and again one day before the period ends.",
+      },
+      {
+        ar: "إذا انقضت مدة المراجعة دون قبول أو طلب تعديلات أو فتح خلاف، تُعدّ المرحلة مقبولة قبولًا ضمنيًا ويُحرَّر مبلغها إلى الوكالة، ويُبلَّغ الطرفان بذلك. كل إرسال جديد بعد التعديلات يبدأ مدة مراجعة جديدة. القبول، صريحًا كان أو ضمنيًا، يعني أن بنود القائمة سُلّمت، ولا يسقط حق العميل في عيوب خفية لم يكن ممكنًا اكتشافها عند المراجعة.",
+        en: "If the review period ends with no acceptance, change request or dispute, the milestone is deemed accepted and its amount is released to the agency; both parties are told. Each new delivery after changes starts a new review period. Acceptance, express or deemed, means the checklist items were delivered; it does not take away the client's rights over hidden defects that could not be found during review.",
+      },
+    ],
+  },
+  {
+    id: "revisions",
+    title: { ar: "جولات التعديل", en: "Revision rounds" },
+    body: [
+      {
+        ar: "يشمل سعر كل مرحلة {rounds}، وكل طلب تعديلات على تسليم يُحتسب جولة. بعد استنفاد الجولات المشمولة، للوكالة أن تمنح جولة إضافية دون مقابل، أو أن تقترح طلب تعديل مدفوعًا عبر المنصة لا يُلزم العميل إلا بموافقته عليه. ويبقى للعميل في كل الأحوال أن يقبل المرحلة أو يفتح خلافًا إذا رأى أن بنودها لم تُنجز.",
+        en: "Each milestone's price includes {rounds}; each request for changes to a delivery counts as one round. Once the included rounds are used, the agency may grant an extra round free of charge or propose a paid change request on the platform, which binds the client only if the client accepts it. The client can always accept the milestone or open a dispute if it considers the checklist items not done.",
+      },
+    ],
+  },
+  {
+    id: "fees",
+    title: { ar: "الأتعاب والضرائب", en: "Fees and taxes" },
+    body: [
+      {
+        ar: "لا يدفع العميل أكثر من مبلغ العقد وما يقبله من طلبات تعديل مدفوعة. رسوم سوّق كما في بند الدفع أعلاه، وتُحتسب على الجزء المحوَّل إلى الوكالة فقط. {vat} يتحمّل كل طرف ما يفرضه القانون عليه من ضرائب ورسوم، ولا تُفرض على العميل أي غرامة تأخير أو فائدة بموجب هذا العقد.",
+        en: "The client never pays more than the contract amount and any paid change requests it accepts. Sawwiq's fee is as set in the payment section above and applies only to the part paid to the agency. {vat} Each party bears the taxes and fees the law puts on it; this contract charges the client no late-payment penalty or interest.",
+      },
+    ],
+  },
+  clause("ownership"),
+  {
+    id: "ip",
+    title: { ar: "الملكية الفكرية", en: "Intellectual property" },
+    body: [
+      {
+        ar: "تنتقل إلى العميل الحقوق المالية على ما يُسلَّم في كل مرحلة (التصاميم والنصوص والصور والفيديو وغيرها) عند سداد مبلغ تلك المرحلة للوكالة كاملًا، دون قيد زمني أو جغرافي، وفي الحدود التي يجيزها {copyrightLaw}، ما لم ينص شرط خاص على غير ذلك. إذا سُوّيت مرحلة بقرار قسمة أو بإلغاء بالتراضي، تنتقل الحقوق على ما سُلّم منها بقدر ما دُفع عنه كما يبيّنه القرار أو الاتفاق، ويبقى الباقي للوكالة. قبل السداد يستعمل العميل الأعمال للمراجعة فقط. تبقى الحقوق الأدبية لمؤلفيها كما يقرّر القانون، وتحتفظ الوكالة بأدواتها وقوالبها ومعارفها السابقة وتمنح العميل ترخيصًا دائمًا لاستخدام ما يدخل منها في الأعمال المدفوعة.",
+        en: "The economic rights in what is delivered in each milestone (designs, copy, photos, video and the rest) pass to the client once that milestone's amount has been paid to the agency in full, without limit of time or place, to the extent {copyrightLaw} allows, unless a special condition says otherwise. If a milestone is settled by a split decision or a mutual cancellation, rights in what was delivered pass to the extent it was paid for, as the decision or agreement states; the rest stays with the agency. Until payment the client may use the work only to review it. Moral rights stay with their authors as the law provides; the agency keeps its own pre-existing tools, templates and know-how and gives the client a permanent licence to use whatever of them is built into paid work.",
+      },
+      clause("ip").body[1],
+    ],
+  },
+  clause("data"),
+  clause("advertising"),
+  clause("changes"),
+  {
+    id: "disputes",
+    title: { ar: "الخلافات على المراحل والتسليم الجزئي والاستئناف", en: "Milestone disputes, partial delivery and appeal" },
+    body: [
+      {
+        ar: "لأي طرف أن يفتح خلافًا على مرحلة محفوظ مبلغها ببيان مكتوب. يضيف كل طرف أدلته (وصفًا وروابط للأعمال والمراسلات) على صفحة العقد، ويطّلع عليها الطرف الآخر ويردّ عليها. يقرّر فريق سوّق، بناءً على قائمة بنود المرحلة وما سُلّم فعلًا وسجلّ العقد والأدلة، تحرير المبلغ كله للوكالة، أو إعادته كله للعميل، أو قسمته بينهما بقدر ما أُنجز من بنود المرحلة (التسليم الجزئي)، مع أسباب مكتوبة يراها الطرفان. ولا تُحتسب رسوم سوّق إلا على الجزء المحرَّر للوكالة.",
+        en: "Either party may open a dispute on a milestone whose amount is held, with a written statement. Each party adds its evidence (a description and links to the work and messages) on the contract page, where the other can see and answer it. Sawwiq's team decides, from the milestone's checklist, what was actually delivered, the contract record and the evidence, to release the whole amount to the agency, refund it all to the client, or split it between them in proportion to the checklist items delivered (partial delivery), with written reasons both parties can read. Sawwiq's fee applies only to the part released to the agency.",
+      },
+      {
+        ar: "لكل طرف أن يستأنف القرار مرة واحدة خلال {appealDays} من صدوره بمذكرة مكتوبة، فيعيد فريق سوّق النظر ويصدر قرارًا نهائيًا. لا يُنفَّذ أي قرار على المبلغ إلا بعد أن يصبح نهائيًا: بانقضاء مدة الاستئناف، أو بقبول الطرفين له، أو بالقرار على الاستئناف. يتعلق قرار سوّق بالمبالغ المحفوظة على المنصة فقط، ولا يمنع أي طرف من اللجوء إلى القضاء المختص.",
+        en: "Either party may appeal the decision once, within {appealDays}, with a written note; Sawwiq's team then reviews it again and makes a final decision. No decision moves money until it is final: when the appeal period ends, when both parties accept it, or when the appeal is decided. Sawwiq's decision concerns only the amounts held on the platform and does not stop either party from going to the competent courts.",
+      },
+    ],
+  },
+  {
+    id: "termination",
+    title: { ar: "الإلغاء وإنهاء العقد والتسليم", en: "Cancellation, ending the contract and handover" },
+    body: [
+      {
+        ar: "قبل توقيع العميل يجوز لأي طرف إلغاء العقد. بعد التوقيع يجوز لأي طرف إلغاء ما تبقى منه ما دام لا يوجد مبلغ محفوظ. إذا وُجد مبلغ محفوظ، يقترح أحد الطرفين إلغاءً بالتراضي يبيّن لكل مرحلة محفوظة ما يُحرَّر للوكالة وما يُعاد للعميل (والأصل إعادة مبلغ ما لم يُسلَّم كاملًا)؛ فإن قبله الطرف الآخر نُفّذ وأُغلق العقد، وإن رفضه جاز لأي منهما فتح خلاف.",
+        en: "Before the client signs, either party may cancel the contract. After signing, either party may cancel what remains of it while no money is held. If money is held, one party proposes a mutual cancellation stating, for each held milestone, what is released to the agency and what is refunded to the client (by default, whatever was not delivered is refunded in full); if the other party accepts, it is carried out and the contract is closed, and if it declines, either may open a dispute.",
+      },
+      {
+        ar: "لكل طرف إنهاء العقد إذا أخلّ الطرف الآخر بالتزام جوهري ولم يعالجه خلال 14 يومًا من إخطاره كتابيًا عبر المنصة. وعند انتهاء العقد لأي سبب، تسلّم الوكالة خلال 7 أيام صلاحيات الإدارة على كل حسابات العميل، والملفات المصدرية للأعمال المدفوعة، وآخر تقرير أداء، ثم تزيل صلاحياتها بطلب العميل.",
+        en: "Either party may end the contract if the other breaches a material obligation and does not fix it within 14 days of written notice through the platform. When the contract ends for any reason, within 7 days the agency hands over admin access to all the client's accounts, the source files of paid work and a final performance report, then removes its own access when the client asks.",
+      },
+    ],
+  },
+  {
+    id: "chargebacks",
+    title: { ar: "استرداد المدفوعات عبر البطاقة", en: "Chargebacks" },
+    body: [
+      {
+        ar: "يلتزم العميل بألّا يطلب من جهة إصدار بطاقته أو مصرفه استرداد مبلغ مرحلة قبلها أو عُدّت مقبولة أو صدر فيها قرار نهائي، ويبقى مدينًا للوكالة بقيمتها إن فعل. تُعالَج طلبات الاسترداد وفق قواعد شريك الدفع وجهة إصدار البطاقة. إذا استردّ شريك الدفع من سوّق مبلغًا سبق تحويله إلى الوكالة بسبب طلب استرداد قُبل ضدها، يجوز لسوّق خصمه من مستحقات الوكالة المستقبلية على المنصة فقط، بعد إخطار الوكالة بالتفاصيل ومنحها 14 يومًا للاعتراض، ودون أي فائدة أو غرامة. ولا تخصم سوّق أي مبلغ آخر من مستحقات الوكالة.",
+        en: "The client will not ask its card issuer or bank to reverse the payment for a milestone it accepted, that was deemed accepted, or that was settled by a final decision; if it does, it still owes the agency that amount. Chargebacks are handled under the rules of the payment partner and the card issuer. If the payment partner recovers from Sawwiq an amount already paid to the agency because a chargeback was upheld against it, Sawwiq may deduct that amount from the agency's future payouts on the platform only, after telling the agency the details and giving it 14 days to contest it, and without interest or penalty. Sawwiq deducts nothing else from the agency's payouts.",
+      },
+    ],
+  },
+  {
+    id: "protection_limits",
+    title: { ar: "حدود الحماية", en: "What protection covers" },
+    body: [
+      {
+        ar: "تغطي حماية سوّق أمرًا محددًا: أن يُحرَّر مبلغ كل مرحلة للوكالة عند تسليم بنود قائمتها المتفق عليها وقبولها، وأن يُعاد للعميل أو يُقسم بقرار نهائي إذا لم تُسلَّم. لا تضمن سوّق نتائج تجارية (مبيعات أو متابعين أو عملاء محتملين أو ترتيبًا في محركات البحث)، ولا أداء منصات الإعلان أو قراراتها، ولا ما يتجاوز بنود القائمة، ولا ميزانية الإعلانات أو أي مبلغ يُدفع خارج المنصة. وفي وضع التجربة لا تحفظ سوّق أي مبلغ ولا تضمنه.",
+        en: "Sawwiq's protection covers one thing: each milestone's amount is released to the agency when its agreed checklist is delivered and accepted, and refunded or split under a final decision when it is not. Sawwiq does not guarantee business results (sales, followers, leads or search rankings), the performance or decisions of ad platforms, anything beyond the checklist items, or the ad budget or any money paid outside the platform. In test mode Sawwiq holds and guarantees no money at all.",
+      },
+    ],
+  },
+  clause("liability"),
+  clause("force_majeure"),
+  clause("precedence"),
+];
+
+/** The current service conditions. */
+export const SERVICE_CLAUSES = SERVICE_CLAUSES_2026_10;
+
+/** The conditions a contract was signed under (by its legal version). */
+export const serviceClausesFor = (version: string | null | undefined) => (version === "2026-09" ? SERVICE_CLAUSES_2026_09 : SERVICE_CLAUSES_2026_10);
+
+/** "7 days" / "7 أيام" / "14 يومًا", for {reviewDays} and {appealDays}. */
+export function daysText(n: number, l: "ar" | "en") {
+  if (l === "en") return n === 1 ? "one day" : `${n} days`;
+  if (n === 1) return "يوم واحد";
+  if (n === 2) return "يومين";
+  return n <= 10 ? `${n} أيام` : `${n} يومًا`;
+}
+
+/** "two rounds of changes" etc., for {rounds}. */
+export function roundsText(n: number, l: "ar" | "en") {
+  if (l === "en") return n === 0 ? "no rounds of changes" : n === 1 ? "one round of changes" : `${n} rounds of changes`;
+  if (n === 0) return "لا جولات تعديل";
+  if (n === 1) return "جولة تعديل واحدة";
+  if (n === 2) return "جولتي تعديل";
+  return n <= 10 ? `${n} جولات تعديل` : `${n} جولة تعديل`;
+}
 
 /** Closing clauses shared by contracts and NDAs: who can sign, how, and how records are kept. */
 export const COMMON_CLAUSES: Clause[] = [

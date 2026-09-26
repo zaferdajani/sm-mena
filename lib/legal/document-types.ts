@@ -27,7 +27,7 @@ export type DocSignature = {
 };
 
 export type LegalDocument = {
-  kind: "contract" | "nda";
+  kind: "contract" | "nda" | "receipt";
   locale: "ar" | "en";
   dir: "rtl" | "ltr";
   title: string;
@@ -40,6 +40,8 @@ export type LegalDocument = {
   fingerprint: string;
   /** IANA time zone for printed timestamps (the contract country's). */
   timeZone: string;
+  /** Printed diagonally on every page, e.g. "TEST MODE — NO REAL MONEY". */
+  watermark?: string;
   /** Localized labels the renderer needs. */
   labels: {
     page: string; // "Page {n} of {total}" pattern with {n} and {total}

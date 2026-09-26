@@ -3,7 +3,10 @@ import { GoogleForm } from "@/components/studio/google-form";
 import { ProfileForm } from "@/components/studio/profile-form";
 import { requireAgency } from "@/lib/auth/guards";
 import { countryOptions } from "@/lib/country-options";
-import { INDUSTRIES, PLATFORMS, serviceOptions, TEAM_SIZES } from "@/lib/labels";
+import { FOOTER_SERVICES } from "@/components/shell/site-footer";
+import { INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
+import { ROLES } from "@/lib/services/catalog";
+import { pendingTexts } from "@/lib/services/tags";
 import { mediaUrl } from "@/lib/storage";
 
 export default async function StudioProfilePage({ params, searchParams }: PageProps<"/[locale]/studio/profile">) {
@@ -22,9 +25,10 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
         <GoogleForm current={agency.googleMapsUrl ?? agency.googlePlaceId} />
       </div>
       <ProfileForm
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey) }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingTexts: (await pendingTexts(agency.pendingServices)).map((p) => p.text) }}
         options={{
-          serviceGroups: serviceOptions(locale),
+          roles: ROLES.map((r) => ({ key: r.key, label: locale === "ar" ? r.name_ar : r.name_en })),
+          popularServices: [...FOOTER_SERVICES],
           countries: await countryOptions(locale),
           platforms: PLATFORMS.map((key) => ({ key, label: tPlat(key) })),
           industries: INDUSTRIES.map((key) => ({ key, label: tInd(key) })),

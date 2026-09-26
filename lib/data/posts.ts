@@ -6,7 +6,6 @@ import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 import { contentLang, translationSearchText, type ContentLang, type PostTranslation } from "@/lib/content-lang";
-import { agencyScope } from "@/lib/demo";
 
 export type PostInput = {
   caption: string;
@@ -36,6 +35,8 @@ export type FeedFilters = {
   fullService?: boolean;
   verified?: boolean;
   agencyId?: string;
+  /** The visitor chose the demo view (lib/demo-mode.ts); set on the server only. */
+  includeDemo?: boolean;
 };
 
 export type ImageView = { url: string; thumbUrl: string; width: number; height: number; color: string; alt: string };
@@ -193,6 +194,8 @@ export function decodeCursor(value: string | undefined | null): Cursor | null {
 function filterConditions(filters: FeedFilters): SQL[] {
   const c: SQL[] = [eq(posts.status, "published"), eq(agencies.status, "active")];
   if (filters.agencyId) c.push(eq(posts.agencyId, filters.agencyId));
+  // Demo work only in the demo view (an agency's own page always shows its posts).
+  else if (!filters.includeDemo) c.push(eq(agencies.isDemo, false));
   if (filters.service) c.push(sql`${filters.service} = any(${posts.services})`);
   if (filters.platforms?.length) c.push(arrayOverlaps(posts.platforms, filters.platforms));
   if (filters.industry) c.push(eq(posts.industry, filters.industry));
@@ -271,8 +274,6 @@ export async function getFeed(
 ): Promise<{ items: PostView[]; nextCursor: string | null }> {
   const db = await getDb();
   const conditions = filterConditions(filters);
-  const scope = await agencyScope();
-  if (scope) conditions.push(scope);
   // On an agency's own grid, pinned posts come first (page one only) and are
   // excluded from the chronological pages so they never repeat.
   const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platforms?.length);
@@ -316,7 +317,7 @@ export async function getPostsByIds(ids: string[]): Promise<PostView[]> {
     .select({ post: posts, agency: agencies })
     .from(posts)
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
-    .where(and(inArray(posts.id, ids), eq(posts.status, "published"), eq(agencies.status, "active"), await agencyScope()));
+    .where(and(inArray(posts.id, ids), eq(posts.status, "published"), eq(agencies.status, "active")));
   const views = await attachImages(rows);
   const order = new Map(ids.map((id, i) => [id, i]));
   return views.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));

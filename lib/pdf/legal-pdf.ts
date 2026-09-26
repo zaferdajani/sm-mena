@@ -193,6 +193,10 @@ export async function renderLegalPdf(doc: LegalDocument): Promise<Buffer> {
   }
 
   // --------------------------------------------------------- evidence page
+  // Receipts and other unsigned records have no signature page.
+  if (doc.signatures.length) writeEvidence();
+
+  function writeEvidence() {
   pdf.addPage();
   pdf.setFillColor(...BRAND);
   pdf.rect(0, 0, PAGE_W, 26, "F");
@@ -266,12 +270,14 @@ export async function renderLegalPdf(doc: LegalDocument): Promise<Buffer> {
   row(doc.labels.fingerprint, doc.fingerprint, { font: "courier", size: 8.5 });
   y += 3;
   write(doc.labels.evidenceNote, { size: 9, color: GREY, leading: 1.5 });
+  }
 
   // ----------------------------------------------------------------- footer
   const total = pdf.getNumberOfPages();
   const shortPrint = doc.fingerprint.slice(0, 16);
   for (let n = 1; n <= total; n++) {
     pdf.setPage(n);
+    if (doc.watermark) drawWatermark(pdf, doc.watermark);
     pdf.setDrawColor(...RULE);
     pdf.setLineWidth(0.2);
     pdf.line(LEFT, FOOTER_Y - 5, RIGHT, FOOTER_Y - 5);
@@ -288,6 +294,22 @@ export async function renderLegalPdf(doc: LegalDocument): Promise<Buffer> {
   // re-pack also packs the objects into object streams when that is smaller.
   const shrunk = await shrinkDocument(Buffer.from(pdf.output("arraybuffer")), { contentType: "application/pdf" });
   return shrunk.body;
+}
+
+/** A light diagonal stamp across the page (test-mode receipts). */
+function drawWatermark(pdf: jsPDF, text: string) {
+  const label = pdfText(text);
+  setSmartFont(pdf, label, 30, "bold");
+  pdf.setTextColor(200, 60, 60);
+  try {
+    const GState = (pdf as unknown as { GState: new (o: { opacity: number }) => unknown }).GState;
+    (pdf as unknown as { setGState: (g: unknown) => void }).setGState(new GState({ opacity: 0.12 }));
+    pdf.text(label, PAGE_W / 2, PAGE_H / 2, { align: "center", angle: 35 });
+    (pdf as unknown as { setGState: (g: unknown) => void }).setGState(new GState({ opacity: 1 }));
+  } catch {
+    pdf.setTextColor(235, 200, 200);
+    pdf.text(label, PAGE_W / 2, PAGE_H / 2, { align: "center", angle: 35 });
+  }
 }
 
 /** "Page {n} of {total}" patterns are filled in; a bare word gets "n / total". */

@@ -41,12 +41,12 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
           </Link>
         </li>
         <li>
-          <a href="mailto:privacy@sawwiq.jo" className={card}>
+          <a href="mailto:privacy@sawwiq.org" className={card}>
             <Mail className="mt-0.5 size-5 text-brand" />
             <span>
               <b className="block">{t("privacy.title")}</b>
               <span className="text-sm text-muted-foreground">{t("privacy.body")}</span>
-              <span className="mt-1 block text-sm font-medium" dir="ltr">privacy@sawwiq.jo</span>
+              <span className="mt-1 block text-sm font-medium" dir="ltr">privacy@sawwiq.org</span>
             </span>
           </a>
         </li>

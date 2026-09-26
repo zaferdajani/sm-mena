@@ -1,7 +1,8 @@
-import { LifeBuoy } from "lucide-react";
+import { LifeBuoy, LogIn } from "lucide-react";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
+import { DemoBanner } from "@/components/demo/demo-banner";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeaderBell } from "@/components/notifications/header-bell";
@@ -13,6 +14,7 @@ import { chosenCountry, currentCountry } from "@/lib/country-choice";
 import { COUNTRIES } from "@/lib/countries";
 import { BottomNav, SideNav, type NavItem } from "./nav-links";
 import { SiteFooter } from "./site-footer";
+import { canUse } from "@/lib/feature-gate";
 
 /** Instagram-like shell: side navigation on desktop, top bar + bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -21,7 +23,8 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
   const locale = await getLocale();
-  const [country, chosen] = await Promise.all([currentCountry(), chosenCountry()]);
+  // Admin → Features decides which sections appear in the navigation.
+  const [country, chosen, matchOpen] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker")]);
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
   const picker = (
     <CountryPicker
@@ -36,7 +39,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
-    { href: "/match", label: t("match"), icon: "match" },
+    ...(matchOpen ? [{ href: "/match", label: t("match"), icon: "match" } as NavItem] : []),
     { href: "/saved", label: t("saved"), icon: "saved" },
     isStaffRole(user?.role)
       ? { href: "/admin", label: t("admin"), icon: "admin" }
@@ -54,7 +57,14 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {th("brand")}
         </Link>
         <nav aria-label={t("menu")}>
-          <SideNav items={[...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3)]} />
+          <SideNav
+            items={[
+              ...items.slice(0, 3),
+              { href: "/hire", label: t("hire"), icon: "hire" },
+              ...items.slice(3),
+              ...(user ? [] : [{ href: "/login", label: t("login"), icon: "login" } as NavItem]),
+            ]}
+          />
           <HeaderBell variant="row" />
         </nav>
         <div className="mt-auto grid gap-3 px-3 text-xs text-muted-foreground">
@@ -79,14 +89,22 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex min-w-0 items-center gap-1">
           {picker}
           <HeaderBell />
-          <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
-            <LifeBuoy className="size-5" />
-          </Link>
+          {user ? (
+            <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted">
+              <LifeBuoy className="size-5" />
+            </Link>
+          ) : (
+            // Signed out: sign-in takes the support icon's place (support stays in the footer).
+            <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login">
+              <LogIn className="size-5" />
+            </Link>
+          )}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
         </div>
       </header>
 
       <main className="min-w-0 flex-1 pb-20 md:pb-10">
+        <DemoBanner />
         {children}
         <SiteFooter />
       </main>

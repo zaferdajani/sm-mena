@@ -6,7 +6,7 @@ import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./cta
 import { MilestoneLedger } from "./ledger";
 import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
-export function SiteHeader({ lang, country, chosen }: { lang: Lang; country: CountryCode; chosen: boolean }) {
+export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
   const c = siteCopy[lang];
   return (
     <header className="sw-header">
@@ -31,17 +31,24 @@ export function SiteHeader({ lang, country, chosen }: { lang: Lang; country: Cou
           variant="landing"
         />
         <LangSwitch lang={lang} />
+        <a className="sw-signin" href={account.href} data-testid="landing-account">
+          <svg aria-hidden="true" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21a8 8 0 0 1 16 0" />
+          </svg>
+          <span>{account.label}</span>
+        </a>
       </div>
     </header>
   );
 }
 
-export function PaymentsSection({ lang, country }: { lang: Lang; country: CountryCode }) {
+export function PaymentsSection({ lang, country, live }: { lang: Lang; country: CountryCode; live: boolean }) {
   const p = landingCopy(lang, country).payments;
   return (
     <section aria-labelledby="payments-title" className="sw-pay" id="payments">
       <div className="sw-pay__text">
-        <p className="sw-eyebrow">{p.eyebrow}</p>
+        <p className="sw-eyebrow">{live ? p.eyebrow : p.eyebrowSoon}</p>
         <h2 className="sw-h2" id="payments-title">
           {p.title}
         </h2>
@@ -58,6 +65,8 @@ export function PaymentsSection({ lang, country }: { lang: Lang; country: Countr
           ))}
         </ul>
         <p className="sw-pay__direct">{p.direct}</p>
+        {/* Nothing is promised as live until lib/payments/readiness.ts says so. */}
+        {!live && <p className="sw-pay__direct" data-testid="payments-soon">{p.soon}</p>}
       </div>
       <div className="sw-pay__panel">
         <MilestoneLedger country={country} lang={lang} />

@@ -19,7 +19,7 @@ test("admin verifies an agency and the badge appears publicly", async ({ page },
   await row.getByTestId("verify-toggle").click();
   await expect(row.getByTestId("verify-toggle")).toHaveText("Remove verification");
   await page.goto(`/en/a/${handle}`);
-  await expect(page.locator('h1 + [aria-label="Verified"]')).toBeVisible();
+  await expect(page.locator('h1 + [aria-label="Business identity verified"]')).toBeVisible();
 });
 
 test("a reported post can be hidden by admin", async ({ page, browser }, info) => {

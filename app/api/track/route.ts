@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { isCrawler } from "@/lib/crawler";
-import { isDemoMode } from "@/lib/demo";
 import { recordPageView } from "@/lib/data/stats";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -19,8 +18,7 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   const ua = request.headers.get("user-agent") ?? "";
-  // Crawlers and demo visits (lib/demo.ts) are not traffic.
-  if (isCrawler(ua) || (await isDemoMode())) return new Response(null, { status: 204 });
+  if (isCrawler(ua)) return new Response(null, { status: 204 });
   if (!rateLimit(`track:${await clientIp()}`, 120, 10 * 60 * 1000)) return new Response(null, { status: 429 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return new Response(null, { status: 400 });

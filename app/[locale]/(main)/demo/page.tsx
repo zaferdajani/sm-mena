@@ -4,7 +4,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { enterDemoAction } from "@/app/[locale]/(main)/demo-actions";
 import { agencyName } from "@/lib/content-lang";
 import { getAgencyByHandle } from "@/lib/data/agencies";
-import { DEMO_STUDIO_HANDLES } from "@/lib/demo";
+import { DEMO_STUDIO_HANDLES } from "@/lib/demo-mode";
+import { canUse } from "@/lib/feature-gate";
 import { pageMeta } from "@/lib/seo";
 
 // Reached only by typing /demo: not linked, not indexed, not in the sitemap.
@@ -18,7 +19,9 @@ export default async function DemoPage({ params }: PageProps<"/[locale]/demo">) 
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Demo");
-  const studios = (await Promise.all(DEMO_STUDIO_HANDLES.map((h) => getAgencyByHandle(h)))).filter((a) => a?.isDemo);
+  // The demo view can be switched off (Admin → Features → demo view).
+  const open = await canUse("demo_view");
+  const studios = open ? (await Promise.all(DEMO_STUDIO_HANDLES.map((h) => getAgencyByHandle(h)))).filter((a) => a?.isDemo) : [];
   const card = "flex w-full items-start gap-3 rounded-xl border p-4 text-start hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 outline-none";
   return (
     <article className="mx-auto max-w-2xl space-y-6 px-4 py-8" data-testid="demo-page">
@@ -26,7 +29,8 @@ export default async function DemoPage({ params }: PageProps<"/[locale]/demo">) 
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <p className="text-muted-foreground">{t("intro")}</p>
       </header>
-      <ul className="grid gap-3">
+      {!open && <p className="rounded-xl border p-4 text-sm" data-testid="demo-off">{t("off")}</p>}
+      <ul className="grid gap-3" hidden={!open}>
         <li>
           <form action={enterDemoAction}>
             <button type="submit" className={card} data-testid="demo-as-client">
