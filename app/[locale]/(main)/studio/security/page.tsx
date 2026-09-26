@@ -9,7 +9,7 @@ export default async function StudioSecurity({ params }: PageProps<"/[locale]/st
   const { user, agency } = await requireAgency();
   return (
     <div className="space-y-8">
-      <SecurityPage userId={user.id} role={user.role} />
+      <SecurityPage userId={user.id} role={user.role} email={user.email} />
       <div className="max-w-xl">
         <CloseAccount handle={agency.handle} />
       </div>

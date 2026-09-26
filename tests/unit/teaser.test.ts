@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { COUNTRY_CODES } from "@/lib/countries";
-import { summariseProviders } from "@/lib/teaser";
+import { summariseProviders, vaultState } from "@/lib/teaser";
 
 describe("teaser stats", () => {
   it("lists every served country, even with no providers", () => {
@@ -37,5 +37,20 @@ describe("teaser stats", () => {
     expect(s.countries.find((c) => c.code === "eg")?.n).toBe(1);
     expect(s.total).toBe(2);
     expect(s.cities).toEqual([{ key: "riyadh", country: "sa", n: 1 }]);
+  });
+});
+
+describe("teaser vault", () => {
+  it("unlocks teasers as real seats fill and tracks progress to the next one", () => {
+    let v = vaultState(0);
+    expect(v.items.every((i) => !i.open)).toBe(true);
+    expect(v.next?.at).toBe(100);
+    expect(v.left).toBe(100);
+    v = vaultState(150);
+    expect(v.items.map((i) => i.open)).toEqual([true, false, false]);
+    expect(v.progress).toBeCloseTo(50 / 400);
+    v = vaultState(1200);
+    expect(v.next).toBeNull();
+    expect(v.progress).toBe(1);
   });
 });

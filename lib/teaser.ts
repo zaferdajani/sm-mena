@@ -43,3 +43,21 @@ export function summariseProviders(rows: ProviderRow[]): TeaserStats {
 
 /** A seat number as shown on the page and the share card: "#0042" (at least four digits). */
 export const seatLabel = (seat: number) => `#${String(seat).padStart(4, "0")}`;
+
+/**
+ * The vault: teasers about what's coming that unlock as real seats fill
+ * (docs/39). Everyone works toward the next one together (goal gradient).
+ */
+export const VAULT_MILESTONES = [
+  { key: "one", at: 100 },
+  { key: "two", at: 500 },
+  { key: "three", at: 1000 },
+] as const;
+
+export function vaultState(seats: number) {
+  const items = VAULT_MILESTONES.map((m) => ({ ...m, open: seats >= m.at }));
+  const next = items.find((m) => !m.open) ?? null;
+  const prev = [...items].reverse().find((m) => m.open)?.at ?? 0;
+  const progress = next ? Math.min(1, Math.max(0, (seats - prev) / (next.at - prev))) : 1;
+  return { items, next, progress, left: next ? next.at - seats : 0 };
+}

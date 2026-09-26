@@ -2606,7 +2606,8 @@
       "work": "Contracts and work",
       "discovery": "Finding agencies",
       "trust": "Trust",
-      "network": "Agency network"
+      "network": "Agency network",
+      "launch": "Launch"
     },
     "soonTitle": "Coming soon",
     "soonShort": "coming soon",
@@ -2666,6 +2667,11 @@
         "name": "PDF portfolio import",
         "desc": "Agencies turn a PDF portfolio into reviewed posts, clients and an introduction.",
         "soon": "Importing a PDF portfolio is coming soon. Meanwhile, add your work as posts."
+      },
+      "prelaunch_home": {
+        "name": "Pre-launch home page",
+        "desc": "The front page shows The List teaser (/soon) so providers claim founding seats. Turn it off on launch day to bring back the normal front page.",
+        "soon": "Only staff see the teaser as the front page, to preview it."
       }
     },
     "golive": {
@@ -2915,7 +2921,24 @@
     "copied": "Link copied",
     "have": "Have a seat? Sign in",
     "footnote": "Counts are of providers actually registered on Sawwiq and update continuously. Populations are approximate, from the latest official estimates.",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "ctaSeat": "Claim seat {seat} free",
+    "recentTitle": "Just claimed",
+    "recentItem": "{kind} in {city} claimed seat",
+    "kind": {
+      "agency": "An agency",
+      "freelancer": "A freelancer"
+    },
+    "vaultTitle": "The vault",
+    "vaultIntro": "Three secrets about Sawwiq, revealed one by one as the seats fill. Every seat claimed brings the next one closer.",
+    "vault": {
+      "one": "Clients won't search for you… they'll ask, and a smart assistant recommends the best fit for each request.",
+      "two": "Your page shows up on Google in Arabic and English, for every service you offer and every city you work in.",
+      "three": "Clients send their project requests, and you choose the ones that suit you."
+    },
+    "vaultOpened": "Revealed thanks to the seat holders",
+    "vaultAt": "Revealed at seat {seat}",
+    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}"
   },
   "Seat": {
     "title": "Your seat on The List",
@@ -2929,5 +2952,32 @@
     "cardUrl": "sawwiq.org/soon",
     "whatsapp": "WhatsApp",
     "whatsappText": "I just claimed my founding seat on Sawwiq, the platform of platforms for Arab social media makers. Seats are free before launch, claim yours:"
+  },
+  "Account": {
+    "title": "Sign-in details",
+    "current": "You currently sign in with:",
+    "emailTitle": "Change email (your username)",
+    "newEmail": "New email",
+    "password": "Current password",
+    "code": "Code from your authenticator app",
+    "saveEmail": "Save new email",
+    "emailDone": "Email changed. Use it to sign in from now on.",
+    "passwordTitle": "Change password",
+    "newPassword": "New password",
+    "confirm": "Type the new password again",
+    "passwordHint": "At least 8 characters. Other devices are signed out; this one stays signed in.",
+    "savePassword": "Save new password",
+    "passwordDone": "Password changed, and other devices were signed out.",
+    "errors": {
+      "badPassword": "Your current password is wrong.",
+      "badCode": "That code didn't work. Try the newest code in the app.",
+      "emailTaken": "That email is already used by another account.",
+      "samePassword": "The new password is the same as the current one.",
+      "invalid": "Check the details and try again.",
+      "short": "The new password needs at least 8 characters.",
+      "mismatch": "The two new passwords don't match.",
+      "rateLimited": "Too many attempts. Wait a little and try again.",
+      "demo": "Demo accounts are shared, so their sign-in details can't be changed."
+    }
   }
 }

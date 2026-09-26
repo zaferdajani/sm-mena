@@ -6,7 +6,7 @@ import { FEATURES, getFeatures } from "@/lib/features";
 import { formatDate } from "@/lib/format";
 import { goLiveChecklist } from "@/lib/golive";
 
-const GROUPS = ["money", "work", "discovery", "trust", "network"] as const;
+const GROUPS = ["money", "work", "discovery", "trust", "network", "launch"] as const;
 
 /**
  * Admin → Features (the OneClickConvert console model): switch each platform

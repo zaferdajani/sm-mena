@@ -29,3 +29,19 @@ is unchanged; `/soon` is the link to use in the pre-launch campaign
 - Seat numbers are permanent. Never reissue, sell or pad them, and don't claim a cap on seats unless there is one.
 - Don't write «ملك الملوك» ("king of kings") in Arabic copy; see the playbook.
 - No new personal data: registration is the existing `/join` flow (docs/08). A seat number is not personal data; the share card holds only what the provider chooses to post.
+
+## The front page until launch
+- Admin → Features → **Pre-launch home page** (`prelaunch_home`, group Launch) decides what `/` shows.
+  - **On** (the default): everyone sees the teaser as the front page.
+  - **Coming soon**: only staff see the teaser there, to preview it.
+  - **Off**: the normal landing page, for launch day.
+- The e2e server starts with it off (`playwright.config.ts`), so the landing page stays under test.
+- `/soon` always shows the teaser (`components/teaser/teaser-view.tsx`). Its top corner links to sign in, or back to the studio or admin console.
+
+## More teasers
+- **Moving hero:** the Higgsfield Reel, recut for the web as silent and looping (`public/teaser/citadel-9x16.mp4`, ~0.5 MB). It plays on phones; visitors who ask for reduced motion see the still.
+- **"Just claimed":** the latest real seats, showing seat, city and agency or freelancer only. Names never appear before launch (`recentSeats()`).
+- **The vault:** three teasers about what's coming, which unlock as seats fill: #0100, #0500 and #1000 (`vaultState()`).
+  - A progress bar counts the seats left to the next one.
+  - Locked text is never sent to the browser.
+  - The texts live in `messages/*.json` → `Teaser.vault`.

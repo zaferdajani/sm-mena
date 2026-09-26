@@ -19,7 +19,8 @@ const e2eEnv = {
   MFA_ENCRYPTION_KEY: "e2e-only-mfa-key-not-a-secret",
   // Protected payments are "coming soon" in production until the partner is live;
   // the contract suites exercise them in test mode (tests/e2e/features.spec.ts covers the switches).
-  FEATURE_DEFAULTS: "protected_payments=on",
+  // The landing page is under test; the pre-launch home has its own test (tests/e2e/teaser.spec.ts).
+  FEATURE_DEFAULTS: "protected_payments=on,prelaunch_home=off",
 };
 
 export default defineConfig({

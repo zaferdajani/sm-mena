@@ -35,6 +35,7 @@ Things that already exist keep working whatever the switch says: a signed contra
 | `reviews` | on | Review invite and review links show Coming soon; creating invites is refused. |
 | `partners` | on | Studio → Partners shows Coming soon (off: hidden from the studio menu). |
 | `demo_view` | on | "Explore the demo" is hidden; off also ignores an existing demo cookie. |
+| `prelaunch_home` | on | The front page is the normal landing page instead of the pre-launch teaser (docs/39). In "coming soon", only staff see the teaser there. |
 
 ## Protected payments: the go-live checklist
 

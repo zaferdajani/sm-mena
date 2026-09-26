@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, isNotNull, lte, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, lte, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies } from "@/lib/db/schema";
 import { summariseProviders } from "@/lib/teaser";
@@ -60,4 +60,18 @@ export async function seatOf(agency: { id: string; city: string; isDemo: boolean
     .from(agencies)
     .where(and(eq(agencies.city, agency.city), eq(agencies.isDemo, false), isNotNull(agencies.foundingSeat), lte(agencies.foundingSeat, seat)));
   return { seat, citySeat: n };
+}
+
+/**
+ * The latest claimed seats for the "just claimed" ticker: seat, city and kind
+ * only, never a name (providers are not public before launch).
+ */
+export async function recentSeats(limit = 6) {
+  const db = await getDb();
+  return db
+    .select({ seat: agencies.foundingSeat, city: agencies.city, kind: agencies.kind, at: agencies.createdAt })
+    .from(agencies)
+    .where(and(isNotNull(agencies.foundingSeat), eq(agencies.isDemo, false), eq(agencies.status, "active")))
+    .orderBy(desc(agencies.foundingSeat))
+    .limit(limit);
 }

@@ -27,6 +27,8 @@ export const FEATURES = [
   { key: "reviews", group: "trust" },
   { key: "partners", group: "network" },
   { key: "demo_view", group: "discovery" },
+  // On until launch: the front page is the pre-launch teaser (/soon, docs/39). In "soon", staff preview it.
+  { key: "prelaunch_home", group: "launch" },
 ] as const;
 export type FeatureKey = (typeof FEATURES)[number]["key"];
 export const isFeatureKey = (k: string): k is FeatureKey => FEATURES.some((f) => f.key === k);
