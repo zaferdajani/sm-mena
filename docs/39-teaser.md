@@ -11,7 +11,7 @@ is unchanged; `/soon` is the link to use in the pre-launch campaign
 - Copy: the `Teaser` namespace in `messages/ar.json` and `messages/en.json`.
 - Live numbers: `teaserStats()` (`lib/data/teaser.ts`) counts **real, active** providers. Demo agencies never count (docs/31). `summariseProviders()` (`lib/teaser.ts`, unit-tested) groups them by country and city. The city wins when it disagrees with the stored country.
 - Map: a tile map of the eight served countries (`components/teaser/provider-map.tsx`), laid out west to east and never flipped for RTL. The shade grows with each country's count. A country with no providers shows "first place open". Bars list countries and the top eight cities.
-- Look: a night theme (`.teaser-night` in `app/globals.css`, the dark tokens plus `--gold`) whatever the OS theme, with visuals made with Higgsfield in `public/teaser/` (webp, no text, logos or faces).
+- Look (redesigned 26 Sep 2026, owner decision): the site's own light theme, one column, no video, no vault, no "secrets": the provider line as the title, the next seat, one call to action, three plain reasons, who it is for, and the live count per country. The night-theme visuals in `public/teaser/` and `.teaser-night` are unused and can be removed once the redesign is approved.
 - **Founding seats:** `agencies.founding_seat` (migration 0015) numbers real providers #1, #2, #3… in join order.
   - The numbers come from the `founding_seat_seq` sequence, so a number is never reused, even if a provider leaves.
   - Demo agencies never get one.

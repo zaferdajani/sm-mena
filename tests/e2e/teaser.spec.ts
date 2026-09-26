@@ -7,7 +7,6 @@ import { ADMIN, joinAgency, login } from "./helpers";
 test("the teaser shows every country and sends providers to /join", async ({ page }) => {
   await page.goto("/ar/soon");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.getByTestId("teaser-map").locator("[data-country]")).toHaveCount(8);
   await expect(page.getByTestId("teaser-countries").locator("li")).toHaveCount(8);
   // The next founding seat is shown as #0001-style, and sharing starts with WhatsApp.
   await expect(page.getByTestId("teaser-next-seat")).toHaveText(/^#\d{4,}$/);
@@ -20,7 +19,7 @@ test("the teaser shows every country and sends providers to /join", async ({ pag
 test("the teaser has an English version", async ({ page }) => {
   await page.goto("/en/soon");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("platform of platforms");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Show your work");
 });
 
 test("a new provider gets a founding seat and a share card in the studio", async ({ page }) => {
@@ -36,8 +35,7 @@ test("a new provider gets a founding seat and a share card in the studio", async
 
 test("the teaser carries the moving hero, the vault and an account link", async ({ page }) => {
   await page.goto("/ar/soon");
-  await expect(page.getByTestId("teaser-vault").locator("li")).toHaveCount(3);
-  await expect(page.getByTestId("teaser-vault-left")).toBeVisible();
+  await expect(page.getByTestId("teaser-seat")).toBeVisible();
   await expect(page.getByTestId("teaser-account")).toHaveAttribute("href", "/ar/login");
   await expect(page.getByTestId("teaser-cta").first()).toContainText("#");
 });
