@@ -51,18 +51,45 @@ export async function hireCards(service: string, place: Place = {}, { limit = 24
  * ones), summarised the same way everywhere (lib/price-stats.ts). `range` is
  * null below MIN_PRICE_SAMPLE prices: too few to present as market data.
  */
+export type PriceBasis = "monthly_packages" | "one_off_packages" | "starting_prices";
+
+/**
+ * The price guide for a service in a place (marketing/06 §7A). Comparable
+ * packages first: real agencies' packages *for this service*, monthly ones
+ * (a retainer) separately from one-off ones (a shoot, a design), each summarised
+ * only from MIN_PRICE_SAMPLE or more. Only when neither sample is large enough
+ * does it fall back to agencies' overall starting prices, and says so (`basis`).
+ */
 export async function priceGuide(service: string, place: Place = {}) {
   const db = await getDb();
-  const rows = await db
-    .select({ price: agencies.startingPriceJod, verified: agencies.isVerified, updatedAt: agencies.updatedAt })
-    .from(agencies)
-    .where(and(where(service, place), eq(agencies.isDemo, false)));
+  const [rows, pkgs] = await Promise.all([
+    db
+      .select({ price: agencies.startingPriceJod, verified: agencies.isVerified, updatedAt: agencies.updatedAt })
+      .from(agencies)
+      .where(and(where(service, place), eq(agencies.isDemo, false))),
+    db
+      .select({ price: packages.priceJod, billing: packages.billing, updatedAt: packages.createdAt })
+      .from(packages)
+      .innerJoin(agencies, eq(packages.agencyId, agencies.id))
+      .where(and(where(service, place), eq(agencies.isDemo, false), eq(packages.service, service))),
+  ]);
+  const monthly = pkgs.filter((r) => r.billing === "monthly");
+  const oneOff = pkgs.filter((r) => r.billing !== "monthly");
   const priced = rows.filter((r) => r.price !== null && r.price > 0);
-  const summary = summarizePrices(priced.map((r) => r.price!));
-  const updatedAt = priced.reduce<Date | null>((d, r) => (!d || r.updatedAt > d ? r.updatedAt : d), null);
+  const pick = (): { basis: PriceBasis; prices: number[]; dates: Date[] } => {
+    const m = summarizePrices(monthly.map((r) => r.price));
+    if (m && m.n >= MIN_PRICE_SAMPLE) return { basis: "monthly_packages", prices: monthly.map((r) => r.price), dates: monthly.map((r) => r.updatedAt) };
+    const o = summarizePrices(oneOff.map((r) => r.price));
+    if (o && o.n >= MIN_PRICE_SAMPLE) return { basis: "one_off_packages", prices: oneOff.map((r) => r.price), dates: oneOff.map((r) => r.updatedAt) };
+    return { basis: "starting_prices", prices: priced.map((r) => r.price!), dates: priced.map((r) => r.updatedAt) };
+  };
+  const chosen = pick();
+  const summary = summarizePrices(chosen.prices);
+  const updatedAt = chosen.dates.reduce<Date | null>((d, x) => (!d || x > d ? x : d), null);
   return {
     agencies: rows.length,
     verified: rows.filter((r) => r.verified).length,
+    basis: chosen.basis,
     n: summary?.n ?? 0,
     min: summary?.min ?? null,
     max: summary?.max ?? null,

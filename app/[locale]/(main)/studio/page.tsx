@@ -10,6 +10,8 @@ import { listPackages } from "@/lib/data/packages";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { mediaUrl } from "@/lib/storage";
 import { seatOf } from "@/lib/data/teaser";
+import { foundingStatus } from "@/lib/founding";
+import { FoundingPanel } from "@/components/studio/founding-panel";
 import { countryOf, countryOfCity } from "@/lib/countries";
 import { agencyName } from "@/lib/content-lang";
 import { SITE_URL } from "@/lib/site";
@@ -56,6 +58,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </Link>
         </p>
       )}
+      {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} />}
       {seat && cityName && <SeatCard seat={seat.seat} citySeat={seat.citySeat} city={locale === "ar" ? cityName.ar : cityName.en} name={agencyName({ ...agency, nameTranslation: agency.translation?.name }, locale)} locale={locale} url={`${SITE_URL}/${locale}/soon`} />}
       {steps.some((x) => !x.done) && (
         <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">

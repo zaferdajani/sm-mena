@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
     description: data.description || `${t("accountsTitle")}: ${data.name} · ${data.agency.name}`,
     images: data.client.logoUrl ? [{ url: data.client.logoUrl, alt: data.name }] : undefined,
     noindex: data.agency.isDemo || data.agency.status !== "active",
+    country: data.agency.country,
   });
 }
 

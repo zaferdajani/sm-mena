@@ -266,7 +266,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
         <h2 className="text-lg font-bold">{t("priceTitle", { service: search, place })}</h2>
         {range ? (
           <>
-            <p className="mt-2 text-sm leading-relaxed">{t("priceBody", { count: range.n, min: range.min, max: range.max, median: range.median, currency: currencyLabel(currency, locale) })}</p>
+            <p className="mt-2 text-sm leading-relaxed">{t(price.basis === "monthly_packages" ? "priceBodyMonthly" : price.basis === "one_off_packages" ? "priceBodyOneOff" : "priceBody", { count: range.n, min: range.min, max: range.max, median: range.median, currency: currencyLabel(currency, locale) })}</p>
             <dl className="mt-4 grid grid-cols-3 gap-3 text-center">
               {([["priceMin", range.min], ["priceMedian", range.median], ["priceMax", range.max]] as const).map(([k, v]) => (
                 <div key={k} className="flex flex-col-reverse rounded-lg bg-background p-3">
@@ -275,7 +275,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
                 </div>
               ))}
             </dl>
-            <p className="mt-3 text-xs text-muted-foreground" data-testid="price-label">{t("priceLabel", { count: range.n, date: priceDate })}</p>
+            <p className="mt-3 text-xs text-muted-foreground" data-testid="price-label">{t(price.basis === "monthly_packages" ? "priceLabelMonthly" : price.basis === "one_off_packages" ? "priceLabelOneOff" : "priceLabel", { count: range.n, date: priceDate })}</p>
           </>
         ) : (
           <p className="mt-2 text-sm" data-testid="price-none">{price.n ? t("priceTooFew") : t("priceNone")}</p>

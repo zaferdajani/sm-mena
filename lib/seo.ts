@@ -10,7 +10,9 @@ import { SITE_URL } from "@/lib/site";
 
 export const BRAND = { ar: "سوّق", en: "Sawwiq" } as const;
 export const brandOf = (locale: string) => (locale === "ar" ? BRAND.ar : BRAND.en);
-const ogLocale = (locale: string) => (locale === "ar" ? "ar_JO" : "en_JO");
+/** Open Graph locale by language and country: a Saudi page is ar_SA, not ar_JO (marketing/06 §7C). */
+const OG_COUNTRY: Record<string, string> = { jo: "JO", sa: "SA", ae: "AE", kw: "KW", qa: "QA", bh: "BH", om: "OM", eg: "EG" };
+const ogLocale = (locale: string, country = "jo") => `${locale === "ar" ? "ar" : "en"}_${OG_COUNTRY[country] ?? "JO"}`;
 
 /** SEO_INDEXABLE=false keeps the whole site out of search engines (staging, before launch). */
 export const siteIndexable = () => process.env.SEO_INDEXABLE !== "false";
@@ -92,6 +94,8 @@ export function pageMeta(o: {
   images?: OgImage[];
   noindex?: boolean;
   type?: "website" | "profile" | "article";
+  /** The page's country (lib/countries.ts codes); decides the Open Graph locale. Jordan when unknown. */
+  country?: string;
 }): Metadata {
   const brand = brandOf(o.locale);
   const title = o.title ? fitTitle(o.title, o.absoluteTitle ? TITLE_MAX : TITLE_MAX - brand.length - 3) : undefined;
@@ -106,8 +110,8 @@ export function pageMeta(o: {
       type: o.type ?? "website",
       url,
       siteName: brand,
-      locale: ogLocale(o.locale),
-      alternateLocale: routing.locales.filter((l) => l !== o.locale).map(ogLocale),
+      locale: ogLocale(o.locale, o.country),
+      alternateLocale: routing.locales.filter((l) => l !== o.locale).map((l) => ogLocale(l, o.country)),
       ...(title ? { title: o.absoluteTitle ? title : `${title} · ${brand}` } : {}),
       ...(description ? { description } : {}),
       images,

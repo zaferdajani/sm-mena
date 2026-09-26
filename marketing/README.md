@@ -18,6 +18,8 @@ Branch `claude/marketing-campaign`. Prepared 25 Sep 2026. **Nothing has been pos
 
 - `06-launch-review-response.md`: what we take from the external launch review, the new positioning, and the owner decisions it needs.
 
+- `07-interviews.md`: the decision interviews (20 buyers, 15 providers) to run before spending on acquisition.
+
 ## Skills, connectors and tools used
 
 | Capability | Used for |

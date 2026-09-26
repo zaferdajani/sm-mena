@@ -33,6 +33,7 @@ import { agencyLd, breadcrumbLd } from "@/lib/structured-data";
 import { cn } from "@/lib/utils";
 import { getVisitorId, interactionKey } from "@/lib/visitor";
 import { canUse } from "@/lib/feature-gate";
+import { isFoundingMember } from "@/lib/founding";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
   const { locale, handle } = await params;
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
     description: agency.bio || t("agencyDescription", { name: agency.name, services: services.slice(0, 3).join("، "), city }),
     images: cover ? [{ url: cover.url, width: cover.width, height: cover.height, alt: agency.name }] : avatar ? [{ url: avatar, alt: agency.name }] : undefined,
     type: "profile",
+    country: agency.country,
     // Demo agencies are for trying the site, not for search results.
     noindex: agency.isDemo || agency.status !== "active",
   });
@@ -130,7 +132,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: agency.foundingSeat }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: agency.foundingSeat, founding: isFoundingMember(agency) }}
         following={following}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}

@@ -324,7 +324,9 @@
     "memberNo": "Member No. {n}",
     "confirmedByClient": "Confirmed by the client",
     "notConfirmed": "Listed by the agency",
-    "card": "Behind-the-Page card"
+    "card": "Behind-the-Page card",
+    "foundingBadge": "Founding member {year}",
+    "foundingTitle": "One of the first 100 providers on Sawwiq. A dated badge, not a quality rank."
   },
   "Explore": {
     "title": "Explore",
@@ -785,7 +787,11 @@
     "pickCountry": "{service}: pick a country",
     "priceLabel": "Starting prices from {count, plural, one {# eligible agency} other {# eligible agencies}}, updated {date}. Agency service fees only; advertising spend excluded.",
     "priceTooFew": "Fewer than 3 real agencies here have published a starting price, so we don't show a price range yet. Ask for quotes to compare.",
-    "faq3aTest": "No. Browsing, contacting agencies, getting quotes and signing a contract on Sawwiq are free. Protected payments through a licensed payment partner are coming; until they are live you pay the agency directly and Sawwiq charges nothing."
+    "faq3aTest": "No. Browsing, contacting agencies, getting quotes and signing a contract on Sawwiq are free. Protected payments through a licensed payment partner are coming; until they are live you pay the agency directly and Sawwiq charges nothing.",
+    "priceBodyMonthly": "Monthly packages for this service run from {min} to {max} {currency}; half of them cost {median} {currency} a month or less. The final price depends on the number of posts, platforms and the scope of work.",
+    "priceBodyOneOff": "One-off packages for this service run from {min} to {max} {currency}; half of them cost {median} {currency} or less. The final price depends on the deliverables, revisions and timing.",
+    "priceLabelMonthly": "From {count, plural, one {# monthly package} other {# monthly packages}} published by real agencies for this service, updated {date}. Agency service fees only; advertising spend excluded.",
+    "priceLabelOneOff": "From {count, plural, one {# one-off package} other {# one-off packages}} published by real agencies for this service, updated {date}. Agency service fees only; advertising spend excluded."
   },
   "Reviews": {
     "tab": "Reviews",
@@ -3038,7 +3044,7 @@
     "shareText": "Sawwiq: the platform of platforms for Arab social media makers. Founding seats are free before launch:",
     "copied": "Link copied",
     "have": "Have a seat? Sign in",
-    "footnote": "Counts are of providers actually registered on Sawwiq and update continuously. Populations are approximate, from the latest official estimates.",
+    "footnote": "Counts are registered provider profiles on Sawwiq (not verified businesses) and update continuously. Populations are approximate, from the latest official estimates.",
     "whatsapp": "WhatsApp",
     "ctaSeat": "Claim seat {seat} free",
     "recentTitle": "Just claimed",
@@ -3191,6 +3197,41 @@
       "badCode": "That code isn't right.",
       "expired": "That code expired. Ask for a new one.",
       "tooMany": "Too many tries for this code. Ask for a new one."
+    }
+  },
+  "Founding": {
+    "memberTitle": "Founding member · {year}",
+    "notMemberTitle": "The Founding 100",
+    "memberUntil": "Your founding benefits run until {date}.",
+    "memberPending": "Your premium tools start the day they become usable and run for {days} days from then; we'll tell you the date.",
+    "stillOpen": "{left, plural, =1 {1 founding seat left} other {# founding seats left}}: the first 100 accepted providers get hands-on help. Anyone can still register normally afterwards.",
+    "closed": "The founding cohort ({size} seats) is closed. Registration stays open and free during launch.",
+    "notRank": "A founding seat is a membership number in order of joining. It is not a quality certification, a search ranking or a share in the company.",
+    "benefits": {
+      "profile": {
+        "what": "Assisted launch profile",
+        "limit": "We help turn three permitted examples of work into case studies. Limited by our onboarding capacity."
+      },
+      "badge": {
+        "what": "Founding-member badge and permanent number",
+        "limit": "Dated; never a certification or a ranking."
+      },
+      "premium": {
+        "what": "90 days of premium tools",
+        "limit": "Starts when the tools are usable. No surprise billing."
+      },
+      "intros": {
+        "what": "Two partner introductions",
+        "limit": "Introductions to complementary providers, not guaranteed contracts."
+      },
+      "exposure": {
+        "what": "Launch exposure",
+        "limit": "Consideration for editorial showcases and events, by published criteria. No guaranteed leads."
+      },
+      "advisory": {
+        "what": "Founding advisory group",
+        "limit": "Real feedback sessions on the product. No ownership implied."
+      }
     }
   }
 }

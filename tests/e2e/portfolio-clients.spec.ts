@@ -106,6 +106,9 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(page.getByTestId("who-runs-hit")).toContainText("Confirmed by the client");
   await page.goto(`/en/a/${handle}`);
   await expect(page.getByTestId("member-no")).toContainText("Member No.");
+  // The first 100 seats are the founding cohort (docs/39); later seats on a long-lived database are not.
+  const seatNo = Number((await page.getByTestId("member-no").innerText()).replace(/\D/g, ""));
+  await expect(page.getByTestId("founding-badge")).toHaveCount(seatNo <= 100 ? 1 : 0);
   await page.goto("/en/studio");
   await expect(page.getByTestId("share-card-preview")).toBeVisible();
   await expect(page.getByTestId("behind-card").first()).toContainText("I'm the one behind the page");

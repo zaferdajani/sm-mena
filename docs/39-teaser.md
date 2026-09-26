@@ -45,3 +45,12 @@ is unchanged; `/soon` is the link to use in the pre-launch campaign
   - A progress bar counts the seats left to the next one.
   - Locked text is never sent to the browser.
   - The texts live in `messages/*.json` → `Teaser.vault`.
+
+## The Founding 100 (cohort ≠ seat number ≠ benefits)
+
+Three things that must never be confused (`lib/founding.ts`, unit-tested):
+- **Seat number**: every real provider's permanent membership number, in join order. It never expires and never means quality.
+- **Founding cohort**: the first `FOUNDING.size` (100) seats that also joined before `FOUNDING_CLOSES_AT` (env, ISO date; unset = no date). Demo agencies never. The public page header shows a dated badge, "Founding member 2026", for cohort members only.
+- **Benefits** (Studio home → Founding panel, `components/studio/founding-panel.tsx`): assisted launch profile (three permitted works into case studies; limited by onboarding capacity), the dated badge and number, 90 days of premium tools **counted from `FOUNDING_ACTIVATED_AT`** (when the tools are usable, never from joining), two partner introductions, consideration for launch showcases by published criteria, and an advisory group. Each benefit names its boundary; none is a certification, ranking, guaranteed lead or share.
+
+The teaser's footnote says what its counts are: registered provider profiles, not verified businesses.

@@ -29,6 +29,8 @@ export type ProfileData = {
   isVerified: boolean;
   isDemo: boolean;
   memberNo?: number | null;
+  /** In the Founding 100 cohort (lib/founding.ts): a dated badge, not a rank. */
+  founding?: boolean;
   postCount: number;
   followerCount: number;
   services: string[];
@@ -79,6 +81,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
           {agency.isVerified && <VerifiedBadge label={tc("verified")} className="size-5" />}
           {agency.kind === "freelancer" && <span className="rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand" data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
           {agency.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">{tc("demo")}</span>}
+          {agency.founding && <span className="rounded bg-amber-100 px-1.5 text-[11px] font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100" data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
         </div>
         <p className="text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)}

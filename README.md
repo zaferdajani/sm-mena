@@ -83,7 +83,7 @@ Configuration is in `.env.example`. Copy it to `.env.local` and fill in only wha
 
 ## Put it online
 
-The site runs on **Vercel** (free Hobby plan) with **Supabase** for the database (Postgres) and uploaded files (Storage). Everything is driven from GitHub Actions; see `docs/27-vercel.md` for the full walkthrough and `docs/25-supabase.md` for the database.
+The site runs on **Vercel** (the **Pro** plan: Hobby is for personal, non-commercial projects, and a marketplace is commercial even while it is free to use) with **Supabase** for the database (Postgres) and uploaded files (Storage). Everything is driven from GitHub Actions; see `docs/27-vercel.md` for the full walkthrough and `docs/25-supabase.md` for the database.
 
 1. In GitHub → this repo → Settings → Secrets and variables → Actions, add:
    - `VERCEL_TOKEN` (vercel.com → Account Settings → Tokens)

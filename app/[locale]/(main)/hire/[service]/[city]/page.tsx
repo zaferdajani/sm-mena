@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[se
         : t("metaDescriptionNoPrice", { count: price.agencies, service: search, place: name }),
     // Country pages are indexed like service pages; a city page only when enough real agencies there make it different from its country page.
     noindex: real < (place.country ? INDEX_MIN_SERVICE : INDEX_MIN_CITY),
+    country: place.country ?? countryOfCity(place.city) ?? undefined,
   });
 }
 

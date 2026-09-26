@@ -232,7 +232,7 @@ Alternative (not recommended): browser pixels behind a consent banner. This is f
 
 | Offer | Audience | Mechanic | Guardrail |
 |---|---|---|---|
-| **Founding agency** (first 40 per city) | Agencies | Founding badge, homepage feature, direct WhatsApp group with founder, **free Pro when paid plans start** (length = owner decision #4) | Never promise "lifetime" without sign-off (legacy copy said lifetime; see `docs/01`) |
+| **Founding 100** (first 100 accepted providers, `FOUNDING_CLOSES_AT` as the date) | Providers | Assisted launch profile (3 permitted works → case studies), dated founding badge + permanent number, 90 days of premium tools from activation, two partner introductions, consideration for showcases by published criteria, advisory group (docs/39) | Hands-on benefits capped at 100 by onboarding capacity; everyone else registers normally. Never "lifetime", never a ranking or certification |
 | **Agency invites agency** | Agencies | Each verified agency invited = +1 month Pro later | Only counts when the invited agency is verified and posts 6 works |
 | **Refer a business owner** | Agencies and businesses | Agency shares its «اطلب عرض عبر سوّق» ("Request a quote via Sawwiq") link; the client's request is routed to them first | The client still sees alternatives (relevance rule) |
 | **Launch week for businesses** | Businesses | «أول طلب لك: نساعدك تكتب البريف» ("Your first request: we'll help you write the brief"; human help via WhatsApp) | No discounts on agencies' prices by us |

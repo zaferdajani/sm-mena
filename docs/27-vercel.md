@@ -1,11 +1,11 @@
 # 27 · Running on Vercel + Supabase
 
 The site needs two things: somewhere to **run the code** and somewhere to **keep the data**.
-- **Code:** Vercel (free Hobby plan), made by the Next.js team. It runs the app as serverless functions: no server to pay for or keep awake.
+- **Code:** Vercel (**Pro plan**, $20/month per member), made by the Next.js team. It runs the app as serverless functions: no server to pay for or keep awake.
 - **Data:** Supabase (database + files), already set up (docs/25-supabase.md).
 - **Domain:** Namecheap (`sawwiq.org`).
 
-> Vercel's Hobby plan is free for personal, non-commercial projects. When Sawwiq starts charging (the 10% guarantee fee, subscriptions), Vercel's terms require the Pro plan ($20/month per member). Until then Hobby is fine.
+> Vercel's Hobby plan is for personal, non-commercial use only. A marketplace is a commercial project even while it charges nobody, so Sawwiq runs on **Pro** ($20/month per member) from the public launch; the earlier reading (Hobby until we charge) was too generous (external review, 26 Sep 2026). Owner: Vercel → project → Settings → General → upgrade before launch.
 
 ## One-time setup (about 15 minutes)
 
