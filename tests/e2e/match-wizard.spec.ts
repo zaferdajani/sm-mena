@@ -112,3 +112,21 @@ test("each answer brings the next question and its options into view", async ({ 
   await nearTop();
   await expect(choices.locator("button").first()).toBeInViewport();
 });
+
+test("the chat survives browsers whose scrollIntoView returns a Promise", async ({ page }) => {
+  // Newer Chromium returns a Promise; returned from an effect, React called it as a cleanup and the page crashed.
+  await page.addInitScript(() => {
+    const scroll = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (...args: Parameters<typeof scroll>) {
+      scroll.apply(this, args);
+      return Promise.resolve() as unknown as void;
+    };
+  });
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/ar/match");
+  await page.getByTestId("chat-input").fill("أحتاج إدارة حسابات إنستغرام لمطعم");
+  await page.getByTestId("chat-send").click();
+  await expect(page.getByTestId("wizard-choices")).toBeVisible({ timeout: 20_000 });
+  expect(errors).toEqual([]);
+});

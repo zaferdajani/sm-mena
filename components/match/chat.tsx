@@ -137,7 +137,12 @@ export function MatchChat({
     const before = shown.current;
     shown.current = turns.length;
     const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    if (pending) return thinking.current?.scrollIntoView({ behavior, block: "nearest" });
+    // Newer browsers return a Promise from scrollIntoView; an effect must
+    // return nothing or a cleanup function, so never return its result.
+    if (pending) {
+      thinking.current?.scrollIntoView({ behavior, block: "nearest" });
+      return;
+    }
     if (turns.length === before) return;
     // A restored conversation (many turns at once) opens at its latest question.
     const first =
