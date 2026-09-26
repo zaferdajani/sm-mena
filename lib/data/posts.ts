@@ -6,6 +6,7 @@ import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 import { contentLang, translationSearchText, type ContentLang, type PostTranslation } from "@/lib/content-lang";
+import { agencyScope } from "@/lib/demo";
 
 export type PostInput = {
   caption: string;
@@ -270,6 +271,8 @@ export async function getFeed(
 ): Promise<{ items: PostView[]; nextCursor: string | null }> {
   const db = await getDb();
   const conditions = filterConditions(filters);
+  const scope = await agencyScope();
+  if (scope) conditions.push(scope);
   // On an agency's own grid, pinned posts come first (page one only) and are
   // excluded from the chronological pages so they never repeat.
   const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platforms?.length);
@@ -313,7 +316,7 @@ export async function getPostsByIds(ids: string[]): Promise<PostView[]> {
     .select({ post: posts, agency: agencies })
     .from(posts)
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
-    .where(and(inArray(posts.id, ids), eq(posts.status, "published"), eq(agencies.status, "active")));
+    .where(and(inArray(posts.id, ids), eq(posts.status, "published"), eq(agencies.status, "active"), await agencyScope()));
   const views = await attachImages(rows);
   const order = new Map(ids.map((id, i) => [id, i]));
   return views.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));

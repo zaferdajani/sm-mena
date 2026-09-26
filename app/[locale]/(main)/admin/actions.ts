@@ -12,6 +12,7 @@ import { posts, users } from "@/lib/db/schema";
 import { setReviewStatus } from "@/lib/data/reviews";
 import { CITIES } from "@/lib/labels";
 import { isServiceKey } from "@/lib/taxonomy";
+import { setDemoHiddenOnMain } from "@/lib/demo";
 
 const uuid = z.string().uuid();
 const refresh = () => revalidatePath("/[locale]", "layout");
@@ -37,6 +38,14 @@ export async function setPlanAction(formData: FormData) {
     .parse(Object.fromEntries(formData));
   await setAgencyFlags(data.agencyId, { plan: data.plan, planExpiresAt: data.until ? new Date(`${data.until}T23:59:59Z`) : null });
   await audit(admin.id, "agency.plan", "agency", data.agencyId, { plan: data.plan, until: data.until });
+  refresh();
+}
+
+/** Hides the demo agencies from the main site (they stay at /demo), or shows them again. */
+export async function setDemoHiddenAction(hidden: boolean) {
+  const admin = await requireStaff("demo.remove");
+  await setDemoHiddenOnMain(hidden === true, admin.id);
+  await audit(admin.id, hidden ? "demo.hide_on_main" : "demo.show_on_main", "agency");
   refresh();
 }
 

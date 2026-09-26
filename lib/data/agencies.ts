@@ -7,6 +7,7 @@ import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 import { contentLang, type AgencyTranslation, type ContentLang } from "@/lib/content-lang";
+import { agencyScope } from "@/lib/demo";
 
 export type AgencyInput = {
   handle: string;
@@ -156,7 +157,7 @@ export async function listStripAgencies(limit = 20, country?: string): Promise<A
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`, country ? inCountry(country) : undefined))
+    .where(and(eq(agencies.status, "active"), sql`${agencies.postCount} > 0`, country ? inCountry(country) : undefined, await agencyScope()))
     .orderBy(
       desc(sql`(select max(p.created_at) from posts p where p.agency_id = ${agencies.id} and p.status = 'published')`),
     )
@@ -178,6 +179,8 @@ export async function listAgencies(filters: {
 }): Promise<AgencySummary[]> {
   const db = await getDb();
   const conditions = [eq(agencies.status, "active")];
+  const scope = await agencyScope();
+  if (scope) conditions.push(scope);
   if (filters.service) conditions.push(sql`${filters.service} = any(${agencies.services})`);
   if (filters.country) conditions.push(inCountry(filters.country));
   if (filters.city) conditions.push(eq(agencies.city, filters.city));

@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { agencies, packages } from "@/lib/db/schema";
 import { taxonomy } from "@/lib/taxonomy";
 import { suggestBudget } from "./score";
+import { agencyScope } from "@/lib/demo";
 
 /** Fewer prices than this and the budget question uses the currency's default ranges. */
 const MIN_PRICES = 4;
@@ -15,16 +16,17 @@ const MIN_PRICES = 4;
  */
 export async function groupPriceStats(country: string) {
   const db = await getDb();
+  const scope = await agencyScope();
   const [starting, pkgs] = await Promise.all([
     db
       .select({ services: agencies.services, price: agencies.startingPriceJod })
       .from(agencies)
-      .where(and(eq(agencies.status, "active"), eq(agencies.country, country))),
+      .where(and(eq(agencies.status, "active"), eq(agencies.country, country), scope)),
     db
       .select({ service: packages.service, price: packages.priceJod })
       .from(packages)
       .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-      .where(and(eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country))),
+      .where(and(eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), scope)),
   ]);
   const out: Record<string, ReturnType<typeof suggestBudget>> = {};
   for (const group of taxonomy.categories) {

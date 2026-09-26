@@ -15,7 +15,8 @@ export async function notifyNewInquiry(agency: Agency, inquiry: Inquiry) {
     "",
     `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/ar/studio/inbox`,
   ].join("\n");
-  if (!key || !to) {
+  // Demo agencies (lib/demo.ts) have fictional addresses.
+  if (!key || !to || agency.isDemo) {
     if (process.env.NODE_ENV !== "test") console.info(`[notify:mock] inquiry for @${agency.handle}`);
     return;
   }
@@ -40,7 +41,8 @@ export async function notifyNewMessage(agency: Agency, conversation: Pick<Conver
     "",
     `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/ar/studio/messages/${conversation.id}`,
   ].join("\n");
-  if (!key || !to) {
+  // Demo agencies (lib/demo.ts) have fictional addresses.
+  if (!key || !to || agency.isDemo) {
     if (process.env.NODE_ENV !== "test") console.info(`[notify:mock] chat message for @${agency.handle}`);
     return;
   }

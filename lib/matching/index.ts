@@ -9,6 +9,7 @@ import { inCountry } from "@/lib/data/agency-filters";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isServiceKey } from "@/lib/taxonomy";
 import { rank, suggestBudget, type Need, type Reason } from "./score";
+import { agencyScope } from "@/lib/demo";
 
 export type Match = AgencySummary & {
   score: number;
@@ -31,7 +32,7 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined));
+    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, await agencyScope()));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 
@@ -102,6 +103,7 @@ export async function marketPrices(service: string, city?: string | null) {
   // Prices are per currency, so always within one country: the visitor's, else the city's.
   const country = scopedCountry() ?? countryOfCity(city) ?? "jo";
   if (city && countryOfCity(city) !== country) city = null;
+  const scope = await agencyScope();
   const starting = await db
     .select({ p: agencies.startingPriceJod })
     .from(agencies)
@@ -111,13 +113,14 @@ export async function marketPrices(service: string, city?: string | null) {
         sql`${service} = any(${agencies.services})`,
         city ? eq(agencies.city, city) : undefined,
         eq(agencies.country, country),
+        scope,
       ),
     );
   const pkgs = await db
     .select({ p: packages.priceJod })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country)));
+    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), scope));
   const startingPrices = starting.map((r) => r.p).filter((p): p is number => p !== null);
   const packagePrices = pkgs.map((r) => r.p);
   return {

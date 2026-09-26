@@ -14,6 +14,7 @@ import { directionOf, routing } from "@/i18n/routing";
 import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
+import { DemoBanner } from "@/components/demo-banner";
 
 const plexArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-plex-arabic",
@@ -99,6 +100,7 @@ export default async function LocaleLayout({
           <DomGuard />
           <NextIntlClientProvider>
             <LanguageOffer texts={offerTexts} />
+            <DemoBanner />
             {children}
             <PageTracker />
             <FlagPolyfill />

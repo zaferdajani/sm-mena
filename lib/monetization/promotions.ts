@@ -5,6 +5,7 @@ import { agencies, events, promotions } from "@/lib/db/schema";
 import { inCountry } from "@/lib/data/agency-filters";
 import { getPostsByIds, type FeedFilters, type PostView } from "@/lib/data/posts";
 import { PROMOTION_RULES } from "./plans";
+import { agencyScope } from "@/lib/demo";
 
 type Placement = "feed" | "strip" | "explore";
 
@@ -25,6 +26,7 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         eq(agencies.status, "active"),
         // Sponsored slots stay in the visitor's country.
         filters.country ? inCountry(filters.country) : undefined,
+        await agencyScope(),
       ),
     );
   return rows

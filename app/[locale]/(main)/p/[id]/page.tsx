@@ -14,13 +14,14 @@ import { serviceLabel } from "@/lib/labels";
 import { isCrawlerRequest } from "@/lib/request";
 import { pageMeta, postIndexable } from "@/lib/seo";
 import { getVisitorId } from "@/lib/visitor";
+import { agencyVisible } from "@/lib/demo";
 
 const captionFits = (caption: string, locale: string) => (/[\u0600-\u06FF]/.test(caption) ? locale === "ar" : locale !== "ar");
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">): Promise<Metadata> {
   const { locale, id } = await params;
   const found = await getPost(id);
-  if (!found) return {};
+  if (!found || !(await agencyVisible(found.agency))) return {};
   const post = localizedPost(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
   const service = post.services[0] ? serviceLabel(post.services[0], locale) : "";
@@ -42,7 +43,8 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const { locale, id } = await params;
   setRequestLocale(locale);
   const found = await getPost(id);
-  if (!found) notFound();
+  // In the demo only demo agencies exist; on the main site, hidden demo agencies don't (lib/demo.ts).
+  if (!found || !(await agencyVisible(found.agency))) notFound();
   const post = localizedPost(found, locale);
   const t = await getTranslations("Post");
   const tSeo = await getTranslations("Seo");

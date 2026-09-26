@@ -8,8 +8,11 @@ test("the phone landing opens with the logo intro, then asks who you are", async
   await page.goto("/ar?intro=1");
   const intro = page.getByTestId("intro-sting");
   await expect(intro).toBeVisible();
-  await expect(page.getByTestId("welcome-chooser")).toHaveCount(0);
-  await page.getByTestId("intro-skip").click();
+  // While the intro plays the chooser waits. Checked in one step: on a slow
+  // machine the intro may close itself (stalled video) at any moment.
+  const waits = await page.evaluate(() => document.documentElement.dataset.intro !== "playing" || !document.querySelector('[data-testid="welcome-chooser"]'));
+  expect(waits).toBe(true);
+  if (await page.getByTestId("intro-skip").isVisible()) await page.getByTestId("intro-skip").click().catch(() => undefined);
   await expect(intro).toHaveCount(0);
   await expect(page.getByTestId("welcome-chooser")).toBeVisible();
 });

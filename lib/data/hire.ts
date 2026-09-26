@@ -4,14 +4,18 @@ import { agencies, packages, postImages, posts } from "@/lib/db/schema";
 import { mediaUrl } from "@/lib/storage";
 import { toSummary, type AgencySummary } from "./agencies";
 import { inCountry } from "./agency-filters";
+import { agencyScope } from "@/lib/demo";
 
 export type HireCard = AgencySummary & { thumbs: { postId: string; url: string; color: string }[] };
 
 /** A hire page's place: a city, a whole country, or (neither) every country. */
 export type Place = { city?: string; country?: string };
 
-function where(service: string, place: Place = {}) {
+/** Also limited to the demo's agencies in the demo (lib/demo.ts). */
+async function where(service: string, place: Place = {}) {
   const c = [eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`];
+  const scope = await agencyScope();
+  if (scope) c.push(scope);
   if (place.city) c.push(eq(agencies.city, place.city));
   if (place.country) c.push(inCountry(place.country));
   return and(...c);
@@ -23,7 +27,7 @@ export async function hireCards(service: string, place: Place = {}, limit = 24):
   const rows = await db
     .select()
     .from(agencies)
-    .where(where(service, place))
+    .where(await where(service, place))
     .orderBy(desc(agencies.isVerified), desc(sql`${agencies.postCount} > 0`), desc(agencies.followerCount))
     .limit(limit);
   if (!rows.length) return [];
@@ -55,7 +59,7 @@ export async function priceGuide(service: string, place: Place = {}) {
       verified: sql<number>`count(*) filter (where ${agencies.isVerified})::int`,
     })
     .from(agencies)
-    .where(where(service, place));
+    .where(await where(service, place));
   return { ...row, median: row.median === null ? null : Math.round(Number(row.median)) };
 }
 
@@ -65,7 +69,7 @@ export async function citiesForService(service: string, country?: string) {
   return db
     .select({ city: agencies.city, n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(where(service, { country }))
+    .where(await where(service, { country }))
     .groupBy(agencies.city)
     .orderBy(desc(sql`count(*)`));
 }
@@ -80,7 +84,7 @@ export async function serviceCounts({ realOnly = false } = {}) {
   const rows = await db
     .select({ service: sql<string>`unnest(${agencies.services})`, city: agencies.city, country: agencies.country })
     .from(agencies)
-    .where(realOnly ? and(eq(agencies.status, "active"), eq(agencies.isDemo, false)) : eq(agencies.status, "active"));
+    .where(and(eq(agencies.status, "active"), realOnly ? eq(agencies.isDemo, false) : await agencyScope()));
   const services = new Map<string, number>();
   const pairs = new Map<string, number>();
   const countries = new Map<string, number>();
@@ -99,7 +103,7 @@ export async function countriesForService(service: string) {
   return db
     .select({ country: agencies.country, n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(where(service))
+    .where(await where(service))
     .groupBy(agencies.country);
 }
 
@@ -109,7 +113,7 @@ export async function realAgencyCount(service: string, place: Place = {}) {
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(agencies)
-    .where(and(where(service, place), eq(agencies.isDemo, false)));
+    .where(and(await where(service, place), eq(agencies.isDemo, false)));
   return row.n;
 }
 
@@ -120,7 +124,7 @@ export async function packageFacts(service: string, place: Place = {}) {
     .select({ price: packages.priceJod, billing: packages.billing, days: packages.deliveryDays })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(where(service, place), eq(packages.service, service)));
+    .where(and(await where(service, place), eq(packages.service, service)));
   if (!rows.length) return null;
   const median = (xs: number[]) => {
     const v = [...xs].sort((a, b) => a - b);

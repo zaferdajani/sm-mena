@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { AgencyAdminButtons, RemoveDemoButton } from "@/components/admin/admin-buttons";
+import { AgencyAdminButtons, DemoOnMainButton, RemoveDemoButton } from "@/components/admin/admin-buttons";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
 import { adminListAgencies } from "@/lib/data/admin";
+import { demoHiddenOnMain } from "@/lib/demo";
 import { setPlanAction } from "../actions";
 
 export default async function AdminAgencies({ params, searchParams }: PageProps<"/[locale]/admin/agencies">) {
@@ -22,12 +23,14 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
   const tp = await getTranslations("Studio.plan");
   const rows = await adminListAgencies(q || undefined);
   const hasDemo = rows.some((r) => r.isDemo);
+  const hiddenOnMain = await demoHiddenOnMain();
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <form className="flex-1" role="search">
           <Input name="q" type="search" defaultValue={q} placeholder={t("search")} className="h-9" />
         </form>
+        {hasDemo && can(me.role, "demo.remove") && <DemoOnMainButton hidden={hiddenOnMain} />}
         {hasDemo && can(me.role, "demo.remove") && <RemoveDemoButton />}
       </div>
       <ul className="divide-y rounded-xl border" data-testid="admin-agencies">

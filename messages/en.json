@@ -590,8 +590,10 @@
     "plan": "Plan",
     "planUntil": "Until",
     "setPlan": "Update plan",
+    "hideDemoOnMain": "Hide demo agencies from the main site",
+    "showDemoOnMain": "Show demo agencies on the main site",
     "removeDemo": "Remove all demo data",
-    "removeDemoConfirm": "All demo agencies and their posts will be permanently deleted. Continue?",
+    "removeDemoConfirm": "All demo agencies and their posts will be permanently deleted, and the demo at /demo will be empty. To keep the demo, use “Hide demo agencies from the main site” instead. Continue?",
     "removedDemo": "Removed {count} demo agencies.",
     "noReports": "No open reports.",
     "reason": "Reason",
@@ -980,6 +982,7 @@
       "badPassword": "Wrong password.",
       "rateLimited": "Too many attempts. Wait a few minutes and try again.",
       "noPending": "Start again: the setup expired.",
+      "demo": "Two-factor sign-in is off for demo accounts.",
       "alreadyOn": "Two-factor sign-in is already on.",
       "notConfigured": "Two-factor sign-in isn't available: the server has no MFA_ENCRYPTION_KEY.",
       "requiredForAdmins": "Admins can't turn off two-factor sign-in."
@@ -2183,5 +2186,21 @@
     "label": "Sawwiq intro",
     "skip": "Skip",
     "soundOn": "Sound on"
+  },
+  "Demo": {
+    "title": "Sawwiq demo",
+    "intro": "Explore Sawwiq with sample agencies, work and requests. Everything here is fictional, and nothing reaches real agencies or clients.",
+    "asClient": {
+      "title": "Browse as a client",
+      "body": "See the work, search agencies and try the AI matchmaker. No sign-in needed."
+    },
+    "asAgency": {
+      "title": "Try the studio as {name}",
+      "body": "Edit the page, post work, answer requests and send quotes. No sign-in needed."
+    },
+    "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
+    "banner": "You're in the demo: sample agencies and data.",
+    "exit": "Leave demo",
+    "blocked": "Not available in the demo."
   }
 }

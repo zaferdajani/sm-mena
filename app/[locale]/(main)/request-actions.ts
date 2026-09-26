@@ -6,6 +6,7 @@ import { currentCountry } from "@/lib/country-choice";
 import { z } from "zod";
 import { closeRequest, createProjectRequest, getRequestByToken, getRequestForVisitor, INVITED, setProposalStatus } from "@/lib/data/requests";
 import { CITIES, PLATFORMS } from "@/lib/labels";
+import { isDemoMode } from "@/lib/demo";
 import { findMatches } from "@/lib/matching";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -63,7 +64,8 @@ export async function createRequestAction(_: RequestState, formData: FormData): 
       description: d.description,
       fullService,
       brands: d.brands || null,
-      source: d.source,
+      // In the demo (lib/demo.ts) requests only ever reach demo agencies.
+      source: (await isDemoMode()) ? "demo" : d.source,
       visitorId,
     },
     matches.map((m) => ({ agencyId: m.id, score: m.score })),

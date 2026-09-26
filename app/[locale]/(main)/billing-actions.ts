@@ -16,7 +16,8 @@ export async function checkoutPlanAction(formData: FormData) {
     .object({ plan: z.enum(["pro", "business"]), months: z.coerce.number().refine((m) => (PLAN_MONTHS as readonly number[]).includes(m)) })
     .parse(Object.fromEntries(formData));
   // Checkout is open once revenue is switched on; the test provider also allows it for trying the flow.
-  if (!monetizationEnabled() && !isTestPayments()) return redirect({ href: "/studio/billing", locale });
+  // Demo agencies (lib/demo.ts) never pay.
+  if (agency.isDemo || (!monetizationEnabled() && !isTestPayments())) return redirect({ href: "/studio/billing", locale });
   if (!rateLimit(`checkout:${agency.id}`, 10, 60 * 60 * 1000)) return redirect({ href: "/studio/billing?error=rate", locale });
   const { redirectPath } = await startPlanCheckout(agency.id, data.plan, data.months, user.id);
   return redirect({ href: redirectPath, locale });

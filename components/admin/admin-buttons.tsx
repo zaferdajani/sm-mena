@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import {
   removeDemoAction,
+  setDemoHiddenAction,
   resolveReportAction,
   setPostStatusAction,
   setPromotionStatusAction,
@@ -49,6 +50,16 @@ export function RemoveDemoButton() {
       }}
     >
       {t("removeDemo")}
+    </ActionButton>
+  );
+}
+
+/** Hides or shows the demo agencies on the main site; /demo keeps them either way (lib/demo.ts). */
+export function DemoOnMainButton({ hidden }: { hidden: boolean }) {
+  const t = useTranslations("Admin");
+  return (
+    <ActionButton variant="outline" onRun={() => setDemoHiddenAction(!hidden)} testId="demo-on-main">
+      {t(hidden ? "showDemoOnMain" : "hideDemoOnMain")}
     </ActionButton>
   );
 }
