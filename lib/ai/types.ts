@@ -14,6 +14,8 @@ export type Recommendation = {
   summary: string;
   /** Currency of the budget amounts (the visitor's country); JOD when missing. */
   currency?: string;
+  /** Nothing matched everything: these are the closest agencies (docs/35). */
+  closest?: boolean;
 };
 
 /** "mock" runs the real tool loop with a scripted, offline stand-in for the model. */

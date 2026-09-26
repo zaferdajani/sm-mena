@@ -28,6 +28,7 @@ Things that already exist keep working whatever the switch says: a signed contra
 | `paid_plans` | coming soon (`on` if `MONETIZATION_ENABLED=true`) | No plan checkout, and no paid ranking boost. Pilots can buy through the checkout. |
 | `contracts` | on | "New contract" shows Coming soon; existing contracts work. |
 | `ndas` | on | "New NDA" shows Coming soon. |
+| `portfolio_import` | on | The "Import a PDF portfolio" link is hidden and `/studio/import` shows Coming soon (docs/36). |
 | `quote_requests` | on | The request form, "Get quotes" on hire pages and the matchmaker's "send my project" step are hidden. |
 | `ai_matchmaker` | on | `/match` shows Coming soon (off: redirects to Explore); the nav item and home CTA are hidden; `/api/match` answers 404. |
 | `messaging` | on | The "Message" button on agency pages is hidden. |

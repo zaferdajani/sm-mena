@@ -3,6 +3,10 @@ import { z } from "zod";
 import { findMatches, marketPrices, type Match } from "@/lib/matching";
 import { CITIES, INDUSTRIES, PLATFORMS } from "@/lib/labels";
 import { allServices } from "@/lib/taxonomy";
+import { DEFAULT_COUNTRY, currencyOf } from "@/lib/countries";
+import { closestAsMatches } from "@/lib/matching/closest";
+import { describeDifferences } from "@/lib/matching/describe";
+import { scopedCountry, scopedIncludeDemo } from "@/lib/matching/scope";
 
 const SERVICE_KEYS = allServices.map((s) => s.key) as [string, ...string[]];
 const CITY_KEYS = [...CITIES] as [string, ...string[]];
@@ -113,7 +117,18 @@ export async function runTool(name: string, input: unknown, state: ToolState): P
       const i = searchInput.parse(input);
       const matches = await findMatches({ services: i.services, city: i.city, budgetMaxJod: i.budget_max_jod, platforms: i.platforms, industry: i.industry });
       matches.forEach((m) => state.seen.set(m.handle, m));
-      return { content: JSON.stringify({ count: matches.length, agencies: matches.map(forModel) }) };
+      if (matches.length) return { content: JSON.stringify({ count: matches.length, agencies: matches.map(forModel) }) };
+      // Nothing fits everything: offer the closest agencies, with what differs (docs/35).
+      const country = scopedCountry() ?? DEFAULT_COUNTRY;
+      const closest = await closestAsMatches({ services: i.services, city: i.city, country, platforms: i.platforms, budgetMax: i.budget_max_jod, industry: i.industry }, { includeDemo: scopedIncludeDemo() });
+      closest.forEach((m) => state.seen.set(m.handle, m));
+      return {
+        content: JSON.stringify({
+          count: 0,
+          note: "No agency matches everything the client asked for. Tell the client that plainly, then recommend the closest agencies below (with recommend_agencies); the cards show each one's match percentage and differences.",
+          closest: closest.map((m) => ({ ...forModel(m), match_percent: m.closeness?.percent, differences: describeDifferences(m.closeness?.differences ?? [], "en", currencyOf(country)).map((l) => `${l.status}: ${l.text}`) })),
+        }),
+      };
     }
     if (name === "price_guide") {
       const i = priceInput.parse(input);
@@ -125,6 +140,7 @@ export async function runTool(name: string, input: unknown, state: ToolState): P
       if (!agencies.length) return { content: "None of these handles came from search_agencies. Search first, then recommend.", isError: true };
       state.recommendation = {
         agencies,
+        closest: agencies.some((a) => a.closeness) || undefined,
         services: i.services,
         city: i.city,
         platforms: i.platforms,

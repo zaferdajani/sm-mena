@@ -74,6 +74,7 @@ export function MatchChat({
   aiMode: boolean;
 }) {
   const t = useTranslations("Match");
+  const tClose = useTranslations("Closest");
   const tw = useTranslations("MatchWizard");
   const tCountry = useTranslations("Countries");
   const tCity = useTranslations("Cities");
@@ -253,6 +254,11 @@ export function MatchChat({
             {turn.content && <Bubble role={turn.role}>{turn.content}</Bubble>}
             {turn.recommendation && (
               <div className="space-y-3" data-testid="recommendation">
+                {turn.recommendation.closest && (
+                  <p className="rounded-lg border border-dashed p-3 text-sm" role="status" data-testid="closest-notice">
+                    <b>{tClose("title")}</b> · {tClose("body")}
+                  </p>
+                )}
                 {(turn.recommendation.budgetMinJod !== null || turn.recommendation.budgetMaxJod !== null) && (
                   <div className="flex items-start gap-3 rounded-xl border bg-brand-soft p-3" data-testid="budget-card">
                     <Wallet className="mt-0.5 size-5 shrink-0 text-brand" />
