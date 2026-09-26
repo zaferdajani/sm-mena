@@ -3,7 +3,8 @@ import { createTranslator } from "next-intl";
 import { citiesOf, countryOf, DEFAULT_COUNTRY, isCountryCode, type CountryCode } from "@/lib/countries";
 import { serviceLabel } from "@/lib/labels";
 import { findMatches, marketPrices } from "@/lib/matching";
-import { scopedCountry } from "@/lib/matching/scope";
+import { closestAsMatches } from "@/lib/matching/closest";
+import { scopedCountry, scopedIncludeDemo } from "@/lib/matching/scope";
 import { emptyNeed, exampleBudget, formatAmount, mergeText, nextStep, resolveServices, skipRest, type WizardNeed } from "@/lib/match-wizard";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
@@ -114,6 +115,32 @@ export async function basicMatchmaker(history: ChatMessage[], locale: string, wi
     : t("fallback.noPrices", { country: countryLabel });
 
   if (!matches.length) {
+    // Nothing fits everything: say so, then the closest agencies with what differs (docs/35).
+    const closest = await closestAsMatches(
+      { services, city: need.city, country, platforms: need.platforms, budgetMin: need.budgetMin, budgetMax: need.budgetMax, industry },
+      { includeDemo: scopedIncludeDemo() },
+    );
+    if (closest.length) {
+      return {
+        mode: "basic",
+        provider: "basic",
+        reply: t("closestReply", { country: countryLabel }),
+        recommendation: {
+          agencies: closest,
+          services,
+          city: need.city,
+          platforms: need.platforms,
+          budgetMinJod: budgetMin,
+          budgetMaxJod: budgetMax,
+          budgetNote: note,
+          summary: last.slice(0, 1500),
+          currency: c.currency,
+          closest: true,
+        },
+        suggestions: wizard ? [] : [t("fallback.chipAnyCity"), t("fallback.chipHigherBudget")],
+        need: wizard ? need : undefined,
+      };
+    }
     return {
       mode: "basic",
       provider: "basic",

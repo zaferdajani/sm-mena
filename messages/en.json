@@ -2381,7 +2381,8 @@
       "chipOtherCity": "Another city",
       "chipAnyCity": "Any city",
       "chipHigherBudget": "Higher budget"
-    }
+    },
+    "closestReply": "No agency in {country} matches everything you asked for. Here are the closest ones, with how well each fits and what differs."
   },
   "Welcome": {
     "title": "Welcome to Sawwiq",
@@ -2638,6 +2639,37 @@
         "disputeCover": "Someone assigned to review disputes and stuck payouts every day",
         "liveSwitch": "Live switch set in the deployment"
       }
+    }
+  },
+  "Closest": {
+    "title": "No exact matches",
+    "body": "No agency matches everything you asked for. These are the closest ones, with what differs from your request.",
+    "hireBody": "No agency offers this here yet. These are the closest ones, with what differs.",
+    "none": "Nothing close enough either. Try fewer filters, or send your project and let agencies come to you.",
+    "match": "{percent}% match",
+    "view": "View profile",
+    "send": "Send your project to agencies",
+    "diff": {
+      "servicesOffered": "Offers {services}",
+      "servicesMissing": "Doesn't offer {services}",
+      "servicesRelated": "Offers something similar: {services}",
+      "inCity": "In {city}",
+      "inCountry": "Based in {country}",
+      "otherCity": "In {city}, not {wanted}",
+      "servesCountry": "Based in {country}; works with clients in {wanted}",
+      "elsewhere": "Based in {country}; doesn't list {wanted}",
+      "priceUnknown": "Hasn't published a price yet",
+      "withinBudget": "Starts at {price}, within your budget",
+      "overBudget": "Starts at {price}: {over} over your maximum of {max}",
+      "belowMin": "Its packages cost less than your minimum of {min}",
+      "platformsOffered": "Works on {platforms}",
+      "platformsMissing": "Doesn't list {platforms}",
+      "industryMet": "Has worked with {industry}",
+      "industryMissing": "Hasn't listed {industry} experience",
+      "fullServiceMet": "Covers content, ads and branding",
+      "fullServicePartly": "Covers {count, plural, =0 {none} one {one} other {#}} of content, ads and branding",
+      "verifiedMet": "Business identity verified",
+      "verifiedMissing": "Business identity not verified yet"
     }
   }
 }

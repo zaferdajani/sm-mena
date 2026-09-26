@@ -9,6 +9,7 @@ import { inCountry, realUnless } from "@/lib/data/agency-filters";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { isServiceKey } from "@/lib/taxonomy";
 import { MIN_PRICE_SAMPLE } from "@/lib/price-stats";
+import type { Difference } from "./closeness";
 import { rank, suggestBudget, type Need, type Reason } from "./score";
 
 export type Match = AgencySummary & {
@@ -17,6 +18,8 @@ export type Match = AgencySummary & {
   reasons: Reason[];
   bio: string;
   cheapestPackage: { title: string; priceJod: number; billing: "monthly" | "one_off" } | null;
+  /** Set when nothing matched everything: how close this agency comes and what differs (docs/35). */
+  closeness?: { percent: number; differences: Difference[] };
 };
 
 /** Loads candidates, scores them, and returns the best matches with display data. */

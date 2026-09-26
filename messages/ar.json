@@ -2381,7 +2381,8 @@
       "chipOtherCity": "في مدينة أخرى",
       "chipAnyCity": "في أي مدينة",
       "chipHigherBudget": "ميزانية أعلى"
-    }
+    },
+    "closestReply": "لا توجد وكالة في {country} تطابق كل ما طلبته. هذه أقرب الوكالات، مع نسبة المطابقة وما يختلف عن طلبك."
   },
   "Welcome": {
     "title": "أهلاً بك في سوّق",
@@ -2638,6 +2639,37 @@
         "disputeCover": "تم تكليف شخص بمراجعة الخلافات والتحويلات المتعثرة يومياً",
         "liveSwitch": "تم ضبط مفتاح التفعيل في النشر"
       }
+    }
+  },
+  "Closest": {
+    "title": "لا توجد نتائج مطابقة تماماً",
+    "body": "لا توجد وكالة تطابق كل ما طلبته. هذه أقرب الوكالات، مع توضيح ما يختلف عن طلبك.",
+    "hireBody": "لا توجد وكالة تقدّم هذه الخدمة هنا بعد. هذه أقرب الوكالات، مع توضيح ما يختلف.",
+    "none": "لا توجد وكالات قريبة بما يكفي أيضاً. جرّب فلاتر أقل، أو أرسل مشروعك ودع الوكالات تتواصل معك.",
+    "match": "مطابقة {percent}٪",
+    "view": "عرض الصفحة",
+    "send": "أرسل مشروعك للوكالات",
+    "diff": {
+      "servicesOffered": "تقدّم {services}",
+      "servicesMissing": "لا تقدّم {services}",
+      "servicesRelated": "تقدّم خدمة قريبة: {services}",
+      "inCity": "في {city}",
+      "inCountry": "مقرّها في {country}",
+      "otherCity": "في {city} وليست في {wanted}",
+      "servesCountry": "مقرّها في {country}، وتعمل مع عملاء في {wanted}",
+      "elsewhere": "مقرّها في {country}، ولا تذكر {wanted}",
+      "priceUnknown": "لم تنشر سعراً بعد",
+      "withinBudget": "تبدأ من {price}، ضمن ميزانيتك",
+      "overBudget": "تبدأ من {price}: أعلى بـ{over} من حدّك الأقصى {max}",
+      "belowMin": "باقاتها أقل من حدّك الأدنى {min}",
+      "platformsOffered": "تعمل على {platforms}",
+      "platformsMissing": "لا تذكر {platforms}",
+      "industryMet": "عملت مع قطاع {industry}",
+      "industryMissing": "لم تذكر خبرة في قطاع {industry}",
+      "fullServiceMet": "تغطي المحتوى والإعلانات والهوية",
+      "fullServicePartly": "تغطي {count, plural, =0 {لا شيء} one {واحداً} two {اثنين} few {#} many {#} other {#}} من المحتوى والإعلانات والهوية",
+      "verifiedMet": "هوية النشاط التجاري موثّقة",
+      "verifiedMissing": "هوية النشاط التجاري غير موثّقة بعد"
     }
   }
 }

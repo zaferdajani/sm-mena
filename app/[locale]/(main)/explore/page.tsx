@@ -15,6 +15,10 @@ import { citiesOf, COUNTRIES, countryName, countryOfCity, currencyOf } from "@/l
 import { currentCountry } from "@/lib/country-choice";
 import { cn } from "@/lib/utils";
 import { getVisitorId } from "@/lib/visitor";
+import { ClosestMatches } from "@/components/closest/closest-matches";
+import { canUse } from "@/lib/feature-gate";
+import { closestAgencies } from "@/lib/matching/closest";
+import { hasRequirements } from "@/lib/matching/closeness";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]/explore">): Promise<Metadata> {
   const { locale } = await params;
@@ -62,6 +66,22 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const posts = tab === "posts" ? await feedPage(filters, null, visitorId, { placement: "explore", limit: 24 }) : null;
   const agencies = tab === "agencies" ? await listAgencies({ ...filters, limit: 60 }) : null;
   const count = posts ? posts.items.filter((i) => !i.sponsored).length : (agencies?.length ?? 0);
+  // Nothing matched every filter: say so, then show the closest agencies and what differs (docs/35).
+  const requirements = { services: filters.service ? [filters.service] : [], city: filters.city, country, platforms: filters.platforms, budgetMin: filters.minPrice, budgetMax: filters.maxPrice, industry: filters.industry, fullService: filters.fullService, verified: filters.verified };
+  const closest = count === 0 && hasRequirements(requirements) ? await closestAgencies(requirements, { includeDemo: filters.includeDemo }) : null;
+  const closestBlock = closest ? (
+    <>
+      <ClosestMatches
+        matches={closest}
+        currency={currency}
+        viewCountry={country}
+        sendHref={(await canUse("quote_requests")) ? { pathname: "/request/new", query: { ...(filters.service ? { service: filters.service } : {}), ...(filters.city ? { city: filters.city } : {}) } } : null}
+      />
+      <Empty text="" clear={tc("clearFilters")} />
+    </>
+  ) : (
+    <Empty text={tc("noResults")} clear={tc("clearFilters")} />
+  );
   const resultLabel = t("results", { count }) + (posts?.nextCursor ? "+" : "");
   const query = Object.fromEntries(Object.entries(sp).filter(([k, v]) => k !== "tab" && typeof v === "string")) as Record<string, string>;
 
@@ -99,7 +119,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           (posts.items.length ? (
             <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
           ) : (
-            hasActiveFilters(p) ? <Empty text={tc("noResults")} clear={tc("clearFilters")} /> : <EmptySupply />
+            hasActiveFilters(p) ? closestBlock : <EmptySupply />
           ))}
         {agencies &&
           (agencies.length ? (
@@ -109,7 +129,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
               ))}
             </div>
           ) : (
-            hasActiveFilters(p) ? <Empty text={tc("noResults")} clear={tc("clearFilters")} /> : <EmptySupply />
+            hasActiveFilters(p) ? closestBlock : <EmptySupply />
           ))}
       </div>
     </div>
@@ -118,8 +138,8 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
 
 function Empty({ text, clear }: { text: string; clear: string | null }) {
   return (
-    <div className="px-4 py-16 text-center text-muted-foreground">
-      <p>{text}</p>
+    <div className={text ? "px-4 py-16 text-center text-muted-foreground" : "px-4 pb-8 text-center text-muted-foreground"}>
+      {text && <p>{text}</p>}
       {clear && (
         <Link href="/explore" className="mt-3 inline-block text-sm font-medium text-brand">
           {clear}

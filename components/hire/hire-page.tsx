@@ -22,6 +22,8 @@ import { taxonomy } from "@/lib/taxonomy";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
 import { canUse } from "@/lib/feature-gate";
+import { ClosestMatches } from "@/components/closest/closest-matches";
+import { closestAgencies } from "@/lib/matching/closest";
 
 export async function hireCopy(locale: string, service: string, where: Place = {}) {
   const t = await getTranslations({ locale, namespace: "Hire" });
@@ -70,6 +72,8 @@ export async function HirePage({ locale, service, city, country: countryParam }:
   const pageUrl = `${SITE_URL}/${locale}/hire/${service}${placePath ? `/${placePath}` : ""}`;
   // Structured data, counts and prices only ever describe real agencies (docs/31).
   const real = cards.filter((a) => !a.isDemo);
+  // No agency here offers it: the closest ones (another city, a similar service), with what differs (docs/35).
+  const closest = !cards.length && country ? await closestAgencies({ services: [service], city: city ?? null, country }, { includeDemo }) : null;
   const range = country ? price.range : null;
   const priceDate = price.updatedAt ? new Intl.DateTimeFormat(locale === "ar" ? "ar" : "en", { month: "long", year: "numeric" }).format(price.updatedAt) : "";
 
@@ -194,6 +198,15 @@ export async function HirePage({ locale, service, city, country: countryParam }:
             ))}
           </ul>
         ) : (
+          closest && closest.length ? (
+            <ClosestMatches
+              matches={closest}
+              currency={currency}
+              viewCountry={country!}
+              variant="hire"
+              sendHref={canRequest ? { pathname: "/request/new", query: { service, ...(city ? { city } : {}) } } : null}
+            />
+          ) : (
           <div className="rounded-xl border">
             <EmptySupply text={t("noAgencies")}>
               {city && country && (
@@ -203,6 +216,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
               )}
             </EmptySupply>
           </div>
+          )
         )}
       </section>
 

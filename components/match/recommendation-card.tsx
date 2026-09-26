@@ -13,6 +13,8 @@ import { formatJod } from "@/lib/format";
 import type { Match } from "@/lib/matching";
 import { serviceLabel } from "@/lib/labels";
 import type { Reason } from "@/lib/matching/score";
+import { diffLines } from "@/lib/matching/describe-core";
+import { DiffList, MatchMeter } from "@/components/closest/match-bits";
 import { whatsappLink } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +47,18 @@ export function RecommendationCard({ agency, rank, country }: { agency: Match; r
   const reasons = agency.reasons.filter((r) => r.code !== "featured" && r.code !== "verified");
   const abroad = agency.country !== country;
   const money = (n: number) => formatJod(n, locale, currencyOf(agency.country));
+  const tClose = useTranslations("Closest");
+  const tPlat = useTranslations("Platforms");
+  const tInd = useTranslations("Industries");
+  // A "closest" suggestion (nothing matched everything): its match percentage and what differs (docs/35).
+  const close = agency.closeness
+    ? diffLines(agency.closeness.differences, locale, currencyOf(country), {
+        t: (k, v) => tClose(`diff.${k}` as "diff.inCity", v as never),
+        city: (k) => tCity(k as "amman"),
+        platform: (k) => tPlat(k as "instagram"),
+        industry: (k) => tInd(k as "other"),
+      })
+    : null;
   return (
     <article className={cn("rounded-xl border bg-card p-3", agency.featured && "border-amber-300")} data-testid="recommendation-card" data-country={agency.country}>
       <div className="flex items-start gap-3">
@@ -62,7 +76,8 @@ export function RecommendationCard({ agency, rank, country }: { agency: Match; r
             )}
           </p>
           <p className="text-xs text-muted-foreground">
-            <span dir="ltr">@{agency.handle}</span> · {countryOf(agency.country).flag} {tCity(agency.city)} · {t("matchScore", { score: agency.score })}
+            <span dir="ltr">@{agency.handle}</span> · {countryOf(agency.country).flag} {tCity(agency.city)}
+            {!agency.closeness && <> · {t("matchScore", { score: agency.score })}</>}
           </p>
           {abroad && isCountryCode(agency.country) && isCountryCode(country) && (
             <p className="mt-0.5 text-xs text-muted-foreground" data-testid="serves-tag">
@@ -80,6 +95,12 @@ export function RecommendationCard({ agency, rank, country }: { agency: Match; r
                 ? tc("from", { price: money(agency.startingPriceJod) })
                 : agency.services.slice(0, 2).map((s) => serviceLabel(s, locale)).join(" · ")}
           </p>
+          {agency.closeness && close && (
+            <div className="mt-2 space-y-1.5" data-testid="closest-card">
+              <MatchMeter percent={agency.closeness.percent} label={tClose("match", { percent: agency.closeness.percent })} />
+              <DiffList lines={close} />
+            </div>
+          )}
           {reasons.length > 0 && (
             <ul className="mt-2 flex flex-wrap gap-1" aria-label={t("why")}>
               {reasons.map((r, i) => (
