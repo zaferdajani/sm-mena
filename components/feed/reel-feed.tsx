@@ -24,7 +24,7 @@ function measure(root: HTMLElement) {
 /**
  * The phone feed (docs/36-feed.md): one post per screen, swipe up for the next,
  * snapping like TikTok. The page scrolls (so the header and bottom bar stay);
- * `interstitial` is a full-screen card shown after the third post.
+ * `interstitial` is a full-screen card shown after the third post (or the last, if fewer).
  */
 export function ReelFeed({ initial, filters, interstitial }: { initial: FeedPage; filters: FeedFilters; interstitial?: React.ReactNode }) {
   const t = useTranslations("Feed");
@@ -82,7 +82,7 @@ export function ReelFeed({ initial, filters, interstitial }: { initial: FeedPage
       {items.map((post, i) => (
         <Fragment key={`${post.id}:${post.sponsored?.promotionId ?? ""}`}>
           <ReelCard post={post} priority={i === 0} />
-          {i === 2 && interstitial && (
+          {i === Math.min(2, items.length - 1) && interstitial && (
             <section
               className="flex snap-start snap-always flex-col justify-center overflow-hidden bg-brand-soft px-6"
               style={{ height: "var(--reel-h, calc(100svh - 8rem))", scrollMarginTop: "var(--reel-top, 0px)" }}

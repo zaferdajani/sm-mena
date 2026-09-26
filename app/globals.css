@@ -209,6 +209,13 @@
 html.reel-snap {
   scroll-snap-type: y mandatory;
 }
+/* The very top (language offer, demo banner, header) and the footer stay reachable. */
+html.reel-snap body {
+  scroll-snap-align: start;
+}
+html.reel-snap [data-testid="site-footer"] {
+  scroll-snap-align: end;
+}
 @keyframes reel-burst {
   0% { opacity: 0; transform: scale(0.4); }
   15% { opacity: 0.95; transform: scale(1.15); }

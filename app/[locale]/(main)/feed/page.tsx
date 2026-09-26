@@ -87,6 +87,22 @@ export default async function FeedPage({ params, searchParams }: PageProps<"/[lo
     </div>
   );
 
+  // Links to the hire hubs: on every layout (search engines crawl as phones too).
+  const popular = (
+    <nav aria-label={ts("popularServices")} className="mt-4 border-t pt-3">
+      <h2 className="mb-2 text-xs font-medium text-muted-foreground">{ts("popularServices")}</h2>
+      <ul className="flex flex-wrap gap-1.5">
+        {FOOTER_SERVICES.map((s) => (
+          <li key={s}>
+            <Link href={`/hire/${s}`} className="inline-block rounded-full bg-accent px-2.5 py-1 text-xs text-accent-foreground hover:underline" data-testid="home-service-link">
+              {serviceLinkText(s, locale)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+
   if (phone) {
     return (
       <div data-testid="feed-reels">
@@ -108,6 +124,7 @@ export default async function FeedPage({ params, searchParams }: PageProps<"/[lo
                 <h2 className="mt-1 text-2xl leading-snug">{introTitle}</h2>
                 <p className="mt-2 text-muted-foreground">{t("introBody")}</p>
                 {ctas}
+                {popular}
               </>
             }
           />
@@ -132,18 +149,7 @@ export default async function FeedPage({ params, searchParams }: PageProps<"/[lo
           <h1 className="text-xl leading-snug">{introTitle}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("introBody")}</p>
           {ctas}
-          <nav aria-label={ts("popularServices")} className="mt-4 border-t pt-3">
-            <h2 className="mb-2 text-xs font-medium text-muted-foreground">{ts("popularServices")}</h2>
-            <ul className="flex flex-wrap gap-1.5">
-              {FOOTER_SERVICES.map((s) => (
-                <li key={s}>
-                  <Link href={`/hire/${s}`} className="inline-block rounded-full bg-accent px-2.5 py-1 text-xs text-accent-foreground hover:underline" data-testid="home-service-link">
-                    {serviceLinkText(s, locale)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {popular}
         </section>
 
         {suggested.length > 0 && (
