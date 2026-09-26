@@ -7,7 +7,7 @@
   {"type":"clip","src":"clips/V05.mp4","in":0.2,"dur":4.3,"amb":0.3},
   {"type":"clip","src":"clips/V10.mp4","in":1.4,"dur":2.1,"amb":0.25},
   {"type":"clip","src":"clips/V06.mp4","in":1.0,"dur":2.0,"amb":0.25},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.9,"card_at":3.4,"endcard":{"tag":"The first Arabic marketplace for marketing agencies","cta":"Ask the matchmaker","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.9,"card_at":3.4,"endcard":{"tag":"Your marketing team starts here","cta":"Ask the matchmaker","y":1420}}],
  "captions":[
   {"t":"Need a marketing agency?","s":"Not sure who to pick?","start":0.2,"end":2.7},
   {"t":"With <span class='hl'>Sawwiq</span>","s":"see their real work and prices","start":2.8,"end":5.4},

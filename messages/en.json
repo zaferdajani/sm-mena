@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "Sawwiq · The first Arabic marketplace for marketing & social media agencies",
-    "description": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices and direct WhatsApp contact."
+    "title": "Sawwiq · Your marketing team starts here: marketing & social media agencies",
+    "description": "The Arabic network to find, compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices and direct WhatsApp contact."
   },
   "Home": {
     "eyebrow": "Coming soon in Jordan",
@@ -2008,8 +2008,8 @@
     "dismiss": "Keep this language"
   },
   "Seo": {
-    "homeTitle": "Sawwiq | The first Arabic marketplace for marketing agencies",
-    "homeDescription": "The first Arabic platform to compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices, verified reviews and milestone-based contracts.",
+    "homeTitle": "Sawwiq | Your marketing team starts here",
+    "homeDescription": "The Arabic network to find, compare and hire social media and digital marketing agencies in Jordan, Saudi Arabia, the UAE, the Gulf and Egypt: real work, package prices, verified reviews and milestone-based contracts.",
     "popularServices": "Most requested services",
     "agencyTitle": "{name}: {service} in {city}",
     "agencyDescription": "{name} is an agency in {city} offering {services}. See its work, package prices and client reviews, and contact it directly on Sawwiq.",
@@ -2020,12 +2020,12 @@
     "postTitle": "{service} by {agency}",
     "postDescription": "Work by {agency} in {service}. See more of the agency's work and contact it on Sawwiq.",
     "feedTitle": "Latest work from Arab marketing and social media agencies",
-    "feedDescription": "Follow the latest work from marketing and social media agencies in Jordan, the Gulf and Egypt on the first Arabic agency marketplace: real campaigns, reels and designs, with package prices and direct WhatsApp contact."
+    "feedDescription": "Follow the latest work from marketing and social media agencies in Jordan, the Gulf and Egypt on the Arabic network for marketing agencies: real campaigns, reels and designs, with package prices and direct WhatsApp contact."
   },
   "About": {
     "title": "About Sawwiq",
-    "description": "Sawwiq is the first Arabic platform to find, compare and hire marketing and social media agencies: how we verify agencies and reviews, and how protected payments work.",
-    "intro": "Sawwiq is the first Arabic platform that brings marketing and social media agencies together in one place: business owners in Jordan, the Gulf and Egypt see their real work, compare prices and client reviews, then contact them directly or contract through the platform with protected payments.",
+    "description": "Sawwiq is the Arabic network to find, compare and hire marketing and social media agencies: how we verify agencies and reviews, and how protected payments work.",
+    "intro": "Sawwiq is the Arabic network that brings marketing and social media agencies together in one place: business owners in Jordan, the Gulf and Egypt see their real work, compare prices and client reviews, then contact them directly or contract through the platform with protected payments.",
     "what": {
       "title": "What we offer",
       "body": "A page for every agency with its work and priced packages, hire pages for every service and city, an AI assistant that asks about your project and suggests the best-suited agencies with a realistic budget, and project requests where several agencies send you quotes."
@@ -2493,7 +2493,7 @@
   },
   "Welcome": {
     "title": "Welcome to Sawwiq",
-    "subtitle": "The first Arabic marketplace for marketing agencies. What brings you here?",
+    "subtitle": "Your marketing team starts here. What brings you here?",
     "client": "I need a marketing agency",
     "clientHint": "For my business. Answer a few quick questions and we suggest the best fit.",
     "agency": "I am an agency or freelancer",
@@ -2973,7 +2973,7 @@
   },
   "Teaser": {
     "metaTitle": "Sawwiq: the platform of platforms. The List is open before launch",
-    "metaDescription": "The first Arabic platform for social media agencies, freelancers, content creators and influencers. Claim your founding seat free before launch: every number is given once.",
+    "metaDescription": "The Arabic network for social media agencies, freelancers, content creators and influencers. Claim your founding seat free before launch: every number is given once.",
     "badge": "The List is open · Before launch only",
     "title": "The platform of platforms.",
     "tagline": "Every Arab social media maker under one roof. The top belongs to those who arrive first.",

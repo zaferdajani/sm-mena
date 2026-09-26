@@ -46,7 +46,7 @@ The mobile landing intro uses `public/assets/brand/intro/sawwiq-intro-720.{webm,
 | See real work before you pay | `stills/key-messages/SWQ-M2-real-work-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | Meta, TikTok, Snap | See real work | ✅ |
 | Pay per milestone, protected | `stills/key-messages/SWQ-M3-milestones-HOLD-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | Meta, Snap | Protected payments (HOLD) | ⛔ HOLD |
 | Clear contract in milestones (launch-safe) | `stills/key-messages/SWQ-M3b-milestone-contract-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | Meta, LinkedIn | Milestone contracts, launch-safe | ✅ |
-| First Arabic platform | `stills/key-messages/SWQ-M4-first-arabic-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | All (brand) | Hero & "find in a minute" | ✅ after legal sign-off on the claim |
+| **Retired** (old "first Arabic platform" claim; re-render with the master line «فريقك التسويقي يبدأ من هنا» / "Your marketing team starts here" before any use) | `stills/key-messages/SWQ-M4-first-arabic-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | All (brand) | Hero & "find in a minute" | ✅ after legal sign-off on the claim |
 | Agencies: free showcase + client requests | `stills/key-messages/SWQ-M5-agencies-{ar,en}-{1x1,4x5,9x16}.jpg` (6 files) | Meta, LinkedIn, TikTok | Agencies | ✅ |
 | Agencies (Riyadh) | `stills/key-messages/SWQ-M5-SA-agencies-{ar}-{1x1,4x5,9x16}.jpg` (3 files) | LinkedIn, Snap KSA | Agencies | ✅ |
 

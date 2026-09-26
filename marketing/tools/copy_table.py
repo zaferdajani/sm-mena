@@ -20,7 +20,7 @@ add(A,'meta_desc','مجاناً للأعمال','Free for businesses')
 add(A,'tiktok_text','مش عارف أي وكالة تسويق تختار؟ جاوب على ٤ أسئلة وشوف الترشيحات 👀','Not sure which agency to pick? Answer 4 questions and see your matches 👀')
 add(A,'snap_headline','وكالتك المناسبة بدقيقة','Your agency, in a minute')
 add(A,'x_post','بدّك وكالة تسويق لمشروعك؟ على سوّق بتشوف أعمال حقيقية وأسعار الباقات، وبتسأل المطابق الذكي عن الأنسب لك. sawwiq.org/match','Need a marketing agency? On Sawwiq you see real work and package prices, then ask the AI matchmaker for the best fit. sawwiq.org/match')
-add(A,'x_card','سوّق: أول منصة عربية لوكالات التسويق','Sawwiq: the first Arabic marketplace for marketing agencies')
+add(A,'x_card','سوّق: فريقك التسويقي يبدأ من هنا','Sawwiq: your marketing team starts here')
 add(A,'yt_head','وكالتك بدقيقة','Agency in 1 min')
 add(A,'yt_long','شوف شغل وكالات التسويق الحقيقي، واختار الأنسب لك بدقيقة','See real agency work and pick the right one in a minute')
 A = 'See real work (V04, M2)'
@@ -40,7 +40,7 @@ add(A,'meta_primary','وكالتك تستاهل واجهة تليق بشغلها
 add(A,'meta_headline','صفحة مجانية لوكالتك','A free page for your agency')
 add(A,'meta_desc','مجاناً خلال الإطلاق','Free during launch')
 add(A,'li_intro','صفحة مجانية لوكالتك على سوّق: شغلك مجمّع حسب العميل، وطلبات من عملاء جادّين في ٨ دول.','A free Sawwiq page for your agency: work grouped by client, and requests from serious clients in 8 countries.')
-add(A,'li_headline','أول منصة عربية لوكالات التسويق: سجّل وكالتك مجاناً','The first Arabic marketplace for agencies: list yours free')
+add(A,'li_headline','فريقك التسويقي يبدأ من هنا: سجّل وكالتك مجاناً','Your marketing team starts here: list your agency free')
 add(A,'tiktok_text','عندك وكالة أو شغل حر؟ اعمل صفحتك مجاناً واستقبل طلبات عملاء 🎨','Agency or freelancer? Create your free page and get client requests 🎨')
 add(A,'snap_headline','صفحة مجانية لوكالتك','A free page for your agency')
 A = 'Saudi (V10, M1-SA, M5-SA)'
@@ -52,7 +52,7 @@ A = 'Jordan (V11, M1-JO)'
 add(A,'meta_primary','بعمّان في وكالات كتير… على سوّق شوف شغلهم، قارن الأسعار، وتواصل معهم عبر واتساب.','Lots of agencies in Amman… On Sawwiq see their work, compare prices and message them on WhatsApp.')
 add(A,'meta_headline','لاقي وكالتك الصح بعمّان','Find your agency in Amman')
 A = 'Google Search RSA (Jordan; KSA variants in brackets)'
-for h in [('شركات تسويق في عمّان','Marketing agencies in Amman'),('وكالات سوشيال ميديا موثّقة','Verified social media agencies'),('شوف أعمالهم الحقيقية','See their real work'),('قارن الباقات والأسعار','Compare packages and prices'),('المطابق الذكي بدقيقة','AI matchmaker in a minute'),('عقود واضحة على مراحل','Clear milestone contracts'),('مجاناً للأعمال','Free for businesses'),('أول منصة عربية للوكالات','First Arabic agency platform'),('[شركات تسويق في الرياض]','[Marketing agencies in Riyadh]')]:
+for h in [('شركات تسويق في عمّان','Marketing agencies in Amman'),('وكالات سوشيال ميديا موثّقة','Verified social media agencies'),('شوف أعمالهم الحقيقية','See their real work'),('قارن الباقات والأسعار','Compare packages and prices'),('المطابق الذكي بدقيقة','AI matchmaker in a minute'),('عقود واضحة على مراحل','Clear milestone contracts'),('مجاناً للأعمال','Free for businesses'),('شبكة الوكالات العربية','Find your marketing team'),('[شركات تسويق في الرياض]','[Marketing agencies in Riyadh]')]:
     add(A,'g_head',*h)
 add(A,'g_desc','شوف أعمال وكالات التسويق الحقيقية وأسعار باقاتها، وتواصل معهم مباشرة عبر واتساب.','See real agency work and package prices, then contact them directly on WhatsApp.')
 add(A,'g_desc','جاوب على ٤ أسئلة، والمطابق الذكي يرشّح لك الوكالات الأنسب لمشروعك ومدينتك.','Answer 4 questions; the AI matchmaker suggests the best agencies for your business.')

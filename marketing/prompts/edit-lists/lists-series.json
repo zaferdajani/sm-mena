@@ -4,7 +4,7 @@
   {"type":"clip","src":"clips/V01.mp4","in":0.2,"dur":2.6,"amb":0.25},
   {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":4.0,"speed":2.5,"chip":"المطابق الذكي","head":"وكالتك المناسبة… <span style='color:#0e6b46'>بدقيقة</span>","sub":"جاوب على ٤ أسئلة، وشوف الترشيحات"},
   {"type":"clip","src":"clips/V10.mp4","in":2.0,"dur":2.0,"amb":0.25},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.3,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.3,"card_at":3.4,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا","cta":"اسأل المطابق الذكي","y":1420}}],
  "captions":[{"t":"بدّك وكالة تسويق؟","s":"ومش عارف مين تختار؟","start":0.2,"end":2.6},{"t":"لقيتها <span class='hl'>بدقيقة</span>","start":6.7,"end":8.6}],
  "vo":[{"src":"vo/H1.mp3","at":0.25},{"src":"vo/H4.mp3","at":2.75},{"src":"vo/H7.mp3","at":11.2}]},
 
@@ -17,7 +17,7 @@
 {"name":"SWQ-V05-bumper-in-a-minute-ar-6s-9x16","size":[1080,1920],"lang":"ar",
  "segments":[
   {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":2.0,"speed":5.0,"chip":"المطابق الذكي","head":"وكالتك المناسبة <span style='color:#0e6b46'>بدقيقة</span>"},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":0.0,"card_at":3.2,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}]},
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":0.0,"card_at":3.2,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا","cta":"اسأل المطابق الذكي","y":1420}}]},
 
 {"name":"SWQ-V06-business-owner-ar-20s-9x16","size":[1080,1920],"lang":"ar",
  "segments":[
@@ -26,7 +26,7 @@
   {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":3.7,"speed":2.6,"chip":"المطابق الذكي","head":"٤ أسئلة… و<span style='color:#0e6b46'>ترشيحات</span> جاهزة"},
   {"type":"clip","src":"clips/V02.mp4","in":2.4,"dur":1.6,"amb":0.3},
   {"type":"clip","src":"clips/V09.mp4","in":1.4,"dur":2.4,"amb":0.3},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":1.6,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":1.6,"card_at":3.4,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا","cta":"اسأل المطابق الذكي","y":1420}}],
  "captions":[{"t":"بدّك وكالة تسويق؟","s":"ومش عارف مين تختار؟","start":0.2,"end":2.6},{"t":"وكالات <span class='hl'>موثّقة</span>","s":"وعقود واضحة","start":11.3,"end":15.2}],
  "vo":[{"src":"vo/H1.mp3","at":0.25},{"src":"vo/H2.mp3","at":2.8},{"src":"vo/H4.mp3","at":7.65},{"src":"vo/H6.mp3","at":11.4}]},
 
@@ -56,7 +56,7 @@
   {"type":"ui","rec":"rec2/explore.webm","in":1.4,"dur":4.8,"speed":1.1,"chip":"استكشف","head":"شف شغلهم <span style='color:#0e6b46'>قبل لا تدفع</span>","sub":"أعمال وكالات حقيقية مع الباقات والأسعار","demo":"واجهة سوّق الحقيقية · حسابات تجريبية"},
   {"type":"ui","rec":"rec2/match-sa.webm","in":1.6,"dur":4.4,"speed":2.2,"chip":"المطابق الذكي","head":"الأنسب لك <span style='color:#0e6b46'>في الرياض</span>","sub":"الميزانية بالريال، والمدن السعودية"},
   {"type":"clip","src":"clips/V08.mp4","in":0.3,"dur":3.0,"amb":0.3},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.2,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.2,"card_at":3.4,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا","cta":"اسأل المطابق الذكي","y":1420}}],
  "captions":[{"t":"تبي وكالة تسويق؟","s":"وما تدري مين تختار؟","start":0.2,"end":3.2},{"t":"وكالات من <span class='hl'>الرياض وجدة والدمام</span>","start":12.5,"end":15.4}],
  "vo":[{"src":"vo/S1.mp3","at":0.25},{"src":"vo/S2.mp3","at":3.45},{"src":"vo/S3.mp3","at":8.3},{"src":"vo/S4.mp3","at":12.7},{"src":"vo/S5.mp3","at":18.3}]},
 
@@ -65,7 +65,7 @@
   {"type":"clip","src":"clips/V09.mp4","in":0.0,"dur":4.0,"amb":0.3},
   {"type":"clip","src":"clips/V02.mp4","in":0.8,"dur":2.4,"amb":0.3},
   {"type":"ui","rec":"rec2/match-jo.webm","in":1.6,"dur":2.8,"speed":3.4,"chip":"المطابق الذكي","head":"شوف، قارن، <span style='color:#0e6b46'>واختار</span>"},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.4,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق · الأردن","cta":"اسأل المطابق الذكي","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.4,"card_at":3.4,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا · الأردن","cta":"اسأل المطابق الذكي","y":1420}}],
  "captions":[{"t":"بعمّان في وكالات كتير…","s":"بس مين الصح؟","start":0.2,"end":4.0},{"t":"على <span class='hl'>سوّق</span>","s":"شوف شغلهم، قارن، واختار وإنت مرتاح","start":4.1,"end":6.4}],
  "vo":[{"src":"vo/J1.mp3","at":0.3},{"src":"vo/H7.mp3","at":11.9}]},
 
@@ -78,7 +78,7 @@
   {"type":"clip","src":"clips/V04.mp4","in":0.3,"dur":4.3,"amb":0.3},
   {"type":"clip","src":"clips/V10.mp4","in":1.4,"dur":2.1,"amb":0.25},
   {"type":"clip","src":"clips/V06.mp4","in":1.0,"dur":2.0,"amb":0.25},
-  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.3,"card_at":3.4,"endcard":{"tag":"أول منصة عربية لوكالات التسويق","cta":"اسأل المطابق الذكي","y":1420}}],
+  {"type":"sting","src":"sting/out/sawwiq-sting-9x16.mp4","hold":2.3,"card_at":3.4,"endcard":{"tag":"فريقك التسويقي يبدأ من هنا","cta":"اسأل المطابق الذكي","y":1420}}],
  "captions":[
   {"t":"بدّك وكالة تسويق؟","s":"ومش عارف مين تختار؟","start":0.2,"end":2.7},
   {"t":"مع <span class='hl'>سوّق</span>","s":"شوف شغلهم الحقيقي وأسعارهم","start":2.8,"end":5.4},

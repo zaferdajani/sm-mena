@@ -15,7 +15,7 @@ test("a saved country shows the landing page for that country", async ({ page, c
   await expect(page.locator("#cities-title")).toHaveText("في كل مدن السعودية");
   await expect(page.locator(".sw-city__name").first()).toHaveText("الرياض");
   await expect(page.getByText("اعثر على وكالة التسويق المناسبة في السعودية").first()).toBeAttached();
-  await expect(page.locator(".sw-footer__tagline")).toHaveText("أول منصة عربية لوكالات التسويق · السعودية");
+  await expect(page.locator(".sw-footer__tagline")).toHaveText("فريقك التسويقي يبدأ من هنا · السعودية");
   await expect(page.locator(".sw-header [data-testid=country-picker] select")).toHaveValue("sa");
   await expect(page.locator(".sw-ledger")).toContainText("ر.س");
   await expect(page.locator(".sw-ledger")).not.toContainText("د.أ");

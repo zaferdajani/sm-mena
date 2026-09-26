@@ -169,7 +169,7 @@ const ar: SiteCopy = {
     bandSub: "اكتب ما تحتاجه، والمطابق يرشّح لك الوكالات الأنسب.",
   },
   footer: {
-    tagline: "أول منصة عربية لوكالات التسويق · الأردن",
+    tagline: "فريقك التسويقي يبدأ من هنا · الأردن",
     rights: "© 2026 سوّق",
     links: [
       { label: "تصفّح الوكالات", href: "explore" },
@@ -297,7 +297,7 @@ const en: SiteCopy = {
     bandSub: "Tell it what you need. It shortlists the right agencies.",
   },
   footer: {
-    tagline: "The first Arabic marketplace for marketing agencies · Jordan",
+    tagline: "Your marketing team starts here · Jordan",
     rights: "© 2026 Sawwiq",
     links: [
       { label: "Browse agencies", href: "explore" },
@@ -392,7 +392,7 @@ function build(lang: Lang, code: CountryCode): SiteCopy {
       title: isAr ? `في كل مدن ${name}` : `Across ${name}`,
       list: cities.map((city) => ({ slug: city.key, name: cityName(city), alt: isAr ? city.en.toUpperCase() : city.ar })),
     },
-    footer: { ...base.footer, tagline: isAr ? `أول منصة عربية لوكالات التسويق · ${name}` : `The first Arabic marketplace for marketing agencies · ${country.en}` },
+    footer: { ...base.footer, tagline: isAr ? `فريقك التسويقي يبدأ من هنا · ${name}` : `Your marketing team starts here · ${country.en}` },
   };
 }
 

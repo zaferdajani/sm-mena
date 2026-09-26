@@ -7,12 +7,12 @@ Use one company Google Workspace address (e.g. social@sawwiq.org) and a password
 
 | Platform | Handle | Profile picture | Cover / banner | Bio (AR · EN) |
 |---|---|---|---|---|
-| Instagram (Business) | @sawwiq | mark on limestone, 1080² | none (use Highlights covers) | «أول منصة عربية لوكالات التسويق 🇯🇴🇸🇦 شوف الشغل قبل ما تدفع 👇» ("The first Arabic marketplace for marketing agencies 🇯🇴🇸🇦 See the work before you pay 👇") · "The first Arabic marketplace for marketing agencies" |
+| Instagram (Business) | @sawwiq | mark on limestone, 1080² | none (use Highlights covers) | «فريقك التسويقي يبدأ من هنا 🇯🇴🇸🇦 شوف الشغل قبل ما تدفع 👇» ("Your marketing team starts here 🇯🇴🇸🇦 See the work before you pay 👇") · "Your marketing team starts here" |
 | Facebook Page | /sawwiq | same | `SWQ-cover-facebook-1640x624` | same |
 | TikTok (Business) | @sawwiq | same | none | «وكالتك المناسبة بدقيقة 👀» ("The right agency, in a minute 👀") |
 | Snapchat (Public Profile) | sawwiq | same | `SWQ-cover-snapchat-tiktok-1080x1920` | «تبي وكالة تسويق؟ شف شغلهم قبل لا تدفع» ("Want a marketing agency? See their work before you pay") |
 | X | @sawwiq | same | `SWQ-cover-x-1500x500` | same as Instagram |
-| LinkedIn Company Page | /company/sawwiq | same | `SWQ-cover-linkedin-company-1128x191` | "The first Arabic marketplace for marketing agencies. Free showcase and client requests for agencies." |
+| LinkedIn Company Page | /company/sawwiq | same | `SWQ-cover-linkedin-company-1128x191` | "Your marketing team starts here. Free showcase and client requests for agencies." |
 | Founder LinkedIn | (personal) | own photo | `SWQ-cover-linkedin-personal-1584x396` | Founder, Sawwiq |
 | YouTube | @sawwiq | same | `SWQ-cover-youtube-2560x1440` | channel trailer = V02 hero 16:9 |
 | Threads | @sawwiq (created with Instagram) | same | none | same |
@@ -45,7 +45,7 @@ Profile picture file: `marketing/assets/sting/` end frame, or `public/assets/bra
 5. **No browser pixels** (Meta Pixel, TikTok Pixel, gtag) unless the owner reverses the `docs/10` policy. That would need a consent banner first.
 
 ## 4. Before the first paid post (approvals)
-- [ ] **Owner:** legal sign-off on «أول منصة عربية لوكالات التسويق» ("the first Arabic marketplace for marketing agencies"). Keep the evidence file.
+- [ ] **Owner:** legal sign-off on «فريقك التسويقي يبدأ من هنا» ("your marketing team starts here"). Keep the evidence file.
 - [ ] **Owner:** confirm the Founding offer terms (free Pro for how long?).
 - [ ] **Owner:** confirm the guarantee fee shown to agencies at launch (0% or 10%).
 - [ ] **Owner:** choose voice-over voices by ear:

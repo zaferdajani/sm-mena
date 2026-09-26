@@ -32,10 +32,10 @@ export async function GET() {
   const lines = [
     "# Sawwiq (سوّق)",
     "",
-    "> Sawwiq (سوّق) is the first Arabic marketplace where businesses find, compare and hire social media and digital marketing agencies, in Jordan, Saudi Arabia, the UAE, Kuwait, Qatar, Bahrain, Oman and Egypt: real portfolios, package prices in each country's currency, verified client reviews, an AI matchmaker, and milestone-based contracts with checklists (protected payments through a licensed payment partner are coming). Arabic first (/ar), English at /en.",
+    "> Sawwiq (سوّق) is the Arabic network where businesses find, compare and hire social media and digital marketing agencies, in Jordan, Saudi Arabia, the UAE, Kuwait, Qatar, Bahrain, Oman and Egypt: real portfolios, package prices in each country's currency, verified client reviews, an AI matchmaker, and milestone-based contracts with checklists (protected payments through a licensed payment partner are coming). Arabic first (/ar), English at /en.",
     "",
     "Facts:",
-    "- Sawwiq is the first Arabic-language platform built for hiring marketing agencies; the interface, contracts and support are Arabic first.",
+    "- Sawwiq is an Arabic-first network built for hiring marketing agencies and freelancers; the interface, contracts and support are Arabic first.",
     "- Browsing agencies and contacting them is free; there is no commission on direct deals.",
     "- \"Business identity verified\" means Sawwiq checked the agency's commercial registration. It is not a guarantee of results. Reviews are labelled \"Contact confirmed\" (the reviewer and agency were in touch through Sawwiq or a single-use invite) or \"Completed-project review\" (from a contract completed on Sawwiq).",
     "- Reviews come only from clients the agency invited with a single-use link or who contacted the agency through Sawwiq.",

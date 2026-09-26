@@ -8,7 +8,7 @@ The owner shared an outside review of Sawwiq (repository, contracts and payments
 |---|---|---|
 | **Launch order**: focused founding community + a private buyer pilot at the same time; working relationships, not registration counts, as the foundation of the public launch. | Agreed. The Behind-the-Page brief (05) already ties every mechanic to proof (client-confirmed accounts, hires from "who runs this page"), but its arc still led with a Reveal week. The Reveal moves after the private seed has real, confirmed relationships. | 05 §4 re-ordered: Private seed (20–30 providers + first buyers) → Founding launch → Buyer launch. The Sawwiq 50 is announced only when it can be computed from confirmed accounts and completed work. |
 | **No public payment-protection promises** until a licensed partner holds funds and the legal answers are in writing. | Agreed and already enforced: protected payments are a feature switch in "coming soon" (docs/34), the partner pack and lawyer brief exist (docs/33), the claim register (02 §8) HOLDs those assets. | No change; the review's list of written answers (funds and eligibility, failure and dispute handling, commercial and legal terms) is appended to docs/33. |
-| **Drop "the first Arabic marketplace"** as the master claim; lead with the network. | Agreed. The claim register already required legal sign-off; the review is right that it is hard to defend and makes the platform the hero. | Master line becomes the network line (below). Messages, SEO titles and landing copy change in one pass (task). |
+| **Drop "the first Arabic marketplace"** as the master claim; lead with the network. | Agreed. The claim register already required legal sign-off; the review is right that it is hard to defend and makes the platform the hero. | **Done (26 Sep 2026):** the master line is «فريقك التسويقي يبدأ من هنا» / "Your marketing team starts here" everywhere: messages, SEO titles and descriptions, structured data, llms.txt, landing footer, brand kit, ad copy and edit lists. The M4 "first Arabic" stills are retired until re-rendered. |
 | **Start narrow commercially, broad organisationally**: Amman restaurants and cafés first; everyone may register. | Agreed as the pilot segment (clinics second). | 01 §4 Phase A gets the segment and its package. |
 | **Founding 100 with a concrete offer**, and separate *membership number* from *founding-cohort eligibility* from *benefits received*. | Agreed. Member numbers (docs/28) are a join sequence and say so; the offer needs cohort dates, a cap on hands-on benefits, activation and expiry. | Founding program spec in 01 §10 (replaces "first 40 per city"); code: cohort rules and a dated badge (task). The public counter names what it counts. |
 | **Value before buyer traffic**: overflow work, missing capabilities, client administration, permissioned credit. | Agreed; the partner network (docs/29) and accounts (docs/28) are the tools. | Weekly partner-matching session and a moderated opportunity digest go into the calendar (03). |
@@ -39,7 +39,7 @@ The owner shared an outside review of Sawwiq (repository, contracts and payments
 
 ## Owner decisions this asks for
 
-1. Approve the new master line (above) so the messages, SEO titles and landing copy change in one pass.
+1. ~~Approve the new master line~~ Approved and applied.
 2. Move Vercel to Pro before the public launch.
 3. Confirm the pilot segment (Amman restaurants and cafés, clinics second) and who runs the 35 interviews.
 4. Choose the payment partner (docs/32/33) so the written answers can be requested.

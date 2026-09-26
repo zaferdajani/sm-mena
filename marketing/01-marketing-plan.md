@@ -9,8 +9,8 @@ Sources: `docs/01`, `02`, `03`, `07`, `10`, `14`, `18`, `20`, `21`, `28`, `compo
 
 | | |
 |---|---|
-| **What we sell** | The first Arabic marketplace to find, compare and hire marketing and social media agencies. Real work, prices, verified reviews, an AI matcher, and contracts paid per milestone. |
-| **Positioning line** | «أول منصة عربية لوكالات التسويق», "The first Arabic marketplace for marketing agencies". This is a positioning claim and needs legal sign-off (§11). |
+| **What we sell** | The Arabic network to find, compare and hire marketing and social media agencies and freelancers. Real work, prices, verified reviews, an AI matcher, and contracts paid per milestone. |
+| **Positioning line** | «فريقك التسويقي يبدأ من هنا», "Your marketing team starts here". This is a positioning claim and needs legal sign-off (§11). |
 | **Cold-start rule** | Supply first. Do not spend on business-side ads in a city until it has **30 verified agencies with real posts**: Amman first, then Riyadh. |
 | **90 days** | W1–4 Amman agencies → W5–8 Amman businesses + Riyadh agencies → W9–13 Riyadh businesses + Jordan scale + organic Gulf/Egypt supply. |
 | **Money** | Everything is free during launch (`MONETIZATION_ENABLED=false`). Paid media: Lean ≈ 2.2k JOD, Standard ≈ 5.6k JOD, Growth ≈ 12.4k JOD over 90 days (§6). |
@@ -33,7 +33,7 @@ Businesses in our markets hire marketing agencies through Instagram DMs, cousins
 | P1 | Find fast | اعرف الوكالات المناسبة لك بدقيقة | Find the right agencies in a minute | AI matcher at `/match`: 4 questions on need, platforms, budget and city. **Verify that it runs in about 60 s before paid use.** |
 | P2 | See before you pay | شوف الشغل الحقيقي قبل ما تدفع | See real work before you pay | Portfolio feed, "Clients" tab, packages with prices |
 | P3 | Pay per milestone | ادفع على مراحل، والمال ينتظر موافقتك | Pay per milestone. The money waits for your approval | Contracts with milestones and checklists. **Escrow is in test mode; hold until the provider is live.** |
-| P4 | First Arabic platform | أول منصة عربية لوكالات التسويق | The first Arabic marketplace for marketing agencies | Arabic-first product, 8 countries. Positioning claim; sign-off needed. |
+| P4 | The network | فريقك التسويقي يبدأ من هنا | Your marketing team starts here | Arabic-first product, 8 countries. Positioning claim; sign-off needed. |
 | P6 | Apps are marketing too | التطبيق قناتك المباشرة… وجرّبه قبل ما تتعاقد | An app is your direct channel. Try it before you sign | `app_development` service, hire page `/hire/app_development`; posts carry the app with **Try the app** (the app mall sandbox, docs/37). Needs the app mall to allow sawwiq.org (owner step, 04 §4). |
 | P5 (agencies) | Free showcase + real requests | صفحة مجانية لشغلك، وطلبات عملاء حقيقية | A free showcase, and real client requests | Free during launch; requests and quotes are live |
 
@@ -223,7 +223,7 @@ Alternative (not recommended): browser pixels behind a consent banner. This is f
 
 ## 9. PR
 
-- **Launch story (W5):** "A Jordanian startup launches the first Arabic marketplace for hiring marketing agencies". Pitch Arabic outlets (Al Ghad, Roya, Al Mamlaka, Ammon, Khaberni) and English (Jordan Times, Wamda, MAGNiTT news, Arabian Business for KSA W9). Needs a founder quote, 3 real founding agencies, and photos.
+- **Launch story (W5):** "A Jordanian startup launches an Arabic network for hiring marketing agencies and freelancers". Pitch Arabic outlets (Al Ghad, Roya, Al Mamlaka, Ammon, Khaberni) and English (Jordan Times, Wamda, MAGNiTT news, Arabian Business for KSA W9). Needs a founder quote, 3 real founding agencies, and photos.
 - **Data PR (W11+):** "What does social media management cost in Jordan?" from anonymised quote data. Publish only with n ≥ 100 real quotes; label the methodology.
 - **Founder voice:** LinkedIn 2 posts a week and a podcast circuit (Jordanian and Saudi business podcasts).
 - **Crisis line** (payments question): «الدفع المحمي يعمل حالياً في وضع تجريبي، وسيتم تفعيله مع مزوّد دفع مرخّص قبل الإطلاق التجاري.» ("Protected payment currently runs in test mode and will be switched on with a licensed payment provider before commercial launch.")
@@ -245,7 +245,7 @@ No fake reviews, no invented testimonials. Anything illustrative is labelled «�
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | **Payment claims ahead of reality** (escrow is test mode) | High | Legal and trust | "Protected payment" ads held; claim-safe wording: «عقد على مراحل، وكل مرحلة تعتمدها أنت» ("A contract in stages, and you approve each one"). Launch escrow ads only after the licensed PSP and CBJ check. |
-| "First Arabic platform" challenged | Medium | Ad rejection or complaint | Legal check; fallback «منصة عربية لوكالات التسويق» ("An Arabic platform for marketing agencies"); keep evidence of the search. |
+| The old "first Arabic platform" claim resurfacing in an unreviewed asset (retired 26 Sep 2026; master line is now «فريقك التسويقي يبدأ من هنا») | Low | Ad rejection or complaint | Legal check; fallback «منصة عربية لوكالات التسويق» ("An Arabic platform for marketing agencies"); keep evidence of the search. |
 | Cold start: businesses arrive to thin supply | High | Churn, bad reviews | 30-agency gate per city; demo agencies clearly marked and never in ads. |
 | Agencies fear "lead reselling" | Medium | Slow supply | Free at launch; founder calls; clear fee rules; 10% guarantee fee shown honestly (currently 0 during launch per `.env.example`; decision #3) |
 | Health-sector ad rules (MoH, syndicates) | Medium | Ad rejection | No before/after or medical claims; the health vertical creative shows only the business side |

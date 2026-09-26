@@ -14,7 +14,7 @@ UTM pattern: `?utm_source={platform}&utm_medium=paid|organic&utm_campaign=launch
 | TikTok ad text (100) | مش عارف أي وكالة تسويق تختار؟ جاوب على ٤ أسئلة وشوف الترشيحات 👀 | 63 ✓ | Not sure which agency to pick? Answer 4 questions and see your matches 👀 | 72 ✓ |
 | Snap headline (34) | وكالتك المناسبة بدقيقة | 22 ✓ | Your agency, in a minute | 24 ✓ |
 | X post (280) | بدّك وكالة تسويق لمشروعك؟ على سوّق بتشوف أعمال حقيقية وأسعار الباقات، وبتسأل المطابق الذكي عن الأنسب لك. sawwiq.org/match | 121 ✓ | Need a marketing agency? On Sawwiq you see real work and package prices, then ask the AI matchmaker for the best fit. sawwiq.org/match | 134 ✓ |
-| X card headline (70) | سوّق: أول منصة عربية لوكالات التسويق | 36 ✓ | Sawwiq: the first Arabic marketplace for marketing agencies | 59 ✓ |
+| X card headline (70) | سوّق: فريقك التسويقي يبدأ من هنا | 36 ✓ | Sawwiq: your marketing team starts here | 59 ✓ |
 | YouTube headline (15) | وكالتك بدقيقة | 13 ✓ | Agency in 1 min | 15 ✓ |
 | YouTube long headline (90) | شوف شغل وكالات التسويق الحقيقي، واختار الأنسب لك بدقيقة | 55 ✓ | See real agency work and pick the right one in a minute | 55 ✓ |
 
@@ -50,7 +50,7 @@ UTM pattern: `?utm_source={platform}&utm_medium=paid|organic&utm_campaign=launch
 | Meta headline (40) | صفحة مجانية لوكالتك | 19 ✓ | A free page for your agency | 27 ✓ |
 | Meta description (30) | مجاناً خلال الإطلاق | 19 ✓ | Free during launch | 18 ✓ |
 | LinkedIn intro (visible) (150) | صفحة مجانية لوكالتك على سوّق: شغلك مجمّع حسب العميل، وطلبات من عملاء جادّين في ٨ دول. | 85 ✓ | A free Sawwiq page for your agency: work grouped by client, and requests from serious clients in 8 countries. | 109 ✓ |
-| LinkedIn headline (70) | أول منصة عربية لوكالات التسويق: سجّل وكالتك مجاناً | 50 ✓ | The first Arabic marketplace for agencies: list yours free | 58 ✓ |
+| LinkedIn headline (70) | فريقك التسويقي يبدأ من هنا: سجّل وكالتك مجاناً | 50 ✓ | Your marketing team starts here: list your agency free | 58 ✓ |
 | TikTok ad text (100) | عندك وكالة أو شغل حر؟ اعمل صفحتك مجاناً واستقبل طلبات عملاء 🎨 | 61 ✓ | Agency or freelancer? Create your free page and get client requests 🎨 | 69 ✓ |
 | Snap headline (34) | صفحة مجانية لوكالتك | 19 ✓ | A free page for your agency | 27 ✓ |
 
@@ -81,7 +81,7 @@ UTM pattern: `?utm_source={platform}&utm_medium=paid|organic&utm_campaign=launch
 | Google RSA headline (30) | المطابق الذكي بدقيقة | 20 ✓ | AI matchmaker in a minute | 25 ✓ |
 | Google RSA headline (30) | عقود واضحة على مراحل | 20 ✓ | Clear milestone contracts | 25 ✓ |
 | Google RSA headline (30) | مجاناً للأعمال | 14 ✓ | Free for businesses | 19 ✓ |
-| Google RSA headline (30) | أول منصة عربية للوكالات | 23 ✓ | First Arabic agency platform | 28 ✓ |
+| Google RSA headline (30) | شبكة الوكالات العربية | 23 ✓ | Find your marketing team | 28 ✓ |
 | Google RSA headline (30) | [شركات تسويق في الرياض] | 23 ✓ | [Marketing agencies in Riyadh] | 30 ✓ |
 | Google RSA description (90) | شوف أعمال وكالات التسويق الحقيقية وأسعار باقاتها، وتواصل معهم مباشرة عبر واتساب. | 80 ✓ | See real agency work and package prices, then contact them directly on WhatsApp. | 80 ✓ |
 | Google RSA description (90) | جاوب على ٤ أسئلة، والمطابق الذكي يرشّح لك الوكالات الأنسب لمشروعك ومدينتك. | 74 ✓ | Answer 4 questions; the AI matchmaker suggests the best agencies for your business. | 83 ✓ |

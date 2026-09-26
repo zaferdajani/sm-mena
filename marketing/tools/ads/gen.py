@@ -9,8 +9,8 @@ M = {
                 en=dict(chip='Protected payments', t='Pay <em>per milestone</em>. The money waits for your approval', s='Each milestone is held by a trusted third party and released to the agency when you approve the work.', cta='Start safely', note='Protected payments go live with a licensed payment provider.')),
  'M3b-milestone-contract': dict(photo='K05', ar=dict(chip='عقود واضحة', t='عقد واضح، <em>على مراحل</em>', s='تسليمات محددة لكل مرحلة، وتعتمد كل مرحلة بنفسك. بدون رسوم مفاجئة.', cta='اسأل المطابق الذكي'),
                 en=dict(chip='Clear contracts', t='A clear contract, <em>in milestones</em>', s='Set deliverables for every milestone, and you approve each one. No surprise charges.', cta='Ask the matchmaker')),
- 'M4-first-arabic': dict(photo='logo', ar=dict(chip='سوّق', t='أول منصة عربية <em>لوكالات التسويق</em>', s='الأردن · السعودية · الإمارات · الكويت · قطر · البحرين · عُمان · مصر', cta='ابدأ الآن'),
-                en=dict(chip='Sawwiq', t='The first Arabic marketplace <em>for marketing agencies</em>', s='Jordan · Saudi Arabia · UAE · Kuwait · Qatar · Bahrain · Oman · Egypt', cta='Get started')),
+ 'M4-first-arabic': dict(photo='logo', ar=dict(chip='سوّق', t='فريقك التسويقي <em>يبدأ من هنا</em>', s='الأردن · السعودية · الإمارات · الكويت · قطر · البحرين · عُمان · مصر', cta='ابدأ الآن'),
+                en=dict(chip='Sawwiq', t='Your marketing team <em>starts here</em>', s='Jordan · Saudi Arabia · UAE · Kuwait · Qatar · Bahrain · Oman · Egypt', cta='Get started')),
  'M5-agencies': dict(photo='K06', ar=dict(chip='للوكالات والمستقلين', t='صفحة <em>مجانية</em> لوكالتك، وطلبات عملاء حقيقية', s='اعرض شغلك مجمّعاً حسب العميل، واستقبل الطلبات وقدّم عروضك. مجاناً خلال الإطلاق.', cta='أنشئ صفحتك مجاناً'),
                 en=dict(chip='For agencies & freelancers', t='A <em>free</em> showcase, and real client requests', s='Show your work grouped by client, receive requests and send proposals. Free during launch.', cta='Create your free page')),
  'M1-SA-find': dict(photo='K07', ar=dict(chip='السعودية', t='تبي وكالة تسويق؟ <em>شف شغلها قبل لا تدفع</em>', s='وكالات في الرياض وجدة والدمام، بأعمال حقيقية وأسعار واضحة بالريال.', cta='اسأل المطابق الذكي')),
@@ -50,7 +50,7 @@ for name, slides in (('C1-how-to-choose-an-agency', C1), ('C2-agencies-4-reasons
 WA = [dict(photo='K01', chip='مرحبا 👋', t='بدّك وكالة تسويق؟ 👀', s='جرّب المطابق الذكي على سوّق: ٤ أسئلة وبس.', cta='sawwiq.org/match'),
       dict(photo='K03', chip='نصيحة اليوم', t='شوف الشغل قبل ما تدفع ✅', s='أعمال حقيقية وأسعار واضحة، لوكالات في بلدك.', cta='تصفّح الوكالات'),
       dict(photo='K06', chip='للوكالات 🎨', t='عندك وكالة أو شغل حر؟', s='اعمل صفحة مجانية، واستقبل طلبات عملاء حقيقيين.', cta='أنشئ صفحتك مجاناً'),
-      dict(photo='logo', chip='سوّق', t='أول منصة عربية <em>لوكالات التسويق</em>', s='احفظ الرابط وشاركه مع أي صاحب مصلحة 🙏', cta='sawwiq.org')]
+      dict(photo='logo', chip='سوّق', t='فريقك التسويقي <em>يبدأ من هنا</em>', s='احفظ الرابط وشاركه مع أي صاحب مصلحة 🙏', cta='sawwiq.org')]
 for i, w in enumerate(WA, 1): job('whatsapp-status', f'SWQ-WA-status-{i:02d}', 1080, 1920, dict(w, lang='ar'))
 # Google Display (M1 ar + M5 ar)
 GD = [(300,250),(336,280),(728,90),(300,600),(320,50),(160,600),(970,250),(1200,628),(1200,1200),(320,100),(468,60)]
@@ -65,11 +65,11 @@ for k in ('M1-find', 'M5-agencies'):
             if w < 400 and h >= 100: q['ts'] = '2.1'
         job('google-display', f'SWQ-GDN-{k}-ar-{w}x{h}', w, h, q)
 # covers
-CV = dict(chip='', t='أول منصة عربية <em>لوكالات التسويق</em>', s='شوف الشغل الحقيقي، قارن، وادفع على مراحل.', cta='sawwiq.org', lang='ar')
+CV = dict(chip='', t='فريقك التسويقي <em>يبدأ من هنا</em>', s='شوف الشغل الحقيقي، قارن، وادفع على مراحل.', cta='sawwiq.org', lang='ar')
 job('covers', 'SWQ-cover-facebook-1640x624', 1640, 624, dict(CV, center='900', ts='2.7', cta=''))
 job('covers', 'SWQ-cover-x-1500x500', 1500, 500, dict(CV, photo='K03w', cta='اسأل المطابق الذكي'))
 job('covers', 'SWQ-cover-linkedin-company-1128x191', 1128, 191, dict(CV, photo='K06w2', t='صفحة مجانية لوكالتك، وطلبات عملاء حقيقية', cta='sawwiq.org'))
-job('covers', 'SWQ-cover-linkedin-personal-1584x396', 1584, 396, dict(CV, photo='K06w2', t='أول منصة عربية <em>لوكالات التسويق</em>'))
+job('covers', 'SWQ-cover-linkedin-personal-1584x396', 1584, 396, dict(CV, photo='K06w2', t='فريقك التسويقي <em>يبدأ من هنا</em>'))
 job('covers', 'SWQ-cover-youtube-2560x1440', 2560, 1440, dict(CV, center='1400', ts='5.6', cta=''))
 job('covers', 'SWQ-cover-snapchat-tiktok-1080x1920', 1080, 1920, dict(CV, photo='K07', cta='اسأل المطابق الذكي'))
 json.dump(jobs, open('jobs.json', 'w'), ensure_ascii=False)

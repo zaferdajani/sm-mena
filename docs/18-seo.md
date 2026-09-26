@@ -92,18 +92,18 @@ City pages (`/hire/{service}/{city}`) take «… في عمّان/إربد/الز
 
 Then join with what happens on the site (inquiries and project requests per landing page) to see which pages bring customers, not just clicks.
 
-## Positioning: the first Arabic platform for marketing agencies
+## Positioning: your marketing team starts here
 
-Sawwiq is the first Arabic-first marketplace for hiring marketing and social media agencies, and every place a search or answer engine reads says so (2026-09):
+Sawwiq is the Arabic-first network for hiring marketing and social media agencies, and every place a search or answer engine reads says so (2026-09):
 
 | Where | What it says |
 |---|---|
-| Home title | `سوّق \| أول منصة عربية لشركات التسويق والسوشيال ميديا` · `Sawwiq \| The first Arabic marketplace for marketing agencies` |
-| Home, feed and default descriptions | "أول منصة عربية…" plus the countries (Jordan, Saudi Arabia, UAE, the Gulf, Egypt) and the core keywords (شركات التسويق الإلكتروني، إدارة السوشيال ميديا) |
+| Home title | `سوّق \| الشبكة العربية لشركات التسويق والسوشيال ميديا` · `Sawwiq \| Your marketing team starts here` |
+| Home, feed and default descriptions | "الشبكة العربية…" plus the countries (Jordan, Saudi Arabia, UAE, the Gulf, Egypt) and the core keywords (شركات التسويق الإلكتروني، إدارة السوشيال ميديا) |
 | Organization JSON-LD | `description`, `slogan`, `foundingDate`, `knowsLanguage`, and `areaServed` listing all eight countries |
 | WebSite JSON-LD | `description` in the page language |
 | `llms.txt` | the summary line and a "facts" line for AI answer engines |
 | About page | description and introduction |
-| Landing footer | "أول منصة عربية لوكالات التسويق · {country}" |
+| Landing footer | "فريقك التسويقي يبدأ من هنا · {country}" |
 
-Country and city keywords stay on the hire pages (`/hire/{service}`, per country and city), so the home page can carry the brand claim without losing local searches. Keep the claim consistent when editing copy: "أول منصة عربية" / "the first Arabic marketplace".
+Country and city keywords stay on the hire pages (`/hire/{service}`, per country and city), so the home page can carry the brand claim without losing local searches. Keep the claim consistent when editing copy: "الشبكة العربية" / "the Arabic network".

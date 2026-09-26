@@ -9,8 +9,8 @@
 ## 1. The idea: the founding cohort
 Scarcity that is true: **the platform is empty, so whoever is first in each city and each service is the first thing clients see.** Every message comes back to one line:
 
-> «أول منصة عربية لصنّاع السوشيال ميديا. التسجيل مجاني قبل الإطلاق، والأماكن الأولى في مدينتك ما زالت متاحة.»
-> ("The first Arabic platform for social media makers. Registration is free before launch, and the first places in your city are still open.")
+> «شبكة صنّاع السوشيال ميديا العرب. التسجيل مجاني قبل الإطلاق، والأماكن الأولى في مدينتك ما زالت متاحة.»
+> ("The network of Arab social media makers. Registration is free before launch, and the first places in your city are still open.")
 
 The live map on `/soon` does the FOMO work. "Riyadh: 14 · Kuwait: first place open" makes a Kuwaiti agency want to be that first tile. It is honest at any number.
 

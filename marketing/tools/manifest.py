@@ -30,7 +30,7 @@ S = {  # still prefix → (platform, message, copy section, status)
  'M2-real-work': ('Meta, TikTok, Snap', 'See real work before you pay', 'See real work', '✅'),
  'M3-milestones-HOLD': ('Meta, Snap', 'Pay per milestone, protected', 'Protected payments (HOLD)', '⛔ HOLD'),
  'M3b-milestone-contract': ('Meta, LinkedIn', 'Clear contract in milestones (launch-safe)', 'Milestone contracts, launch-safe', '✅'),
- 'M4-first-arabic': ('All (brand)', 'First Arabic platform', 'Hero & "find in a minute"', '✅ after legal sign-off on the claim'),
+ 'M4-first-arabic': ('All (brand)', 'RETIRED: re-render with the master line ("Your marketing team starts here")', 'Hero & "find in a minute"', '✅ after legal sign-off on the claim'),
  'M5-agencies': ('Meta, LinkedIn, TikTok', 'Agencies: free showcase + client requests', 'Agencies', '✅'),
  'M5-SA-agencies': ('LinkedIn, Snap KSA', 'Agencies (Riyadh)', 'Agencies', '✅'),
 }

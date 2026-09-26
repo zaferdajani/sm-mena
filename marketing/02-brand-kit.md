@@ -1,7 +1,7 @@
 # Sawwiq brand kit: voice, dialects, taglines, hashtags, templates
 
 ## 1. Brand in one line
-**سوّق: أول منصة عربية لوكالات التسويق.** Sawwiq: the first Arabic marketplace for marketing agencies.
+**سوّق: فريقك التسويقي يبدأ من هنا.** Sawwiq: your marketing team starts here.
 **Idea: «سوّق صح»** ("Market right"). Evidence instead of hope: real work, clear prices, contracts in milestones.
 
 ## 2. Voice and tone
@@ -46,7 +46,7 @@ Egypt is supply-only for 90 days, so use the Egyptian dialect for agency recruit
 
 | Use | Arabic | English |
 |---|---|---|
-| Master | أول منصة عربية لوكالات التسويق | The first Arabic marketplace for marketing agencies |
+| Master | فريقك التسويقي يبدأ من هنا | Your marketing team starts here |
 | Brand idea | سوّق صح. | Market right. |
 | P1 speed | وكالتك المناسبة… بدقيقة | The right agency, in a minute |
 | P2 proof | شوف الشغل قبل ما تدفع | See the work before you pay |
@@ -116,7 +116,7 @@ AR/EN: 3–5 short paragraphs: an observation from the market → what we built 
 
 | Claim | Status | Allowed wording |
 |---|---|---|
-| First Arabic marketplace for agencies | Positioning; **legal sign-off** | «أول منصة عربية لوكالات التسويق» ("the first Arabic marketplace for marketing agencies"). Fallback: «منصة عربية لوكالات التسويق» ("an Arabic marketplace for marketing agencies") |
+| Network positioning | Positioning; **legal sign-off** | «فريقك التسويقي يبدأ من هنا» ("your marketing team starts here"). Fallback: «منصة عربية لوكالات التسويق» ("an Arabic marketplace for marketing agencies") |
 | Find in a minute | Matcher to results ≈ 10 s measured on the rule-based matcher (25 Sep). **Re-check with the live AI provider.** | «بدقيقة» ("in a minute") |
 | Real work | True for real agencies; demo accounts exist | Show «حسابات تجريبية» ("demo accounts") on UI footage until real agencies replace them |
 | Verified agencies | Registration checked, not quality | «موثّقة» ("verified"); never «مضمونة» ("guaranteed") |

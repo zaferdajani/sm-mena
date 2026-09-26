@@ -32,7 +32,7 @@ describe("landing copy per country", () => {
     expect(ar.cities.list[0]).toEqual({ slug: "riyadh", name: "الرياض", alt: "RIYADH" });
     expect(ar.payments.ledger.project).toBe("حملة إطلاق مطعم، الرياض");
     expect(ar.payments.ledger.money(1750)).toBe("1,750 ر.س");
-    expect(ar.footer.tagline).toBe("أول منصة عربية لوكالات التسويق · السعودية");
+    expect(ar.footer.tagline).toBe("فريقك التسويقي يبدأ من هنا · السعودية");
 
     const en = landingCopy("en", "ae");
     expect(en.chapters[0].title).toBe("Find the right marketing agency in the United Arab Emirates");
@@ -42,7 +42,7 @@ describe("landing copy per country", () => {
     expect(en.payments.ledger.money(1750)).toBe("AED 1,750");
     expect(en.trust.review.name).toBe("Dr. Lina, dental clinic in Sharjah");
     expect(en.agencies.body).toBe("For agencies and freelancers in Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah and Fujairah. Your Sawwiq page is free.");
-    expect(en.footer.tagline).toBe("The first Arabic marketplace for marketing agencies · United Arab Emirates");
+    expect(en.footer.tagline).toBe("Your marketing team starts here · United Arab Emirates");
   });
 
   it("drops Jordan-only places everywhere else", () => {

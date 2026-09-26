@@ -23,7 +23,7 @@ A post marked **(real)** needs real, consented material from a founding agency o
 
 | # | Day | Channels | Format | Asset / material | Hook (AR) | Goal |
 |---|---|---|---|---|---|---|
-| 1 | W1 Sun | IG, FB, LI, X | Logo sting + launch post | `sting/sawwiq-sting-9x16.mp4`, M4 1x1 | «سوّق: أول منصة عربية لوكالات التسويق» ("Sawwiq: the first Arabic marketplace for marketing agencies") | Awareness, handles live |
+| 1 | W1 Sun | IG, FB, LI, X | Logo sting + launch post | `sting/sawwiq-sting-9x16.mp4`, M4 1x1 | «سوّق: فريقك التسويقي يبدأ من هنا» ("Sawwiq: your marketing team starts here") | Awareness, handles live |
 | 2 | W1 Sun | LI-F | Founder text post | E template | «ليش بنينا سوّق؟» ("Why we built Sawwiq") | Credibility with agencies |
 | 3 | W1 Mon | IG, TT, YT-S | Reel 21 s | V07 agency | «شغلك حلو… بس مين شايفه؟» ("Your work is great… but who's seeing it?") | Agency sign-ups |
 | 4 | W1 Tue | LI | Video 16:9 | V08 LinkedIn agency | «صفحة مجانية لوكالتك» ("A free page for your agency") | Agency sign-ups |
