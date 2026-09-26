@@ -14,6 +14,8 @@ Branch `claude/marketing-campaign`. Prepared 25 Sep 2026. **Nothing has been pos
 | 8 | Production tools (rebuild or re-render anything) | [`tools/`](tools/) |
 | 9 | Mobile landing logo intro (owner request) | `components/landing/intro-sting.tsx`, `public/assets/brand/intro/`, `tests/e2e/intro.spec.ts` |
 
+- `05-behind-the-page-movement.md`: the identity campaign — «المنصات للجمهور. سوّق لمن يديرها.»: cards, client confirmation, "who runs this page", the Sawwiq 50.
+
 ## Skills, connectors and tools used
 
 | Capability | Used for |
