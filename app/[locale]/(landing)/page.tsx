@@ -1,10 +1,11 @@
-import { isStaffRole } from "@/lib/auth/permissions";
-import { getSessionUser } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Lang } from "@/components/landing/copy";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { SawwiqPage } from "@/components/landing/sawwiq-page";
+import { TeaserView } from "@/components/teaser/teaser-view";
+import { accountLink } from "@/lib/account-link";
+import { canUse } from "@/lib/feature-gate";
 import { JsonLd } from "@/components/seo/json-ld";
 import { chosenCountry, currentCountry } from "@/lib/country-choice";
 import { pageMeta } from "@/lib/seo";
@@ -19,21 +20,24 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
 /**
  * The front page: the landing site (first built on Higgsfield) with its
  * scroll-driven film, who we help, protected payments, services, trust,
- * agencies and cities. Every call to action opens the app (/feed, /match,
+ * agencies and cities (the pre-launch teaser instead while "prelaunch_home" is on).
+ * Every call to action opens the app (/feed, /match,
  * /explore, /join). The copy follows the visitor's country: their saved
  * choice, else the country of their IP address, else Jordan.
  */
 export default async function LandingPage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [country, chosen, user] = await Promise.all([currentCountry(), chosenCountry(), getSessionUser()]);
-  // Header account button: sign in, or back to the studio / admin console.
-  const ar = locale !== "en";
-  const account = !user
-    ? { href: `/${locale}/login`, label: ar ? "تسجيل الدخول" : "Sign in" }
-    : isStaffRole(user.role)
-      ? { href: `/${locale}/admin`, label: ar ? "لوحة الإدارة" : "Admin" }
-      : { href: `/${locale}/studio`, label: ar ? "الاستوديو" : "Studio" };
+  const [country, chosen, account, prelaunch] = await Promise.all([currentCountry(), chosenCountry(), accountLink(locale), canUse("prelaunch_home")]);
+  // Until launch the front page is the teaser (Admin → Features → Pre-launch home page; docs/39).
+  if (prelaunch) {
+    return (
+      <>
+        <JsonLd data={[organizationLd(), websiteLd(locale)]} />
+        <TeaserView locale={locale} account={account} />
+      </>
+    );
+  }
   return (
     <>
       <JsonLd data={[organizationLd(), websiteLd(locale)]} />

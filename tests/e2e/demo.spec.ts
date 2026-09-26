@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-// The typed /demo link (docs/35-demo-link.md). playwright.config turns the demo
+// The typed /demo link (docs/37-demo-link.md). playwright.config turns the demo
 // view on for every test; this one starts as a real visitor.
 test.use({ storageState: { cookies: [], origins: [] } });
 

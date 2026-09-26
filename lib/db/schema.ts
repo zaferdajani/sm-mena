@@ -11,6 +11,7 @@ import {
   integer,
   jsonb,
   pgEnum,
+  pgSequence,
   pgTable,
   primaryKey,
   text,
@@ -158,6 +159,9 @@ export const sessions = pgTable(
   (t) => [index("sessions_user_idx").on(t.userId)],
 );
 
+// Founding seat numbers only go up, so a number never comes back (docs/39).
+export const foundingSeatSeq = pgSequence("founding_seat_seq");
+
 // ---------------------------------------------------------------------------
 // Agencies (the only public profiles)
 // ---------------------------------------------------------------------------
@@ -173,8 +177,6 @@ export const agencies = pgTable(
     name: text("name").notNull(),
     bio: text("bio").notNull().default(""),
     avatarKey: text("avatar_key"),
-    // Member number, in order of joining (docs/28: shown on the page and the Behind-the-Page card).
-    memberNo: integer("member_no").default(sql`nextval('agency_member_seq')`),
     // Country code (lib/countries.ts); prices are in this country's currency.
     country: text("country").notNull().default("jo"),
     city: text("city").notNull(),
@@ -206,6 +208,8 @@ export const agencies = pgTable(
     teamSize: text("team_size"),
     isVerified: boolean("is_verified").notNull().default(false),
     isDemo: boolean("is_demo").notNull().default(false),
+    // Founding seat: 1, 2, 3… in the order real providers joined; never reused (docs/39).
+    foundingSeat: integer("founding_seat").unique(),
     status: agencyStatus("status").notNull().default("active"),
     deactivatedAt: timestamp("deactivated_at", { withTimezone: true }),
     deactivationReason: text("deactivation_reason"), // self | admin | demo_cleanup

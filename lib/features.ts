@@ -27,6 +27,8 @@ export const FEATURES = [
   { key: "reviews", group: "trust" },
   { key: "partners", group: "network" },
   { key: "demo_view", group: "discovery" },
+  // Off by default: the front page is the landing page; on makes it the pre-launch teaser (/soon, docs/39); "soon" previews it to staff.
+  { key: "prelaunch_home", group: "launch" },
 ] as const;
 export type FeatureKey = (typeof FEATURES)[number]["key"];
 export const isFeatureKey = (k: string): k is FeatureKey => FEATURES.some((f) => f.key === k);
@@ -40,6 +42,8 @@ export function defaultFeatures(): FeatureMap {
   for (const f of FEATURES) out[f.key] = { state: "on", pilots: [] };
   out.protected_payments = { state: "soon", pilots: [] };
   out.paid_plans = { state: process.env.MONETIZATION_ENABLED === "true" ? "on" : "soon", pilots: [] };
+  // The front page is the landing page; the pre-launch teaser stays at /soon and is switched on by an admin only.
+  out.prelaunch_home = { state: "off", pilots: [] };
   // FEATURE_DEFAULTS="protected_payments=on,ndas=off" changes the starting point (the e2e server uses it).
   for (const pair of (process.env.FEATURE_DEFAULTS ?? "").split(",")) {
     const [k, v] = pair.split("=").map((x) => x?.trim());

@@ -18,8 +18,8 @@ export async function topAgencies(country: string, limit = 50): Promise<TopRow[]
   const rows = await db
     .select({ agency: agencies, confirmed })
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), eq(agencies.isDemo, false), eq(agencies.country, country), isNotNull(agencies.memberNo)))
-    .orderBy(desc(confirmed), desc(agencies.ratingCount), desc(agencies.postCount), agencies.memberNo)
+    .where(and(eq(agencies.status, "active"), eq(agencies.isDemo, false), eq(agencies.country, country), isNotNull(agencies.foundingSeat)))
+    .orderBy(desc(confirmed), desc(agencies.ratingCount), desc(agencies.postCount), agencies.foundingSeat)
     .limit(limit);
-  return rows.map((r, i) => ({ rank: i + 1, agency: toSummary(r.agency), memberNo: r.agency.memberNo, confirmed: Number(r.confirmed), reviews: r.agency.ratingCount, posts: r.agency.postCount }));
+  return rows.map((r, i) => ({ rank: i + 1, agency: toSummary(r.agency), memberNo: r.agency.foundingSeat, confirmed: Number(r.confirmed), reviews: r.agency.ratingCount, posts: r.agency.postCount }));
 }

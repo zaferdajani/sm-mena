@@ -130,7 +130,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: agency.foundingSeat }}
         following={following}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}

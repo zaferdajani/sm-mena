@@ -2,7 +2,7 @@ import { INDUSTRIES } from "@/lib/labels";
 
 /**
  * Business types (the taxonomy's `business_types`, stored as `posts.industry`):
- * the tag on each post and the chips that filter the feed (docs/36-feed.md).
+ * the tag on each post and the chips that filter the feed (docs/38-feed.md).
  */
 export const BUSINESS_TYPES = INDUSTRIES;
 export type BusinessType = (typeof BUSINESS_TYPES)[number];

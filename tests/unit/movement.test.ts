@@ -1,6 +1,7 @@
 import "./setup-db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createAgency, getAgencyByHandle } from "@/lib/data/agencies";
+import { assignFoundingSeats } from "@/lib/data/teaser";
 import { clientByConfirmToken, confirmClient, confirmedCounts, ensureConfirmToken, resetConfirmation, saveClient } from "@/lib/data/portfolio-clients";
 import { topAgencies } from "@/lib/data/top";
 import { findWhoRuns, parseAccountQuery } from "@/lib/data/who-runs";
@@ -21,6 +22,7 @@ beforeAll(async () => {
   const u2 = await createUser("m2@test.jo", "password-123");
   a1 = (await createAgency(u1.id, { handle: "behind.one", name: "Behind One", city: "amman", services: ["smm_management"], startingPriceJod: 200 })).id;
   a2 = (await createAgency(u2.id, { handle: "behind.two", name: "Behind Two", city: "amman", services: ["smm_management"], startingPriceJod: 200 })).id;
+  await assignFoundingSeats(); // seats are given in join order (docs/39); the member number on the page is the seat
   const c = await saveClient(a1, null, { name: "Rose Café", links: [{ kind: "instagram", value: "@Rose.Cafe" }, { kind: "tiktok", value: "rosecafe" }] });
   if ("error" in c) throw new Error("client");
   cafe = c.id;
@@ -36,8 +38,8 @@ describe("member numbers", () => {
   it("are given in order of joining", async () => {
     const one = await getAgencyByHandle("behind.one");
     const two = await getAgencyByHandle("behind.two");
-    expect(one?.memberNo).toBeGreaterThan(0);
-    expect(two!.memberNo!).toBe(one!.memberNo! + 1);
+    expect(one?.foundingSeat).toBeGreaterThan(0);
+    expect(two!.foundingSeat!).toBe(one!.foundingSeat! + 1);
   });
 });
 

@@ -110,8 +110,15 @@
     {
       "idx": 15,
       "version": "7",
+      "when": 1790442709117,
+      "tag": "0015_founding_seats",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
       "when": 1790446299679,
-      "tag": "0015_apps_and_movement",
+      "tag": "0016_apps_and_movement",
       "breakpoints": true
     }
   ]

@@ -4,7 +4,9 @@ import { eq } from "drizzle-orm";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { requireAgency, requireUser } from "@/lib/auth/guards";
-import { destroySession } from "@/lib/auth/session";
+import { createSession, destroyAllSessions, destroySession } from "@/lib/auth/session";
+import { changeEmailSchema, changePasswordSchema } from "@/lib/account-schema";
+import { changeEmail, changePassword, type AccountError } from "@/lib/data/account";
 import { deactivateAgency } from "@/lib/data/deactivation";
 import { adminMfaRequired, confirmEnrollment, disableMfa, mfaKeyConfigured, regenerateBackupCodes, startEnrollment, verifySecondFactor } from "@/lib/auth/mfa";
 import { verifyPassword } from "@/lib/auth/password";
@@ -77,4 +79,34 @@ export async function deactivateAccountAction(_: DeactivateResult | undefined, f
   await destroySession();
   const locale = await getLocale();
   return redirect({ href: "/login?closed=1", locale });
+}
+
+export type AccountResult = { error?: AccountError | "invalid" | "short" | "mismatch" | "rateLimited" | "demo"; done?: "email" | "password" };
+
+/** Security → sign-in details: a new email (the username you sign in with). */
+export async function changeEmailAction(_: AccountResult | undefined, formData: FormData): Promise<AccountResult> {
+  const user = await requireUser();
+  if (!rateLimit(`account:${user.id}`, 8, 15 * 60 * 1000)) return { error: "rateLimited" };
+  if (await sharedDemoAccount(user.id)) return { error: "demo" };
+  const parsed = changeEmailSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "invalid" };
+  const error = await changeEmail(user.id, parsed.data);
+  return error ? { error } : { done: "email" };
+}
+
+/** Security → sign-in details: a new password. Every other device is signed out; this one stays in. */
+export async function changePasswordAction(_: AccountResult | undefined, formData: FormData): Promise<AccountResult> {
+  const user = await requireUser();
+  if (!rateLimit(`account:${user.id}`, 8, 15 * 60 * 1000)) return { error: "rateLimited" };
+  if (await sharedDemoAccount(user.id)) return { error: "demo" };
+  const parsed = changePasswordSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    const path = parsed.error.issues[0]?.path[0];
+    return { error: path === "newPassword" ? "short" : path === "confirm" ? "mismatch" : "invalid" };
+  }
+  const error = await changePassword(user.id, parsed.data);
+  if (error) return { error };
+  await destroyAllSessions(user.id);
+  await createSession(user.id);
+  return { done: "password" };
 }

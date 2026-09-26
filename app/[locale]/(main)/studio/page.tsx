@@ -2,12 +2,17 @@ import { CheckCircle2, Circle, ExternalLink, Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClicksChart } from "@/components/studio/clicks-chart";
 import { ShareCard } from "@/components/studio/share-card";
+import { SeatCard } from "@/components/teaser/seat-card";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { agencyInsights, topPosts } from "@/lib/data/insights";
 import { listPackages } from "@/lib/data/packages";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { mediaUrl } from "@/lib/storage";
+import { seatOf } from "@/lib/data/teaser";
+import { countryOf, countryOfCity } from "@/lib/countries";
+import { agencyName } from "@/lib/content-lang";
+import { SITE_URL } from "@/lib/site";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
 export default async function StudioOverview({ params, searchParams }: PageProps<"/[locale]/studio">) {
@@ -18,9 +23,12 @@ export default async function StudioOverview({ params, searchParams }: PageProps
   const t = await getTranslations("Studio");
   const ent = entitlementsFor(agency);
   const days = Math.min(30, ent.insightsDays);
-  const [insights, top, packages] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id)]);
+  const [insights, top, packages, seat] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id), seatOf(agency)]);
+  const cityName = countryOf(countryOfCity(agency.city)).cities.find((c) => c.key === agency.city);
   // Setup steps, in order: the page, the packages, the first work.
+  // The claimed seat counts as the first step done (endowed progress, docs/39).
   const steps = [
+    ...(seat ? [{ key: "seat", href: "/soon", done: true } as const] : []),
     { key: "profile", href: "/studio/profile", done: Boolean(agency.bio.trim() && agency.services.length) },
     { key: "packages", href: "/studio/packages", done: packages.length > 0 },
     { key: "post", href: "/studio/new", done: agency.postCount > 0 },
@@ -48,6 +56,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </Link>
         </p>
       )}
+      {seat && cityName && <SeatCard seat={seat.seat} citySeat={seat.citySeat} city={locale === "ar" ? cityName.ar : cityName.en} name={agencyName({ ...agency, nameTranslation: agency.translation?.name }, locale)} locale={locale} url={`${SITE_URL}/${locale}/soon`} />}
       {steps.some((x) => !x.done) && (
         <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">
           <h2 className="font-semibold">{t("setup.title")}</h2>
@@ -64,7 +73,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </ol>
         </section>
       )}
-      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: agency.memberNo, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
+      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: agency.foundingSeat, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-testid="insight-tiles">

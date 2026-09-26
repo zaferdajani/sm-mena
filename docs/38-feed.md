@@ -1,4 +1,4 @@
-# The feed: business-type tags and the phone swipe feed
+# 38. The feed: business-type tags and the phone swipe feed
 
 ## Business-type tags
 

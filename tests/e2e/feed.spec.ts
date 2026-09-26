@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-// The feed (docs/36-feed.md): business-type tags and chips everywhere; phones get
+// The feed (docs/38-feed.md): business-type tags and chips everywhere; phones get
 // the full-screen swipe feed, desktops the card list.
 
 test("business-type chips filter the feed, and every post shows its type", async ({ page }) => {
