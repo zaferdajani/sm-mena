@@ -14,7 +14,7 @@ import { INDUSTRIES, PLATFORMS, serviceLabel, serviceOptions } from "@/lib/label
 import { citiesOf, COUNTRIES, countryName, countryOfCity, currencyOf } from "@/lib/countries";
 import { currentCountry } from "@/lib/country-choice";
 import { cn } from "@/lib/utils";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 import { ClosestMatches } from "@/components/closest/closest-matches";
 import { canUse } from "@/lib/feature-gate";
 import { closestAgencies } from "@/lib/matching/closest";
@@ -64,7 +64,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
     industries: INDUSTRIES.map((key) => ({ key, label: tInd(key) })),
   };
 
-  const posts = tab === "posts" ? await feedPage(filters, null, visitorId, { placement: "explore", limit: 24 }) : null;
+  const posts = tab === "posts" ? await feedPage(filters, null, visitorId, { placement: "explore", limit: 24, stateKey: await interactionKey() }) : null;
   const agencies = tab === "agencies" ? await listAgencies({ ...filters, limit: 60 }) : null;
   const count = posts ? posts.items.filter((i) => !i.sponsored).length : (agencies?.length ?? 0);
   // Nothing matched every filter: say so, then show the closest agencies and what differs (docs/35).

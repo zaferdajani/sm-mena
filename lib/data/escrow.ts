@@ -1,19 +1,22 @@
 import "server-only";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { getDb, type DB } from "@/lib/db";
-import { escrowLedger, milestones, type Contract } from "@/lib/db/schema";
+import { escrowLedger, milestoneShares, milestones, type Contract } from "@/lib/db/schema";
 import { checkSplit, HELD_STATUSES, payout, splitKind, type Split } from "@/lib/contracts/rules";
+import { splitRelease } from "@/lib/contracts/shares";
 import { paymentProvider } from "@/lib/payments/provider";
 
 // Money out of protection, once. Every payout and refund for a milestone goes
 // through settleMilestone: a status transition guarded in SQL (only from a
 // held status) and ledger rows with one idempotency key per milestone and
-// kind ("rel:", "fee:", "ref:"), in one transaction. A second call — a
-// double click, a replayed job, two admins at once — changes nothing.
+// kind ("rel:", "fee:", "ref:"; "prel:"/"pfee:" for a partner's share,
+// docs/40), in one transaction. A second call — a double click, a replayed
+// job, two admins at once — changes nothing.
 
 type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
 
-export const ledgerKey = (kind: "dep" | "rel" | "fee" | "ref", milestoneId: string) => `${kind}:${milestoneId}`;
+export type LedgerKind = "dep" | "rel" | "fee" | "ref" | "prel" | "pfee";
+export const ledgerKey = (kind: LedgerKind, milestoneId: string) => `${kind}:${milestoneId}`;
 
 /** What is held for one milestone right now: deposits − payouts − fees − refunds. */
 export async function heldFor(milestoneId: string, ex?: Tx | DB) {
@@ -31,7 +34,9 @@ export type SettleResult = "ok" | "already" | "mismatch";
 
 /**
  * Pays `releaseFils` of a held milestone to the agency (less Sawwiq's fee on
- * that part only) and refunds `refundFils` to the client. The two must add up
+ * that part only) and refunds `refundFils` to the client. When a partner
+ * accepted a share of the milestone, its part goes straight to the partner
+ * (lib/contracts/shares.ts), so it never waits on the agency. The two must add up
  * to what is held. The milestone becomes released, refunded or split.
  */
 export async function settleMilestone(
@@ -64,11 +69,20 @@ export async function settleMilestone(
       // Test money moves at once; a real partner confirms each payout and refund (lib/data/money-out.ts).
       const status = provider === "mock" ? "succeeded" : "pending";
       const note = opts.note?.slice(0, 500) ?? null;
-      const { fee, net } = payout(s.releaseFils, contract.feePercent);
+      const [share] = await tx
+        .select({ partnerAgencyId: milestoneShares.partnerAgencyId, amountFils: milestoneShares.amountFils })
+        .from(milestoneShares)
+        .where(and(eq(milestoneShares.milestoneId, milestoneId), eq(milestoneShares.status, "accepted")));
+      const parts = share ? splitRelease(s.releaseFils, m.amountFils, share.amountFils, contract.feePercent) : { agency: payout(s.releaseFils, contract.feePercent), partner: null };
       const rows: (typeof escrowLedger.$inferInsert)[] = [];
-      if (s.releaseFils > 0) {
-        rows.push({ contractId: contract.id, milestoneId, type: "release", amountFils: net, provider, status, note, idemKey: ledgerKey("rel", milestoneId) });
-        if (fee > 0) rows.push({ contractId: contract.id, milestoneId, type: "fee", amountFils: fee, provider, status, note, idemKey: ledgerKey("fee", milestoneId) });
+      if (parts.agency.gross > 0) {
+        rows.push({ contractId: contract.id, milestoneId, type: "release", amountFils: parts.agency.net, provider, status, note, idemKey: ledgerKey("rel", milestoneId) });
+        if (parts.agency.fee > 0) rows.push({ contractId: contract.id, milestoneId, type: "fee", amountFils: parts.agency.fee, provider, status, note, idemKey: ledgerKey("fee", milestoneId) });
+      }
+      if (share && parts.partner && parts.partner.gross > 0) {
+        const payee = share.partnerAgencyId;
+        rows.push({ contractId: contract.id, milestoneId, type: "release", amountFils: parts.partner.net, provider, status, note, idemKey: ledgerKey("prel", milestoneId), payeeAgencyId: payee });
+        if (parts.partner.fee > 0) rows.push({ contractId: contract.id, milestoneId, type: "fee", amountFils: parts.partner.fee, provider, status, note, idemKey: ledgerKey("pfee", milestoneId), payeeAgencyId: payee });
       }
       if (s.refundFils > 0) rows.push({ contractId: contract.id, milestoneId, type: "refund", amountFils: s.refundFils, provider, status, note, idemKey: ledgerKey("ref", milestoneId) });
       if (rows.length) await tx.insert(escrowLedger).values(rows);

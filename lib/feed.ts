@@ -12,13 +12,14 @@ export async function feedPage(
   filters: FeedFilters,
   cursor: string | null,
   visitorId: string | null,
-  options: { limit?: number; placement?: "feed" | "explore" | null } = {},
+  /** stateKey: whose likes and saves to show (the signed-in account; docs/41). */
+  options: { limit?: number; placement?: "feed" | "explore" | null; stateKey?: string | null } = {},
 ): Promise<FeedPage> {
   const { items, nextCursor } = await getFeed(filters, cursor, options.limit ?? 12);
   const withAds = options.placement
     ? await injectPromotions(items, { placement: options.placement, filters, firstPage: !cursor, visitorId })
     : items;
-  return withState(withAds, visitorId, nextCursor);
+  return withState(withAds, options.stateKey ?? null, nextCursor);
 }
 
 export async function withState(items: PostView[], visitorId: string | null, nextCursor: string | null = null): Promise<FeedPage> {

@@ -4,17 +4,20 @@ import { Bookmark, Heart, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useOptimistic, useState, useTransition } from "react";
 import { likePost, savePost } from "@/app/[locale]/(main)/actions";
+import { useGoToSignIn } from "@/components/sign-in-redirect";
 import { cn } from "@/lib/utils";
 
 export function useLike(postId: string, liked: boolean, count: number) {
   const [state, setState] = useState({ liked, count });
   const [optimistic, setOptimistic] = useOptimistic(state);
   const [, start] = useTransition();
+  const goToSignIn = useGoToSignIn();
   const toggle = (forceLike = false) => {
     if (forceLike && optimistic.liked) return;
     start(async () => {
       setOptimistic({ liked: !optimistic.liked, count: optimistic.count + (optimistic.liked ? -1 : 1) });
       const result = await likePost(postId).catch(() => null);
+      if (result && "signIn" in result) return goToSignIn();
       if (result) setState({ liked: result.liked, count: result.count });
     });
   };
@@ -43,11 +46,13 @@ export function PostActions({
   const [optimisticSaved, setOptimisticSaved] = useOptimistic(isSaved);
   const [copied, setCopied] = useState(false);
   const [, start] = useTransition();
+  const goToSignIn = useGoToSignIn();
 
   const toggleSave = () =>
     start(async () => {
       setOptimisticSaved(!optimisticSaved);
       const result = await savePost(postId).catch(() => null);
+      if (result && "signIn" in result) return goToSignIn();
       if (result) setSaved(result.saved);
     });
 

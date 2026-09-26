@@ -15,6 +15,7 @@ import {
   disputeEvidence,
   escrowLedger,
   milestoneChecks,
+  milestoneShares,
   milestoneDisputes,
   milestones,
   partnerRequests,
@@ -369,6 +370,8 @@ export type ContractView = {
   /** Partner contracts: the agency buying the work. */
   clientAgency: { id: string; name: string; handle: string } | null;
   milestones: (Milestone & { checks: MilestoneCheck[] })[];
+  /** Milestones a partner delivers (accepted shares), by milestone id. */
+  partners: Record<string, { name: string; handle: string }>;
   events: (typeof contractEvents.$inferSelect)[];
   money: { deposited: number; released: number; refunded: number; fees: number; held: number };
   /** Held per milestone (protected mode). */
@@ -415,6 +418,12 @@ export async function view(contract: Contract): Promise<ContractView> {
   const cancellations = await db.select().from(cancellationProposals).where(eq(cancellationProposals.contractId, contract.id)).orderBy(desc(cancellationProposals.createdAt));
   const [invite] = contract.status === "completed" ? await db.select().from(reviewRequests).where(and(eq(reviewRequests.contractId, contract.id), isNull(reviewRequests.usedAt))) : [];
   const changes = await db.select().from(contractChanges).where(eq(contractChanges.contractId, contract.id)).orderBy(desc(contractChanges.createdAt));
+  // Partners delivering a milestone (docs/40): shown by name on it; the share itself stays between agency and partner.
+  const shareRows = await db
+    .select({ milestoneId: milestoneShares.milestoneId, name: agencies.name, handle: agencies.handle })
+    .from(milestoneShares)
+    .innerJoin(agencies, eq(milestoneShares.partnerAgencyId, agencies.id))
+    .where(and(eq(milestoneShares.contractId, contract.id), eq(milestoneShares.status, "accepted")));
   const [lastUpdate] = await db
     .select({ at: contractEvents.createdAt })
     .from(contractEvents)
@@ -428,6 +437,7 @@ export async function view(contract: Contract): Promise<ContractView> {
     agency,
     clientAgency: clientAgency ?? null,
     milestones: ms.map((m) => ({ ...m, checks: checks.filter((c) => c.milestoneId === m.id) })),
+    partners: Object.fromEntries(shareRows.map((r) => [r.milestoneId, { name: r.name, handle: r.handle }])),
     events: evs,
     money: { ...money, held: money.deposited - money.released - money.refunded - money.fees },
     heldBy,

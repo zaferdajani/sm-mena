@@ -12,7 +12,7 @@ import {
 import { feedPage, type FeedPage } from "@/lib/feed";
 import { recordPromotionClick } from "@/lib/monetization/promotions";
 import { rateLimit } from "@/lib/rate-limit";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 import { createInquiry, createReport } from "@/lib/data/interactions";
 import { getDb } from "@/lib/db";
 import { agencies as agenciesTable } from "@/lib/db/schema";
@@ -50,26 +50,31 @@ export async function loadMorePosts(
   const { includeDemo: _ignored, ...clientFilters } = (rawFilters ?? {}) as Record<string, unknown>;
   void _ignored;
   const filters = { ...filtersSchema.parse(clientFilters), includeDemo: await demoMode() };
-  const visitorId = await getVisitorId();
-  return feedPage(filters, z.string().max(200).parse(cursor), visitorId, { placement });
+  const [visitorId, stateKey] = await Promise.all([getVisitorId(), interactionKey()]);
+  return feedPage(filters, z.string().max(200).parse(cursor), visitorId, { placement, stateKey });
 }
 
-async function visitorOrThrow(action: string) {
-  const visitorId = await getVisitorId({ create: true });
-  if (!visitorId || !rateLimit(`${action}:${visitorId}`, 120, 60 * 1000)) throw new Error("rate_limited");
-  return visitorId;
+/** Follows, likes and saves need an account (docs/41): visitors are sent to sign in. */
+async function accountOrSignIn(action: string) {
+  const key = await interactionKey();
+  if (!key) return null;
+  if (!rateLimit(`${action}:${key}`, 120, 60 * 1000)) throw new Error("rate_limited");
+  return key;
 }
 
 export async function likePost(postId: string) {
-  return toggleLike(uuid.parse(postId), await visitorOrThrow("like"));
+  const key = await accountOrSignIn("like");
+  return key ? toggleLike(uuid.parse(postId), key) : { signIn: true as const };
 }
 
 export async function savePost(postId: string) {
-  return toggleSave(uuid.parse(postId), await visitorOrThrow("save"));
+  const key = await accountOrSignIn("save");
+  return key ? toggleSave(uuid.parse(postId), key) : { signIn: true as const };
 }
 
 export async function followAgency(agencyId: string) {
-  return toggleFollow(uuid.parse(agencyId), await visitorOrThrow("follow"));
+  const key = await accountOrSignIn("follow");
+  return key ? toggleFollow(uuid.parse(agencyId), key) : { signIn: true as const };
 }
 
 const channel = z.enum(["whatsapp", "phone", "email", "website", "instagram"]);

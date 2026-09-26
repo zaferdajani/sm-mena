@@ -26,8 +26,9 @@ async function send(entry: Entry) {
   if (!c) return "skipped" as const;
   let result;
   if (entry.type === "release") {
-    const [fee] = await db.select({ amountFils: escrowLedger.amountFils }).from(escrowLedger).where(eq(escrowLedger.idemKey, ledgerKey("fee", entry.milestoneId)));
-    result = await provider.payout({ idemKey: entry.idemKey, contractId: entry.contractId, milestoneId: entry.milestoneId, agencyId: c.agencyId, amountFils: entry.amountFils, feeFils: fee?.amountFils ?? 0, currency: c.currency });
+    const [fee] = await db.select({ amountFils: escrowLedger.amountFils }).from(escrowLedger).where(eq(escrowLedger.idemKey, ledgerKey(feeKindOf(entry), entry.milestoneId)));
+    // A partner's share goes to the partner (docs/40); everything else to the contract's agency.
+    result = await provider.payout({ idemKey: entry.idemKey, contractId: entry.contractId, milestoneId: entry.milestoneId, agencyId: entry.payeeAgencyId ?? c.agencyId, amountFils: entry.amountFils, feeFils: fee?.amountFils ?? 0, currency: c.currency });
   } else {
     const [dep] = await db.select({ providerRef: escrowLedger.providerRef }).from(escrowLedger).where(eq(escrowLedger.idemKey, ledgerKey("dep", entry.milestoneId)));
     result = await provider.refund({ idemKey: entry.idemKey, contractId: entry.contractId, milestoneId: entry.milestoneId, depositProviderRef: dep?.providerRef ?? null, amountFils: entry.amountFils, currency: c.currency });
@@ -41,13 +42,16 @@ async function send(entry: Entry) {
 async function setStatus(entry: Pick<Entry, "idemKey" | "milestoneId" | "type" | "note">, status: "succeeded" | "pending" | "failed", providerRef: string | null, error?: string) {
   const db = await getDb();
   const keys = [entry.idemKey!];
-  if (entry.type === "release" && entry.milestoneId) keys.push(ledgerKey("fee", entry.milestoneId));
+  if (entry.type === "release" && entry.milestoneId) keys.push(ledgerKey(feeKindOf(entry), entry.milestoneId));
   const tries = status === "failed" ? triesOf(entry.note) + 1 : triesOf(entry.note);
   await db
     .update(escrowLedger)
     .set({ status, providerRef, ...(status === "failed" ? { note: withTries(entry.note, tries, error) } : {}) })
     .where(inArray(escrowLedger.idemKey, keys));
 }
+
+/** The fee entry beside a payout: "pfee:" for a partner's share, "fee:" otherwise. */
+const feeKindOf = (entry: Pick<Entry, "idemKey">) => (entry.idemKey?.startsWith("prel:") ? "pfee" : "fee");
 
 // The retry count lives in the entry's note ("… [tries:2]"), which the ledger trigger lets us update.
 const triesOf = (note: string | null) => Number(/\[tries:(\d+)\]/.exec(note ?? "")?.[1] ?? 0);

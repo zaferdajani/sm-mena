@@ -24,6 +24,12 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
         </p>
       )}
       <LoginForm />
+      <p className="mt-4 rounded-lg bg-muted p-3 text-center text-sm" data-testid="client-signin-link">
+        {t("clientPrompt")}{" "}
+        <Link href="/signin" className="font-medium text-brand">
+          {t("clientLink")}
+        </Link>
+      </p>
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("noAccount")}{" "}
         <Link href="/join" className="font-medium text-brand">

@@ -117,8 +117,22 @@
     {
       "idx": 16,
       "version": "7",
-      "when": 1790446299679,
-      "tag": "0016_apps_and_movement",
+      "when": 1790448362542,
+      "tag": "0016_milestone_shares",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790449686686,
+      "tag": "0017_client_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1790450299679,
+      "tag": "0018_apps_and_movement",
       "breakpoints": true
     }
   ]

@@ -27,7 +27,8 @@ import type { PostApp } from "@/lib/app-demo";
 // agency = an agency account. The rest are staff (lib/auth/permissions.ts):
 // owner (the platform owner; cannot be removed by anyone else), admin, and
 // scoped team roles for engineering (backbone), maintenance and support.
-export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support"]);
+// "client": a business owner who signs in with an emailed code to follow, save and like (docs/41).
+export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support", "client"]);
 // deactivated: the account holder closed it (or the demo cleanup did); hidden
 // everywhere and sign-in is off, but its contracts and ledger stay (docs/32).
 export const agencyStatus = pgEnum("agency_status", ["active", "suspended", "deactivated"]);
@@ -123,6 +124,25 @@ export const users = pgTable("users", {
   invitedBy: uuid("invited_by"),
   createdAt: createdAt(),
 });
+
+/**
+ * One-time sign-in codes sent by email (docs/41-client-accounts.md). Only a
+ * hash of the code is stored; codes expire after 10 minutes and allow five
+ * tries. Rows are deleted after a day.
+ */
+export const loginCodes = pgTable(
+  "login_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email").notNull(),
+    codeHash: text("code_hash").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("login_codes_email_idx").on(t.email, t.createdAt)],
+);
 
 /** Single-use invitations to join the staff with a given role (owner only). */
 export const staffInvites = pgTable(
@@ -835,6 +855,9 @@ export const escrowLedger = pgTable(
     // ("dep:<milestone>", "rel:…", "fee:…", "ref:…"): a replayed event or a
     // double click can't move money twice. Rows are append-only (trigger).
     idemKey: text("idem_key").unique(),
+    // Who a payout goes to: null = the contract's agency; a partner who
+    // delivered a share of the milestone otherwise ("prel:…"/"pfee:…"; docs/40).
+    payeeAgencyId: uuid("payee_agency_id").references(() => agencies.id, { onDelete: "restrict" }),
     // Test-mode money (the built-in test checkout): kept forever as a record
     // that the flow ran, never counted as real money. Derived, so it can't drift.
     test: boolean("test").generatedAlwaysAs(sql`provider = 'mock'`).notNull(),
@@ -842,6 +865,51 @@ export const escrowLedger = pgTable(
   },
   (t) => [index("escrow_contract_idx").on(t.contractId), index("escrow_type_idx").on(t.type, t.createdAt)],
 );
+
+/**
+ * A partner's share of one client milestone (docs/40-collaboration.md): the
+ * agency brings in a freelancer or partner agency for that milestone, for a
+ * percentage or a fixed amount of it. Agreed between agency and partner and
+ * frozen (terms hash) once the partner accepts; the client's own contract
+ * terms do not change. When the client confirms the milestone (or its review
+ * period ends), settleMilestone pays the share to the partner and the rest
+ * to the agency, each less Sawwiq's fee.
+ */
+export const milestoneShares = pgTable(
+  "milestone_shares",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    contractId: uuid("contract_id")
+      .notNull()
+      .references(() => contracts.id, { onDelete: "restrict" }),
+    milestoneId: uuid("milestone_id")
+      .notNull()
+      .references(() => milestones.id, { onDelete: "restrict" }),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    partnerAgencyId: uuid("partner_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "restrict" }),
+    kind: text("kind").notNull(), // percent | fixed
+    percent: integer("percent"),
+    amountFils: integer("amount_fils").notNull(),
+    note: text("note"),
+    status: text("status").notNull().default("proposed"), // proposed | accepted | declined | cancelled
+    termsHash: text("terms_hash"),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    // Direct payment mode: the agency pays the partner itself and both mark it.
+    paidByAgencyAt: timestamp("paid_by_agency_at", { withTimezone: true }),
+    receivedByPartnerAt: timestamp("received_by_partner_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    // One live share per milestone.
+    uniqueIndex("milestone_shares_live_idx").on(t.milestoneId).where(sql`status in ('proposed', 'accepted')`),
+    index("milestone_shares_partner_idx").on(t.partnerAgencyId, t.status),
+  ],
+);
+export type MilestoneShare = typeof milestoneShares.$inferSelect;
 
 /** Contract timeline: who did what, shown to both sides and to admins in disputes. */
 export const contractEvents = pgTable(

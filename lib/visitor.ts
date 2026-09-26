@@ -28,3 +28,13 @@ export function visitorCookieOptions() {
     maxAge: 60 * 60 * 24 * 365,
   };
 }
+
+/**
+ * Who follows, likes and saves: a signed-in account only ("u:<user id>";
+ * docs/41). Null for visitors who haven't signed in; they're asked to.
+ */
+export async function interactionKey(): Promise<string | null> {
+  const { getSessionUser } = await import("@/lib/auth/session");
+  const user = await getSessionUser();
+  return user ? `u:${user.id}` : null;
+}

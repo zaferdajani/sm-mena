@@ -31,7 +31,7 @@ import { pageMeta } from "@/lib/seo";
 import { mediaUrl } from "@/lib/storage";
 import { agencyLd, breadcrumbLd } from "@/lib/structured-data";
 import { cn } from "@/lib/utils";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 import { canUse } from "@/lib/feature-gate";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
@@ -73,9 +73,9 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   ]);
   const visitorId = await getVisitorId();
   const [following, posts, reviewRows, sub, canReview, pkgs, clients, viewCountry] = await Promise.all([
-    isFollowing(visitorId, agency.id),
+    isFollowing(await interactionKey(), agency.id),
     // Work filed under an account is grouped in account tiles; the grid shows the rest.
-    tab === "work" ? feedPage({ agencyId: agency.id, standalone: true }, null, visitorId, { limit: 24 }) : null,
+    tab === "work" ? feedPage({ agencyId: agency.id, standalone: true }, null, visitorId, { limit: 24, stateKey: await interactionKey() }) : null,
     tab === "reviews" ? listReviews(agency.id) : null,
     tab === "reviews" ? subScores(agency.id) : null,
     tab === "reviews" ? canReviewAfterInquiry(visitorId, agency.id) : false,
