@@ -11,7 +11,7 @@ import { users } from "@/lib/db/schema";
 import { DEMO_COOKIE, DEMO_STUDIO_HANDLES } from "@/lib/demo-mode";
 import { canUse } from "@/lib/feature-gate";
 
-/** Turns the labelled demo view on or off for this browser (docs/31). Leaving also ends a demo agency's session (docs/35). */
+/** Turns the labelled demo view on or off for this browser (docs/31). Leaving also ends a demo agency's session (docs/37). */
 export async function setDemoModeAction(on: boolean) {
   const jar = await cookies();
   // Entering needs the demo view switched on (Admin → Features); leaving always works.
@@ -27,7 +27,7 @@ export async function setDemoModeAction(on: boolean) {
 const isStudioHandle = (v: unknown): v is (typeof DEMO_STUDIO_HANDLES)[number] => typeof v === "string" && (DEMO_STUDIO_HANDLES as readonly string[]).includes(v);
 
 /**
- * The /demo page (docs/35): turns the demo view on and, with `as` set to one
+ * The /demo page (docs/37): turns the demo view on and, with `as` set to one
  * of the demo agencies, signs in as it without a password. Only seeded demo
  * agencies whose owner is a plain agency account qualify, never staff.
  */

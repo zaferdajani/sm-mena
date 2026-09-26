@@ -13,6 +13,7 @@ import { updateAgency, createAgency } from "../data/agencies";
 import { saveClient } from "../data/portfolio-clients";
 import { syncServiceCatalog } from "../services/tags";
 import { createPostFromProcessed } from "../data/posts";
+import { normalizeForSearch } from "../text";
 import { createProjectRequest } from "../data/requests";
 import { ensureOwner, recoverOwner } from "../data/staff";
 import { createUser, getUserByEmail } from "../data/users";
@@ -22,6 +23,7 @@ import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
 import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
 import { DEMO_PROFILES, DEMO_ROLES } from "./demo-profiles";
+import { DEMO_TRANSLATIONS } from "./demo-translations";
 import { ROLE_KEYS } from "../services/catalog";
 import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, type DeliverableLine } from "./schema";
 
@@ -225,6 +227,41 @@ async function addDemoRoles(log: (...a: unknown[]) => void) {
   log(`Added team roles to ${n} demo agencies.`);
 }
 
+const TRANSLATIONS_FLAG = "demo_translations_v1";
+
+/** English versions of the demo agencies that write in Arabic, and of their posts' captions (lib/db/demo-translations.ts). */
+async function addDemoTranslations(log: (...a: unknown[]) => void) {
+  const db = await getDb();
+  const [done] = await db.select().from(appSettings).where(eq(appSettings.key, TRANSLATIONS_FLAG));
+  if (done) return;
+  let agencyCount = 0;
+  let postCount = 0;
+  for (const [handle, tr] of Object.entries(DEMO_TRANSLATIONS)) {
+    const [agency] = await db
+      .update(agencies)
+      .set({
+        contentLang: "ar",
+        translation: { name: tr.name, bio: tr.bio, ...(tr.about ? { about: tr.about } : {}), ...(tr.strengths ? { strengths: tr.strengths } : {}) },
+        // Search finds them by their English name and bio too.
+        searchText: sql`${agencies.searchText} || ' ' || ${normalizeForSearch(`${tr.name} ${tr.bio}`)}`,
+      })
+      .where(and(eq(agencies.handle, handle), eq(agencies.isDemo, true)))
+      .returning({ id: agencies.id });
+    if (!agency) continue;
+    agencyCount++;
+    for (const [ar, en] of Object.entries(tr.captions)) {
+      const rows = await db
+        .update(posts)
+        .set({ translation: { caption: en }, searchText: sql`${posts.searchText} || ' ' || ${normalizeForSearch(`${en} ${tr.name}`)}` })
+        .where(and(eq(posts.agencyId, agency.id), eq(posts.caption, ar)))
+        .returning({ id: posts.id });
+      postCount += rows.length;
+    }
+  }
+  await db.insert(appSettings).values({ key: TRANSLATIONS_FLAG, value: true }).onConflictDoNothing();
+  log(`Added English to ${agencyCount} demo agencies and ${postCount} posts.`);
+}
+
 /** Keeps a few open demo client requests (they expire after 14 days) so the agency request feed is never empty. */
 async function addDemoRequests(log: (...a: unknown[]) => void) {
   const db = await getDb();
@@ -354,6 +391,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     await addDemoPortfolio(log);
     await addDemoProfiles(log);
     await addDemoRoles(log);
+    await addDemoTranslations(log);
     await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
     return;
@@ -535,6 +573,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   await addDemoPortfolio(log);
   await addDemoProfiles(log);
   await addDemoRoles(log);
+  await addDemoTranslations(log);
   await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
   if (!production) {

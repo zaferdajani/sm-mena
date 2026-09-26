@@ -38,7 +38,7 @@ The same path we took on OneClickConvert: first make every page honest and index
 1. **The final domain is `sawwiq.org`** (`NEXT_PUBLIC_SITE_URL`, set by Actions → Vercel → setup). Any other host answers with `noindex`.
 2. **Google Search Console and Bing Webmaster Tools:** verify the domain (DNS TXT is simplest, or set `GOOGLE_SITE_VERIFICATION` / `BING_SITE_VERIFICATION`), submit `/sitemap.xml`, and request indexing for `/ar`, `/ar/hire` and the top hire pages.
 3. **IndexNow:** add a secret `INDEXNOW_KEY` (32 hex characters, e.g. `openssl rand -hex 16`).
-4. **Demo agencies never count as real** (docs/31-trust-and-demo.md); they stay reachable through the demo view and `/demo` (docs/35-demo-link.md). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.
+4. **Demo agencies never count as real** (docs/31-trust-and-demo.md); they stay reachable through the demo view and `/demo` (docs/37-demo-link.md). Until then almost only home, hire index, explore, about and contact are indexable, on purpose.
 5. **Watch response times.** Vercel functions start fast, and pages are served close to the London database; check Search Console → Crawl stats if crawling slows.
 6. **Check the Jordan-specific facts in the service copy** before indexing: drone/archaeological-site permits (video), trademark registration at the Ministry of Industry, Trade and Supply (branding), JFDA Arabic labelling (packaging), municipality licences for outdoor ads and shop signs, `.jo` domain documents, CliQ and cash on delivery (e-commerce), LinkedIn minimum audience, WhatsApp template approval and per-conversation pricing.
 

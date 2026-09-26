@@ -22,7 +22,7 @@ function measure(root: HTMLElement) {
 }
 
 /**
- * The phone feed (docs/36-feed.md): one post per screen, swipe up for the next,
+ * The phone feed (docs/38-feed.md): one post per screen, swipe up for the next,
  * snapping like TikTok. The page scrolls (so the header and bottom bar stay);
  * `interstitial` is a full-screen card shown after the third post (or the last, if fewer).
  */
