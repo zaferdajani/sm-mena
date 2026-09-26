@@ -11,6 +11,7 @@ import { isStaffRole } from "@/lib/auth/permissions";
 import { completeMfaSession, createSession, destroySession, getPendingMfaUser } from "@/lib/auth/session";
 import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
+import { assignFoundingSeats } from "@/lib/data/teaser";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -137,6 +138,8 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     await deleteUser(user.id);
     return { error: "handleTaken", fields };
   }
+  // Their founding seat number (docs/39), shown in the studio.
+  await assignFoundingSeats();
   await createSession(user.id);
   const locale = await getLocale();
   return redirect({ href: "/studio/profile?welcome=1", locale });

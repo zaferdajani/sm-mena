@@ -1,5 +1,7 @@
 # Pre-launch plan: make joining Sawwiq the thing to do
 
+> Superseded by the full campaign in `06-the-list-playbook.md` («القائمة», "The List": founding seats, city race, evidence review). This page stays as the short version.
+
 **Goal:** before the public launch, get providers across Jordan, KSA, the Gulf and Egypt to register, and make "are you on Sawwiq yet?" a question people in the industry ask each other. Providers here means agencies, freelancers, content creators, influencers, photographers, designers and media buyers. The landing link is **sawwiq.org/ar/soon** (docs/39).
 
 **Constraints:** nothing gets posted, sent or paid for without owner approval. Numbers are real only. No fake reviews, testimonials, brands or faces. Don't say "free forever". There's no launch date until you pick one.

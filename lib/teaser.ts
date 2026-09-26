@@ -40,3 +40,6 @@ export function summariseProviders(rows: ProviderRow[]): TeaserStats {
   const total = countries.reduce((s, c) => s + c.n, 0);
   return { total, agencies: total - freelancers, freelancers, countries, cities };
 }
+
+/** A seat number as shown on the page and the share card: "#0042" (at least four digits). */
+export const seatLabel = (seat: number) => `#${String(seat).padStart(4, "0")}`;

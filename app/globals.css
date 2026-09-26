@@ -49,7 +49,9 @@
   color-scheme: light;
 }
 
-:root[data-theme="dark"] {
+/* The pre-launch teaser (/soon) is always night-themed, whatever the OS says. */
+:root[data-theme="dark"],
+.teaser-night {
   color-scheme: dark;
   --background: oklch(0.17 0.01 160);
   --foreground: oklch(0.95 0.01 160);
@@ -235,4 +237,16 @@ html.reel-snap [data-testid="site-footer"] {
 }
 @media (prefers-reduced-motion: reduce) {
   .reel-burst, .reel-hint { animation: none; }
+}
+
+/* Pre-launch teaser (docs/39): gold accents on the night theme. */
+.teaser-night {
+  --gold: #d9ae55;
+  --gold-soft: #f3dca2;
+}
+.teaser-gold-text {
+  background: linear-gradient(180deg, var(--gold-soft), var(--gold) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
