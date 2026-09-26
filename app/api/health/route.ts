@@ -22,6 +22,7 @@ export async function GET() {
       ai: aiStatus(),
       google: googleConfigured(),
       monetization: monetizationEnabled(),
+      email: Boolean(process.env.RESEND_API_KEY),
     }, { status: storageReady ? 200 : 503 });
   } catch (error) {
     console.error("health check failed:", error instanceof Error ? error.message : error);

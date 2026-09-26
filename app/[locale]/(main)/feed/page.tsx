@@ -21,7 +21,7 @@ import { pageMeta } from "@/lib/seo";
 import { stripAgencies } from "@/lib/strip";
 import { currentCountry } from "@/lib/country-choice";
 import { countryName } from "@/lib/countries";
-import { getVisitorId } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
 import { canUse } from "@/lib/feature-gate";
 import { isBusinessType } from "@/lib/business-types";
 import { deviceOf } from "@/lib/data/stats";
@@ -50,7 +50,7 @@ export default async function FeedPage({ params, searchParams }: PageProps<"/[lo
   const [country, includeDemo, matchOpen] = await Promise.all([currentCountry(), demoMode(), canUse("ai_matchmaker")]);
   const tf = await getTranslations("Feed");
   const filters = { country, ...(type ? { industry: type } : {}) };
-  const [strip, page] = await Promise.all([stripAgencies(country, includeDemo), feedPage({ ...filters, includeDemo }, null, visitorId, { placement: "feed" })]);
+  const [strip, page] = await Promise.all([stripAgencies(country, includeDemo), feedPage({ ...filters, includeDemo }, null, visitorId, { placement: "feed", stateKey: await interactionKey() })]);
   const empty = type ? (
     <div className="px-4 py-12 text-center" data-testid="feed-type-empty">
       <p className="font-medium">{tf("emptyType")}</p>

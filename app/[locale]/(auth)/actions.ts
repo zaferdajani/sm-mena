@@ -12,6 +12,8 @@ import { completeMfaSession, createSession, destroySession, getPendingMfaUser } 
 import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
 import { assignFoundingSeats } from "@/lib/data/teaser";
+import { mergeDeviceInteractions } from "@/lib/data/interactions";
+import { getVisitorId } from "@/lib/visitor";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -48,6 +50,8 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
     return redirect({ href: "/login/verify", locale });
   }
   await createSession(user.id);
+  // This device's follows, likes and saves move to the account (docs/41).
+  await mergeDeviceInteractions(await getVisitorId(), user.id);
   if (isStaffRole(user.role)) await audit(user.id, "auth.login", "user", user.id, { mfa: false });
   return redirect({ href: await homeFor(user.id, user.role), locale });
 }

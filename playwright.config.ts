@@ -21,6 +21,8 @@ const e2eEnv = {
   // the contract suites exercise them in test mode (tests/e2e/features.spec.ts covers the switches).
   // The landing page is under test; the pre-launch home has its own test (tests/e2e/teaser.spec.ts).
   FEATURE_DEFAULTS: "protected_payments=on,prelaunch_home=off",
+  // Client sign-in codes are shown on screen (never in real production; docs/41).
+  AUTH_SHOW_CODES: "true",
 };
 
 export default defineConfig({

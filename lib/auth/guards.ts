@@ -14,7 +14,8 @@ export async function requireAgency() {
   const user = await getSessionUser();
   if (!user) return redirect({ href: "/login", locale });
   const agency = await getCurrentAgency();
-  if (!agency) return redirect({ href: isStaffRole(user.role) ? "/admin" : "/login", locale });
+  // Staff go to the console; client accounts (docs/41) to their saved list.
+  if (!agency) return redirect({ href: isStaffRole(user.role) ? "/admin" : user.role === "client" ? "/saved" : "/login", locale });
   return { user, agency };
 }
 

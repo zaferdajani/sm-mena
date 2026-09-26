@@ -119,3 +119,10 @@ A partner share stores:
 - the share (percentage or amount) and an optional note about the work.
 
 It holds no personal data. The partner sees only the shared milestone, its checklist and its own payout, never the client's name or contact details. Shares are kept as long as the contract they belong to, because they're a payout instruction.
+
+## Client accounts (docs/41)
+- **Email** (the sign-in identity): kept while the account exists.
+- **Consent:** the version is recorded at the first sign-in (`consent_version`), and the checkbox on `/signin` says the email is used for signing in only.
+- **Sign-in codes:** stored as keyed hashes only, deleted after 24 hours.
+- **Logs:** addresses are never logged, and the email that carries the code contains nothing else.
+- **Follows, likes and saves:** tied to the account key; staff remove them with the account when its owner asks for deletion (support).
