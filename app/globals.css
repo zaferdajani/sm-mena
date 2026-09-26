@@ -250,3 +250,43 @@ html.reel-snap [data-testid="site-footer"] {
   background-clip: text;
   color: transparent;
 }
+
+/* Pre-launch page motion (components/teaser/motion.tsx, docs/39). */
+.teaser-sky {
+  background:
+    radial-gradient(60% 50% at 80% 0%, rgba(251, 191, 36, 0.35), transparent 60%),
+    radial-gradient(50% 45% at 10% 20%, rgba(251, 113, 133, 0.22), transparent 60%),
+    radial-gradient(60% 60% at 50% 100%, rgba(19, 120, 74, 0.16), transparent 60%);
+  background-size: 160% 160%;
+  animation: teaser-drift 18s ease-in-out infinite alternate;
+}
+@keyframes teaser-drift {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 100%; }
+}
+.teaser-float { animation: teaser-float 7s ease-in-out infinite; }
+.teaser-float--2 { animation-duration: 9s; animation-delay: -3s; }
+.teaser-float--3 { animation-duration: 8s; animation-delay: -5s; }
+@keyframes teaser-float {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--tilt, 0deg)); }
+}
+.teaser-reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.teaser-reveal.is-in { opacity: 1; transform: none; }
+.teaser-marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.teaser-marquee__track { display: flex; width: max-content; animation: teaser-marquee 40s linear infinite; }
+.teaser-marquee__track--reverse { animation-direction: reverse; }
+.teaser-marquee:hover .teaser-marquee__track { animation-play-state: paused; }
+@keyframes teaser-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.teaser-fade-in { animation: teaser-fade 0.6s ease both; }
+@keyframes teaser-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.teaser-pulse { animation: teaser-pulse 2.4s ease-in-out infinite; }
+@keyframes teaser-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(19, 120, 74, 0.25); } 50% { box-shadow: 0 0 0 14px rgba(19, 120, 74, 0); } }
+.teaser-bar { transform-origin: left; transform: scaleX(0); transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1); }
+[dir="rtl"] .teaser-bar { transform-origin: right; }
+.is-in .teaser-bar { transform: scaleX(1); }
+@media (prefers-reduced-motion: reduce) {
+  .teaser-sky, .teaser-float, .teaser-marquee__track, .teaser-pulse { animation: none; }
+  .teaser-reveal { opacity: 1; transform: none; transition: none; }
+  .teaser-bar { transform: scaleX(1); transition: none; }
+}

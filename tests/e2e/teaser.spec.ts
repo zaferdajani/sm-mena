@@ -19,7 +19,7 @@ test("the teaser shows every country and sends providers to /join", async ({ pag
 test("the teaser has an English version", async ({ page }) => {
   await page.goto("/en/soon");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Show your work");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Your work deserves");
 });
 
 test("a new provider gets a founding seat and a share card in the studio", async ({ page }) => {

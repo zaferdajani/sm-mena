@@ -2978,7 +2978,7 @@
     "confirmed": "Confirmed by the client"
   },
   "Teaser": {
-    "metaTitle": "Sawwiq: The List is open before launch",
+    "metaTitle": "Sawwiq: The List is open before launch. Your work deserves clients who come looking",
     "metaDescription": "The Arabic network for social media agencies, freelancers, content creators and influencers. Claim your founding seat free before launch: every number is given once.",
     "badge": "Before launch · The List is open",
     "title": "Show your work. Grow your team. Build relationships that bring work.",
@@ -3062,7 +3062,38 @@
     },
     "vaultOpened": "Revealed thanks to the seat holders",
     "vaultAt": "Revealed at seat {seat}",
-    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}"
+    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}",
+    "v3": {
+      "heroTitle": "Your work deserves clients who come looking for it.",
+      "heroSub": "Sawwiq is the Arabic network where businesses find their marketing team, and where agencies, freelancers and creators find clients, partners and work that gets seen. Register before launch: your founding seat number is yours for good.",
+      "freeLine": "Free during launch · a page in two minutes",
+      "chips": {
+        "request": "New request: a café in Amman wants a monthly package",
+        "partner": "Partner found: a photographer for Thursday's shoot",
+        "seen": "Your work, seen by the people who hire"
+      },
+      "registered": "providers registered so far",
+      "nextSeatShort": "the next founding seat",
+      "imagineTitle": "Imagine the morning it starts working for you.",
+      "imagineSub": "Three things change when your work is somewhere businesses actually look, and the people you need are one message away.",
+      "imagine": {
+        "clients": {
+          "title": "Clients come to you",
+          "body": "A business owner describes what she needs; Sawwiq shows her the people whose real work fits. Your page is the pitch."
+        },
+        "partners": {
+          "title": "Partners complete your team",
+          "body": "Won a project that needs a photographer or a media buyer? Find one on Sawwiq, agree the scope, and deliver together."
+        },
+        "seen": {
+          "title": "Your work gets seen",
+          "body": "Not buried in a PDF or a DM. Every post, filed under the account it was for, in front of people who are ready to hire."
+        }
+      },
+      "cohort": "The first 100 accepted providers are the founding cohort: hands-on help with your page, two partner introductions and 90 days of premium tools once they're live. Everyone else still registers free.",
+      "closingTitle": "Start here.",
+      "closingBody": "A better working life for the people who make social media begins with a page that shows what you can do. Claim your seat; the rest we build together."
+    }
   },
   "Seat": {
     "title": "Your seat on The List",
