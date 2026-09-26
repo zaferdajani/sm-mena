@@ -42,6 +42,16 @@ The agency side:
 - New post / edit post: **Account (client)** files the post under an account.
 - PDF import (docs/36): logos cut out of the PDF become accounts, and each draft names the account it belongs to; the guide at the top of the review says what is still unsorted.
 
+## Client confirmation, "Who runs this page?", member numbers and the Sawwiq 50
+
+The Behind-the-Page movement (marketing/05) needs proof, not claims:
+
+- **Client confirmation.** Studio → Accounts → "Get the confirmation link" makes a private link (`portfolio_clients.confirm_token`) the agency sends the client (copy, or WhatsApp with a ready message). The client opens `/confirm-account/{token}` (no sign-in; not indexed), sees the account and the agency, and taps "Yes, {agency} runs this page" → `confirmed_at` is set. The account then shows **"Confirmed by the client"** on the agency's page, the account page and the card. The agency can withdraw a confirmation (which also voids the link). A visitor may confirm at most 10 links an hour.
+- **Who runs this page?** (`/who-runs`, `lib/data/who-runs.ts`): type a handle or paste a profile link; the answer is the agency (or agencies) whose client **confirmed** that account, with a link to the account page. Unconfirmed listings never appear, so nobody can claim a page they don't run. Demo agencies appear only in the demo view. An empty answer invites the person who does run it to join.
+- **Member number** (`agencies.member_no`, sequence `agency_member_seq`, backfilled by join date in migration `0015`): shown on the page header and the card.
+- **The Behind-the-Page card** (`components/profile/behind-card.tsx`): a 1080×1920 card (story size) with the agency's picture and name, "I'm the one behind the page", the member number, and up to 8 accounts with logos (confirmed first, ticked). It is drawn by the browser (so Arabic is shaped and the layout mirrored exactly as on the site) and rasterised to PNG on the device by `modern-screenshot` when the agency presses Download or Share on the studio home (Web Share with the file where supported; otherwise a download). No server image rendering: the server-side renderer could not lay out Arabic acceptably.
+- **The Sawwiq 50** (`/sawwiq50`, `lib/data/top.ts`): the visitor's country, real agencies only, ranked by confirmed accounts, then verified reviews, then posts. Computed live; never edited by hand; the page says how it is ranked.
+
 ## Demo data
 
 `lib/db/demo-profiles.ts` gives several demo agencies an introduction, strengths, countries served and made-up clients (marked "demo"). It runs once per database (`demo_profiles_v1` flag): locally with `npm run db:seed`, live with Actions → Maintenance → **seed-demo**.

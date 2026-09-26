@@ -28,7 +28,7 @@ export default async function StudioClientsPage({ params }: PageProps<"/[locale]
       {clients.map((c) => (
         <ClientItem
           key={c.id}
-          client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation, logoUrl: mediaUrl(c.logoKey) }}
+          client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation, logoUrl: mediaUrl(c.logoKey), confirmedAt: c.confirmedAt }}
           industries={industries}
           countries={countries}
           industryLabel={c.industry ? tInd(c.industry) : null}

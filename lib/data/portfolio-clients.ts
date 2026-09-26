@@ -1,7 +1,8 @@
-import { and, asc, count, desc, eq, inArray } from "drizzle-orm";
+import { randomBytes } from "node:crypto";
+import { and, asc, count, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 import { isCountryCode } from "@/lib/countries";
 import { getDb } from "@/lib/db";
-import { portfolioClients, postImages, posts, type ClientTranslation, type PortfolioClient } from "@/lib/db/schema";
+import { agencies, portfolioClients, postImages, posts, type Agency, type ClientTranslation, type PortfolioClient } from "@/lib/db/schema";
 import { INDUSTRIES } from "@/lib/labels";
 import { cleanLinks, type CleanLink } from "@/lib/social-links";
 import { mediaUrl } from "@/lib/storage";
@@ -156,4 +157,60 @@ export async function clientNames(ids: string[]): Promise<Map<string, { name: st
     .from(portfolioClients)
     .where(inArray(portfolioClients.id, ids));
   return new Map(rows.map((r) => [r.id, { name: r.name, translation: r.translation ?? {} }]));
+}
+
+// --- Client confirmation (docs/28): the client says, through a private link
+// the agency sends, that this agency runs its account. Confirmed accounts get
+// a badge and are the only ones "Who runs this page?" answers with.
+
+/** The account's confirmation link token, made on first use. Null when the client isn't the agency's. */
+export async function ensureConfirmToken(agencyId: string, clientId: string): Promise<string | null> {
+  const db = await getDb();
+  const [row] = await db.select({ token: portfolioClients.confirmToken }).from(portfolioClients).where(and(eq(portfolioClients.id, clientId), eq(portfolioClients.agencyId, agencyId)));
+  if (!row) return null;
+  if (row.token) return row.token;
+  const token = randomBytes(18).toString("base64url");
+  await db.update(portfolioClients).set({ confirmToken: token }).where(eq(portfolioClients.id, clientId));
+  return token;
+}
+
+/** What a confirmation link points at: the account and the agency that asks. */
+export async function clientByConfirmToken(token: string): Promise<{ client: PortfolioClient & { logoUrl: string | null }; agency: Agency } | null> {
+  if (!token || token.length > 64) return null;
+  const db = await getDb();
+  const [row] = await db
+    .select({ client: portfolioClients, agency: agencies })
+    .from(portfolioClients)
+    .innerJoin(agencies, eq(agencies.id, portfolioClients.agencyId))
+    .where(eq(portfolioClients.confirmToken, token));
+  return row ? { client: { ...row.client, logoUrl: mediaUrl(row.client.logoKey) }, agency: row.agency } : null;
+}
+
+/** The client confirms. Idempotent: an already confirmed account stays confirmed. */
+export async function confirmClient(token: string): Promise<boolean> {
+  const db = await getDb();
+  const rows = await db
+    .update(portfolioClients)
+    .set({ confirmedAt: sql`coalesce(${portfolioClients.confirmedAt}, now())`, updatedAt: new Date() })
+    .where(eq(portfolioClients.confirmToken, token))
+    .returning({ id: portfolioClients.id });
+  return rows.length > 0;
+}
+
+/** The agency withdraws a confirmation (a client changed, a link leaked): a new link is needed afterwards. */
+export async function resetConfirmation(agencyId: string, clientId: string) {
+  const db = await getDb();
+  await db.update(portfolioClients).set({ confirmedAt: null, confirmToken: null, updatedAt: new Date() }).where(and(eq(portfolioClients.id, clientId), eq(portfolioClients.agencyId, agencyId)));
+}
+
+/** How many client-confirmed accounts each agency has. */
+export async function confirmedCounts(agencyIds: string[]): Promise<Map<string, number>> {
+  if (!agencyIds.length) return new Map();
+  const db = await getDb();
+  const rows = await db
+    .select({ agencyId: portfolioClients.agencyId, n: count() })
+    .from(portfolioClients)
+    .where(and(inArray(portfolioClients.agencyId, agencyIds), isNotNull(portfolioClients.confirmedAt)))
+    .groupBy(portfolioClients.agencyId);
+  return new Map(rows.map((r) => [r.agencyId, Number(r.n)]));
 }

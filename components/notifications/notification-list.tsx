@@ -76,7 +76,7 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
                 <span className={cn("block text-sm", !n.readAt && "font-semibold")} dir="auto">
                   {t(`kinds.${kind}`, values)}
                 </span>
-                <span className="text-xs text-muted-foreground">{timeAgo(n.createdAt.toISOString(), locale)}</span>
+                <span suppressHydrationWarning className="text-xs text-muted-foreground">{timeAgo(n.createdAt.toISOString(), locale)}</span>
               </span>
               {!n.readAt && <span className="mt-2 size-2.5 shrink-0 rounded-full bg-brand" />}
             </Link>

@@ -2,6 +2,7 @@ import { DemoNotice } from "@/components/demo/demo-banner";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { AppPanel } from "@/components/post/app-panel";
 import { PostCard } from "@/components/post/post-card";
 import { PostGrid } from "@/components/post/post-grid";
 import { ReportDialog } from "@/components/post/report-dialog";
@@ -65,6 +66,11 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
         </div>
       )}
       <PostCard post={item} priority linkToPost={false} />
+      {post.app && (
+        <div className="px-3 pt-2">
+          <AppPanel app={post.app} />
+        </div>
+      )}
       <div className="flex items-center justify-between gap-2 px-3 py-2">
         {clientName && post.client ? (
           <Link href={`/a/${post.agency.handle}/c/${post.client.id}`} className="flex min-w-0 items-center gap-1.5 truncate text-sm font-medium text-brand" data-testid="post-client">

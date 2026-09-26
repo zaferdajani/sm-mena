@@ -1,9 +1,10 @@
 "use client";
 
-import { ImagePlus, Plus, Trash2, X } from "lucide-react";
+import { BadgeCheck, Copy, ImagePlus, Link2, Plus, Trash2, X } from "lucide-react";
+import { useFormatter } from "next-intl";
 import { useTranslations } from "next-intl";
 import { useActionState, useState, useTransition } from "react";
-import { deleteClientAction, saveClientAction } from "@/app/[locale]/(main)/studio/actions";
+import { confirmLinkAction, deleteClientAction, resetConfirmationAction, saveClientAction } from "@/app/[locale]/(main)/studio/actions";
 import { SocialIcon } from "@/components/social-icon";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
@@ -16,7 +17,7 @@ import type { ClientTranslation, ContentLang } from "@/lib/content-lang";
 import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
-export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[]; translation?: ClientTranslation | null; logoUrl?: string | null };
+export type ClientFormInitial = { id: string; name: string; industry: string | null; country: string | null; description: string; links: { kind: string; value: string }[]; translation?: ClientTranslation | null; logoUrl?: string | null; confirmedAt?: Date | null };
 
 // Empty rows ready to fill for a new client: the accounts agencies run most.
 const STARTER: LinkKind[] = ["instagram", "tiktok", "facebook", "website"];
@@ -225,6 +226,7 @@ export function ClientItem({ client, industries, countries, industryLabel, postC
         </Button>
         <DeleteClientButton clientId={client.id} />
       </div>
+      <ConfirmationRow clientId={client.id} name={client.name} confirmedAt={client.confirmedAt ?? null} />
       {client.links.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">
           {client.links.map((l) => (
@@ -234,6 +236,55 @@ export function ClientItem({ client, industries, countries, industryLabel, postC
             </li>
           ))}
         </ul>
+      )}
+    </div>
+  );
+}
+
+/** Client confirmation (docs/28): the status, and the private link to send the client. */
+function ConfirmationRow({ clientId, name, confirmedAt }: { clientId: string; name: string; confirmedAt: Date | null }) {
+  const t = useTranslations("PortfolioClients");
+  const format = useFormatter();
+  const [url, setUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [pending, start] = useTransition();
+  if (confirmedAt) {
+    return (
+      <p className="mt-2 flex flex-wrap items-center gap-2 text-xs" data-testid="client-confirmed-status">
+        <span className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-2 py-0.5 font-medium text-brand"><BadgeCheck className="size-3.5" /> {t("confirmed", { date: format.dateTime(confirmedAt, { dateStyle: "medium" }) })}</span>
+        <button type="button" className="text-muted-foreground underline" disabled={pending} onClick={() => start(() => resetConfirmationAction(clientId))}>{t("reset")}</button>
+      </p>
+    );
+  }
+  return (
+    <div className="mt-2 grid gap-2 text-xs" data-testid="client-confirmation">
+      <p className="flex flex-wrap items-center gap-2">
+        <span className="text-muted-foreground">{t("notConfirmed")}</span>
+        {!url && (
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 font-medium text-brand"
+            disabled={pending}
+            onClick={() => start(async () => { const r = await confirmLinkAction(clientId); if ("url" in r) setUrl(r.url); })}
+            data-testid="confirm-link-button"
+          >
+            <Link2 className="size-3.5" /> {t("getLink")}
+          </button>
+        )}
+      </p>
+      {url && (
+        <div className="grid gap-1.5 rounded-lg border bg-muted/40 p-2">
+          <p className="text-muted-foreground">{t("linkHint")}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <code className="min-w-0 flex-1 truncate rounded bg-background px-2 py-1" dir="ltr" data-testid="confirm-link">{url}</code>
+            <button type="button" className="inline-flex items-center gap-1 rounded-md border px-2 py-1" onClick={() => { void navigator.clipboard?.writeText(url); setCopied(true); }}>
+              <Copy className="size-3.5" /> {copied ? t("copied") : t("copy")}
+            </button>
+            <a href={`https://wa.me/?text=${encodeURIComponent(t("whatsappText", { account: name, url }))}`} target="_blank" rel="noopener noreferrer" className="rounded-md border px-2 py-1 font-medium text-brand">
+              {t("whatsapp")}
+            </a>
+          </div>
+        </div>
       )}
     </div>
   );

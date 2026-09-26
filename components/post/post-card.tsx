@@ -13,6 +13,7 @@ import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
 import { whatsappLink } from "@/lib/text";
 import { trackPromotionClick } from "@/app/[locale]/(main)/actions";
+import { AppPanel } from "./app-panel";
 import { BusinessTag } from "./business-tag";
 import { ContactLink } from "./contact-link";
 import { ImageCarousel } from "./image-carousel";
@@ -43,7 +44,7 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
             <span className="truncate">{post.agency.name}</span>
             {post.agency.isVerified && <VerifiedBadge label={tc("verified")} />}
           </Link>
-          <p className="truncate text-xs text-muted-foreground">
+          <p suppressHydrationWarning className="truncate text-xs text-muted-foreground">
             {promotionId ? tc("sponsored") : `${tCity(post.agency.city)} · ${timeAgo(post.createdAt, locale)}`}
           </p>
         </div>
@@ -89,6 +90,7 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
             <span dir="auto">{post.caption}</span>
           </p>
         )}
+        {post.app && <AppPanel app={post.app} compact />}
         <BusinessTag type={post.industry} />
         {post.result && (
           <p className="inline-flex rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
@@ -103,7 +105,7 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
           ))}
         </div>
         {linkToPost && (
-          <Link href={postHref} className="block text-xs text-muted-foreground">
+          <Link suppressHydrationWarning href={postHref} className="block text-xs text-muted-foreground">
             {timeAgo(post.createdAt, locale)}
           </Link>
         )}

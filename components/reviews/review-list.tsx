@@ -53,7 +53,7 @@ export async function ReviewList({ reviews, agencyName }: { reviews: Review[]; a
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Stars value={r.rating} size="size-3.5" />
-            <span>{timeAgo(r.createdAt.toISOString(), locale)}</span>
+            <span suppressHydrationWarning>{timeAgo(r.createdAt.toISOString(), locale)}</span>
             {r.service && <span>· {serviceLabel(r.service, locale)}</span>}
           </div>
           <p className="whitespace-pre-line text-sm" dir="auto">{r.body}</p>

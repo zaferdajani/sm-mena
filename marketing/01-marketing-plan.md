@@ -34,6 +34,7 @@ Businesses in our markets hire marketing agencies through Instagram DMs, cousins
 | P2 | See before you pay | شوف الشغل الحقيقي قبل ما تدفع | See real work before you pay | Portfolio feed, "Clients" tab, packages with prices |
 | P3 | Pay per milestone | ادفع على مراحل، والمال ينتظر موافقتك | Pay per milestone. The money waits for your approval | Contracts with milestones and checklists. **Escrow is in test mode; hold until the provider is live.** |
 | P4 | First Arabic platform | أول منصة عربية لوكالات التسويق | The first Arabic marketplace for marketing agencies | Arabic-first product, 8 countries. Positioning claim; sign-off needed. |
+| P6 | Apps are marketing too | التطبيق قناتك المباشرة… وجرّبه قبل ما تتعاقد | An app is your direct channel. Try it before you sign | `app_development` service, hire page `/hire/app_development`; posts carry the app with **Try the app** (the app mall sandbox, docs/37). Needs the app mall to allow sawwiq.org (owner step, 04 §4). |
 | P5 (agencies) | Free showcase + real requests | صفحة مجانية لشغلك، وطلبات عملاء حقيقية | A free showcase, and real client requests | Free during launch; requests and quotes are live |
 
 Supporting proof points: verified reviews with "results vs targets", Google ratings shown as they are, WhatsApp contact, NDA and contract templates per country, and the client owns every account and file (handover within 7 days).

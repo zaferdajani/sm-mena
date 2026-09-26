@@ -18,6 +18,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { PostApp } from "@/lib/app-demo";
 
 // ---------------------------------------------------------------------------
 // Enums
@@ -172,6 +173,8 @@ export const agencies = pgTable(
     name: text("name").notNull(),
     bio: text("bio").notNull().default(""),
     avatarKey: text("avatar_key"),
+    // Member number, in order of joining (docs/28: shown on the page and the Behind-the-Page card).
+    memberNo: integer("member_no").default(sql`nextval('agency_member_seq')`),
     // Country code (lib/countries.ts); prices are in this country's currency.
     country: text("country").notNull().default("jo"),
     city: text("city").notNull(),
@@ -250,6 +253,8 @@ export const posts = pgTable(
     translation: jsonb("translation").$type<PostTranslation>().notNull().default({}),
     // The client business this work was for (portfolio groups work by client).
     clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
+    // The app this post shows, with its "Try the app" sandbox link (lib/app-demo.ts).
+    app: jsonb("app").$type<PostApp | null>(),
     status: postStatus("status").notNull().default("published"),
     likeCount: integer("like_count").notNull().default(0),
     saveCount: integer("save_count").notNull().default(0),
@@ -284,6 +289,9 @@ export const portfolioClients = pgTable(
     links: jsonb("links").$type<ClientLink[]>().notNull().default([]),
     // The account's logo (a square WebP in storage, like an agency avatar).
     logoKey: text("logo_key"),
+    // The client confirmed that this agency runs its account (docs/28): a private link the agency sends.
+    confirmToken: text("confirm_token"),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     position: integer("position").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

@@ -43,6 +43,8 @@ export async function SiteFooter() {
             <li><Link href="/about" className="hover:text-foreground hover:underline">{t("about")}</Link></li>
             <li><Link href="/contact" className="hover:text-foreground hover:underline">{t("contact")}</Link></li>
             <li><Link href="/join" className="hover:text-foreground hover:underline">{t("forAgencies")}</Link></li>
+            <li><Link href="/who-runs" className="hover:text-foreground hover:underline">{t("whoRuns")}</Link></li>
+            <li><Link href="/sawwiq50" className="hover:text-foreground hover:underline">{t("top")}</Link></li>
             <li><Link href="/legal" className="hover:text-foreground hover:underline">{t("legal")}</Link></li>
             <li><Link href="/support" className="hover:text-foreground hover:underline">{t("report")}</Link></li>
             <li>

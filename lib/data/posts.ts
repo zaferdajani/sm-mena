@@ -5,6 +5,7 @@ import { agencies, portfolioClients, postImages, posts, type Agency } from "@/li
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
+import type { PostApp } from "@/lib/app-demo";
 import { contentLang, translationSearchText, type ContentLang, type PostTranslation } from "@/lib/content-lang";
 
 export type PostInput = {
@@ -15,6 +16,8 @@ export type PostInput = {
   result?: string | null;
   /** Portfolio client this work was for (lib/data/portfolio-clients.ts); checked by the caller. */
   clientId?: string | null;
+  /** The app this post shows (lib/app-demo.ts), cleaned by the caller. */
+  app?: PostApp | null;
   /** Caption and result in the agency's other language. */
   translation?: PostTranslation;
 };
@@ -56,6 +59,8 @@ export type PostView = {
   clientId: string | null;
   /** That client as an account: name and logo for the "For {client}" line (null when untagged). */
   client: { id: string; name: string; nameTranslation: string | null; logoUrl: string | null } | null;
+  /** The app this post shows, with its sandbox link, if any. */
+  app: PostApp | null;
   likeCount: number;
   saveCount: number;
   viewCount: number;
@@ -121,6 +126,7 @@ export async function createPostFromProcessed(
         industry: input.industry ?? null,
         result: input.result ?? null,
         clientId: input.clientId ?? null,
+        app: input.app ?? null,
         translation: input.translation ?? {},
         searchText: postSearchText(input, agency),
         ...(createdAt ? { createdAt } : {}),
@@ -269,6 +275,7 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     result: post.result,
     clientId: post.clientId,
     client: (post.clientId && clientById.get(post.clientId)) || null,
+    app: post.app ?? null,
     likeCount: post.likeCount,
     saveCount: post.saveCount,
     viewCount: post.viewCount,

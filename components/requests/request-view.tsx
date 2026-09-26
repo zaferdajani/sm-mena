@@ -67,7 +67,7 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
                     {p.agency.isVerified && <VerifiedBadge label={tc("verified")} />}
                   </Link>
                   {p.agency.ratingAverage !== null && <RatingBadge average={p.agency.ratingAverage} count={p.agency.ratingCount} />}
-                  <p className="text-xs text-muted-foreground">{timeAgo(p.createdAt.toISOString(), locale)} · {t(`proposalStatus.${p.status}`)}</p>
+                  <p suppressHydrationWarning className="text-xs text-muted-foreground">{timeAgo(p.createdAt.toISOString(), locale)} · {t(`proposalStatus.${p.status}`)}</p>
                 </div>
                 <div className="text-end">
                   <p className="text-lg font-bold">{formatJod(p.priceJod, locale, currencyOf(p.agency.country))}</p>

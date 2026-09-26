@@ -63,7 +63,7 @@ export function ReelCard({ post: raw, priority = false }: { post: FeedItem; prio
         <Link href={`/a/${post.agency.handle}`} onClick={onPromoClick} className="flex items-center gap-1 font-semibold drop-shadow">
           <bdi className="truncate">{post.agency.name}</bdi>
           {post.agency.isVerified && <VerifiedBadge label={tc("verified")} />}
-          <span className="truncate text-xs font-normal text-white/75">· {promotionId ? tc("sponsored") : `${tCity(post.agency.city)} · ${timeAgo(post.createdAt, locale)}`}</span>
+          <span suppressHydrationWarning className="truncate text-xs font-normal text-white/75">· {promotionId ? tc("sponsored") : `${tCity(post.agency.city)} · ${timeAgo(post.createdAt, locale)}`}</span>
         </Link>
         <BusinessTag type={post.industry} className="bg-white/20 text-white backdrop-blur" />
         {post.caption && (

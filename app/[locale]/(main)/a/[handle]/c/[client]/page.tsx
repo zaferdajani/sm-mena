@@ -76,6 +76,7 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-bold" dir="auto">{name}</h1>
           <p className="text-sm text-muted-foreground">{[meta, t("accountPosts", { count: client.postCount })].filter(Boolean).join(" · ")}</p>
+          {client.confirmedAt && <p className="mt-1 text-xs font-medium text-brand" data-testid="account-confirmed">✓ {t("confirmedByClient")}</p>}
           {description && <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{description}</p>}
           {client.links.length > 0 && (
             <div className="mt-3">

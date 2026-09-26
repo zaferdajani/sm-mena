@@ -38,7 +38,7 @@ const FLAGSHIPS: Record<string, string[]> = {
   paid_media: ["ads_meta", "ads_google"],
   creative: ["video_production", "photography"],
   branding: ["brand_identity", "graphic_design"],
-  digital: ["web_design", "seo"],
+  digital: ["web_design", "app_development", "seo"],
   offline: ["event_coverage", "print_design"],
 };
 const ADS_BY_PLATFORM: Record<string, string> = { instagram: "ads_meta", facebook: "ads_meta", tiktok: "ads_tiktok", snapchat: "ads_snapchat", google: "ads_google", linkedin: "ads_linkedin" };

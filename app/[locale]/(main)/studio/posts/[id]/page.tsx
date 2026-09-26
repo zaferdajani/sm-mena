@@ -21,7 +21,7 @@ export default async function EditPostPage({ params }: PageProps<"/[locale]/stud
         mode="edit"
         contentLang={contentLang(agency.contentLang)}
         {...await postFormOptions(agency.services, agency.id)}
-        initial={{ postId: post.id, caption: post.caption, services: post.services, platforms: post.platforms, industry: post.industry, result: post.result, clientId: post.clientId, images: post.images.map((i) => i.thumbUrl), translation: post.translation }}
+        initial={{ postId: post.id, caption: post.caption, services: post.services, platforms: post.platforms, industry: post.industry, result: post.result, clientId: post.clientId, images: post.images.map((i) => i.thumbUrl), translation: post.translation, app: post.app }}
       />
       <div className="border-t pt-4">
         <DeletePostButton postId={post.id} />

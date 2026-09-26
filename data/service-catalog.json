@@ -3170,6 +3170,31 @@
       ]
     },
     {
+      "key": "app_development",
+      "group": "digital",
+      "parent": "app_development",
+      "name_ar": "تطوير تطبيقات الجوال والويب",
+      "name_en": "Mobile and web app development",
+      "aliases": [
+        "تطوير تطبيقات",
+        "برمجة تطبيقات",
+        "تطبيق جوال",
+        "ابلكيشن",
+        "app development",
+        "mobile app",
+        "ios app",
+        "android app",
+        "flutter",
+        "react native",
+        "web app",
+        "PWA"
+      ],
+      "roles": [
+        "web_developer",
+        "ui_ux_designer"
+      ]
+    },
+    {
       "key": "landing_pages",
       "group": "digital",
       "parent": "web_design",
@@ -3504,7 +3529,7 @@
     {
       "key": "mobile_app_development",
       "group": "web_dev",
-      "parent": "web_design",
+      "parent": "app_development",
       "name_ar": "تطوير تطبيقات الجوال",
       "name_en": "Mobile app development",
       "aliases": [
@@ -3513,7 +3538,12 @@
         "برمجة تطبيق",
         "iOS",
         "Android",
-        "Flutter"
+        "Flutter",
+        "mobile app",
+        "تطبيق جوال",
+        "flutter",
+        "react native",
+        "اندرويد"
       ],
       "roles": [
         "web_developer",

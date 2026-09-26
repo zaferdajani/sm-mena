@@ -63,6 +63,12 @@ Profile picture file: `marketing/assets/sting/` end frame, or `public/assets/bra
 - [ ] Google Search Console and Bing verified.
 - [ ] Landing pages: every ad goes to `/ar`, `/ar/match`, `/ar/explore` or `/ar/join` with UTMs. Test at 390 px width.
 
+## 4b. The movement and the app mall (Owner, before W5)
+
+- [ ] App mall (PCN, `pcn-api` on Fly): set `PCN_ALLOWED_ORIGINS` to include `https://sawwiq.org` so its sandbox demos can be framed on Sawwiq ("Try the app", docs/37). Developers then allow `https://sawwiq.org` on their own embed keys.
+- [ ] Founding members (marketing/05): the first 40 agencies per city get their member numbers by joining first; send each the confirmation-link how-to (Studio → Accounts → "Get the confirmation link") so Reveal week has confirmed accounts.
+- [ ] Reveal week assets: every founding member's Behind-the-Page card (Studio home → Download), scheduled for the same hour on day 1.
+
 ## 5. Launch week run-sheet (W5)
 - **Sunday 12:00:** hero film live on Instagram, Facebook, TikTok, YouTube, LinkedIn and X; press note to 12 outlets; WhatsApp status.
 - **Sunday to Tuesday:** reply to every comment within 4 working hours; daily 10-minute KPI check.

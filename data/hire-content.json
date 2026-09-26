@@ -1408,5 +1408,64 @@
         }
       ]
     }
+  },
+  "app_development": {
+    "onSite": false,
+    "ar": {
+      "search": "تطوير تطبيقات الجوال",
+      "intro": "تبني الوكالة تطبيقك للجوال أو الويب من الفكرة إلى المتجر: تصميم الواجهات، والبرمجة لأندرويد وiOS (غالباً بكود واحد عبر Flutter أو React Native) أو تطبيق ويب يعمل على كل جهاز، وربطه بأنظمتك (الحجوزات، الدفع، الإشعارات، الولاء)، ونشره على App Store وGoogle Play، ودعمه بعد الإطلاق. صار التطبيق جزءاً من التسويق نفسه: قناة مباشرة لعملائك بلا خوارزميات، وإشعارات تصل بلا إعلان مدفوع، وبيانات تملكها أنت. على سوّق يمكنك تجربة تطبيقات الوكالة الحقيقية داخل صندوق تجريبي قبل أن تتعاقد.",
+      "includes": [
+        "ورشة تحديد المتطلبات وخريطة الشاشات",
+        "تصميم الواجهات بالعربية والإنجليزية",
+        "برمجة التطبيق واختباره على الأجهزة",
+        "ربطه بأنظمة الدفع والحجز والإشعارات",
+        "النشر على App Store وGoogle Play باسمك",
+        "دعم وتحديثات بعد الإطلاق باتفاق واضح"
+      ],
+      "priceDrivers": "يتأثر السعر بعدد الشاشات والمزايا، ودعم منصة واحدة أو المنصتين، والتكاملات مع أنظمة خارجية، والحاجة إلى لوحة تحكم أو خادم خاص، ومدة الدعم بعد الإطلاق.",
+      "notFor": "إذا كان جمهورك يزورك مرة في السنة فالتطبيق عبء لا قناة؛ موقع سريع وحساب سوشيال ميديا نشط أفضل. ابدأ بالتطبيق عندما يكون لديك عملاء متكررون أو خدمة تحتاج حساباً وحجزاً وإشعارات.",
+      "faq": [
+        {
+          "q": "تطبيق أصلي أم Flutter أم تطبيق ويب؟",
+          "a": "لمعظم الأعمال، كود واحد لأندرويد وiOS (Flutter أو React Native) يكفي ويوفر نصف التكلفة. التطبيق الأصلي يستحق ثمنه عند الحاجة إلى أداء عالٍ أو مزايا جهاز دقيقة. تطبيق الويب (PWA) هو الأرخص والأسرع نشراً ولا يحتاج متجراً، لكنه أقل حضوراً على هاتف العميل."
+        },
+        {
+          "q": "من يملك الكود وحسابات المتاجر؟",
+          "a": "يجب أن تُنشر التطبيقات بحساب مطوّر باسم شركتك على App Store وGoogle Play، وأن ينص العقد على تسليم الكود المصدري أو حق استخدامه. عقود سوّق تنص على أن العميل يملك الحسابات والملفات وتُسلَّم خلال سبعة أيام."
+        },
+        {
+          "q": "كيف أجرّب تطبيقات الوكالة قبل التعاقد؟",
+          "a": "على صفحة الوكالة، المنشورات التي تحمل تطبيقاً فيها زر «جرّب التطبيق»: يفتح التطبيق الحقيقي داخل صندوق تجريبي معزول من دون تثبيت شيء ومن دون رؤية الكود."
+        }
+      ]
+    },
+    "en": {
+      "search": "mobile app development",
+      "intro": "The agency builds your mobile or web app from idea to store: interface design, development for Android and iOS (usually one codebase with Flutter or React Native) or a web app that runs on every device, integrations with your systems (bookings, payments, notifications, loyalty), publishing on the App Store and Google Play, and support after launch. An app has become part of marketing itself: a direct channel to your customers with no algorithm in between, notifications that arrive without a paid ad, and data you own. On Sawwiq you can try an agency's real apps in a sandbox before you sign.",
+      "includes": [
+        "Requirements workshop and screen map",
+        "Interface design in Arabic and English",
+        "Development and testing on real devices",
+        "Integration with payments, bookings and notifications",
+        "Publishing on the App Store and Google Play under your name",
+        "Support and updates after launch on clear terms"
+      ],
+      "priceDrivers": "Price depends on the number of screens and features, one platform or both, integrations with external systems, whether a dashboard or a dedicated backend is needed, and the length of support after launch.",
+      "notFor": "If your customers visit once a year, an app is a burden, not a channel; a fast website and an active social account do better. Start an app when you have repeat customers or a service that needs accounts, bookings and notifications.",
+      "faq": [
+        {
+          "q": "Native, Flutter or a web app?",
+          "a": "For most businesses one codebase for Android and iOS (Flutter or React Native) is enough and halves the cost. Native is worth its price when you need top performance or fine device features. A web app (PWA) is the cheapest and fastest to ship and needs no store, but it has less presence on the customer's phone."
+        },
+        {
+          "q": "Who owns the code and the store accounts?",
+          "a": "Apps should be published from a developer account in your company's name on the App Store and Google Play, and the contract should hand over the source code or a licence to use it. Sawwiq's contracts state that the client owns the accounts and files, handed over within seven days."
+        },
+        {
+          "q": "How do I try an agency's apps before signing?",
+          "a": "On the agency's page, posts that carry an app have a \"Try the app\" button: it opens the real app in an isolated sandbox, with nothing to install and without exposing the code."
+        }
+      ]
+    }
   }
 }

@@ -143,6 +143,11 @@ export const taxonomy = {
           "name_en": "Website and e-commerce design"
         },
         {
+          "key": "app_development",
+          "name_ar": "تطوير تطبيقات الجوال والويب",
+          "name_en": "Mobile and web app development"
+        },
+        {
           "key": "analytics",
           "name_ar": "التحليلات والتقارير",
           "name_en": "Analytics and reporting"

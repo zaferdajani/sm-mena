@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
 import type { ContentLang, PostTranslation } from "@/lib/content-lang";
 import { ChipGroup, Field } from "./chips";
+import { APP_KINDS, type PostApp } from "@/lib/app-demo";
 import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
@@ -24,7 +25,7 @@ export type PostFormProps = {
   clients: Option[];
   /** The agency's main language; the optional translation is in the other one. */
   contentLang: ContentLang;
-  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation };
+  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation; app?: PostApp | null };
 };
 
 export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial }: PostFormProps) {
@@ -156,6 +157,33 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
           </>
         )}
       </OtherLanguage>
+      {/* The app this post shows, tried in the app mall's sandbox (docs/37). */}
+      <details className="rounded-xl border p-3" open={Boolean(initial?.app)} data-testid="app-section">
+        <summary className="cursor-pointer text-sm font-medium">{t("app.title")}</summary>
+        <p className="mt-1 text-xs text-muted-foreground">{t("app.hint")}</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field label={t("app.name")} htmlFor="app_name">
+            <Input id="app_name" name="app_name" maxLength={80} defaultValue={initial?.app?.name ?? ""} placeholder={t("app.namePlaceholder")} />
+          </Field>
+          <Field label={t("app.kind")} htmlFor="app_kind">
+            <select id="app_kind" name="app_kind" defaultValue={initial?.app?.kind ?? "cross"} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm">
+              {APP_KINDS.map((k) => <option key={k} value={k}>{t(`app.kinds.${k}`)}</option>)}
+            </select>
+          </Field>
+          <Field label={t("app.version")} htmlFor="app_version">
+            <Input id="app_version" name="app_version" maxLength={40} defaultValue={initial?.app?.version ?? ""} placeholder="2.1" dir="ltr" />
+          </Field>
+          <Field label={t("app.try")} hint={t("app.tryHint")} htmlFor="app_try">
+            <Input id="app_try" name="app_try" maxLength={500} defaultValue={initial?.app?.tryUrl ?? ""} placeholder="https://pcn.store/embed/…/" dir="ltr" inputMode="url" />
+          </Field>
+          <Field label={t("app.store")} htmlFor="app_store">
+            <Input id="app_store" name="app_store" maxLength={500} defaultValue={initial?.app?.storeUrl ?? ""} placeholder="https://apps.apple.com/… / https://play.google.com/…" dir="ltr" inputMode="url" />
+          </Field>
+          <Field label={t("app.web")} htmlFor="app_web">
+            <Input id="app_web" name="app_web" maxLength={500} defaultValue={initial?.app?.webUrl ?? ""} placeholder="https://app.example.com" dir="ltr" inputMode="url" />
+          </Field>
+        </div>
+      </details>
       <Field label={tc("postClient")} hint={tc("postClientHint")} htmlFor="clientId">
         <div className="flex items-center gap-3">
           <select id="clientId" name="clientId" defaultValue={initial?.clientId ?? ""} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm">

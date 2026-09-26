@@ -12,7 +12,7 @@ import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
 import { answerPartnerRequest, sendPartnerRequest } from "@/lib/data/partners";
-import { deleteClient, ownsClient, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
+import { deleteClient, ensureConfirmToken, ownsClient, resetConfirmation, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
 import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
 import { normalizeLines } from "@/lib/deliverables";
@@ -24,8 +24,10 @@ import { resolveServices } from "@/lib/services/tags";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
 import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
+import { SITE_URL } from "@/lib/site";
 import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
+import { cleanApp, type AppError } from "@/lib/app-demo";
 import { instagramHandle, normalizePhone, normalizeUrl, validateHandle } from "@/lib/text";
 import { agencyTranslationSchema, clientTranslationSchema, contentLang, packageTranslationSchema, postTranslationSchema, readTranslation } from "@/lib/content-lang";
 
@@ -45,10 +47,25 @@ function postFields(formData: FormData) {
     industry: (INDUSTRIES as readonly string[]).includes(industryRaw) ? industryRaw : null,
     result: String(formData.get("result") ?? "").trim().slice(0, 80) || null,
     clientId: String(formData.get("clientId") ?? "") || null,
+    // The app this post shows (optional, lib/app-demo.ts); an error here is returned by the action.
+    app: cleanApp({
+      name: String(formData.get("app_name") ?? ""),
+      kind: String(formData.get("app_kind") ?? ""),
+      version: String(formData.get("app_version") ?? ""),
+      tryUrl: String(formData.get("app_try") ?? ""),
+      storeUrl: String(formData.get("app_store") ?? ""),
+      webUrl: String(formData.get("app_web") ?? ""),
+    }),
     // Caption and result in the agency's other language (optional, lib/content-lang.ts).
     translation: readTranslation(formData, postTranslationSchema) ?? {},
   };
 }
+
+/** The app section's error, if the agency typed one; otherwise the fields with a clean app. */
+function appError(fields: ReturnType<typeof postFields>): { error: AppError } | null {
+  return fields.app && "error" in fields.app ? { error: fields.app.error } : null;
+}
+const withApp = (fields: ReturnType<typeof postFields>) => ({ ...fields, app: fields.app && "error" in fields.app ? null : fields.app });
 
 /** Keeps a post's client only when it is one of the agency's own clients. */
 async function ownClient<T extends { clientId: string | null }>(agencyId: string, fields: T): Promise<T> {
@@ -61,8 +78,11 @@ export async function createPostAction(_: StudioState, formData: FormData): Prom
   const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
   if (!files.length) return { error: "noImages" };
   if (files.length > MAX_IMAGES_PER_POST) return { error: "tooMany" };
-  const fields = await ownClient(agency.id, postFields(formData));
-  if (!fields.services.length) return { error: "noServices" };
+  const raw = await ownClient(agency.id, postFields(formData));
+  if (!raw.services.length) return { error: "noServices" };
+  const badApp = appError(raw);
+  if (badApp) return badApp;
+  const fields = withApp(raw);
   if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
 
   let postId: string;
@@ -82,9 +102,11 @@ export async function updatePostAction(_: StudioState, formData: FormData): Prom
   const { agency } = await requireAgency();
   const postId = z.string().uuid().safeParse(formData.get("postId"));
   if (!postId.success) return { error: "generic" };
-  const fields = await ownClient(agency.id, postFields(formData));
-  if (!fields.services.length) return { error: "noServices" };
-  const updated = await updatePost(postId.data, agency.id, fields);
+  const raw = await ownClient(agency.id, postFields(formData));
+  if (!raw.services.length) return { error: "noServices" };
+  const badApp = appError(raw);
+  if (badApp) return badApp;
+  const updated = await updatePost(postId.data, agency.id, withApp(raw));
   if (!updated) return { error: "generic" };
   revalidatePath("/[locale]", "layout");
   return { ok: true };
@@ -341,6 +363,20 @@ export async function saveClientAction(_: ClientState, formData: FormData): Prom
   }
   revalidatePath("/[locale]", "layout");
   return { ok: true, id: result.id };
+}
+
+/** The private link the agency sends its client to confirm the account (docs/28). */
+export async function confirmLinkAction(clientId: string): Promise<{ url: string } | { error: "generic" }> {
+  const { agency } = await requireAgency();
+  const token = await ensureConfirmToken(agency.id, z.string().uuid().parse(clientId));
+  if (!token) return { error: "generic" };
+  return { url: `${SITE_URL}/${await getLocale()}/confirm-account/${token}` };
+}
+
+export async function resetConfirmationAction(clientId: string) {
+  const { agency } = await requireAgency();
+  await resetConfirmation(agency.id, z.string().uuid().parse(clientId));
+  revalidatePath("/[locale]", "layout");
 }
 
 export async function deleteClientAction(clientId: string) {

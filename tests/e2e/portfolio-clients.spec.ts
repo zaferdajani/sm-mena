@@ -43,7 +43,9 @@ test("agency adds an introduction, countries served and a client with accounts",
   await form.getByTestId("client-logo-input").setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: await pngBuffer("#be123c", 400, 400) });
   await expect(form.getByTestId("client-logo-preview")).toBeVisible();
   const rows = form.getByTestId("client-link-row");
-  await rows.nth(0).locator('input[name="linkValue"]').fill("@test.cafe");
+  // The account handle is unique per run: earlier runs' confirmations stay in the database.
+  const ig = `cafe.${handle.replace(/[^a-z0-9.]/g, "")}`;
+  await rows.nth(0).locator('input[name="linkValue"]').fill(`@${ig}`);
   await rows.nth(3).locator('input[name="linkValue"]').fill("testcafe.example");
   await form.getByTestId("add-account").click();
   await rows.nth(4).locator("select").selectOption("youtube");
@@ -55,7 +57,7 @@ test("agency adds an introduction, countries served and a client with accounts",
   await rows.nth(2).locator('input[name="linkValue"]').fill("");
   await form.getByRole("button", { name: "Save client" }).click();
   await expect(page.getByTestId("client-item")).toContainText("Test Café");
-  await expect(page.getByTestId("client-item")).toContainText("@test.cafe");
+  await expect(page.getByTestId("client-item")).toContainText(`@${ig}`);
   await expect(page.getByTestId("client-item").getByTestId("client-logo")).toBeVisible();
 
   // A post filed under the account, and a standalone one.
@@ -88,6 +90,30 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(page.getByTestId("post-client")).toContainText("For Test Café");
   await expect(page.getByTestId("post-client")).toHaveAttribute("href", /\/c\/[0-9a-f-]{36}$/);
 
+  // Behind the Page (docs/28): the confirmation link, the client's tap, the badge, "who runs this page?", the card.
+  await page.goto("/en/studio/clients");
+  await page.getByTestId("confirm-link-button").click();
+  const confirmUrl = await page.getByTestId("confirm-link").innerText();
+  expect(confirmUrl).toMatch(/\/en\/confirm-account\/[\w-]+$/);
+  await page.goto(`/en/who-runs?q=@${ig}`);
+  await expect(page.getByTestId("who-runs-none")).toBeVisible(); // not confirmed yet
+  await page.goto(confirmUrl);
+  await expect(page.getByTestId("confirm-page")).toContainText("Test Café");
+  await page.getByTestId("confirm-yes").click();
+  await expect(page.getByTestId("confirm-done")).toBeVisible();
+  await page.goto(`/en/who-runs?q=https://instagram.com/${ig}`);
+  await expect(page.getByTestId("who-runs-hit")).toHaveCount(1);
+  await expect(page.getByTestId("who-runs-hit")).toContainText("Confirmed by the client");
+  await page.goto(`/en/a/${handle}`);
+  await expect(page.getByTestId("member-no")).toContainText("Member No.");
+  await page.goto("/en/studio");
+  await expect(page.getByTestId("share-card-preview")).toBeVisible();
+  await expect(page.getByTestId("behind-card").first()).toContainText("I'm the one behind the page");
+  const [download] = await Promise.all([page.waitForEvent("download"), page.getByTestId("share-card-download").click()]);
+  expect(download.suggestedFilename()).toBe(`sawwiq-${handle}.png`);
+  await page.goto("/en/sawwiq50");
+  await expect(page.getByTestId("top-row").filter({ hasText: `Agency ${handle}` })).toHaveCount(1); // one confirmed account puts it on the list
+
   // Public page: About shows the introduction, strengths and served countries; Clients lists the accounts.
   await page.goto(`/en/a/${handle}?tab=about`);
   await expect(page.getByTestId("agency-about")).toContainText("small studio");
@@ -95,9 +121,10 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(page.getByTestId("serves-note")).toContainText("Saudi Arabia");
   await page.goto(`/en/a/${handle}?tab=clients`);
   await expect(page.getByTestId("client-open")).toHaveAttribute("href", /\/c\/[0-9a-f-]{36}$/);
+  await expect(page.getByTestId("client-confirmed")).toBeVisible();
   const links = page.getByTestId("client-card").getByTestId("client-link");
   await expect(links).toHaveCount(3);
-  await expect(links.nth(0)).toHaveAttribute("href", "https://www.instagram.com/test.cafe");
+  await expect(links.nth(0)).toHaveAttribute("href", `https://www.instagram.com/${ig}`);
   await expect(links.nth(1)).toHaveAttribute("href", "https://testcafe.example/");
   await expect(links.nth(2)).toHaveAttribute("href", "https://www.youtube.com/@testcafe");
 });

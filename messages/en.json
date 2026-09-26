@@ -38,7 +38,9 @@
     "aboutTitle": "Sawwiq",
     "about": "About us",
     "contact": "Contact",
-    "otherLanguage": "العربية"
+    "otherLanguage": "العربية",
+    "whoRuns": "Who runs this page?",
+    "top": "The Sawwiq 50"
   },
   "NotFound": {
     "title": "Page not found",
@@ -258,7 +260,23 @@
     "slide": "Image {n} of {total}",
     "whatsappMessage": "Hello, I saw your work on Sawwiq and would like to ask about your services.",
     "report": "Report",
-    "notFound": "This post is not available."
+    "notFound": "This post is not available.",
+    "app": {
+      "try": "Try the app",
+      "tryTitle": "Try {name}",
+      "tryHint": "Runs the real app in an isolated sandbox on the app mall. Nothing is installed and no code is shown.",
+      "sandboxNote": "Sandbox demo on the app mall · nothing is installed on your device",
+      "version": "v{v}",
+      "store": "Store page",
+      "web": "Open the web app",
+      "close": "Close",
+      "kinds": {
+        "web": "Web app",
+        "ios": "iOS",
+        "android": "Android",
+        "cross": "iOS & Android"
+      }
+    }
   },
   "Profile": {
     "posts": "posts",
@@ -300,7 +318,11 @@
     "openAccount": "See all the work",
     "backToAgency": "Back to {name}",
     "accountEmpty": "No work filed under this account yet.",
-    "otherWork": "Other work"
+    "otherWork": "Other work",
+    "memberNo": "Member No. {n}",
+    "confirmedByClient": "Confirmed by the client",
+    "notConfirmed": "Listed by the agency",
+    "card": "Behind-the-Page card"
   },
   "Explore": {
     "title": "Explore",
@@ -478,7 +500,28 @@
         "too_small": "One image is too small (under 200 px).",
         "noServices": "Choose at least one service.",
         "limit": "You reached your plan's post limit.",
-        "generic": "Could not save. Please try again."
+        "generic": "Could not save. Please try again.",
+        "appName": "Give the app a name (2 characters or more).",
+        "appTryUrl": "The \"Try the app\" link must be an app-mall embed link (https://pcn.store/embed/…/).",
+        "appUrl": "Check the app's store or web link."
+      },
+      "app": {
+        "title": "This post shows an app (optional)",
+        "hint": "Apps you built for clients are work too. Name the app and its version; add its store page, its web address, and a \"Try the app\" link so visitors run it in a sandbox without installing anything.",
+        "name": "App name",
+        "namePlaceholder": "Rose Café ordering app",
+        "kind": "Runs on",
+        "kinds": {
+          "web": "Web app",
+          "ios": "iOS",
+          "android": "Android",
+          "cross": "iOS and Android"
+        },
+        "version": "Version",
+        "try": "\"Try the app\" link",
+        "tryHint": "From the app mall (pcn.store): deploy the app, publish it, create an embed key that allows https://sawwiq.org, and paste the embed link. Only app-mall links are accepted; the app runs in its sandbox, your code never leaves it.",
+        "store": "Store page (App Store / Google Play)",
+        "web": "Web address of the app"
       }
     },
     "profileForm": {
@@ -568,7 +611,15 @@
     },
     "savedProfile": "Page saved.",
     "packagesWelcome": "Page saved. Next, add your packages: what you offer and for how much. Businesses compare them, and the AI assistant uses them to recommend you.",
-    "packagesSkip": "Skip for now and post your first work"
+    "packagesSkip": "Skip for now and post your first work",
+    "card": {
+      "title": "Your Behind-the-Page card",
+      "hint": "Post it to your story: \"I'm the one behind the page\", your member number, and the accounts you handle. Tag your clients; they repost.",
+      "download": "Download",
+      "share": "Share",
+      "copied": "Link copied",
+      "saved": "Saved to your device; post it to your story."
+    }
   },
   "Admin": {
     "title": "Admin",
@@ -2340,7 +2391,16 @@
     },
     "logo": "Logo",
     "logoHint": "The client's logo or a square picture. Shown on your page and on every post filed under this account.",
-    "removeLogo": "Remove the logo"
+    "removeLogo": "Remove the logo",
+    "confirmed": "Confirmed by the client on {date}",
+    "notConfirmed": "Not confirmed yet",
+    "getLink": "Get the confirmation link",
+    "linkHint": "Send this private link to the client (WhatsApp, email). One tap on their side marks the account as confirmed.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "whatsapp": "Send on WhatsApp",
+    "whatsappText": "Hi! We listed {account} as an account we handle on Sawwiq. Could you confirm it with one tap? {url}",
+    "reset": "Withdraw confirmation"
   },
   "MatchWizard": {
     "placeholder": "Or type it: e.g. Instagram and TikTok for a restaurant in {city}, {budget} a month",
@@ -2845,5 +2905,51 @@
     "emptyType": "No work for this business type yet.",
     "showAll": "Show all work",
     "introEyebrow": "Looking for an agency?"
+  },
+  "WhoRuns": {
+    "title": "Who runs this page?",
+    "intro": "Love a business's page? Type its handle or paste its link. If the client confirmed who runs it, you'll see the agency behind it, its work, and how to hire it.",
+    "placeholder": "@rose.cafe or https://instagram.com/rose.cafe",
+    "search": "Find out",
+    "resultsTitle": "{count, plural, =1 {1 agency} other {# agencies}} behind {handle}",
+    "runs": "runs {handle}",
+    "confirmed": "Confirmed by the client",
+    "seeWork": "See the work",
+    "none": "Nobody on Sawwiq has claimed {handle} yet, or the client hasn't confirmed it.",
+    "noneHint": "Run this page? Create your free page, add the account, and send the client the confirmation link.",
+    "join": "Create my page",
+    "invalid": "Type a handle like @rose.cafe or paste a profile link.",
+    "movement": "Every page you love has a person behind it. #BehindThePage"
+  },
+  "Confirm": {
+    "title": "Does {agency} run your page?",
+    "intro": "{agency} listed {account} as an account it handles on Sawwiq. If that's right, confirm it: the account gets a \"confirmed by the client\" mark on the agency's page, and people searching for who runs your page will find them.",
+    "account": "The account",
+    "agency": "The agency",
+    "yes": "Yes, {agency} runs this page",
+    "done": "Thank you. {account} is now marked as confirmed by the client.",
+    "already": "This account was confirmed on {date}.",
+    "wrong": "Not right? Just close this page; nothing changes. You can also tell us at privacy@sawwiq.org.",
+    "invalid": "This confirmation link is not valid or was withdrawn.",
+    "seeAgency": "See {agency} on Sawwiq"
+  },
+  "Top": {
+    "title": "The Sawwiq 50 · {country}",
+    "intro": "The people behind the most pages in {country}: ranked by accounts their clients confirmed, then verified reviews, then work posted. Real agencies only; computed live.",
+    "rank": "#",
+    "agency": "Agency",
+    "member": "Member",
+    "confirmed": "Confirmed accounts",
+    "reviews": "Reviews",
+    "posts": "Posts",
+    "empty": "No real agency in {country} has confirmed accounts yet. Be the first: add your accounts and send your clients the confirmation link.",
+    "how": "How to climb: add the accounts you handle in Studio → Accounts, and send each client its confirmation link."
+  },
+  "Card": {
+    "tag": "#BehindThePage",
+    "behind": "I'm the one behind the page",
+    "member": "Member No. {n}",
+    "handles": "Accounts I handle",
+    "confirmed": "Confirmed by the client"
   }
 }

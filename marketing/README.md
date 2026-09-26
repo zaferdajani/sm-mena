@@ -16,6 +16,8 @@ Branch `claude/marketing-campaign`. Prepared 25 Sep 2026. **Nothing has been pos
 
 - `05-behind-the-page-movement.md`: the identity campaign — «المنصات للجمهور. سوّق لمن يديرها.»: cards, client confirmation, "who runs this page", the Sawwiq 50.
 
+- `06-launch-review-response.md`: what we take from the external launch review, the new positioning, and the owner decisions it needs.
+
 ## Skills, connectors and tools used
 
 | Capability | Used for |

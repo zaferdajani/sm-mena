@@ -38,7 +38,7 @@ export async function ContractCommitments({ v, locale }: { v: ContractView; loca
             {r.overdue ? <AlertTriangle className="mt-0.5 size-4 shrink-0" /> : <CalendarClock className="mt-0.5 size-4 shrink-0 text-brand" />}
             <span>
               {t(`cadence.${c.reportingCadence as "weekly"}`)}
-              <span className="block text-xs">
+              <span suppressHydrationWarning className="block text-xs">
                 {r.lastUpdateAt ? t("lastUpdate", { when: timeAgo(r.lastUpdateAt.toISOString(), locale) }) : t("noUpdateYet")}
                 {r.overdue && ` · ${t("overdue")}`}
               </span>
@@ -78,7 +78,7 @@ export async function UpdatesList({ v, locale }: { v: ContractView; locale: stri
       <ul className="space-y-2">
         {updates.map((u) => (
           <li key={u.id} className="rounded-xl border p-3 text-sm">
-            <p className="mb-1 text-xs text-muted-foreground">{formatDate(u.createdAt, locale)} · {timeAgo(u.createdAt.toISOString(), locale)}</p>
+            <p suppressHydrationWarning className="mb-1 text-xs text-muted-foreground">{formatDate(u.createdAt, locale)} · {timeAgo(u.createdAt.toISOString(), locale)}</p>
             <p className="whitespace-pre-line" dir="auto">{u.note}</p>
           </li>
         ))}

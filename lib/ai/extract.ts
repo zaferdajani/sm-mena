@@ -24,6 +24,7 @@ const SERVICE_KEYWORDS: [string, string[]][] = [
   ["seo", ["seo", "سيو", "محركات البحث"]],
   ["email_marketing", ["ايميل", "بريد", "newsletter", "email marketing", "واتساب بزنس"]],
   ["web_design", ["تصميم موقع", "موقع الكتروني", "موقع ويب", "website", "web design", "landing page"]],
+  ["app_development", ["تطبيق", "تطبيق جوال", "ابلكيشن", "اب ستور", "app", "mobile app", "application", "ios", "android", "flutter", "react native"]],
   ["analytics", ["تحليلات", "تقارير", "analytics", "reporting"]],
 ];
 const PLATFORM_KEYWORDS: [string, string[]][] = [

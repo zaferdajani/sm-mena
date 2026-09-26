@@ -1,10 +1,13 @@
 import { CheckCircle2, Circle, ExternalLink, Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClicksChart } from "@/components/studio/clicks-chart";
+import { ShareCard } from "@/components/studio/share-card";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { agencyInsights, topPosts } from "@/lib/data/insights";
 import { listPackages } from "@/lib/data/packages";
+import { listClients } from "@/lib/data/portfolio-clients";
+import { mediaUrl } from "@/lib/storage";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
 export default async function StudioOverview({ params, searchParams }: PageProps<"/[locale]/studio">) {
@@ -61,6 +64,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </ol>
         </section>
       )}
+      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: agency.memberNo, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-testid="insight-tiles">

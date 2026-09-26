@@ -66,6 +66,7 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle }:
                   <Link href={`/a/${handle}/c/${c.id}`} data-testid="client-open">{c.name}</Link>
                 </h2>
                 {meta && <p className="text-xs text-muted-foreground">{meta}</p>}
+                {c.confirmedAt && <p className="text-xs font-medium text-brand" data-testid="client-confirmed">✓ {t("confirmedByClient")}</p>}
               </div>
               <Link href={`/a/${handle}/c/${c.id}`} className="shrink-0 text-xs font-medium text-brand">{t("openAccount")}</Link>
             </div>

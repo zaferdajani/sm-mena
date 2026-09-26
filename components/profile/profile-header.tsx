@@ -28,6 +28,7 @@ export type ProfileData = {
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
+  memberNo?: number | null;
   postCount: number;
   followerCount: number;
   services: string[];
@@ -81,6 +82,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
         </div>
         <p className="text-sm text-muted-foreground">
           <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)}
+          {agency.memberNo ? <span className="ms-2 rounded-full border px-1.5 text-[11px] font-medium text-muted-foreground" data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</span> : null}
           {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}` : ""}
         </p>
         {servesNote && <p className="text-xs font-medium text-brand" data-testid="serves-note">{servesNote}</p>}

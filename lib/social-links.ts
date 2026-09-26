@@ -34,6 +34,24 @@ const HOSTS: Partial<Record<LinkKind, string[]>> = {
 
 const hostMatches = (host: string, allowed: string[]) => allowed.some((a) => host === a || host.endsWith(`.${a}`));
 
+/** The network a pasted link belongs to, from its host; null for an unknown site. */
+export function kindOfUrl(url: string): LinkKind | null {
+  const parsed = asUrl(url);
+  if (!parsed) return null;
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+  for (const [kind, hosts] of Object.entries(HOSTS) as [LinkKind, string[]][]) if (hostMatches(host, hosts)) return kind;
+  return null;
+}
+
+/** The handle inside a profile link ("instagram.com/rose.cafe/" → "rose.cafe"), or null when the link has none. */
+export function handleOfUrl(url: string): string | null {
+  const parsed = asUrl(url);
+  if (!parsed) return null;
+  const first = parsed.pathname.split("/").filter(Boolean)[0] ?? "";
+  const handle = decodeURIComponent(first).replace(/^@/, "");
+  return /^[\p{L}\p{N}._-]{1,60}$/u.test(handle) ? handle : null;
+}
+
 function asUrl(value: string): URL | null {
   const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : /^[\w-]+(\.[\w-]+)+([/?#].*)?$/.test(value) ? `https://${value}` : null;
   if (!withScheme) return null;

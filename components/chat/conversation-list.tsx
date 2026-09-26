@@ -24,7 +24,7 @@ export async function ConversationList({ rows, side, empty }: { rows: Conversati
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
                   <p className={cn("truncate", unread ? "font-bold" : "font-medium")} dir="auto">{name}</p>
-                  {c.lastMessageAt && <span className={cn("shrink-0 text-[11px]", unread ? "font-semibold text-brand" : "text-muted-foreground")}>{timeAgo(c.lastMessageAt.toISOString(), locale)}</span>}
+                  {c.lastMessageAt && <span suppressHydrationWarning className={cn("shrink-0 text-[11px]", unread ? "font-semibold text-brand" : "text-muted-foreground")}>{timeAgo(c.lastMessageAt.toISOString(), locale)}</span>}
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <p className={cn("truncate text-sm", unread ? "text-foreground" : "text-muted-foreground")} dir="auto">
