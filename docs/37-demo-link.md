@@ -1,4 +1,4 @@
-# The demo link (/demo)
+# 37. The demo link (/demo)
 
 Typing `sawwiq.org/demo` opens a page for showing Sawwiq with its sample agencies: for UI testing and for explaining the concept. Nothing links to it, and it is `noindex`. It builds on the labelled demo view (docs/31-trust-and-demo.md), so it is the same app, database and code as the platform and gets every change the moment it deploys.
 

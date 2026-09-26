@@ -11,6 +11,7 @@ import {
   integer,
   jsonb,
   pgEnum,
+  pgSequence,
   pgTable,
   primaryKey,
   text,
@@ -157,6 +158,9 @@ export const sessions = pgTable(
   (t) => [index("sessions_user_idx").on(t.userId)],
 );
 
+// Founding seat numbers only go up, so a number never comes back (docs/39).
+export const foundingSeatSeq = pgSequence("founding_seat_seq");
+
 // ---------------------------------------------------------------------------
 // Agencies (the only public profiles)
 // ---------------------------------------------------------------------------
@@ -203,6 +207,8 @@ export const agencies = pgTable(
     teamSize: text("team_size"),
     isVerified: boolean("is_verified").notNull().default(false),
     isDemo: boolean("is_demo").notNull().default(false),
+    // Founding seat: 1, 2, 3… in the order real providers joined; never reused (docs/39).
+    foundingSeat: integer("founding_seat").unique(),
     status: agencyStatus("status").notNull().default("active"),
     deactivatedAt: timestamp("deactivated_at", { withTimezone: true }),
     deactivationReason: text("deactivation_reason"), // self | admin | demo_cleanup

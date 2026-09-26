@@ -19,7 +19,7 @@ import { ImageCarousel } from "./image-carousel";
 import { PostActions, useLike } from "./post-actions";
 
 /**
- * One post filling the screen on the phone feed (TikTok-style, docs/36-feed.md):
+ * One post filling the screen on the phone feed (TikTok-style, docs/38-feed.md):
  * the work edge to edge, the agency, business type and caption over a shade at
  * the bottom, and like, save and share in a column at the side. Double-tap likes.
  * Its height comes from `--reel-h`, set by ReelFeed.

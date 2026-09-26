@@ -11,7 +11,7 @@ import { featureState } from "@/lib/features";
  */
 export const DEMO_COOKIE = "sw_demo";
 
-/** Demo agencies anyone can open the studio of from /demo, without a password (docs/35). */
+/** Demo agencies anyone can open the studio of from /demo, without a password (docs/37). */
 export const DEMO_STUDIO_HANDLES = ["nakhla.studio", "petra.growth"] as const;
 
 export async function demoMode(): Promise<boolean> {

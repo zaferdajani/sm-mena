@@ -59,7 +59,7 @@ export async function injectPromotions(
   const chosen = shuffled.slice(0, slots);
   if (!chosen.length) return items;
   // Paid placement never overrides relevance: in a feed narrowed to one business
-  // type, a sponsored post must be of that type too (docs/36-feed.md).
+  // type, a sponsored post must be of that type too (docs/38-feed.md).
   const sponsoredPosts = (await getPostsByIds(chosen.map((p) => p.postId!))).filter((p) => !ctx.filters.industry || p.industry === ctx.filters.industry);
   if (!sponsoredPosts.length) return items;
   const byPost = new Map(chosen.map((p) => [p.postId!, p.id]));
