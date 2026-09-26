@@ -1611,7 +1611,8 @@
       "roundAsked": "You asked for an extra round; waiting for the agency.",
       "grantRound": "Give an extra round of changes (free)",
       "clientAskedRound": "The client asks for an extra round of changes. Give it free, or propose a paid change request below.",
-      "autoApproved": "Accepted automatically when the review period ended."
+      "autoApproved": "Accepted automatically when the review period ended.",
+      "withPartner": "Delivered with {name}"
     },
     "client": {
       "title": "Contract with {agency}",
@@ -1731,7 +1732,9 @@
       "cancel_proposed": "{actor} proposed cancelling by agreement",
       "cancel_accepted": "{actor} agreed to cancel",
       "cancel_declined": "{actor} declined to cancel",
-      "cancel_withdrawn": "{actor} withdrew the cancellation proposal"
+      "cancel_withdrawn": "{actor} withdrew the cancellation proposal",
+      "partner_joined": "A partner joined to deliver a milestone: {note}",
+      "partner_submitted": "The partner handed over a milestone: {note}"
     },
     "actors": {
       "agency": "Agency",
@@ -2291,7 +2294,11 @@
       "contract_request": "{name} asks you for a contract: {title}",
       "contract_received": "{name} sent you a contract to sign: {title}",
       "contract_completed": "“{title}” is complete",
-      "review_invite": "How was working with {name}? Leave a review"
+      "review_invite": "How was working with {name}? Leave a review",
+      "share_proposed": "{name} invites you to deliver “{milestone}” for a share of its payment",
+      "share_accepted": "{name} accepted to deliver “{milestone}” with you",
+      "share_declined": "{name} declined to deliver “{milestone}”",
+      "share_submitted": "{name} handed “{milestone}” to the client for review"
     }
   },
   "PortfolioClients": {
@@ -2978,6 +2985,75 @@
       "mismatch": "The two new passwords don't match.",
       "rateLimited": "Too many attempts. Wait a little and try again.",
       "demo": "Demo accounts are shared, so their sign-in details can't be changed."
+    }
+  },
+  "Shares": {
+    "title": "Partners on milestones",
+    "introProtected": "Bring in a photographer, freelancer or partner agency on a milestone for a percentage or a fixed amount of it. The partner can hand that milestone to the client themselves, and when the client confirms it their share is paid to them straight from the money held, without waiting for your other milestones.",
+    "introDirect": "Bring in a photographer, freelancer or partner agency on a milestone for a percentage or a fixed amount of it. With direct payment you pay the partner's share once the client confirms the milestone, and the partner confirms receipt.",
+    "partner": "Partner",
+    "kind": "Share type",
+    "kinds": {
+      "percent": "Percentage of the milestone",
+      "fixed": "Fixed amount"
+    },
+    "percentOf": "Percentage of {amount}",
+    "amountIn": "Amount ({currency})",
+    "note": "What the partner delivers (optional)",
+    "notePlaceholder": "e.g. a shoot with 30 edited photos",
+    "propose": "Send the offer to the partner",
+    "sent": "Offer sent. You'll be notified when the partner answers.",
+    "line": "{name} · {share} ({amount})",
+    "status": {
+      "proposed": "Waiting for the partner",
+      "accepted": "Agreed"
+    },
+    "withdraw": "Withdraw offer",
+    "add": "Add a partner to this milestone",
+    "findPartners": "Find partners first",
+    "agencyOnly": "Delivered by your agency",
+    "markPaid": "I paid the partner {amount}",
+    "directPaid": "You paid the partner's share; waiting for them to confirm.",
+    "directReceived": "The partner confirmed receiving their share.",
+    "errors": {
+      "invalid": "Check the details and try again.",
+      "notPartners": "That account isn't one of your partners yet.",
+      "locked": "You can't add a partner to this milestone now: it was handed over or closed.",
+      "exists": "This milestone already has a partner.",
+      "tooMuch": "The partner's share can't be more than the milestone.",
+      "notFound": "Not available.",
+      "rateLimited": "Too many attempts. Wait a little.",
+      "direct": "Not available with direct payment."
+    },
+    "workTitle": "Partner work",
+    "workIntro": "Milestones you deliver for partner agencies. When the client confirms a milestone, your share is paid to you directly.",
+    "offer": "{agency} invites you to deliver “{milestone}” for {amount}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "open": "Open milestone",
+    "yourShare": "Your share: {amount}",
+    "workEmpty": "No partner work yet.",
+    "work": {
+      "back": "All partner work",
+      "for": "For {agency} · contract {number}",
+      "checklist": "Delivery checklist",
+      "submitTitle": "Hand the milestone to the client",
+      "submitNote": "Message to the client about the delivery (optional)",
+      "submit": "Submit for review",
+      "submitted": "The milestone was handed to the client for review.",
+      "waitingFunds": "The client hasn't funded this milestone yet. You can submit once it's funded.",
+      "paid": "Your share was paid: {amount}",
+      "pending": "Your share is on its way: {amount}",
+      "directDue": "The agency pays your share directly: {amount}",
+      "directPaidByAgency": "The agency says it paid your share.",
+      "confirmReceived": "I received {amount}",
+      "received": "You confirmed receipt.",
+      "errors": {
+        "checklist": "Tick every item in the delivery checklist first.",
+        "notFunded": "The client hasn't funded this milestone yet.",
+        "locked": "This milestone can't be submitted now.",
+        "notFound": "Not available."
+      }
     }
   }
 }

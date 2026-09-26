@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 
 type Ms = Milestone & { checks: MilestoneCheck[] };
 /** Per milestone, worked out on the server (components/contracts/milestone-info.ts). */
-export type MilestoneInfo = { reviewBy?: string; daysLeft?: number; rounds?: { left: number; total: number }; roundAsked?: boolean; autoApproved?: boolean };
+export type MilestoneInfo = { partner?: string; reviewBy?: string; daysLeft?: number; rounds?: { left: number; total: number }; roundAsked?: boolean; autoApproved?: boolean };
 type Props = {
   info?: Record<string, MilestoneInfo>;
   perspective: "agency" | "client";
@@ -254,6 +254,11 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
               {m.clientPaidDirect && ` · ${t("paidDirectDone")}`}
               {m.agencyConfirmedPaid && ` · ${t("receivedDone")}`}
             </p>
+            {info[m.id]?.partner && (
+              <p className="text-xs font-medium text-brand" data-testid="milestone-partner">
+                {t("withPartner", { name: info[m.id]!.partner! })}
+              </p>
+            )}
             {m.status === "changes_requested" && m.changesNote && <p className="rounded-lg bg-destructive/10 p-2 text-sm" dir="auto">{t("changes", { note: m.changesNote })}</p>}
             {!["released", "approved", "refunded", "cancelled", "split"].includes(m.status) && <Rounds info={info[m.id]} />}
             {info[m.id]?.autoApproved && <p className="text-xs text-muted-foreground" data-testid="auto-approved">{t("autoApproved")}</p>}

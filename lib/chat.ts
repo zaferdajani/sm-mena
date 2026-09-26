@@ -60,5 +60,5 @@ export const CONTRACT_NOTIFICATION_KINDS = [
 ] as const;
 export type ContractNotificationKind = (typeof CONTRACT_NOTIFICATION_KINDS)[number];
 
-export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry", "partner_request", "partner_accepted", ...CONTRACT_NOTIFICATION_KINDS] as const;
+export const NOTIFICATION_KINDS = ["message", "proposal_received", "proposal_accepted", "proposal_declined", "request_invited", "inquiry", "partner_request", "partner_accepted", "share_proposed", "share_accepted", "share_declined", "share_submitted", ...CONTRACT_NOTIFICATION_KINDS] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];

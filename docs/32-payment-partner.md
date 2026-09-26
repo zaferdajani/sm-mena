@@ -25,6 +25,7 @@ A licensed partner does four things:
 2. **Ask each shortlisted partner these questions in writing:**
    - Can you hold a buyer's payment and pay it to a seller (the agency) only when we instruct, up to 60 days later? Is there a longer maximum?
    - Can one payment be split three ways: part to the agency, the fee to Sawwiq, part refunded to the buyer?
+   - Can one milestone payout also go to a second payee: an agency's partner (freelancer) who delivered part of it (docs/40)?
    - Who onboards and checks the agencies' identity (KYC)? Do you host the onboarding form?
    - How do you notify us of payouts, refunds and chargebacks (signed webhooks)? Do you accept our idempotency key?
    - Which currencies and countries can pay in, and which can receive payouts (JOD first; SAR and AED later)?

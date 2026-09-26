@@ -111,3 +111,11 @@ Signed-in users can change their sign-in email and password from `/studio/securi
 - The audit log records `account.email_changed` and `account.password_changed` without the addresses.
 - A password change signs out every other session.
 - Shared demo accounts can't change their sign-in details.
+
+## Partner shares (docs/40)
+A partner share stores:
+- the two agencies;
+- the milestone;
+- the share (percentage or amount) and an optional note about the work.
+
+It holds no personal data. The partner sees only the shared milestone, its checklist and its own payout, never the client's name or contact details. Shares are kept as long as the contract they belong to, because they're a payout instruction.
