@@ -99,6 +99,13 @@
       "when": 1790412540179,
       "tag": "0013_agency_translations",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1790433561880,
+      "tag": "0014_client_logos",
+      "breakpoints": true
     }
   ]
 }

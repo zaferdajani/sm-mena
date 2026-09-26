@@ -282,6 +282,8 @@ export const portfolioClients = pgTable(
     description: text("description").notNull().default(""),
     translation: jsonb("translation").$type<ClientTranslation>().notNull().default({}),
     links: jsonb("links").$type<ClientLink[]>().notNull().default([]),
+    // The account's logo (a square WebP in storage, like an agency avatar).
+    logoKey: text("logo_key"),
     position: integer("position").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

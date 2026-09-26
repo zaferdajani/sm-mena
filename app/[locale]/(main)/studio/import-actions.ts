@@ -5,10 +5,10 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { requireAgency } from "@/lib/auth/guards";
 import { audit, updateAgency } from "@/lib/data/agencies";
-import { listClients, saveClient } from "@/lib/data/portfolio-clients";
+import { listClients, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
 import { createPost } from "@/lib/data/posts";
 import { canUse } from "@/lib/feature-gate";
-import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar } from "@/lib/images";
 import { resolveServices } from "@/lib/services/tags";
 import { storage } from "@/lib/storage";
 import { INDUSTRIES, PLATFORMS } from "@/lib/labels";
@@ -109,7 +109,8 @@ const profileSchema = z.object({
   about: z.string().max(2000).nullable(),
   strengths: z.array(z.string().trim().min(1).max(80)).max(6),
   services: z.array(z.string().max(60)).max(8),
-  clients: z.array(z.object({ name: z.string().trim().min(2).max(80), industry: z.string().nullable() })).max(30),
+  // `logo`: a file `clientLogo:{index}` in the form data holds the account's logo.
+  clients: z.array(z.object({ name: z.string().trim().min(2).max(80), industry: z.string().nullable(), logo: z.boolean().optional() })).max(30),
 });
 
 /**
@@ -153,9 +154,23 @@ export async function applyProfileImportAction(formData: FormData): Promise<{ ok
     if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   }
   let added = 0;
-  for (const c of clients) {
+  for (const [i, c] of clients.entries()) {
     const industry = c.industry && (INDUSTRIES as readonly string[]).includes(c.industry) ? c.industry : null;
-    if (await clientIdFor(agency.id, c.name, industry)) added++;
+    const id = await clientIdFor(agency.id, c.name, industry);
+    if (!id) continue;
+    added++;
+    // The logo cut out of the PDF becomes the account's logo (a missing or unreadable one is simply skipped).
+    const logo = c.logo ? formData.get(`clientLogo:${i}`) : null;
+    if (logo instanceof File && logo.size > 0) {
+      try {
+        const key = newClientLogoKey(agency.id);
+        await storage().put(key, await processAvatar(Buffer.from(await logo.arrayBuffer())), "image/webp");
+        const old = await setClientLogo(agency.id, id, key);
+        if (old) await storage().remove([old]).catch(() => {});
+      } catch {
+        // keep the account without a logo
+      }
+    }
   }
   await audit(user.id, "portfolio_import.apply", "agency", agency.id, { clients: added, services: picked?.services.length ?? 0, avatar: Boolean(avatarKey), about: Boolean(about?.trim()) });
   revalidatePath("/[locale]", "layout");

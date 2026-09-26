@@ -13,7 +13,7 @@ import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/imag
 import { readPdf, type ReadPage, type ReadProgress } from "@/lib/portfolio-import/read-pdf";
 import { IMPORT_LIMITS, type DraftPost, type ImageRef, type ImportPlan } from "@/lib/portfolio-import/types";
 import { cn } from "@/lib/utils";
-import { PicturePicker, picturesOf } from "./picture-picker";
+import { PicturePicker, picturesOf, type PictureKind } from "./picture-picker";
 
 type Option = { key: string; label: string };
 type Draft = DraftPost & { id: number; include: boolean; error?: string; postId?: string };
@@ -50,6 +50,14 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [profile, setProfile] = useState<Profile>({ about: "", useAbout: false, strengths: [], services: [], clients: [], avatar: null, useAvatar: false });
   const [summary, setSummary] = useState<Summary | null>(null);
+  // The picker, opened by the guide on the kind of picture the step needs.
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerFilter, setPickerFilter] = useState<PictureKind | "all">("all");
+  const openPicker = (kind: PictureKind | "all") => {
+    setPickerFilter(kind);
+    setPickerOpen(true);
+  };
+  const jumpTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const label = (list: Option[], key: string) => list.find((o) => o.key === key)?.label ?? key;
   const page = (i: number) => pages.find((p) => p.index === i);
@@ -175,8 +183,9 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       about: profile.useAbout ? profile.about.trim() || null : null,
       strengths: profile.strengths.filter((s) => s.on && s.text.trim()).map((s) => s.text.trim()),
       services: profile.services.filter((s) => s.on).map((s) => s.key),
-      clients: profile.clients.filter((c) => c.on && c.name.trim().length >= 2).map(({ name, industry }) => ({ name: name.trim(), industry })),
+      clients: profile.clients.filter((c) => c.on && c.name.trim().length >= 2).map(({ name, industry, logo }) => ({ name: name.trim(), industry, logo: Boolean(logo && blobOf(logo)) })),
     };
+    const logoBlobs = profile.clients.filter((c) => c.on && c.name.trim().length >= 2).map((c) => (c.logo ? blobOf(c.logo) : undefined));
     let clients = 0;
     let servicesAdded = 0;
     let avatar = false;
@@ -185,6 +194,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       const form = new FormData();
       form.set("data", JSON.stringify(accepted));
       if (avatarBlob) form.set("avatar", new File([avatarBlob], "logo.jpg", { type: "image/jpeg" }));
+      // Each account's logo, cut out of the PDF, travels under its index.
+      logoBlobs.forEach((b, i) => b && form.set(`clientLogo:${i}`, new File([b], `client-${i + 1}.jpg`, { type: "image/jpeg" })));
       const res = await applyProfileImportAction(form);
       clients = res.clients ?? 0;
       servicesAdded = res.services ?? 0;
@@ -246,6 +257,9 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
 
   const publishing = phase === "publishing";
   const toPublish = drafts.filter((d) => d.include && !d.postId && d.images.length).length;
+  const loosePosts = drafts.filter((d) => d.include && !d.postId && d.images.length && !d.client?.trim()).length;
+  const unnamedClients = profile.clients.filter((c) => c.name.trim().length < 2).length;
+  const pictureCounts = pictures.reduce((acc, p) => ({ ...acc, [p.kind]: (acc[p.kind] ?? 0) + 1 }), {} as Partial<Record<PictureKind, number>>);
   const profileChanges = profile.useAbout || profile.services.some((s) => s.on) || profile.clients.some((c) => c.on && c.name.trim().length >= 2) || (profile.useAvatar && profile.avatar);
   const hasProfile = profile.about || profile.strengths.length > 0 || profile.services.length > 0 || profile.clients.length > 0 || profile.avatar;
   return (
@@ -256,9 +270,50 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
         {truncated && <span className="text-muted-foreground">{t("truncated", { pages: IMPORT_LIMITS.pages })}</span>}
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <PicturePicker pictures={pictures} used={usedRefs} drafts={drafts.map((d) => ({ id: d.id, title: d.title }))} onPost={postFromPictures} onAvatar={(ref) => setProfile((p) => ({ ...p, avatar: ref, useAvatar: true }))} onClientLogos={clientLogosFromPictures} />
+        <PicturePicker
+          pictures={pictures}
+          used={usedRefs}
+          drafts={drafts.map((d) => ({ id: d.id, title: d.title }))}
+          onPost={postFromPictures}
+          onAvatar={(ref) => setProfile((p) => ({ ...p, avatar: ref, useAvatar: true }))}
+          onClientLogos={clientLogosFromPictures}
+          open={pickerOpen}
+          onOpenChange={setPickerOpen}
+          filter={pickerFilter}
+          onFilterChange={setPickerFilter}
+        />
         <p className="text-sm text-muted-foreground">{t("reviewHint")}</p>
       </div>
+
+      {/* What to do with what was found, and what is still unsorted (docs/36). */}
+      <section className="grid gap-3 rounded-xl border p-4" data-testid="import-guide">
+        <h3 className="font-semibold">{t("guide.title")}</h3>
+        <ol className="grid gap-3 text-sm">
+          <GuideStep n={1} done={Boolean(profile.useAvatar && profile.avatar)} title={t("guide.logoStep")} note={profile.useAvatar && profile.avatar ? t("guide.logoDone") : t("guide.logoNone")}>
+            <Button type="button" size="sm" variant="outline" onClick={() => openPicker(pictureCounts.logo ? "logo" : pictureCounts.block ? "block" : "all")} data-testid="guide-logo">
+              {t("guide.logoPick")}
+            </Button>
+          </GuideStep>
+          <GuideStep n={2} done={profile.clients.length > 0 && unnamedClients === 0} title={t("guide.accountsStep")} note={profile.clients.length ? t("guide.accountsFound", { count: profile.clients.length, unnamed: unnamedClients }) : t("guide.accountsNone")}>
+            {unnamedClients > 0 && (
+              <Button type="button" size="sm" onClick={() => jumpTo("import-clients")} data-testid="guide-name-accounts">
+                {t("guide.accountsName")}
+              </Button>
+            )}
+            <Button type="button" size="sm" variant="outline" onClick={() => openPicker(pictureCounts.logo ? "logo" : "all")} data-testid="guide-accounts">
+              {t("guide.accountsPick")}
+            </Button>
+          </GuideStep>
+          <GuideStep n={3} done={toPublish > 0 && loosePosts === 0} title={t("guide.postsStep")} note={`${t("guide.postsCount", { count: toPublish, loose: loosePosts })} ${t("guide.postsHint")}`}>
+            <Button type="button" size="sm" onClick={() => jumpTo("import-drafts")} data-testid="guide-posts">
+              {t("guide.postsGo")}
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => openPicker(pictureCounts.photo ? "photo" : "all")} data-testid="guide-pictures">
+              {t("guide.postsPick")}
+            </Button>
+          </GuideStep>
+        </ol>
+      </section>
       {summary && summary.failed > 0 && <FormError message={t("someFailed", { failed: summary.failed, posts: summary.posts })} />}
       <FormError message={error ? t(`errors.${error}` as "errors.generic") : undefined} />
 
@@ -306,7 +361,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
             </div>
           )}
           {profile.clients.length > 0 && (
-            <div className="grid gap-1.5 text-sm">
+            <div className="grid gap-1.5 text-sm" id="import-clients">
               <span>{t("clients")}</span>
               <p className="text-xs text-muted-foreground">{t("clientsHint")}</p>
               <ul className="grid gap-2 sm:grid-cols-2">
@@ -326,7 +381,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
         </section>
       )}
 
-      <section className="grid gap-4">
+      <section className="grid gap-4" id="import-drafts">
         <h3 className="font-semibold">{t("draftsTitle", { count: drafts.length })}</h3>
         {drafts.map((d, n) => (
           <article key={d.id} className={cn("grid gap-3 rounded-xl border p-4", !d.include && "opacity-60", d.postId && "border-brand")} data-testid="import-draft">
@@ -434,5 +489,17 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
         </Button>
       </div>
     </div>
+  );
+}
+
+/** One line of the guide: a numbered mark (a tick once done), the step, what's left, and its buttons. */
+function GuideStep({ n, done, title, note, children }: { n: number; done: boolean; title: string; note: string; children: React.ReactNode }) {
+  return (
+    <li className="flex flex-wrap items-center gap-2" data-done={done}>
+      <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold", done && "border-brand bg-brand text-white")}>{done ? <Check className="size-3.5" /> : n}</span>
+      <span className="font-medium">{title}</span>
+      <span className="text-muted-foreground">{note}</span>
+      <span className="ms-auto flex flex-wrap gap-2">{children}</span>
+    </li>
   );
 }

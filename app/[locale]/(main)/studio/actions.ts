@@ -12,12 +12,12 @@ import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
 import { answerPartnerRequest, sendPartnerRequest } from "@/lib/data/partners";
-import { deleteClient, ownsClient, saveClient } from "@/lib/data/portfolio-clients";
+import { deleteClient, ownsClient, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
 import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
 import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
-import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar } from "@/lib/images";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar } from "@/lib/images";
 import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
 import { ROLE_KEYS } from "@/lib/services/catalog";
 import { resolveServices } from "@/lib/services/tags";
@@ -306,7 +306,7 @@ export async function submitProposalAction(_: ProposalState, formData: FormData)
   return { ok: true };
 }
 
-export type ClientState = { ok?: boolean; id?: string; error?: "name" | "limit" | "generic" | "link"; index?: number; kind?: string } | undefined;
+export type ClientState = { ok?: boolean; id?: string; error?: "name" | "limit" | "generic" | "link" | "logo"; index?: number; kind?: string } | undefined;
 
 /** Adds or updates a portfolio client and the accounts the agency runs for it. */
 export async function saveClientAction(_: ClientState, formData: FormData): Promise<ClientState> {
@@ -324,6 +324,21 @@ export async function saveClientAction(_: ClientState, formData: FormData): Prom
     translation: readTranslation(formData, clientTranslationSchema) ?? {},
   });
   if ("error" in result) return result;
+  // The account's logo: a new picture replaces the old one; the box removes it.
+  const logo = formData.get("logo");
+  if (logo instanceof File && logo.size > 0) {
+    try {
+      const key = newClientLogoKey(agency.id);
+      await storage().put(key, await processAvatar(Buffer.from(await logo.arrayBuffer())), "image/webp");
+      const old = await setClientLogo(agency.id, result.id, key);
+      if (old) await storage().remove([old]).catch(() => {});
+    } catch {
+      return { error: "logo", id: result.id };
+    }
+  } else if (formData.get("removeLogo") === "1") {
+    const old = await setClientLogo(agency.id, result.id, null);
+    if (old) await storage().remove([old]).catch(() => {});
+  }
   revalidatePath("/[locale]", "layout");
   return { ok: true, id: result.id };
 }

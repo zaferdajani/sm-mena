@@ -36,6 +36,10 @@ export function PicturePicker({
   onPost,
   onAvatar,
   onClientLogos,
+  open: openProp,
+  onOpenChange,
+  filter: filterProp,
+  onFilterChange,
 }: {
   pictures: Picture[];
   /** Pictures already in a post (shown with a mark). */
@@ -44,10 +48,25 @@ export function PicturePicker({
   onPost: (refs: ImageRef[], draftId: number | null) => void;
   onAvatar: (ref: ImageRef) => void;
   onClientLogos: (refs: ImageRef[]) => void;
+  /** Optional control from outside (the guide opens the picker on the right kind). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  filter?: PictureKind | "all";
+  onFilterChange?: (kind: PictureKind | "all") => void;
 }) {
   const t = useTranslations("PortfolioImport.picker");
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<PictureKind | "all">("all");
+  const [openState, setOpenState] = useState(false);
+  const [filterState, setFilterState] = useState<PictureKind | "all">("all");
+  const open = openProp ?? openState;
+  const setOpen = (o: boolean) => {
+    setOpenState(o);
+    onOpenChange?.(o);
+  };
+  const filter = filterProp ?? filterState;
+  const setFilter = (k: PictureKind | "all") => {
+    setFilterState(k);
+    onFilterChange?.(k);
+  };
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [target, setTarget] = useState<string>("new");
   const counts = { all: pictures.length, photo: 0, logo: 0, block: 0, page: 0 } as Record<PictureKind | "all", number>;

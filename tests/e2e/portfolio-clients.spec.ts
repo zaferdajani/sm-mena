@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { joinAgency } from "./helpers";
+import { joinAgency, pngBuffer } from "./helpers";
 
 // Agencies: introduction + strengths, countries served, and portfolio clients
 // with the accounts the agency runs (docs/28-portfolio-clients.md).
@@ -40,6 +40,8 @@ test("agency adds an introduction, countries served and a client with accounts",
   await page.goto("/en/studio/clients");
   const form = page.getByTestId("client-form");
   await form.getByLabel("Business name", { exact: true }).fill("Test Café");
+  await form.getByTestId("client-logo-input").setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: await pngBuffer("#be123c", 400, 400) });
+  await expect(form.getByTestId("client-logo-preview")).toBeVisible();
   const rows = form.getByTestId("client-link-row");
   await rows.nth(0).locator('input[name="linkValue"]').fill("@test.cafe");
   await rows.nth(3).locator('input[name="linkValue"]').fill("testcafe.example");
@@ -54,6 +56,37 @@ test("agency adds an introduction, countries served and a client with accounts",
   await form.getByRole("button", { name: "Save client" }).click();
   await expect(page.getByTestId("client-item")).toContainText("Test Café");
   await expect(page.getByTestId("client-item")).toContainText("@test.cafe");
+  await expect(page.getByTestId("client-item").getByTestId("client-logo")).toBeVisible();
+
+  // A post filed under the account, and a standalone one.
+  for (const [caption, account] of [["Café reels for Test Café", "Test Café"], ["A standalone shoot", ""]] as const) {
+    await page.goto("/en/studio/new");
+    await page.getByTestId("image-input").setInputFiles({ name: "one.png", mimeType: "image/png", buffer: await pngBuffer("#1d4ed8", 900, 900) });
+    await page.fill("#caption", caption);
+    await page.locator('input[name="services"][value="photography"]').check({ force: true }); // a new agency lists no service yet
+    if (account) await page.selectOption("#clientId", { label: account });
+    await page.getByTestId("publish-button").click();
+    await expect(page).toHaveURL(/\/en\/p\//, { timeout: 30_000 });
+  }
+  // The post page names the account, with its logo, and opens it.
+  await expect(page.getByTestId("post-client")).toHaveCount(0); // the standalone post
+  await page.goto(`/en/a/${handle}`);
+  // Work tab: the account as one tile (its two-post group), then the standalone post.
+  const tile = page.getByTestId("account-tile");
+  await expect(tile).toHaveCount(1);
+  await expect(tile).toContainText("Test Café");
+  await expect(tile).toContainText("1 post");
+  await expect(page.getByTestId("post-grid").locator("a")).toHaveCount(1);
+  await tile.click();
+  await expect(page).toHaveURL(/\/en\/a\/.+\/c\/[0-9a-f-]{36}$/);
+  const account = page.getByTestId("account-page");
+  await expect(account).toContainText("Test Café");
+  await expect(account.getByTestId("account-logo")).toBeVisible();
+  await expect(account.getByTestId("client-link")).toHaveCount(3);
+  await expect(account.getByTestId("post-grid").locator("a")).toHaveCount(1);
+  await account.getByTestId("post-grid").locator("a").first().click();
+  await expect(page.getByTestId("post-client")).toContainText("For Test Café");
+  await expect(page.getByTestId("post-client")).toHaveAttribute("href", /\/c\/[0-9a-f-]{36}$/);
 
   // Public page: About shows the introduction, strengths and served countries; Clients lists the accounts.
   await page.goto(`/en/a/${handle}?tab=about`);
@@ -61,6 +94,7 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(page.getByTestId("agency-strengths").locator("li")).toHaveCount(2);
   await expect(page.getByTestId("serves-note")).toContainText("Saudi Arabia");
   await page.goto(`/en/a/${handle}?tab=clients`);
+  await expect(page.getByTestId("client-open")).toHaveAttribute("href", /\/c\/[0-9a-f-]{36}$/);
   const links = page.getByTestId("client-card").getByTestId("client-link");
   await expect(links).toHaveCount(3);
   await expect(links.nth(0)).toHaveAttribute("href", "https://www.instagram.com/test.cafe");

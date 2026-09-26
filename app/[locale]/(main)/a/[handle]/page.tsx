@@ -3,7 +3,8 @@ import { Briefcase, Check, Grid3x3, Info, Star } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { currentCountry } from "@/lib/country-choice";
 import { ClientShowcaseList } from "@/components/profile/client-showcase";
-import { clientShowcase, listClients } from "@/lib/data/portfolio-clients";
+import { accountTiles, clientShowcase, listClients } from "@/lib/data/portfolio-clients";
+import { AccountTiles } from "@/components/profile/account-tiles";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -73,7 +74,8 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const visitorId = await getVisitorId();
   const [following, posts, reviewRows, sub, canReview, pkgs, clients, viewCountry] = await Promise.all([
     isFollowing(visitorId, agency.id),
-    tab === "work" ? feedPage({ agencyId: agency.id }, null, visitorId, { limit: 24 }) : null,
+    // Work filed under an account is grouped in account tiles; the grid shows the rest.
+    tab === "work" ? feedPage({ agencyId: agency.id, standalone: true }, null, visitorId, { limit: 24 }) : null,
     tab === "reviews" ? listReviews(agency.id) : null,
     tab === "reviews" ? subScores(agency.id) : null,
     tab === "reviews" ? canReviewAfterInquiry(visitorId, agency.id) : false,
@@ -84,6 +86,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   ]);
   // Always rendered (every tab), so search engines see reviews and prices on the canonical URL.
   const latestReviews = await listReviews(agency.id, { limit: 3 });
+  const tiles = tab === "work" ? await accountTiles(agency.id) : [];
   const [tSeo, tHire] = await Promise.all([getTranslations("Seo"), getTranslations("Hire")]);
   const rating = ratingSummary(agency);
   const avatarUrl = mediaUrl(agency.avatarKey);
@@ -147,12 +150,15 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ))}
       </div>
       {posts &&
-        (posts.items.length ? (
-          <FeedList initial={posts} filters={{ agencyId: agency.id }} placement={null} layout="grid" />
+        (posts.items.length || tiles.length ? (
+          <>
+            <AccountTiles tiles={tiles} handle={agency.handle} lang={agency.contentLang} />
+            {posts.items.length > 0 && <FeedList initial={posts} filters={{ agencyId: agency.id, standalone: true }} placement={null} layout="grid" />}
+          </>
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
-      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} />}
+      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />

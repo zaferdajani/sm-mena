@@ -36,6 +36,8 @@ const filtersSchema = z
     fullService: z.boolean().optional(),
     verified: z.boolean().optional(),
     agencyId: uuid.optional(),
+    clientId: uuid.optional(),
+    standalone: z.boolean().optional(),
   })
   .strict();
 

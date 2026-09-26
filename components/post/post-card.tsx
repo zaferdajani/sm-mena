@@ -21,6 +21,7 @@ import { PostActions, useLike } from "./post-actions";
 export function PostCard({ post: raw, priority = false, linkToPost = true }: { post: FeedItem; priority?: boolean; linkToPost?: boolean }) {
   const t = useTranslations("Post");
   const tc = useTranslations("Common");
+  const tp = useTranslations("Profile");
   const tCity = useTranslations("Cities");
   const locale = useLocale();
   // Caption, result and agency name in the reader's language when the agency wrote it (lib/content-lang.ts).
@@ -71,6 +72,15 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
 
       <div className="space-y-1.5 px-3 pb-3 text-sm">
         <p className="font-semibold">{t("likes", { count: like.count })}</p>
+        {post.client && (
+          <Link href={`/a/${post.agency.handle}/c/${post.client.id}`} className="flex w-fit items-center gap-1.5 text-xs font-medium text-brand" data-testid="post-account">
+            {post.client.logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={post.client.logoUrl} alt="" className="size-5 rounded-full border bg-white object-cover" />
+            )}
+            {tp("forClient", { name: locale !== post.contentLang && post.client.nameTranslation ? post.client.nameTranslation : post.client.name })}
+          </Link>
+        )}
         {post.caption && (
           <p className={expanded ? "" : "line-clamp-2"} onClick={() => setExpanded(true)}>
             <Link href={`/a/${post.agency.handle}`} className="font-semibold">

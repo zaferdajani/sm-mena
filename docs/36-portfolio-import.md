@@ -45,12 +45,12 @@ The agency reviews everything first. The flow follows Aida's document pipeline i
      - services come from the matchmaker's keywords and every catalog name and alias; the profile is offered the services the portfolio talks about that the agency doesn't list yet;
      - the client comes from lines like "Client: …" or "العميل: …"; on a logo wall, one client per logo, named from its wordmark only when the OCR read real words;
      - OCR gibberish is never used as a title or a name; the field is left for the agency to fill.
-3. **Review** (`components/studio/portfolio-import.tsx`). The agency can:
+3. **Review** (`components/studio/portfolio-import.tsx`). A guide at the top says what to do with what was found, and what is still unsorted: the page logo (chosen or not), the accounts (logos found, how many still need a name), and the posts (how many are ready, how many are not filed under an account yet). Each line has a button that opens the right pictures or jumps to the right section. The agency can:
    - open the **picture picker** (`components/studio/picture-picker.tsx`): every picture found in the PDF (photos, logos, blocks and whole pages), filtered by kind, multi-select. A selection becomes a new post, is added to an existing draft, becomes the agency's page logo (one picture), or is added as client logos to name;
    - untick drafts, remove pages, merge a post with the one above, make a post from an unused page;
    - edit the caption, client, result, services, platforms and industry;
-   - **group posts under a client**: the client field suggests the agency's existing portfolio clients and the ones found in the PDF, so several posts land under the same profile;
-   - choose which profile details to keep: the introduction, strengths, services, clients (with their logos) and the page logo.
+   - **file posts under accounts** (docs/28): the account field on each draft suggests the agency's existing accounts and the ones found in the PDF, so several posts land under the same account and visitors open the account to see them together;
+   - choose which profile details to keep: the introduction, strengths, services, accounts (with their logos, which become the accounts' logos) and the page logo.
 4. **Publish.**
    - Each kept draft is compressed in the browser (same as new posts) and published by `importPostAction`, which runs the same checks and image processing as a normal post.
    - A named client is matched to an existing portfolio client, or added.

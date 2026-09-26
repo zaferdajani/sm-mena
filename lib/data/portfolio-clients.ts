@@ -86,7 +86,46 @@ export async function ownsClient(agencyId: string, clientId: string) {
   return Boolean(row);
 }
 
-export type ClientShowcase = PortfolioClient & { postCount: number; thumbs: { postId: string; url: string; color: string }[] };
+/** Sets or clears the account's logo; returns the key that was there, for the caller to remove from storage. */
+export async function setClientLogo(agencyId: string, clientId: string, logoKey: string | null): Promise<string | null> {
+  const db = await getDb();
+  const [before] = await db.select({ logoKey: portfolioClients.logoKey }).from(portfolioClients).where(and(eq(portfolioClients.id, clientId), eq(portfolioClients.agencyId, agencyId)));
+  if (!before) return null;
+  await db.update(portfolioClients).set({ logoKey, updatedAt: new Date() }).where(eq(portfolioClients.id, clientId));
+  return before.logoKey;
+}
+
+/** One client of an agency (its public account page), or null. */
+export async function getClient(agencyId: string, clientId: string): Promise<(PortfolioClient & { postCount: number; logoUrl: string | null }) | null> {
+  const db = await getDb();
+  const [row] = await db.select().from(portfolioClients).where(and(eq(portfolioClients.id, clientId), eq(portfolioClients.agencyId, agencyId)));
+  if (!row) return null;
+  const [{ n }] = await db.select({ n: count() }).from(posts).where(and(eq(posts.clientId, row.id), eq(posts.status, "published")));
+  return { ...row, postCount: Number(n), logoUrl: mediaUrl(row.logoKey) };
+}
+
+export type AccountTile = { id: string; name: string; translation: ClientTranslation; logoUrl: string | null; postCount: number; cover: { url: string; color: string } | null };
+
+/**
+ * The accounts shown on the agency's Work tab: every client with published
+ * work, its logo, how many posts, and the latest post's picture as a cover.
+ */
+export async function accountTiles(agencyId: string): Promise<AccountTile[]> {
+  const clients = (await listClients(agencyId)).filter((c) => c.postCount > 0);
+  if (!clients.length) return [];
+  const db = await getDb();
+  const rows = await db
+    .select({ clientId: posts.clientId, key: postImages.thumbKey, color: postImages.color })
+    .from(posts)
+    .innerJoin(postImages, and(eq(postImages.postId, posts.id), eq(postImages.position, 0)))
+    .where(and(inArray(posts.clientId, clients.map((c) => c.id)), eq(posts.status, "published")))
+    .orderBy(desc(posts.createdAt));
+  const cover = new Map<string, { url: string; color: string }>();
+  for (const r of rows) if (r.clientId && !cover.has(r.clientId)) cover.set(r.clientId, { url: mediaUrl(r.key)!, color: r.color });
+  return clients.map((c) => ({ id: c.id, name: c.name, translation: c.translation ?? {}, logoUrl: mediaUrl(c.logoKey), postCount: c.postCount, cover: cover.get(c.id) ?? null }));
+}
+
+export type ClientShowcase = PortfolioClient & { postCount: number; logoUrl: string | null; thumbs: { postId: string; url: string; color: string }[] };
 
 /** The public Clients tab: every client with its accounts and up to 6 recent work thumbnails. */
 export async function clientShowcase(agencyId: string): Promise<ClientShowcase[]> {
@@ -105,7 +144,7 @@ export async function clientShowcase(agencyId: string): Promise<ClientShowcase[]
     if (list.length < 6) list.push({ postId: r.postId, url: mediaUrl(r.key)!, color: r.color });
     thumbs.set(r.clientId!, list);
   }
-  return clients.map((c) => ({ ...c, thumbs: thumbs.get(c.id) ?? [] }));
+  return clients.map((c) => ({ ...c, logoUrl: mediaUrl(c.logoKey), thumbs: thumbs.get(c.id) ?? [] }));
 }
 
 /** Client names for a set of posts (the post page and feed cards show "For {client}"), with the other-language name. */

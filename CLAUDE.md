@@ -39,7 +39,7 @@ The product is an Instagram-style showcase for agencies plus an AI matchmaker wi
 2. Works in Arabic on a phone viewport.
 3. New strings exist in both message files.
 4. Any new personal-data field has a consent/retention note in `docs/08-legal-compliance.md`.
-5. Conventional Commit message; one PR per sprint.
+5. Conventional Commit message. Work lands on `main` directly: once the checks above pass, merge `origin/main` into your branch, push the branch, then push it to `main` (`git push origin HEAD:main`); Vercel deploys `main`. Do not open pull requests unless the owner asks for one; the owner does not want to click merge.
 
 ## Style
 - TypeScript strict. Zod for all input validation; share schemas between client and server.

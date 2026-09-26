@@ -5,6 +5,7 @@ import { COUNTRIES } from "@/lib/countries";
 import { listClients, MAX_CLIENTS } from "@/lib/data/portfolio-clients";
 import { INDUSTRIES } from "@/lib/labels";
 import { contentLang } from "@/lib/content-lang";
+import { mediaUrl } from "@/lib/storage";
 
 /** Portfolio clients: the businesses the agency works for and the accounts it runs for each. */
 export default async function StudioClientsPage({ params }: PageProps<"/[locale]/studio/clients">) {
@@ -27,7 +28,7 @@ export default async function StudioClientsPage({ params }: PageProps<"/[locale]
       {clients.map((c) => (
         <ClientItem
           key={c.id}
-          client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation }}
+          client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation, logoUrl: mediaUrl(c.logoKey) }}
           industries={industries}
           countries={countries}
           industryLabel={c.industry ? tInd(c.industry) : null}
