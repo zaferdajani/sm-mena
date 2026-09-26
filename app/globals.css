@@ -204,3 +204,28 @@
     opacity: 1;
   }
 }
+
+/* Phone feed (components/feed/reel-feed.tsx): the page snaps to one post per screen. */
+html.reel-snap {
+  scroll-snap-type: y mandatory;
+}
+@keyframes reel-burst {
+  0% { opacity: 0; transform: scale(0.4); }
+  15% { opacity: 0.95; transform: scale(1.15); }
+  30% { transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+.reel-burst {
+  animation: reel-burst 0.9s ease-out forwards;
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.4));
+}
+@keyframes reel-hint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.reel-hint {
+  animation: reel-hint 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel-burst, .reel-hint { animation: none; }
+}

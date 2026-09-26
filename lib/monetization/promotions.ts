@@ -58,7 +58,10 @@ export async function injectPromotions(
   const slots = ctx.placement === "explore" ? (ctx.firstPage ? PROMOTION_RULES.exploreTop : 0) : Math.floor(items.length / PROMOTION_RULES.feedEvery);
   const chosen = shuffled.slice(0, slots);
   if (!chosen.length) return items;
-  const sponsoredPosts = await getPostsByIds(chosen.map((p) => p.postId!));
+  // Paid placement never overrides relevance: in a feed narrowed to one business
+  // type, a sponsored post must be of that type too (docs/36-feed.md).
+  const sponsoredPosts = (await getPostsByIds(chosen.map((p) => p.postId!))).filter((p) => !ctx.filters.industry || p.industry === ctx.filters.industry);
+  if (!sponsoredPosts.length) return items;
   const byPost = new Map(chosen.map((p) => [p.postId!, p.id]));
   const sponsored = sponsoredPosts.map((p) => ({ ...p, sponsored: { promotionId: byPost.get(p.id)! } }));
   await countImpressions(sponsored.map((p) => p.sponsored.promotionId), ctx.visitorId);

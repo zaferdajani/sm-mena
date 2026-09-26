@@ -2681,5 +2681,13 @@
     "label": "Sawwiq intro",
     "skip": "Skip",
     "soundOn": "Sound on"
+  },
+  "Feed": {
+    "typeBarLabel": "Business type",
+    "allTypes": "All",
+    "swipeHint": "Swipe up for more work",
+    "emptyType": "No work for this business type yet.",
+    "showAll": "Show all work",
+    "introEyebrow": "Looking for an agency?"
   }
 }

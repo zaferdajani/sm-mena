@@ -13,6 +13,7 @@ import { serviceLabel } from "@/lib/labels";
 import { SITE_URL } from "@/lib/site";
 import { whatsappLink } from "@/lib/text";
 import { trackPromotionClick } from "@/app/[locale]/(main)/actions";
+import { BusinessTag } from "./business-tag";
 import { ContactLink } from "./contact-link";
 import { ImageCarousel } from "./image-carousel";
 import { PostActions, useLike } from "./post-actions";
@@ -78,6 +79,7 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
             <span dir="auto">{post.caption}</span>
           </p>
         )}
+        <BusinessTag type={post.industry} />
         {post.result && (
           <p className="inline-flex rounded-md bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">
             📈 <bdi className="ms-1">{post.result}</bdi>
