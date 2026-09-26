@@ -105,3 +105,9 @@ See `docs/23-chat-and-notifications.md`.
 | An inquiry's text copied as the first message of a chat | So the agency can answer inside Sawwiq | Same as the inquiry | Same as chat messages |
 
 Transparency: every chat shows, before the first message can be sent, that chats "are recorded and may be reviewed by our team for quality assurance and to resolve disputes", with a reminder under the composer; the inquiry form says an inquiry also starts a recorded chat. The notice text is versioned (`CHAT_NOTICE_VERSION` in `lib/chat.ts`, currently `2026-09`) and each conversation stores the version its participants were shown. Staff access to transcripts needs the `conversations.view` permission (owner, admin, support); opening a transcript (`conversation.view`) and hiding or restoring a message (`conversation.hide` / `conversation.unhide`) are written to the audit log.
+
+## Changing sign-in details (Security page)
+Signed-in users can change their sign-in email and password from `/studio/security` or `/admin/security`. Both changes need the current password, plus the authenticator code when two-factor is on.
+- The audit log records `account.email_changed` and `account.password_changed` without the addresses.
+- A password change signs out every other session.
+- Shared demo accounts can't change their sign-in details.

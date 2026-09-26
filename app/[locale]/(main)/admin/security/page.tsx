@@ -7,5 +7,5 @@ export default async function AdminSecurity({ params }: PageProps<"/[locale]/adm
   setRequestLocale(locale);
   // The one admin page reachable before enrolment, so the admin can turn 2FA on.
   const user = await requireAdmin({ allowEnroll: true });
-  return <SecurityPage userId={user.id} role={user.role} />;
+  return <SecurityPage userId={user.id} role={user.role} email={user.email} />;
 }
