@@ -15,6 +15,8 @@ describe("feature switches", () => {
     expect(d.paid_plans.state).toBe("soon");
     expect(d.contracts.state).toBe("on");
     expect(d.ai_matchmaker.state).toBe("on");
+    // Collaboration V2 release 1 ships on; Admin → Features can pause it (docs/48).
+    expect(d.collaboration.state).toBe("on");
   });
 
   it("take a different starting point from FEATURE_DEFAULTS, ignoring unknown names", () => {

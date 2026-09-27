@@ -131,3 +131,17 @@ It holds no personal data. The partner sees only the shared milestone, its check
 - **Agents' data:** name, email and phone. Admin enters it when hiring them, for signing in, contact and payouts. It's kept while they work with Sawwiq and for 24 months after (payout records).
 - **Visibility:** agents see only their referred providers' public page names and handles and what the pages are missing, never contact details. Other agents on the leaderboard show by first name only.
 - **Payout records** (amount and note) are kept with the accounts.
+
+## Collaboration V2, release 1 (docs/48)
+
+| Data | Where | Who sees it | Retention |
+|---|---|---|---|
+| Collaboration preference (`collab_profiles`: modes, work modes, open to work, consent version) | the provider's own studio | everyone searching, as a filter and a label; "unknown" until answered | while the page exists |
+| Availability windows (`availability_windows`: dates, status, capacity, visibility, private note) | provider's studio | the note: the provider only; the state: the audience the provider picked (only me / partners / any provider); never a counterparty | 60 days after the window ends they leave the list; rows are removed with the page |
+| Published needs and replies (`collab_needs`, `collab_need_replies`) | Studio → Collaborate | needs: the audience the agency chose; replies: the publishing agency | needs expire on the chosen date (30 days by default) |
+| Private roster (`collab_roster`: group, tags, notes, negotiated-rate reference) | owner agency's studio | the owner agency only; the provider is never told | removed by the owner or with either page |
+| Invitation links (`collab_invites`: token hash, optional label, roles) | sender's studio | the sender; whoever opens the link sees the sender's public name | links expire after 14 days; no phone or email is stored |
+| Blocks (`collab_blocks`) | blocker's studio | the blocker only | until unblocked |
+| Work inquiries, recipients and quotes (`work_inquiries`, `work_inquiry_recipients`, `work_quotes`) | Studio → Collaborate → Work | the buyer sees everything about its own inquiry; each supplier sees one fixed projection (`SUPPLIER_FIELDS`) and only its own quotes; the buyer's linked client contract is never sent | expire on the reply deadline; kept as the record behind a contract request |
+
+Consent: the collaboration preference records `consent_version` (`collab-2026-09`). No new contact data is collected; contact details still open only through an accepted partnership (docs/30). Audit rows: `collab.inquiry.sent`, `collab.inquiry.converted`.

@@ -1,0 +1,79 @@
+import { Plus } from "lucide-react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ComingSoon } from "@/components/features/coming-soon";
+import { CollabHeader, CollabTabs, EmptyState } from "@/components/collab/collab-tabs";
+import { buttonVariants } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import { listBuying, listSupplying, openInquiryCount } from "@/lib/data/collab-inquiries";
+import { sharesForPartner } from "@/lib/data/milestone-shares";
+import { formatDate, formatFils } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { collabPage } from "../gate";
+
+export const STATUS_STYLE: Record<string, string> = {
+  sent: "bg-brand-soft text-brand", replied: "bg-brand-soft text-brand", converted: "bg-brand text-white", declined: "bg-muted text-muted-foreground", expired: "bg-muted text-muted-foreground", withdrawn: "bg-muted text-muted-foreground", draft: "bg-muted",
+  viewed: "bg-brand-soft text-brand", quoted: "bg-brand-soft text-brand", accepted: "bg-brand text-white", passed: "bg-muted text-muted-foreground",
+};
+
+/** Studio → Collaborate → Work: buying (my inquiries), delivering (inquiries to me), disclosed co-delivery (existing shares). */
+export default async function CollabWorkPage({ params }: PageProps<"/[locale]/studio/collab/work">) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const { agency, soon } = await collabPage();
+  if (soon) return <ComingSoon feature="collaboration" />;
+  const t = await getTranslations("Collab");
+  const [buying, supplying, shares, badge] = await Promise.all([listBuying(agency.id), listSupplying(agency.id), sharesForPartner(agency.id), openInquiryCount(agency.id)]);
+  const pill = (s: string, label: string) => <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_STYLE[s] ?? "bg-muted")}>{label}</span>;
+  return (
+    <div className="mx-auto grid max-w-3xl gap-6" data-testid="collab-work">
+      <CollabTabs active="work" badges={{ work: badge }} />
+      <CollabHeader title={t("work.title")} intro={t("work.intro")} action={<Link href="/studio/collab/work/new" className={buttonVariants({ className: "h-11 gap-1.5" })} data-testid="work-new"><Plus className="size-4" /> {t("inquiry.new")}</Link>} />
+
+      <section className="grid gap-2" data-testid="work-delivering">
+        <h2 className="font-semibold">{t("work.delivering")}</h2>
+        <p className="text-xs text-muted-foreground">{t("work.deliveringIntro")}</p>
+        {supplying.length === 0 ? <EmptyState title={t("work.noneDelivering")} body={t("work.noneDeliveringBody")} action={<Link href="/studio/collab/availability" className={buttonVariants({ variant: "outline", className: "h-11" })}>{t("work.setAvailability")}</Link>} /> : (
+          <ul className="grid gap-2">
+            {supplying.map(({ inquiry, me, buyer }) => (
+              <li key={inquiry.id}>
+                <Link href={`/studio/collab/work/${inquiry.id}`} className="flex items-center gap-3 rounded-2xl border p-3 hover:bg-muted/50" data-testid="supplying-row" data-status={me.status}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium" dir="auto">{inquiry.title}</span>
+                    <span className="block text-xs text-muted-foreground">{t("work.from", { name: buyer.name })} · {inquiry.sentAt ? formatDate(inquiry.sentAt, locale) : ""}{inquiry.responseBy && ["sent", "viewed"].includes(me.status) ? ` · ${t("work.respondBy", { date: formatDate(inquiry.responseBy, locale) })}` : ""}</span>
+                  </span>
+                  {pill(me.status, t(`work.recipientStatus.${me.status}`))}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="grid gap-2" data-testid="work-buying">
+        <h2 className="font-semibold">{t("work.buying")}</h2>
+        <p className="text-xs text-muted-foreground">{t("work.buyingIntro")}</p>
+        {buying.length === 0 ? <EmptyState title={t("work.noneBuying")} body={t("work.noneBuyingBody")} action={<Link href="/studio/collab" className={buttonVariants({ variant: "outline", className: "h-11" })}>{t("work.findSomeone")}</Link>} /> : (
+          <ul className="grid gap-2">
+            {buying.map((i) => (
+              <li key={i.id}>
+                <Link href={`/studio/collab/work/${i.id}`} className="flex items-center gap-3 rounded-2xl border p-3 hover:bg-muted/50" data-testid="buying-row" data-status={i.status}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium" dir="auto">{i.title}</span>
+                    <span className="block text-xs text-muted-foreground">{t("work.recipients", { count: i.recipients })} · {t("work.quotes", { count: i.quoted })}{i.budgetFils ? ` · ${formatFils(i.budgetFils, locale, i.currency)}` : ""} · {t(`modes.${i.privacyMode}`)}</span>
+                  </span>
+                  {pill(i.status, t(`work.status.${i.status}`))}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="grid gap-2 rounded-2xl border p-4 text-sm" data-testid="work-disclosed">
+        <h2 className="font-semibold">{t("work.disclosed")}</h2>
+        <p className="text-muted-foreground">{t("work.disclosedIntro")}</p>
+        <Link href="/studio/contracts#partner-work" className="font-medium text-brand">{t("work.disclosedLink", { count: shares.length })}</Link>
+      </section>
+    </div>
+  );
+}

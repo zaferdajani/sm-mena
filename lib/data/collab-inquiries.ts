@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { getDb, type DB } from "@/lib/db";
 import { agencies, collabNeeds, contracts, workInquiries, workInquiryRecipients, workQuotes, type Agency, type WorkInquiry, type WorkInquiryRecipient, type WorkQuote } from "@/lib/db/schema";
 import { addDays } from "@/lib/collab/time";
+import { SUPPLIER_FIELDS } from "@/lib/collab/types";
 import type { InquiryInput, QuoteInput } from "@/lib/collab/schemas";
 import { currencyOf } from "@/lib/countries";
 import { arePartners } from "./contracts";
@@ -31,26 +32,7 @@ const party = (a: { id: string; handle: string; name: string; kind: "agency" | "
  * beyond what the buyer chose to state in the inquiry itself.
  */
 export function supplierProjection(i: WorkInquiry) {
-  return {
-    id: i.id,
-    title: i.title,
-    role: i.role,
-    deliverables: i.deliverables,
-    scope: i.scope,
-    assetsNote: i.assetsNote,
-    startsOn: i.startsOn,
-    dueOn: i.dueOn,
-    timezone: i.timezone,
-    workMode: i.workMode,
-    city: i.city,
-    country: i.country,
-    budgetFils: i.budgetFils,
-    currency: i.currency,
-    privacyMode: i.privacyMode,
-    responseBy: i.responseBy,
-    status: i.status,
-    sentAt: i.sentAt,
-  };
+  return Object.fromEntries(SUPPLIER_FIELDS.map((k) => [k, i[k]])) as Pick<WorkInquiry, (typeof SUPPLIER_FIELDS)[number]>;
 }
 export type SupplierInquiry = ReturnType<typeof supplierProjection>;
 

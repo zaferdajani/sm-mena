@@ -34,6 +34,7 @@ Things that already exist keep working whatever the switch says: a signed contra
 | `messaging` | on | The "Message" button on agency pages is hidden. |
 | `reviews` | on | Review invite and review links show Coming soon; creating invites is refused. |
 | `partners` | on | Studio → Partners shows Coming soon (off: hidden from the studio menu). |
+| `collaboration` | on | Collaboration V2 release 1 (docs/48): Studio → Collaborate (discover, needs, network, work, availability) and invitation links show Coming soon; off hides the tab, the pages 404 and every action refuses. Accepted partnerships, contract requests and shares made through it keep working under `partners` and `contracts`. |
 | `demo_view` | on | "Explore the demo" is hidden; off also ignores an existing demo cookie. |
 | `prelaunch_home` | off | Off: the front page is the landing page (the teaser stays at `/soon`). On: the teaser is the front page. "Coming soon": only staff see the teaser there. The owner turned it off on 26 Sep 2026: the teaser as a front page was too dark and too busy. |
 

@@ -10,6 +10,7 @@ export function SubmitButton({
   name,
   value,
   disabled,
+  testId,
 }: {
   children: React.ReactNode;
   className?: string;
@@ -18,10 +19,11 @@ export function SubmitButton({
   value?: string;
   /** Extra reason to hold the button, e.g. a file still being compressed. */
   disabled?: boolean;
+  testId?: string;
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending || disabled} aria-busy={pending || disabled} variant={variant} className={className} name={name} value={value}>
+    <Button type="submit" disabled={pending || disabled} aria-busy={pending || disabled} variant={variant} className={className} name={name} value={value} data-testid={testId}>
       {children}
     </Button>
   );

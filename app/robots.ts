@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/site";
 
 // Whole sections (prefix match) and token links (trailing slash, so /ar/c/…
 // is blocked but /ar/contact is not).
-const PRIVATE = ["studio", "admin", "saved", "requests", "login", "support", "c/", "r/", "review/", "pay/", "join/staff/"];
+const PRIVATE = ["studio", "admin", "saved", "requests", "login", "support", "c/", "r/", "review/", "pay/", "join/staff/", "invite/"];
 
 // Search and AI answer engines are welcome on public pages (OneClickConvert's
 // policy): being cited by ChatGPT, Claude, Perplexity and Google's AI answers

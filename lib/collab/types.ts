@@ -34,3 +34,10 @@ export const INQUIRY_LIMIT = 20;
 export const INVITE_LIMIT = 10;
 export const MAX_RECIPIENTS = 8;
 export const CONSENT_VERSION = "collab-2026-09";
+
+/**
+ * Exactly the inquiry fields a supplier receives. The buyer's audience
+ * preview and the supplier's page both read this list, so the preview can
+ * never show less (or the recipient more) than the other.
+ */
+export const SUPPLIER_FIELDS = ["id", "title", "role", "deliverables", "scope", "assetsNote", "startsOn", "dueOn", "timezone", "workMode", "city", "country", "budgetFils", "currency", "privacyMode", "responseBy", "status", "sentAt"] as const;

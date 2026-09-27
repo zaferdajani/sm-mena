@@ -11,6 +11,7 @@ import { unreadCount } from "@/lib/data/inbox";
 import { unreadNotificationCount } from "@/lib/data/notifications";
 import { newOpportunityCount } from "@/lib/data/requests";
 import { pendingPartnerCount } from "@/lib/data/partners";
+import { openInquiryCount } from "@/lib/data/collab-inquiries";
 import { mediaUrl } from "@/lib/storage";
 import { featureGate } from "@/lib/feature-gate";
 
@@ -27,8 +28,11 @@ export default async function StudioLayout({ children }: { children: React.React
   const tchat = await getTranslations("Chat");
   const tn = await getTranslations("Notifications");
   const tpart = await getTranslations("Partners");
-  const [partnersGate, unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
+  const tcol = await getTranslations("Collab");
+  const [partnersGate, collabGate, openInquiries, unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
     featureGate("partners"),
+    featureGate("collaboration"),
+    openInquiryCount(agency.id),
     unreadCount(agency.id),
     unreadForAgency(agency.id),
     newOpportunityCount(agency),
@@ -63,6 +67,8 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/posts", label: t("posts") },
             { href: "/studio/followers", label: t("followers") },
             { href: "/studio/clients", label: t("clients") },
+            // Collaboration V2 (docs/48) sits beside the legacy partners page; old links keep working.
+            ...(collabGate !== "off" ? [{ href: "/studio/collab", label: tcol("tab"), badge: openInquiries }] : []),
             ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
             { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
             { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
