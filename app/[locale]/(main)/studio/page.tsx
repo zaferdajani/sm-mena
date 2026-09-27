@@ -9,7 +9,7 @@ import { listPackages } from "@/lib/data/packages";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { mediaUrl } from "@/lib/storage";
 import { seatOf } from "@/lib/data/teaser";
-import { foundingStatus } from "@/lib/founding";
+import { founderEligibility, foundingStatus } from "@/lib/founding";
 import { FoundingPanel } from "@/components/studio/founding-panel";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
@@ -51,7 +51,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </Link>
         </p>
       )}
-      {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} />}
+      {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} eligible={founderEligibility({ ...agency, packageCount: packages.length }).eligible} />}
       {steps.some((x) => !x.done) && (
         <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">
           <h2 className="font-semibold">{t("setup.title")}</h2>
