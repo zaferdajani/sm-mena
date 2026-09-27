@@ -3163,7 +3163,9 @@
         "what": "Your existing clients",
         "limit": "Founder terms for contracts and workflows with clients you already have are still to be decided, once real payment-provider costs are known."
       }
-    }
+    },
+    "activationReady": "Your Founder benefits are activated. Financial benefits apply under the published terms when protected payments go live.",
+    "activationTodo": "Complete your profile and add genuine work or a useful package to activate Founder benefits. Registration alone is not enough."
   },
   "Agent": {
     "title": "My referrals",
