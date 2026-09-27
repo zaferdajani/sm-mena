@@ -31,6 +31,12 @@ export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; cou
           variant="landing"
         />
         <LangSwitch lang={lang} />
+        {account.href.endsWith("/login") && (
+          <a className="sw-join" href={`/${lang}/start`} data-testid="landing-join">
+            <span className="sw-join__long">{c.signUp.label}</span>
+            <span className="sw-join__short" aria-hidden="true">{c.signUp.short}</span>
+          </a>
+        )}
         <a className="sw-signin" href={account.href} data-testid="landing-account">
           <svg aria-hidden="true" fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="18">
             <circle cx="12" cy="8" r="4" />

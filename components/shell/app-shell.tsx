@@ -41,7 +41,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         ? { href: "/agent", label: t("agent"), icon: "studio" }
         : user && user.role !== "client"
           ? { href: "/studio", label: t("studio"), icon: "studio" }
-          : { href: "/join", label: t("join"), icon: "join" },
+          : { href: "/start", label: t("join"), icon: "join" },
   ];
   return (
     <div className="sw-app min-h-dvh md:flex" data-design-surface="app">
@@ -75,7 +75,10 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           {user ? (
             <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted"><LifeBuoy className="size-5" /></Link>
           ) : (
-            <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
+            <>
+              <Link href="/start" className="shrink-0 rounded-full border-2 border-brand px-3 py-1 text-sm font-semibold text-brand hover:bg-brand-soft" data-testid="header-join">{t("joinShort")}</Link>
+              <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
+            </>
           )}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
         </div>
