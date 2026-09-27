@@ -37,6 +37,8 @@ for (const locale of ["ar", "en"]) {
   for (const theme of ["light", "dark"] as const) {
     test(`${locale} Explore separates filters, providers and footer in ${theme}`, async ({ page }, info) => {
       await page.emulateMedia({ colorScheme: theme });
+      // The seeded demo agencies are always there; real ones depend on which specs ran first.
+      await page.context().addCookies([{ name: "sw_demo", value: "1", url: info.project.use.baseURL! }]);
       await page.goto(`/${locale}/explore?tab=agencies`);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       const grid = page.getByTestId("explore-agency-grid");

@@ -79,3 +79,21 @@ test("blocked playback releases the landing and welcome chooser", async ({ page 
   await expect(page.getByTestId("welcome-chooser")).toBeVisible();
   expect(await page.locator(".sw").evaluate((el) => (el as HTMLElement).inert)).toBe(false);
 });
+
+test("without the JavaScript bundle the overlay is still skippable and clears itself", async ({ page }) => {
+  test.setTimeout(60_000);
+  // Only the inline gate script runs: no hydration, no React handlers.
+  await page.route("**/_next/static/**/*.js", (route) => route.abort());
+  await page.goto("/en?intro=1", { waitUntil: "domcontentloaded" });
+  const intro = page.getByTestId("intro-sting");
+  await expect(intro).toBeVisible();
+  await page.getByTestId("intro-skip").click();
+  await expect(intro).toBeHidden();
+  expect(await page.evaluate(() => sessionStorage.getItem("sw_intro_v2"))).toBe("1");
+
+  // And with nobody tapping, the CSS safety net hides it after nine seconds.
+  await page.evaluate(() => sessionStorage.removeItem("sw_intro_v2"));
+  await page.goto("/en?intro=1", { waitUntil: "domcontentloaded" });
+  await expect(intro).toBeVisible();
+  await expect(intro).toBeHidden({ timeout: 12_000 });
+});

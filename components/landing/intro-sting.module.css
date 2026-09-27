@@ -8,6 +8,13 @@
   background: #f7f5ee;
   opacity: 1;
   transition: opacity 200ms ease;
+  /* Safety net without JavaScript: if the bundle never arrives (slow network,
+     a failed chunk), the overlay still gets out of the way after 9s. With
+     JavaScript the intro closes itself by 6.5s, so this never interferes. */
+  animation: intro-failsafe 0s linear 9s forwards;
+}
+@keyframes intro-failsafe {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 /* Author display rules must never defeat the native hidden attribute. */
 .overlay[hidden] { display: none; }
@@ -48,5 +55,5 @@
 }
 .skip:focus-visible, .sound:focus-visible { outline: 3px solid #0e6b46; outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) {
-  .overlay { transition: none; }
+  .overlay { transition: none; animation-delay: 0s; }
 }

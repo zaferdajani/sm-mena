@@ -21,7 +21,9 @@ function shouldPlayIntro() {
 // Hidden in server markup (including no-JS visits). The parser opens it before
 // first paint when eligible. The effect repeats the gate for SPA navigation,
 // where an inserted inline script is not a dependable lifecycle hook.
-const gateScript = `(function(){var el=document.getElementById("sw-intro");if(!el)return;try{var q=new URLSearchParams(location.search).get("intro");var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=false;try{seen=!!sessionStorage.getItem("${SEEN_KEY}")}catch(e){}var show=q!=="0"&&!reduced&&(q==="1"||(!navigator.webdriver&&!seen));el.hidden=!show;if(show)document.documentElement.dataset.intro="playing"}catch(e){el.hidden=true}})();`;
+// The native Skip handler works before (or without) hydration, so a visitor
+// whose JavaScript is slow or blocked is never stuck behind the overlay.
+const gateScript = `(function(){var el=document.getElementById("sw-intro");if(!el)return;try{var q=new URLSearchParams(location.search).get("intro");var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;var seen=false;try{seen=!!sessionStorage.getItem("${SEEN_KEY}")}catch(e){}var show=q!=="0"&&!reduced&&(q==="1"||(!navigator.webdriver&&!seen));el.hidden=!show;if(show){document.documentElement.dataset.intro="playing";var b=el.querySelector('[data-testid="intro-skip"]');if(b)b.addEventListener("click",function(){el.hidden=true;delete document.documentElement.dataset.intro;try{sessionStorage.setItem("${SEEN_KEY}","1")}catch(e){}window.dispatchEvent(new Event("${INTRO_DONE_EVENT}"))},{once:true})}}catch(e){el.hidden=true}})();`;
 
 export function introPlaying() {
   return typeof document !== "undefined" && document.documentElement.dataset.intro === "playing";
