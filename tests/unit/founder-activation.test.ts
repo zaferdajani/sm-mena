@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { FOUNDING, founderEligibility, founderMarketplaceFee, opportunityVisibleAt } from "@/lib/founding";
+import { FOUNDING, founderEligibility, founderFeeDecision, founderHeadStartActive, founderMarketplaceFee, opportunityCutoff, opportunityVisibleAt } from "@/lib/founding";
 
 const base = {
   foundingSeat: 4,
@@ -32,6 +32,31 @@ describe("Founder commercial activation", () => {
     const created = new Date("2026-09-27T08:00:00Z");
     expect(opportunityVisibleAt(created, true)).toEqual(created);
     expect(opportunityVisibleAt(created, false).getTime() - created.getTime()).toBe(FOUNDING.opportunityHeadStartHours * 3_600_000);
+    expect(opportunityCutoff(created, true)).toEqual(created);
+    expect(created.getTime() - opportunityCutoff(created, false).getTime()).toBe(FOUNDING.opportunityHeadStartHours * 3_600_000);
+  });
+
+  it("is a launch mechanic: FOUNDER_HEAD_START_UNTIL switches it off", () => {
+    const created = new Date("2026-09-27T08:00:00Z");
+    expect(founderHeadStartActive(created, null)).toBe(true);
+    expect(founderHeadStartActive(created, new Date("2026-12-31T00:00:00Z"))).toBe(true);
+    expect(founderHeadStartActive(created, new Date("2026-09-01T00:00:00Z"))).toBe(false);
+    expect(opportunityVisibleAt(created, false, false)).toEqual(created);
+    process.env.FOUNDER_HEAD_START_UNTIL = "2026-09-01T00:00:00Z";
+    try {
+      expect(opportunityVisibleAt(created, false)).toEqual(created);
+    } finally {
+      delete process.env.FOUNDER_HEAD_START_UNTIL;
+    }
+  });
+
+  it("names the decision so a contract can reserve the one-time waiver", () => {
+    const common = { eligible: true, protectedPaymentsLive: true, acquiredBySawwiq: true, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2026-11-01T00:00:00Z"), standardFeePercent: 10 };
+    expect(founderFeeDecision({ ...common, priorFeeWaiverReservations: 0 })).toEqual({ fee: 0, kind: "waiver" });
+    expect(founderFeeDecision({ ...common, priorFeeWaiverReservations: 1 })).toEqual({ fee: 7, kind: "founder" });
+    expect(founderFeeDecision({ ...common, priorFeeWaiverReservations: 0, acquiredBySawwiq: false })).toEqual({ fee: 10, kind: "standard" });
+    // Before activation day nothing is discounted either.
+    expect(founderFeeDecision({ ...common, priorFeeWaiverReservations: 0, now: new Date("2026-09-01T00:00:00Z") })).toEqual({ fee: 10, kind: "standard" });
   });
 
   it("waives the first Sawwiq-acquired project then uses 7% during the founder year", () => {

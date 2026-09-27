@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, asc, desc, eq, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import { currencyOf } from "@/lib/countries";
 import { canRequestChanges, clampRounds, DEFAULT_REVISION_ROUNDS, isHeld, reviewDaysSetting, reviewDeadline, roundsState } from "@/lib/contracts/rules";
 import { LEGAL_VERSION } from "@/lib/legal/jurisdictions";
@@ -34,7 +34,7 @@ import {
 import { seal, tryOpen } from "@/lib/auth/secret-box";
 import { paymentProvider } from "@/lib/payments/provider";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
-import { founderEligibility, founderMarketplaceFee } from "@/lib/founding";
+import { founderEligibility, founderFeeDecision, type FounderFeeDecision } from "@/lib/founding";
 import { notifyContract } from "./contract-notify";
 import { isUniqueViolation, ledgerKey, settleMilestone } from "./escrow";
 import { hashToken, INVITE_DAYS } from "./reviews";
@@ -266,90 +266,121 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   const token = randomBytes(18).toString("base64url");
   const paymentsLive = input.paymentMode === "protected" && protectedPaymentsLive();
   const [provider] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
-  const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId));
-  const founder = provider ? founderEligibility({ ...provider, packageCount: pkg?.n ?? 0 }) : { eligible: false };
-  const [history] = await db.select({ n: sql<number>`count(*)::int` }).from(contracts).where(and(eq(contracts.agencyId, agencyId), ne(contracts.status, "cancelled"), eq(contracts.paymentMode, "protected"), eq(contracts.paymentsLive, true), isNotNull(contracts.requestId)));
-  const acquiredBySawwiq = Boolean(input.requestId || input.proposalId);
-  const fee = input.paymentMode === "protected" ? founderMarketplaceFee({ eligible: founder.eligible, protectedPaymentsLive: paymentsLive, acquiredBySawwiq, priorFeeWaiverReservations: history?.n ?? 0, standardFeePercent: feePercent() }) : 0;
-  const specialRequests = input.specialRequests;
   const { country = "jo", city = "amman", name = "" } = provider ?? {};
   const legal = { version: LEGAL_VERSION, jurisdiction: country, city };
   input.agencyLegalName ??= name;
   const reviewDays = reviewDaysSetting();
-  const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee, legal, reviewDays, paymentsLive });
+  const specialRequests = input.specialRequests;
   const totalFils = input.milestones.reduce((s, m) => s + m.amountFils, 0);
 
-  const contract = await db.transaction(async (tx) => {
-    const [row] = await tx
-      .insert(contracts)
-      .values({
-        number,
-        agencyId,
-        requestId: input.requestId ?? null,
-        proposalId: input.proposalId ?? null,
-        packageId: input.packageId ?? null,
-        locale: input.locale === "en" ? "en" : "ar",
-        title: input.title,
-        summary: input.summary,
-        items: input.items,
-        specialRequests: specialRequests.map((r) => r.text),
-        startDate: input.startDate,
-        endDate: input.endDate,
-        totalFils,
-        feePercent: fee,
-        paymentMode: input.paymentMode,
-        nda: input.nda,
-        ndaExtra: input.ndaExtra,
-        currency: currencyOf(country),
-        termsVersion: TERMS_VERSION,
-        kpis: input.kpis ?? [],
-        reportingCadence: input.reportingCadence ?? null,
-        mediaBudgetJod: input.mediaBudgetJod ?? null,
-        jurisdiction: legal.jurisdiction,
-        jurisdictionCity: legal.city,
-        legalVersion: legal.version,
-        agencyLegalName: input.agencyLegalName,
-        agencyRegNumber: input.agencyRegNumber,
-        clientRegNumber: input.clientRegNumber,
-        agencyTerms: input.agencyTerms,
-        clientTerms: input.clientTerms,
-        ndaYears: input.ndaYears,
-        reviewDays,
-        revisionRounds: input.revisionRounds ?? DEFAULT_REVISION_ROUNDS,
-        paymentsLive,
-        clientAgencyId: input.clientAgencyId ?? null,
-        agencySignature: b64(input.signature),
-        agencySignIpHash: input.signIp ? ipHash(input.signIp) : null,
-        clientName: input.client.name,
-        clientPhone: input.client.phone,
-        clientEmail: input.client.email,
-        clientTokenHash: hashToken(token),
-        clientTokenEnc: seal(token),
-        termsHash: hashTerms(terms),
-        agencySignerName: input.signerName,
-        agencySignedAt: new Date(),
-      })
-      .returning();
-    for (const [i, m] of input.milestones.entries()) {
-      const [ms] = await tx
-        .insert(milestones)
-        .values({ contractId: row.id, position: i, title: m.title, dueDate: m.dueDate, amountFils: m.amountFils })
+  // Founder economics (docs/45). The fee is decided here and frozen into the
+  // signed terms. The one-time 0% waiver is a *reservation*: at most one
+  // non-cancelled contract per agency may carry it, enforced by the partial
+  // unique index contracts_founder_waiver_idx, so two contracts created in the
+  // same instant can never both get it. The pre-check below only picks the
+  // fee we expect; the insert is the authority, and a lost race falls back to
+  // the founder rate with freshly computed terms.
+  const standardFee = feePercent();
+  const acquiredBySawwiq = Boolean(input.requestId || input.proposalId);
+  let founderEligible = false;
+  if (input.paymentMode === "protected" && paymentsLive && acquiredBySawwiq && provider) {
+    const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId));
+    founderEligible = founderEligibility({ ...provider, packageCount: pkg?.n ?? 0 }).eligible;
+  }
+  const decide = (priorFeeWaiverReservations: number): FounderFeeDecision =>
+    input.paymentMode === "protected"
+      ? founderFeeDecision({ eligible: founderEligible, protectedPaymentsLive: paymentsLive, acquiredBySawwiq, priorFeeWaiverReservations, standardFeePercent: standardFee })
+      : { fee: 0, kind: "standard" };
+
+  const attempt = async (fee: number, founderWaiver: boolean) => {
+    const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee, legal, reviewDays, paymentsLive });
+    return db.transaction(async (tx) => {
+      const [row] = await tx
+        .insert(contracts)
+        .values({
+          number,
+          agencyId,
+          requestId: input.requestId ?? null,
+          proposalId: input.proposalId ?? null,
+          packageId: input.packageId ?? null,
+          locale: input.locale === "en" ? "en" : "ar",
+          title: input.title,
+          summary: input.summary,
+          items: input.items,
+          specialRequests: specialRequests.map((r) => r.text),
+          startDate: input.startDate,
+          endDate: input.endDate,
+          totalFils,
+          feePercent: fee,
+          founderWaiver,
+          paymentMode: input.paymentMode,
+          nda: input.nda,
+          ndaExtra: input.ndaExtra,
+          currency: currencyOf(country),
+          termsVersion: TERMS_VERSION,
+          kpis: input.kpis ?? [],
+          reportingCadence: input.reportingCadence ?? null,
+          mediaBudgetJod: input.mediaBudgetJod ?? null,
+          jurisdiction: legal.jurisdiction,
+          jurisdictionCity: legal.city,
+          legalVersion: legal.version,
+          agencyLegalName: input.agencyLegalName,
+          agencyRegNumber: input.agencyRegNumber,
+          clientRegNumber: input.clientRegNumber,
+          agencyTerms: input.agencyTerms,
+          clientTerms: input.clientTerms,
+          ndaYears: input.ndaYears,
+          reviewDays,
+          revisionRounds: input.revisionRounds ?? DEFAULT_REVISION_ROUNDS,
+          paymentsLive,
+          clientAgencyId: input.clientAgencyId ?? null,
+          agencySignature: b64(input.signature),
+          agencySignIpHash: input.signIp ? ipHash(input.signIp) : null,
+          clientName: input.client.name,
+          clientPhone: input.client.phone,
+          clientEmail: input.client.email,
+          clientTokenHash: hashToken(token),
+          clientTokenEnc: seal(token),
+          termsHash: hashTerms(terms),
+          agencySignerName: input.signerName,
+          agencySignedAt: new Date(),
+        })
         .returning();
-      const checks = [
-        ...m.checks.map((text) => ({ text, source: "deliverable" })),
-        ...specialRequests.filter((r) => r.milestone === i).map((r) => ({ text: r.text, source: "special_request" })),
-      ];
-      await tx.insert(milestoneChecks).values(checks.map((c, position) => ({ milestoneId: ms.id, position, ...c })));
+      for (const [i, m] of input.milestones.entries()) {
+        const [ms] = await tx
+          .insert(milestones)
+          .values({ contractId: row.id, position: i, title: m.title, dueDate: m.dueDate, amountFils: m.amountFils })
+          .returning();
+        const checks = [
+          ...m.checks.map((text) => ({ text, source: "deliverable" })),
+          ...specialRequests.filter((r) => r.milestone === i).map((r) => ({ text: r.text, source: "special_request" })),
+        ];
+        await tx.insert(milestoneChecks).values(checks.map((c, position) => ({ milestoneId: ms.id, position, ...c })));
+      }
+      await tx.insert(contractEvents).values({ contractId: row.id, actor: "agency", type: "signed", note: input.signerName });
+      if (input.contractRequestId && input.clientAgencyId) {
+        await tx
+          .update(contractRequests)
+          .set({ status: "contracted", contractId: row.id, respondedAt: new Date() })
+          .where(and(eq(contractRequests.id, input.contractRequestId), eq(contractRequests.toAgencyId, agencyId), eq(contractRequests.fromAgencyId, input.clientAgencyId), eq(contractRequests.status, "pending")));
+      }
+      return row;
+    });
+  };
+
+  const first = decide((await hasFounderWaiver(agencyId)) ? 1 : 0);
+  let contract: Contract;
+  if (first.kind === "waiver") {
+    try {
+      contract = await attempt(first.fee, true);
+    } catch (e) {
+      // Another contract took the waiver between the pre-check and the insert: founder rate instead.
+      if (!isFounderWaiverConflict(e)) throw e;
+      contract = await attempt(decide(1).fee, false);
     }
-    await tx.insert(contractEvents).values({ contractId: row.id, actor: "agency", type: "signed", note: input.signerName });
-    if (input.contractRequestId && input.clientAgencyId) {
-      await tx
-        .update(contractRequests)
-        .set({ status: "contracted", contractId: row.id, respondedAt: new Date() })
-        .where(and(eq(contractRequests.id, input.contractRequestId), eq(contractRequests.toAgencyId, agencyId), eq(contractRequests.fromAgencyId, input.clientAgencyId), eq(contractRequests.status, "pending")));
-    }
-    return row;
-  });
+  } else {
+    contract = await attempt(first.fee, false);
+  }
   if (contract.clientAgencyId) await notifyContract(contract, "contract_received", "client");
   return { contract, token };
 }
@@ -365,6 +396,20 @@ export async function arePartners(a: string, b: string) {
     .limit(1);
   return Boolean(row);
 }
+
+/** Whether the agency already holds the one-time founder waiver on a contract that is not cancelled. */
+export async function hasFounderWaiver(agencyId: string) {
+  const db = await getDb();
+  const [row] = await db
+    .select({ id: contracts.id })
+    .from(contracts)
+    .where(and(eq(contracts.agencyId, agencyId), eq(contracts.founderWaiver, true), ne(contracts.status, "cancelled")))
+    .limit(1);
+  return Boolean(row);
+}
+
+/** The partial unique index refused a second waiver for the same agency. */
+const isFounderWaiverConflict = (e: unknown) => isUniqueViolation(e) && /contracts_founder_waiver_idx/.test(String((e as { message?: string })?.message ?? "") + String((e as { cause?: { message?: string } })?.cause?.message ?? ""));
 
 export type DisputeView = MilestoneDispute & { evidence: DisputeEvidence[] };
 export type ContractView = {

@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull, lt, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt, lte, sql } from "drizzle-orm";
 import { getDb, type DB } from "@/lib/db";
 import { notifications, type Notification } from "@/lib/db/schema";
 import type { NotificationKind } from "@/lib/chat";
@@ -15,11 +15,15 @@ export type NewNotification = {
   params?: Record<string, string | number>;
   requestId?: string | null;
   conversationId?: string | null;
+  /** Deliver later: the row exists now but stays invisible and unread-free until this time. */
+  createdAt?: Date;
 } & ({ agencyId: string; visitorId?: undefined } | { visitorId: string; agencyId?: undefined });
 
 export const NOTIFICATION_RETENTION_DAYS = 90;
 
 const recipientWhere = (r: Recipient) => ("agencyId" in r ? eq(notifications.agencyId, r.agencyId) : eq(notifications.visitorId, r.visitorId));
+/** Rows dated in the future are scheduled deliveries (e.g. a brief a non-founder may open in 24h): not shown, not counted yet. */
+const delivered = () => lte(notifications.createdAt, new Date());
 
 export async function addNotifications(rows: NewNotification[], ex?: Executor) {
   if (!rows.length) return;
@@ -33,6 +37,7 @@ export async function addNotifications(rows: NewNotification[], ex?: Executor) {
       params: r.params ?? {},
       requestId: r.requestId ?? null,
       conversationId: r.conversationId ?? null,
+      ...(r.createdAt ? { createdAt: r.createdAt } : {}),
     })),
   );
 }
@@ -54,7 +59,7 @@ export async function notifyMessage(recipient: Recipient, conversationId: string
 
 export async function listNotifications(recipient: Recipient, limit = 50): Promise<Notification[]> {
   const db = await getDb();
-  return db.select().from(notifications).where(recipientWhere(recipient)).orderBy(desc(notifications.createdAt), desc(notifications.id)).limit(limit);
+  return db.select().from(notifications).where(and(recipientWhere(recipient), delivered())).orderBy(desc(notifications.createdAt), desc(notifications.id)).limit(limit);
 }
 
 export async function unreadNotificationCount(recipient: Recipient) {
@@ -62,14 +67,14 @@ export async function unreadNotificationCount(recipient: Recipient) {
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(notifications)
-    .where(and(recipientWhere(recipient), isNull(notifications.readAt)));
+    .where(and(recipientWhere(recipient), isNull(notifications.readAt), delivered()));
   return row?.n ?? 0;
 }
 
 /** Marks the given notifications (or all of them) as read. */
 export async function markNotificationsRead(recipient: Recipient, ids?: number[]) {
   const db = await getDb();
-  const conditions = [recipientWhere(recipient), isNull(notifications.readAt)];
+  const conditions = [recipientWhere(recipient), isNull(notifications.readAt), delivered()];
   if (ids) {
     if (!ids.length) return;
     conditions.push(inArray(notifications.id, ids));

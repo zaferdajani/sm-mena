@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/soon">):
     title: t("metaTitle"),
     absoluteTitle: true,
     description: t("metaDescription"),
-    images: [{ url: "/teaser/citadel-16x9.webp", width: 1600, height: 900, alt: t("title") }],
+    images: [{ url: "/teaser/citadel-16x9.webp", width: 1600, height: 900, alt: t("metaTitle") }],
   });
 }
 

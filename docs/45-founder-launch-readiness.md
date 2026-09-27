@@ -20,6 +20,14 @@ Never call an email signup a launch-ready Founder.
 - Eligible Founders get a **24-hour visibility head start** on otherwise relevant open opportunities during launch.
 - Six months Pro begins when Pro actually launches.
 
+## How the code enforces it
+
+- **Activation gate** (`founderEligibility` in `lib/founding.ts`): founding cohort seat, active non-demo provider, bio + at least one service, and one published work item or one package. Read from the database at decision time, never from the caller. Studio shows "activated" or what is still missing.
+- **24-hour head start** (`lib/data/requests.ts`): the opportunities feed, its "new" badge, the single-opportunity page and the invitation notification all use the same cutoff. A non-founder's invitation is written when the brief is created but dated for the moment it may open it, so nobody is alerted to a brief they cannot see and nobody misses it. Match scores are stored once per brief and never change with founder status. Demo agencies are the owner's fixtures and are exempt. `FOUNDER_HEAD_START_UNTIL` (ISO date) ends the head start without a deploy; while it is unset the head start stays on.
+- **0% then 7%** (`founderFeeDecision` in `lib/founding.ts`, applied in `createContract`): only on a protected contract that came from a Sawwiq brief or proposal, while real protected payments are live, between `FOUNDING_ACTIVATED_AT` and 365 days later. Direct contracts carry no Sawwiq fee at all; an agency's own client paid through Sawwiq pays the standard rate.
+- **One waiver, ever, per agency**: the 0% contract is marked `founder_waiver` and a partial unique index (`contracts_founder_waiver_idx`: one non-cancelled waiver contract per agency) makes the database refuse a second one. `createContract` pre-checks, inserts, and if two contracts race the loser is re-created with the 7% founder rate and freshly computed terms before anyone signs. Cancelling the waiver contract (an unsigned draft, or an active one with no money held) frees the waiver for the next Sawwiq-acquired project; the cancelled contract's signed terms are never edited.
+- **Not activated in test mode**: `protectedPaymentsLive()` is false until a real payment partner is configured and `PROTECTED_PAYMENTS_LIVE=true`; until then every contract carries the standard fee and `payments_live=false`.
+
 ## Acquisition copy
 
 ### Jordan / WhatsApp

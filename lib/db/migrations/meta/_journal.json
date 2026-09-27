@@ -141,6 +141,13 @@
       "when": 1790501607945,
       "tag": "0019_referral_agents",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1790501667945,
+      "tag": "0020_founder_waiver",
+      "breakpoints": true
     }
   ]
 }

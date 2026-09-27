@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
-import { and, arrayOverlaps, desc, eq, gt, inArray, isNull, ne, sql } from "drizzle-orm";
-import { getDb } from "@/lib/db";
+import { and, arrayOverlaps, desc, eq, gt, inArray, isNull, lte, ne, or, sql } from "drizzle-orm";
+import { getDb, type DB } from "@/lib/db";
 import { agencies, events, packages, projectRequests, proposals, requestMatches, type ProjectRequest } from "@/lib/db/schema";
-import { founderEligibility, opportunityVisibleAt } from "@/lib/founding";
+import { founderEligibility, opportunityCutoff, opportunityVisibleAt } from "@/lib/founding";
 import { toSummary } from "./agencies";
 import { addNotifications, type NewNotification } from "./notifications";
 import { hashToken } from "./reviews";
@@ -49,18 +49,19 @@ export async function createProjectRequest(input: RequestInput, matches: { agenc
       if (row.source === "demo") {
         const demo = await tx.select({ id: agencies.id }).from(agencies).where(and(inArray(agencies.id, invited), eq(agencies.isDemo, true)));
         invited = demo.map((a) => a.id);
-      } else if (invited.length) {
-        // During the 24h launch head start, do not notify a non-Founder about a brief they cannot open yet.
-        const candidates = await tx.select().from(agencies).where(inArray(agencies.id, invited));
-        const founderIds: string[] = [];
-        for (const a of candidates) {
-          const [pkg] = await tx.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, a.id));
-          if (founderEligibility({ ...a, packageCount: pkg?.n ?? 0 }, row.createdAt).eligible) founderIds.push(a.id);
+      }
+      // Founder head start (docs/45): an eligible founder hears about a
+      // relevant brief now; everyone else is told when they can open it, so
+      // nobody is alerted to a brief they cannot see yet and nobody misses it.
+      const visibleAt = new Map<string, Date>();
+      if (row.source !== "demo" && invited.length) {
+        for (const id of invited) {
+          const state = await founderStateOf(id, row.createdAt, tx);
+          visibleAt.set(id, opportunityVisibleAt(row.createdAt, state.eligible || state.exempt));
         }
-        invited = invited.filter((id) => founderIds.includes(id));
       }
       await addNotifications(
-        invited.map((agencyId) => ({ agencyId, kind: "request_invited" as const, href: `/studio/opportunities/${row.id}`, params: { services: row.services.join(",") }, requestId: row.id })),
+        invited.map((agencyId) => ({ agencyId, kind: "request_invited" as const, href: `/studio/opportunities/${row.id}`, params: { services: row.services.join(",") }, requestId: row.id, createdAt: visibleAt.get(agencyId) })),
         tx,
       );
     }
@@ -177,18 +178,36 @@ export type Opportunity = {
 };
 
 /** The agency fields opportunities depend on. Demo requests are shown to demo agencies only. */
-export type OpportunityAgency = { id: string; services: string[]; isDemo?: boolean; foundingSeat?: number | null; createdAt?: Date; status?: "active" | "suspended" | "deactivated"; bio?: string; postCount?: number };
+export type OpportunityAgency = { id: string; services: string[]; isDemo?: boolean };
 
 /** Seeded demo requests stay invisible to real agencies. */
 const demoVisibility = (agency: OpportunityAgency) => (agency.isDemo ? undefined : ne(projectRequests.source, "demo"));
 
-/** Open requests an agency can bid on: invited ones first, then any with overlapping services. */
+/**
+ * Founder eligibility from the database, never from what a caller passes in:
+ * the agency row plus its package count. Demo agencies are exempt from the
+ * head start (they are the owner's fixtures, not competing providers).
+ */
+async function founderStateOf(agencyId: string, now: Date, ex?: Pick<DB, "select">) {
+  const db = ex ?? (await getDb());
+  const [a] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
+  if (!a) return { eligible: false, exempt: false };
+  const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId));
+  return { eligible: founderEligibility({ ...a, packageCount: pkg?.n ?? 0 }, now).eligible, exempt: a.isDemo };
+}
+
+/** Briefs the agency may see now: everything for eligible founders, older than the head start for the rest. */
+async function headStartVisibility(agency: OpportunityAgency, now: Date) {
+  const state = await founderStateOf(agency.id, now);
+  if (state.exempt) return undefined;
+  const cutoff = opportunityCutoff(now, state.eligible);
+  return cutoff.getTime() >= now.getTime() ? undefined : or(eq(projectRequests.source, "demo"), lte(projectRequests.createdAt, cutoff));
+}
+
 export async function listOpportunities(agency: OpportunityAgency, only?: { requestId: string }): Promise<Opportunity[]> {
   const db = await getDb();
   const now = new Date();
-  const conditions = [eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, now), demoVisibility(agency), only ? eq(projectRequests.id, only.requestId) : undefined];
-  const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agency.id));
-  const founder = founderEligibility({ foundingSeat: agency.foundingSeat ?? null, createdAt: agency.createdAt ?? now, isDemo: Boolean(agency.isDemo), status: agency.status, bio: agency.bio, services: agency.services, postCount: agency.postCount, packageCount: pkg?.n ?? 0 }, now);
+  const conditions = [eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, now), demoVisibility(agency), await headStartVisibility(agency, now), only ? eq(projectRequests.id, only.requestId) : undefined];
   const rows = await db
     .select({ request: projectRequests, match: requestMatches })
     .from(projectRequests)
@@ -203,8 +222,7 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
     )
     .orderBy(desc(sql`coalesce(${requestMatches.invited}, false)`), desc(projectRequests.createdAt))
     .limit(50);
-  const visibleRows = rows.filter((r) => now >= opportunityVisibleAt(r.request.createdAt, founder.eligible));
-  const ids = visibleRows.map((r) => r.request.id);
+  const ids = rows.map((r) => r.request.id);
   const [counts, mine] = ids.length
     ? await Promise.all([
         db.select({ requestId: proposals.requestId, n: sql<number>`count(*)::int` }).from(proposals).where(inArray(proposals.requestId, ids)).groupBy(proposals.requestId),
@@ -213,7 +231,7 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
     : [[], []];
   const countBy = new Map(counts.map((c) => [c.requestId, c.n]));
   const mineBy = new Map(mine.map((p) => [p.requestId, p]));
-  return visibleRows.map((r) => ({
+  return rows.map((r) => ({
     request: r.request,
     invited: r.match?.invited ?? false,
     score: r.match?.score ?? null,
@@ -226,11 +244,12 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
 /** Matched requests the agency has not opened yet (the Opportunities tab badge). */
 export async function newOpportunityCount(agency: OpportunityAgency) {
   const db = await getDb();
+  const now = new Date();
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(requestMatches)
     .innerJoin(projectRequests, eq(requestMatches.requestId, projectRequests.id))
-    .where(and(eq(requestMatches.agencyId, agency.id), isNull(requestMatches.viewedAt), eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, new Date()), demoVisibility(agency)));
+    .where(and(eq(requestMatches.agencyId, agency.id), isNull(requestMatches.viewedAt), eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, now), demoVisibility(agency), await headStartVisibility(agency, now)));
   return row?.n ?? 0;
 }
 
