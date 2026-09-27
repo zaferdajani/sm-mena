@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { CountryCityField, type CountryOption } from "@/components/country-city-field";
 import { useActionState, useState } from "react";
+import { PhoneField } from "@/components/forms/phone-field";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { ServicePicker } from "@/components/service-picker";
 import { TeamFields } from "@/components/studio/team-fields";
 import { join } from "../actions";
 
-export function JoinForm({ countries, defaultCountry, popular, roles }: { countries: CountryOption[]; defaultCountry: string; popular: string[]; roles: { key: string; label: string }[] }) {
+export function JoinForm({ countries, defaultCountry, phoneCountry, popular, roles }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; popular: string[]; roles: { key: string; label: string }[] }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
@@ -57,11 +58,9 @@ export function JoinForm({ countries, defaultCountry, popular, roles }: { countr
         <ServicePicker popular={popular} />
         <p className="text-xs text-muted-foreground">{t("joinServicesHint")}</p>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="grid gap-1.5">
-          <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
-          <Input id="whatsapp" name="whatsapp" type="tel" required dir="ltr" placeholder="07X XXX XXXX" defaultValue={f.whatsapp} />
-        </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
+        <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || phoneCountry} defaultValue={f.whatsapp} countryLabel={t("phoneCountry")} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="email">{t("email")}</Label>
