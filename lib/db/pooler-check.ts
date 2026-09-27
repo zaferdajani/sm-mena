@@ -4,6 +4,7 @@
 // only; never row data.
 import pg from "pg";
 import postgres from "postgres";
+import { pgPoolConfig } from "./pg-pool";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL is not set.");
@@ -19,12 +20,13 @@ const withTimeout = <T>(p: Promise<T>) =>
 
 async function run(name: string, query: (i: number) => Promise<unknown>, close: () => Promise<unknown>) {
   const tally = { ok: 0, stalled: 0, error: 0 };
+  let firstError = "";
   const started = Date.now();
   for (let round = 0; round < ROUNDS; round++) {
-    const results = await Promise.all(Array.from({ length: PARALLEL }, (_, i) => withTimeout(query(i))));
+    const results = await Promise.all(Array.from({ length: PARALLEL }, (_, i) => withTimeout(query(i).catch((e: Error) => { firstError ||= e.message.slice(0, 160); throw e; }))));
     for (const r of results) tally[r]++;
   }
-  console.log(`${name}: ${JSON.stringify(tally)} in ${Math.round((Date.now() - started) / 1000)} s`);
+  console.log(`${name}: ${JSON.stringify(tally)} in ${Math.round((Date.now() - started) / 1000)} s${firstError ? ` (first error: ${firstError})` : ""}`);
   await Promise.race([close(), new Promise((r) => setTimeout(r, 3000))]);
 }
 
@@ -39,7 +41,7 @@ async function main() {
     () => pj.end({ timeout: 1 }),
   );
 
-  const pool = new pg.Pool({ connectionString: pooled.toString(), max: 3, connectionTimeoutMillis: 10_000 });
+  const pool = new pg.Pool(pgPoolConfig(pooled.toString()));
   await run(
     "pg (node-postgres)",
     (i) => (i % 2 ? pool.query("select count(*)::int from service_tags where status = $1", ["pending"]) : pool.query("select count(*)::int from posts where created_at >= $1", [since])),

@@ -33,6 +33,7 @@
     "@ffmpeg/util": "^0.12.2",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.1",
+    "@vercel/functions": "^3.9.9",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "country-flag-emoji-polyfill": "^0.1.10",
