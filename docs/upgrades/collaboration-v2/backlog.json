@@ -1,1 +1,445 @@
-{"schema_version":1,"package_kind":"implementation_plan_not_product_implementation","repository":"zaferdajani/sm-mena","branch":"plan/collaboration-v2-upgrade","inspected_main_sha":"2a4178b7b216f1fa8868a1f6dfc550a882851ab3","prepared_date":"2026-09-27","release_order":["R0","R1","R2","R3"],"status_vocabulary":["planned","in_progress","implemented","verified","blocked"],"validation_command":"node scripts/validate-collaboration-upgrade-plan.mjs --self-test","application_checks":["npm run lint","npm run typecheck","npm test","npm run build","npm run e2e"],"hold_items":["new_real_money_activation","fee_or_founder_economics_changes","paid_vendor_signup","new_legal_enforceability_claims","automatic_commitments_or_renewals","bulk_outreach"],"tasks":[{"id":"COL00","release":"R0","title":"Reconcile main and record the real baseline","depends_on":[],"acceptance_ids":["AC01"],"path_hints":["AGENTS.md","CLAUDE.md","app/[locale]/(main)/studio/partners/page.tsx"],"deliverable":"Inspect existing data, guards, regression tests and current UI; record measured baseline and reuse/repair decisions. No production mutation.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL10","release":"R1","title":"Additive collaboration data and permission foundation","depends_on":["COL00"],"acceptance_ids":["AC02","AC11"],"path_hints":["lib/db/schema.ts","lib/db/migrate.ts","lib/auth/guards.ts"],"deliverable":"Map/reuse existing provider and partner-contract records; add only necessary opt-in preferences, private roster and inquiry structures with authorized projections and safe migration tests.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL11","release":"R1","title":"Two-sided need discovery and evidence-led matching","depends_on":["COL10"],"acceptance_ids":["AC03","AC04"],"path_hints":["lib/data/partners.ts","app/[locale]/(main)/studio/partners/page.tsx","lib/matching/"],"deliverable":"Explicitly published needs for freelancers, complementary provider search for agencies, hard filters, stable pagination and explainable portfolio-based ranking; leave client matching untouched.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL12","release":"R1","title":"Fresh manual availability and declared capacity","depends_on":["COL10"],"acceptance_ids":["AC05"],"path_hints":["components/studio/team-fields.tsx","app/[locale]/(main)/studio/profile"],"deliverable":"Implement private/opt-in availability intervals, timezone handling, freshness/expiry and explicit unknown states without implying external-calendar synchronization.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL13","release":"R1","title":"Private roster, consented invites and rehire entry","depends_on":["COL10"],"acceptance_ids":["AC06","AC07"],"path_hints":["lib/data/partners.ts","components/studio/partner-widgets.tsx"],"deliverable":"Save providers into tenant-private groups with restricted notes; consented expiring invitations, deduplication, blocking/cooldowns and existing-account linking.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL14","release":"R1","title":"Structured work inquiries and private quote comparison","depends_on":["COL11","COL12","COL13"],"acceptance_ids":["AC08","AC09"],"path_hints":["components/contracts/partner-contract-request.tsx","app/[locale]/(main)/studio/partners/page.tsx"],"deliverable":"Project-linked or standalone scope/date/currency/mode inquiry with recipient preview, replies/counteroffers and clear handoff into the existing supplier-authored partner contract.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL15","release":"R1","title":"Complete R1 UX, regression checks and verified release","depends_on":["COL14"],"acceptance_ids":["AC10","AC29","AC30","AC31","AC32","AC33","AC34","AC35"],"path_hints":["app/[locale]/(main)/studio/layout.tsx","messages/ar.json","messages/en.json","tests/e2e/"],"deliverable":"Deliver a complete mobile/desktop discover-to-contract handoff and rehire path. No unfinished R2/R3 UI. Record source, checks, migrations, screenshots, rollback and production evidence separately.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL20","release":"R2","title":"Versioned work orders linked to authoritative contracts","depends_on":["COL15"],"acceptance_ids":["AC12","AC13"],"path_hints":["lib/data/contracts.ts","lib/data/milestone-shares.ts"],"deliverable":"Add buyer/supplier work-order projection and accepted-scope versioning; preserve supplier agency_id ownership, signed contract hashes and private optional parent-project association.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL21","release":"R2","title":"Audience-scoped threads, sharing and recipient preview","depends_on":["COL20"],"acceptance_ids":["AC14","AC15"],"path_hints":["lib/data/notifications.ts","lib/auth/permissions.ts"],"deliverable":"Separate agency-private, work-order and client channels with shared server-side policies and matching preview projections; cover caches, SSR/RSC, exports, jobs and file signing.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL22","release":"R2","title":"Versioned assets and contextual creative review","depends_on":["COL21"],"acceptance_ids":["AC16"],"path_hints":["lib/storage.ts","components/contracts/"],"deliverable":"Integrate private asset versions and review comments using the existing media stack; test file restrictions, scoped access and preserved feedback history.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL23","release":"R2","title":"Reviewer workflow and truthful payment projections","depends_on":["COL20","COL21","COL22"],"acceptance_ids":["AC17","AC19","AC20"],"path_hints":["lib/data/escrow.ts","lib/data/money-out.ts","lib/payments/readiness.ts"],"deliverable":"Private supplier work goes to its buying agency, disclosed shares retain client review. Reuse guarded authoritative transitions; no new rails, rates, waived-project rules or real-money activation.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL24","release":"R2","title":"Atomic capacity confirmation and expiry","depends_on":["COL12","COL20"],"acceptance_ids":["AC18"],"path_hints":["lib/db/schema.ts","lib/data/"],"deliverable":"Prevent over-allocation of capacity declared in Sawwiq using transaction-safe acceptance, idempotency, expiry and release. Test concurrency on PGlite and Postgres.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL25","release":"R2","title":"Complete R2 multi-party delivery and verified release","depends_on":["COL23","COL24"],"acceptance_ids":["AC21","AC29","AC30","AC31","AC32","AC33","AC34","AC35"],"path_hints":["tests/unit/","tests/e2e/"],"deliverable":"Run private and disclosed delivery/revision/cancellation/dispute flows with distinct sessions; review permissions and actual media before publishing only the complete slice.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL30","release":"R3","title":"Human-controlled scope-to-team planner","depends_on":["COL25"],"acceptance_ids":["AC22","AC23"],"path_hints":["lib/ai/","lib/matching/","lib/services/catalog.ts"],"deliverable":"Deterministic taxonomy-first work-package drafts and authorized candidate explanations; optional budgeted AI, prompt-injection tests, minimal model context and safe no-key fallback.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL31","release":"R3","title":"Private cost worksheet and recurring work drafts","depends_on":["COL25"],"acceptance_ids":["AC24","AC25"],"path_hints":["app/[locale]/(main)/studio/contracts","lib/contracts/"],"deliverable":"Finance-scoped quote/margin planning, explicit unknown/currency handling and reusable production/rehire templates; every cycle requires new confirmation, with no auto-charge or renewal.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL32","release":"R3","title":"Permissioned collaborator evidence and moderation","depends_on":["COL25"],"acceptance_ids":["AC26"],"path_hints":["lib/reviews/provenance.ts","lib/data/reviews.ts"],"deliverable":"Create a separate transaction-linked collaborator-feedback class with consent, confidentiality, moderation and dispute paths; preserve all existing client/Google/payment provenance.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL33","release":"R3","title":"Next-action dashboard, preferences and trustworthy metrics","depends_on":["COL25"],"acceptance_ids":["AC27","AC28"],"path_hints":["lib/data/notifications.ts","lib/notify.ts","app/[locale]/(main)/studio"],"deliverable":"Reuse notification adapters/jobs for deduplicated privacy-safe next actions; add opt-outs and instrument pseudonymous funnel and cohort metrics without fabricating demand.","status":"planned","implementation_commit":null,"evidence":[]},{"id":"COL34","release":"R3","title":"Integrated V2 quality, deployment and evaluation handoff","depends_on":["COL30","COL31","COL32","COL33"],"acceptance_ids":["AC29","AC30","AC31","AC32","AC33","AC34","AC35","AC36"],"path_hints":["tests/e2e/","lib/release.ts","docs/upgrades/collaboration-v2/"],"deliverable":"Validate all delivered software and production evidence, prepare the consent-based pilot, and report real measured outcomes only. Longitudinal business results may remain pending after software release.","status":"planned","implementation_commit":null,"evidence":[]}],"branch_base_sha":"34554e35db6b26a0ba2d8fd48198a5ba9c84b38e"}
+{
+  "schema_version": 1,
+  "package_kind": "implementation_plan_not_product_implementation",
+  "repository": "zaferdajani/sm-mena",
+  "branch": "plan/collaboration-v2-upgrade",
+  "inspected_main_sha": "2a4178b7b216f1fa8868a1f6dfc550a882851ab3",
+  "prepared_date": "2026-09-27",
+  "release_order": [
+    "R0",
+    "R1",
+    "R2",
+    "R3"
+  ],
+  "status_vocabulary": [
+    "planned",
+    "in_progress",
+    "implemented",
+    "verified",
+    "blocked"
+  ],
+  "validation_command": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test",
+  "application_checks": [
+    "npm run lint",
+    "npm run typecheck",
+    "npm test",
+    "npm run build",
+    "npm run e2e"
+  ],
+  "hold_items": [
+    "new_real_money_activation",
+    "fee_or_founder_economics_changes",
+    "paid_vendor_signup",
+    "new_legal_enforceability_claims",
+    "automatic_commitments_or_renewals",
+    "bulk_outreach"
+  ],
+  "tasks": [
+    {
+      "id": "COL00",
+      "release": "R0",
+      "title": "Reconcile main and record the real baseline",
+      "depends_on": [],
+      "acceptance_ids": [
+        "AC01"
+      ],
+      "path_hints": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "app/[locale]/(main)/studio/partners/page.tsx"
+      ],
+      "deliverable": "Inspect existing data, guards, regression tests and current UI; record measured baseline and reuse/repair decisions. No production mutation.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json",
+        "docs/upgrades/collaboration-v2/R0-baseline.md"
+      ]
+    },
+    {
+      "id": "COL10",
+      "release": "R1",
+      "title": "Additive collaboration data and permission foundation",
+      "depends_on": [
+        "COL00"
+      ],
+      "acceptance_ids": [
+        "AC02",
+        "AC11"
+      ],
+      "path_hints": [
+        "lib/db/schema.ts",
+        "lib/db/migrate.ts",
+        "lib/auth/guards.ts"
+      ],
+      "deliverable": "Map/reuse existing provider and partner-contract records; add only necessary opt-in preferences, private roster and inquiry structures with authorized projections and safe migration tests.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL11",
+      "release": "R1",
+      "title": "Two-sided need discovery and evidence-led matching",
+      "depends_on": [
+        "COL10"
+      ],
+      "acceptance_ids": [
+        "AC03",
+        "AC04"
+      ],
+      "path_hints": [
+        "lib/data/partners.ts",
+        "app/[locale]/(main)/studio/partners/page.tsx",
+        "lib/matching/"
+      ],
+      "deliverable": "Explicitly published needs for freelancers, complementary provider search for agencies, hard filters, stable pagination and explainable portfolio-based ranking; leave client matching untouched.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL12",
+      "release": "R1",
+      "title": "Fresh manual availability and declared capacity",
+      "depends_on": [
+        "COL10"
+      ],
+      "acceptance_ids": [
+        "AC05"
+      ],
+      "path_hints": [
+        "components/studio/team-fields.tsx",
+        "app/[locale]/(main)/studio/profile"
+      ],
+      "deliverable": "Implement private/opt-in availability intervals, timezone handling, freshness/expiry and explicit unknown states without implying external-calendar synchronization.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL13",
+      "release": "R1",
+      "title": "Private roster, consented invites and rehire entry",
+      "depends_on": [
+        "COL10"
+      ],
+      "acceptance_ids": [
+        "AC06",
+        "AC07"
+      ],
+      "path_hints": [
+        "lib/data/partners.ts",
+        "components/studio/partner-widgets.tsx"
+      ],
+      "deliverable": "Save providers into tenant-private groups with restricted notes; consented expiring invitations, deduplication, blocking/cooldowns and existing-account linking.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL14",
+      "release": "R1",
+      "title": "Structured work inquiries and private quote comparison",
+      "depends_on": [
+        "COL11",
+        "COL12",
+        "COL13"
+      ],
+      "acceptance_ids": [
+        "AC08",
+        "AC09"
+      ],
+      "path_hints": [
+        "components/contracts/partner-contract-request.tsx",
+        "app/[locale]/(main)/studio/partners/page.tsx"
+      ],
+      "deliverable": "Project-linked or standalone scope/date/currency/mode inquiry with recipient preview, replies/counteroffers and clear handoff into the existing supplier-authored partner contract.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL15",
+      "release": "R1",
+      "title": "Complete R1 UX, regression checks and verified release",
+      "depends_on": [
+        "COL14"
+      ],
+      "acceptance_ids": [
+        "AC10",
+        "AC29",
+        "AC30",
+        "AC31",
+        "AC32",
+        "AC33",
+        "AC34",
+        "AC35"
+      ],
+      "path_hints": [
+        "app/[locale]/(main)/studio/layout.tsx",
+        "messages/ar.json",
+        "messages/en.json",
+        "tests/e2e/"
+      ],
+      "deliverable": "Deliver a complete mobile/desktop discover-to-contract handoff and rehire path. No unfinished R2/R3 UI. Record source, checks, migrations, screenshots, rollback and production evidence separately.",
+      "status": "implemented",
+      "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    {
+      "id": "COL20",
+      "release": "R2",
+      "title": "Versioned work orders linked to authoritative contracts",
+      "depends_on": [
+        "COL15"
+      ],
+      "acceptance_ids": [
+        "AC12",
+        "AC13"
+      ],
+      "path_hints": [
+        "lib/data/contracts.ts",
+        "lib/data/milestone-shares.ts"
+      ],
+      "deliverable": "Add buyer/supplier work-order projection and accepted-scope versioning; preserve supplier agency_id ownership, signed contract hashes and private optional parent-project association.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL21",
+      "release": "R2",
+      "title": "Audience-scoped threads, sharing and recipient preview",
+      "depends_on": [
+        "COL20"
+      ],
+      "acceptance_ids": [
+        "AC14",
+        "AC15"
+      ],
+      "path_hints": [
+        "lib/data/notifications.ts",
+        "lib/auth/permissions.ts"
+      ],
+      "deliverable": "Separate agency-private, work-order and client channels with shared server-side policies and matching preview projections; cover caches, SSR/RSC, exports, jobs and file signing.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL22",
+      "release": "R2",
+      "title": "Versioned assets and contextual creative review",
+      "depends_on": [
+        "COL21"
+      ],
+      "acceptance_ids": [
+        "AC16"
+      ],
+      "path_hints": [
+        "lib/storage.ts",
+        "components/contracts/"
+      ],
+      "deliverable": "Integrate private asset versions and review comments using the existing media stack; test file restrictions, scoped access and preserved feedback history.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL23",
+      "release": "R2",
+      "title": "Reviewer workflow and truthful payment projections",
+      "depends_on": [
+        "COL20",
+        "COL21",
+        "COL22"
+      ],
+      "acceptance_ids": [
+        "AC17",
+        "AC19",
+        "AC20"
+      ],
+      "path_hints": [
+        "lib/data/escrow.ts",
+        "lib/data/money-out.ts",
+        "lib/payments/readiness.ts"
+      ],
+      "deliverable": "Private supplier work goes to its buying agency, disclosed shares retain client review. Reuse guarded authoritative transitions; no new rails, rates, waived-project rules or real-money activation.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL24",
+      "release": "R2",
+      "title": "Atomic capacity confirmation and expiry",
+      "depends_on": [
+        "COL12",
+        "COL20"
+      ],
+      "acceptance_ids": [
+        "AC18"
+      ],
+      "path_hints": [
+        "lib/db/schema.ts",
+        "lib/data/"
+      ],
+      "deliverable": "Prevent over-allocation of capacity declared in Sawwiq using transaction-safe acceptance, idempotency, expiry and release. Test concurrency on PGlite and Postgres.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL25",
+      "release": "R2",
+      "title": "Complete R2 multi-party delivery and verified release",
+      "depends_on": [
+        "COL23",
+        "COL24"
+      ],
+      "acceptance_ids": [
+        "AC21",
+        "AC29",
+        "AC30",
+        "AC31",
+        "AC32",
+        "AC33",
+        "AC34",
+        "AC35"
+      ],
+      "path_hints": [
+        "tests/unit/",
+        "tests/e2e/"
+      ],
+      "deliverable": "Run private and disclosed delivery/revision/cancellation/dispute flows with distinct sessions; review permissions and actual media before publishing only the complete slice.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL30",
+      "release": "R3",
+      "title": "Human-controlled scope-to-team planner",
+      "depends_on": [
+        "COL25"
+      ],
+      "acceptance_ids": [
+        "AC22",
+        "AC23"
+      ],
+      "path_hints": [
+        "lib/ai/",
+        "lib/matching/",
+        "lib/services/catalog.ts"
+      ],
+      "deliverable": "Deterministic taxonomy-first work-package drafts and authorized candidate explanations; optional budgeted AI, prompt-injection tests, minimal model context and safe no-key fallback.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL31",
+      "release": "R3",
+      "title": "Private cost worksheet and recurring work drafts",
+      "depends_on": [
+        "COL25"
+      ],
+      "acceptance_ids": [
+        "AC24",
+        "AC25"
+      ],
+      "path_hints": [
+        "app/[locale]/(main)/studio/contracts",
+        "lib/contracts/"
+      ],
+      "deliverable": "Finance-scoped quote/margin planning, explicit unknown/currency handling and reusable production/rehire templates; every cycle requires new confirmation, with no auto-charge or renewal.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL32",
+      "release": "R3",
+      "title": "Permissioned collaborator evidence and moderation",
+      "depends_on": [
+        "COL25"
+      ],
+      "acceptance_ids": [
+        "AC26"
+      ],
+      "path_hints": [
+        "lib/reviews/provenance.ts",
+        "lib/data/reviews.ts"
+      ],
+      "deliverable": "Create a separate transaction-linked collaborator-feedback class with consent, confidentiality, moderation and dispute paths; preserve all existing client/Google/payment provenance.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL33",
+      "release": "R3",
+      "title": "Next-action dashboard, preferences and trustworthy metrics",
+      "depends_on": [
+        "COL25"
+      ],
+      "acceptance_ids": [
+        "AC27",
+        "AC28"
+      ],
+      "path_hints": [
+        "lib/data/notifications.ts",
+        "lib/notify.ts",
+        "app/[locale]/(main)/studio"
+      ],
+      "deliverable": "Reuse notification adapters/jobs for deduplicated privacy-safe next actions; add opt-outs and instrument pseudonymous funnel and cohort metrics without fabricating demand.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    },
+    {
+      "id": "COL34",
+      "release": "R3",
+      "title": "Integrated V2 quality, deployment and evaluation handoff",
+      "depends_on": [
+        "COL30",
+        "COL31",
+        "COL32",
+        "COL33"
+      ],
+      "acceptance_ids": [
+        "AC29",
+        "AC30",
+        "AC31",
+        "AC32",
+        "AC33",
+        "AC34",
+        "AC35",
+        "AC36"
+      ],
+      "path_hints": [
+        "tests/e2e/",
+        "lib/release.ts",
+        "docs/upgrades/collaboration-v2/"
+      ],
+      "deliverable": "Validate all delivered software and production evidence, prepare the consent-based pilot, and report real measured outcomes only. Longitudinal business results may remain pending after software release.",
+      "status": "planned",
+      "implementation_commit": null,
+      "evidence": []
+    }
+  ],
+  "branch_base_sha": "34554e35db6b26a0ba2d8fd48198a5ba9c84b38e"
+}

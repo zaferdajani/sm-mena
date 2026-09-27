@@ -1,0 +1,153 @@
+{
+  "template": false,
+  "status": "implemented_pending_deployment",
+  "release": "R1",
+  "recorded_at_utc": "2026-09-27T23:37:07Z",
+  "recorded_at_asia_amman": "2026-09-28T02:37:07+03:00",
+  "implementation_commits": [
+    "69fe1af",
+    "bc318d9",
+    "38b6f1d",
+    "96c124a",
+    "70ddb54",
+    "43a3607 (merge of origin/main a45aa17)",
+    "a303d45"
+  ],
+  "main_commit": null,
+  "completed_task_ids": [
+    "COL00",
+    "COL10",
+    "COL11",
+    "COL12",
+    "COL13",
+    "COL14",
+    "COL15"
+  ],
+  "planning_validation": {
+    "result": "pass",
+    "note": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test: 18 tasks, 36 acceptance criteria, 11 invalid-plan self-tests rejected. Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "pass (eslint, a303d45)",
+    "typecheck": "pass (next typegen + tsc --noEmit, a303d45)",
+    "unit_and_integration": "pass: 65 files / 372 tests on merged head 43a3607; collab-data + collab-rules re-run on a303d45 (19 passed); the security fixes touch only lib/data/collab-* and actions.ts",
+    "build": "pass: next build, a303d45, 148 static pages",
+    "full_playwright": "pass: 293 passed, 11 skipped, 0 failed, 0 flaky, exit 0, 11.6 min, head a303d45, mobile+desktop, CI=1 (earlier run on merged head 43a3607: 292 passed, 1 flaky in countries.spec.ts)"
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "pass: fresh store .data/mig-test migrated to 0022 and 0022 re-applied without error (idempotent); 0023 applied via migrate.ts",
+    "postgres": "pass: PostgreSQL 16.13 disposable cluster (127.0.0.1:5499), database 'fresh': all migrations 0000-0023 applied, 57 public tables",
+    "populated_upgrade": "pass: database 'populated' migrated to 0021, seeded demo data, a protected contract created and client-signed before 0022; after 0022+0023: same terms_hash, status active, 2 milestones render, 47 -> 57 tables; the new flow (need, discovery, roster, inquiry, two quote versions, accept -> contract request, invite accept) ran on real Postgres",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "scratchpad/pg-before.json",
+      ".data/pg-rehearsal.pgtest.ts (local only)"
+    ]
+  },
+  "reviews": {
+    "implementation": "done by a separate subagent on ecfcdda..bc318d9+38b6f1d: 0 blocking, 16 non-blocking; all 16 applied in 96c124a",
+    "security_and_payments": "done by a separate bounded subagent on 43a3607: 0 blocking, 2 should-fix (quote rate limit/version cap; currency-safe budget handoff), 5 notes; both should-fixes and two notes applied in a303d45; money/contract invariants confirmed untouched (escrow, money-out, payments, contract rules/terms/hash, milestone shares, contract-requests, Founder: zero diff)",
+    "visual_qa": "done by a separate subagent on 58 fixture captures (320/390/768/1440, ar/en, dark, zoom): 2 blocking (dark capture method, phone tab strip), 5 should-fix, 8 nits; all applied in 96c124a except native date placeholders (accepted) and a header-action emphasis nit; re-captured after fixes: active tabs on-screen at 320/390, zoom 200% at 320 CSS px overflow 0, dark theme rendered"
+  },
+  "deployment": {
+    "id": null,
+    "environment": null,
+    "source_sha": null,
+    "result": "TBD"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": null,
+    "rendered_stamp_match": null,
+    "ancestry_verified": null,
+    "real_intro_playback": "TBD",
+    "authenticated_smoke": "TBD",
+    "routes": [],
+    "artifact_refs": []
+  },
+  "rollback": {
+    "previous_deployment": "main a45aa17 (brochure design, revision brochure-2026-09-27-v1)",
+    "strategy": "forward revert of application code; migrations 0022/0023 are additive and old code ignores the new tables; the collaboration switch (Admin -> Features) stops creation while existing inquiries, roster and contract requests stay readable",
+    "rehearsal": "switch states on/soon/off exercised in tests/e2e/collab-v2.spec.ts (soon: Coming soon on every page and actions refuse; off: tab hidden, pages 404)"
+  },
+  "remaining_tasks": [
+    "COL20",
+    "COL21",
+    "COL22",
+    "COL23",
+    "COL24",
+    "COL25",
+    "COL30",
+    "COL31",
+    "COL32",
+    "COL33",
+    "COL34"
+  ],
+  "blockers": [],
+  "business_validation": {
+    "pilot_status": "not_run",
+    "participants": null,
+    "baseline_comparison": "R0 baseline recorded in docs/upgrades/collaboration-v2/R0-baseline.md (11 steps discover->contact->scope today); R1 scripted path not yet measured with participants",
+    "longitudinal_outcomes": null
+  },
+  "decision": "not_verified",
+  "deviations": [
+    "No per-agency staff roles exist (one login per agency), so 'buyer finance / authorized staff' collapses to the agency owner in R1.",
+    "Availability is manual date ranges only; no capacity reservation objects yet (R2 COL24).",
+    "Invitation links carry no email/phone; recipients are matched by whoever opens the link while signed in."
+  ],
+  "task_updates": {
+    "COL00": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json",
+        "docs/upgrades/collaboration-v2/R0-baseline.md"
+      ]
+    },
+    "COL10": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL11": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL12": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL13": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL14": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL15": {
+      "status": "implemented",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    }
+  },
+  "tested_head": "a303d451794d0a2b6041cc6c761b9a64dc7300e2"
+}
