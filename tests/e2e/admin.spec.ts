@@ -19,7 +19,8 @@ test("admin verifies an agency and the badge appears publicly", async ({ page },
   await row.getByTestId("verify-toggle").click();
   await expect(row.getByTestId("verify-toggle")).toHaveText("Remove verification");
   await page.goto(`/en/a/${handle}`);
-  await expect(page.locator('h1 + [aria-label="Business identity verified"]')).toBeVisible();
+  // Verification is in the profile's wrapping badge row, not necessarily an h1 sibling.
+  await expect(page.getByTestId("provider-profile-header").getByRole("img", { name: "Business identity verified", exact: true })).toBeVisible();
 });
 
 test("a reported post can be hidden by admin", async ({ page, browser }, info) => {
