@@ -1,0 +1,41 @@
+name: Brochure visual evidence only
+on:
+  push:
+    branches: [audit/brochure-visual-evidence]
+    paths: [.github/workflows/brochure-visual-evidence.yml]
+permissions:
+  actions: read
+  contents: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read completed test artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api repos/zaferdajani/sm-mena/actions/artifacts/10941244242/zip > report.zip
+      - name: Export visual evidence, excluding all trace and font files
+        run: |
+          python3 - <<'PY'
+          import base64,io,pathlib,re,zipfile
+          out=pathlib.Path('visual-evidence');out.mkdir()
+          with zipfile.ZipFile('report.zip') as archive:
+              for name in archive.namelist():
+                  suffix=pathlib.Path(name).suffix.lower()
+                  if suffix in {'.png','.jpg','.jpeg'}:
+                      (out/pathlib.Path(name).name).write_bytes(archive.read(name))
+                  if name.endswith('index.html'):
+                      text=archive.read(name).decode()
+                      match=re.search(r'data:application/zip;base64,([A-Za-z0-9+/=]+)',text)
+                      if match:
+                          with zipfile.ZipFile(io.BytesIO(base64.b64decode(match.group(1)))) as metadata:
+                              for item in metadata.namelist():
+                                  if item.endswith('.json'):
+                                      (out/pathlib.Path(item).name).write_bytes(metadata.read(item))
+          print('Exported',len(list(out.iterdir())),'visual/metadata files; no fonts or traces')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brochure-first-pass-visuals
+          path: visual-evidence/
+          retention-days: 3
