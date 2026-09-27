@@ -51,7 +51,14 @@ async function connect(): Promise<DB> {
   if (url) {
     const { default: postgres } = await import("postgres");
     const { drizzle } = await import("drizzle-orm/postgres-js");
-    const client = postgres(runtimeUrl(url), serverless ? { prepare: false, max: 3, idle_timeout: 20 } : { prepare: false, max: 10 });
+    // max_pipeline: 1 — Supabase's transaction pooler (Supavisor) can stall when
+    // several queries are pipelined on one connection: the server sits in
+    // ClientRead and the request hangs until the function times out. Pages that
+    // run many queries at once (the admin dashboard) hit it first. One query in
+    // flight per connection; the pool still runs up to `max` in parallel.
+    // (max_pipeline is a runtime option of postgres.js that its types don't list.)
+    const serverlessOptions = { prepare: false, max: 3, idle_timeout: 20, connect_timeout: 10, max_pipeline: 1 };
+    const client = postgres(runtimeUrl(url), serverless ? serverlessOptions : { prepare: false, max: 10 });
     cache.close = () => client.end();
     const db = drizzle(client, { schema });
     // drizzle turns postgres-js's date serializers into pass-throughs (it maps
