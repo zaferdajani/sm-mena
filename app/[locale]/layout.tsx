@@ -17,6 +17,7 @@ import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
 import "../styles/brochure.css";
+import "../styles/brochure-responsive.css";
 
 // Approved reference: Sawwiq_Saudi_Brochure_Corrected.pdf.
 // One self-hosted variable family for all Arabic/Latin UI text and headings.
@@ -31,9 +32,7 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params,
-}: LayoutProps<"/[locale]">): Promise<Metadata> {
+export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "Metadata" });
@@ -41,9 +40,7 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: { default: t("title"), template: `%s · ${brandOf(locale)}` },
     description: t("description"),
-    // No site-wide canonical or hreflang here: each public page declares its
-    // own through pageMeta() (lib/seo.ts), and private pages must not inherit
-    // the home page's language pairs.
+    // Public pages set their own canonical and language pairs; private pages do not inherit them.
     openGraph: { siteName: brandOf(locale), locale: locale === "ar" ? "ar_JO" : "en_JO", type: "website", images: [defaultOgImage(locale)] },
     twitter: { card: "summary_large_image" },
     ...(siteIndexable() ? {} : { robots: { index: false, follow: false } }),
@@ -54,35 +51,19 @@ export async function generateMetadata({
   };
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: LayoutProps<"/[locale]">) {
+export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  // The offer line is written in the language it offers, so every live
-  // language's three short strings are passed down (not whole dictionaries).
-  // Service tags approved by an admin (on top of the built-in catalog), for server and browser.
   const approvedTags = await customTags();
   const offerTexts = Object.fromEntries(
     await Promise.all(routing.locales.map(async (l) => [l, (await import(`../../messages/${l}.json`)).default.LangOffer] as const)),
   );
 
   return (
-    <html
-      lang={locale}
-      dir={directionOf(locale)}
-      className={`${notoArabic.variable} h-full antialiased`}
-      data-design-system="brochure-v1"
-      // The head script may set data-theme="dark" before React loads.
-      suppressHydrationWarning
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang={locale} dir={directionOf(locale)} className={`${notoArabic.variable} h-full antialiased`} data-design-system="brochure-v1" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body className="min-h-full">
-        {/* Tells shadcn/Base UI components (menus, sliders, tabs) which way to read. */}
         <DirectionProvider direction={directionOf(locale)}>
           <DomGuard />
           <NextIntlClientProvider>

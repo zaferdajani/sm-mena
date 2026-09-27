@@ -8,17 +8,18 @@ async function visualContract(page: Page, info: TestInfo, label: string, dark: b
     const root = getComputedStyle(document.documentElement);
     const font = getComputedStyle(document.body).fontFamily;
     const headings = [...document.querySelectorAll("h1,h2,h3")].map((e) => getComputedStyle(e).fontFamily);
-    return { font, headings, paper: root.getPropertyValue("--background").trim(), viewport: document.documentElement.clientWidth, width: document.documentElement.scrollWidth };
+    const loaded = [...document.fonts].filter((f) => f.status === "loaded" && f.family.toLowerCase().includes("noto")).length;
+    return { font, headings, loaded, paper: root.getPropertyValue("--background").trim(), viewport: document.documentElement.clientWidth, width: document.documentElement.scrollWidth };
   });
   expect(observed.font.toLowerCase()).toContain("noto");
+  expect(observed.loaded, "Noto font must actually load, not just be named in CSS").toBeGreaterThan(0);
   for (const heading of observed.headings) expect(heading.toLowerCase()).toContain("noto");
   expect(observed.paper.toLowerCase()).toBe(dark ? "#10241d" : "#f8f6ef");
   expect(observed.width, `overflow on ${page.url()}`).toBeLessThanOrEqual(observed.viewport + 1);
   const visibleLogo = page.getByTestId("brand-lockup").filter({ visible: true }).first();
-  if (await visibleLogo.count()) {
-    await expect(visibleLogo.locator("img")).toHaveAttribute("src", /mark-192/);
-    expect(await visibleLogo.locator("img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-  }
+  await expect(visibleLogo).toBeVisible();
+  await expect(visibleLogo.locator("img")).toHaveAttribute("src", /mark-192/);
+  expect(await visibleLogo.locator("img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   await info.attach(`${label}-${info.project.name}`, { body: await page.screenshot({ animations: "disabled" }), contentType: "image/png" });
 }
 
@@ -33,7 +34,7 @@ for (const locale of ["ar", "en"]) {
         localStorage.setItem("sw_role", "browse");
         if (value) localStorage.setItem("sw_theme", "dark"); else localStorage.removeItem("sw_theme");
       }, dark);
-      for (const route of ["?intro=0", "soon", "explore?tab=agencies", `a/${DEMO_AGENCY.handle}`, "hire", "join", "login", "legal"]) {
+      for (const route of ["?intro=0", "soon", "explore?tab=agencies", `a/${DEMO_AGENCY.handle}`, "hire", "start", "join", "signin", "login", "legal"]) {
         const response = await page.goto(`/${locale}/${route}`);
         expect(response?.status(), route).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");

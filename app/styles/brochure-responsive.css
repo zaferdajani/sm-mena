@@ -1,0 +1,23 @@
+/* Keep the brochure wordmark and newer Join entry visible together.
+   Two deliberate phone rows avoid squeezing Arabic labels or hiding the logo. */
+@media (max-width: 600px) {
+  .sw[data-design-surface="landing"] { --sw-header-h: 120px; }
+  .sw[data-design-surface="landing"] .sw-header {
+    flex-wrap: wrap;
+    align-content: center;
+    gap: .375rem;
+    padding-block: .5rem;
+  }
+  .sw[data-design-surface="landing"] .sw-header__brand { flex: 1 0 100%; }
+  .sw[data-design-surface="landing"] .sw-header__brand > .sw-brand-lockup { display: inline-flex; }
+  .sw[data-design-surface="landing"] .sw-brand-lockup > img { inline-size: 2rem; block-size: 2rem; }
+  .sw[data-design-surface="landing"] .sw-brand-wordmark { display: inline; font-size: 1.8rem; }
+  .sw[data-design-surface="landing"] .sw-header__tools {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    margin-inline-start: 0;
+    gap: .375rem;
+  }
+  .sw[data-design-surface="landing"] .sw-switch { inline-size: 4.5rem; }
+  .sw[data-design-surface="landing"] .sw-join { padding-inline: .7rem; }
+}
