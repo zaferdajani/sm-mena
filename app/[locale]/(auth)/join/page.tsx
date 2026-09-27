@@ -8,6 +8,8 @@ import { isReferralCode, normalizeCode, REFERRAL_COOKIE } from "@/lib/referrals"
 import { countryOptions } from "@/lib/country-options";
 import { FOOTER_SERVICES } from "@/components/shell/site-footer";
 import { JOIN_ROLES, roleLabel } from "@/lib/services/catalog";
+import { Palette } from "lucide-react";
+import { canUse } from "@/lib/feature-gate";
 import { JoinForm } from "./join-form";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/join">): Promise<Metadata> {
@@ -24,11 +26,19 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   const refCode = [fromUrl, fromCookie].map(normalizeCode).find((c) => isReferralCode(c)) ?? "";
   setRequestLocale(locale);
   const t = await getTranslations("Auth");
-  const [countries, country, phoneFrom] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry()]);
+  const [countries, country, phoneFrom, behance] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry(), canUse("portfolio_import")]);
+  const tb = await getTranslations("BehanceImport.shortcut");
   return (
     <>
       <h1 className="text-xl font-bold">{t("joinTitle")}</h1>
       <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>
+      {/* Providers who already keep a portfolio on Behance learn up front that it carries over (docs/47). */}
+      {behance && (
+        <p className="mb-5 flex items-start gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="join-behance">
+          <Palette className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
+          <span>{tb("join")}</span>
+        </p>
+      )}
       <JoinForm countries={countries} defaultCountry={country} phoneCountry={phoneFrom} refCode={refCode} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("haveAccount")}{" "}

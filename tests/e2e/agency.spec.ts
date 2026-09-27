@@ -4,6 +4,8 @@ import { pngBuffer, uniqueHandle } from "./helpers";
 test("an agency joins, completes its page, publishes and deletes a post", async ({ page }) => {
   const handle = uniqueHandle();
   await page.goto("/en/join");
+  // Before signing up, a provider learns that a Behance portfolio carries over.
+  await expect(page.getByTestId("join-behance")).toContainText("Behance");
   await page.fill("#name", "E2E Agency");
   await page.fill("#handle", handle);
   await page.fill("#whatsapp", "0791112233");
@@ -12,6 +14,10 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
   await expect(page).toHaveURL(/\/en\/studio\/profile\?welcome=1/);
+  // The Behance import is offered as the quick start, next to the welcome.
+  await expect(page.getByTestId("welcome-behance")).toContainText("Already on Behance?");
+  await expect(page.getByTestId("welcome-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
+  await expect(page.getByTestId("welcome-behance-pdf")).toHaveAttribute("href", "/en/studio/import");
 
   await page.fill("#bio", "Testing the platform end to end.");
   await page.fill("#startingPriceJod", "250");
@@ -23,9 +29,12 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   // A new agency's first save moves on to the next setup step: its packages.
   await expect(page).toHaveURL(/\/en\/studio\/packages\?welcome=1/);
   await expect(page.getByTestId("packages-welcome")).toContainText("Page saved.");
+  await expect(page.getByTestId("packages-behance")).toHaveAttribute("href", "/en/studio/import/behance");
   await page.goto("/en/studio");
   await expect(page.getByTestId("setup-profile")).toHaveAttribute("data-done", "true");
   await expect(page.getByTestId("setup-packages")).toHaveAttribute("data-done", "false");
+  // Until the first post exists, the setup list leads with the Behance import.
+  await expect(page.getByTestId("setup-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
 
   await page.goto("/en/studio/new");
   await page.getByTestId("image-input").setInputFiles([

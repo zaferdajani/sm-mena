@@ -19,18 +19,19 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
       <h1 className="mb-4 text-lg font-bold">{t("newPost")}</h1>
       {(await canUse("portfolio_import")) && (
         <div className="mb-5 grid gap-2">
-          <Link href="/studio/import" className="flex items-center gap-3 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm hover:bg-accent" data-testid="import-link">
-            <FileUp className="size-5 shrink-0 text-brand" />
-            <span>
-              <b className="block">{ti("linkTitle")}</b>
-              <span className="text-muted-foreground">{ti("linkBody")}</span>
-            </span>
-          </Link>
-          <Link href="/studio/import/behance" className="flex items-center gap-3 rounded-xl border p-3 text-sm hover:bg-accent" data-testid="behance-import-link">
+          {/* Behance first: most new providers already keep their portfolio there (docs/47). */}
+          <Link href="/studio/import/behance" className="flex items-center gap-3 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm hover:bg-accent" data-testid="behance-import-link">
             <Palette className="size-5 shrink-0 text-brand" />
             <span>
               <b className="block">{tb("linkTitle")}</b>
               <span className="text-muted-foreground">{tb("linkBody")}</span>
+            </span>
+          </Link>
+          <Link href="/studio/import" className="flex items-center gap-3 rounded-xl border p-3 text-sm hover:bg-accent" data-testid="import-link">
+            <FileUp className="size-5 shrink-0 text-brand" />
+            <span>
+              <b className="block">{ti("linkTitle")}</b>
+              <span className="text-muted-foreground">{ti("linkBody")}</span>
             </span>
           </Link>
         </div>

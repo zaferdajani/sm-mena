@@ -7,6 +7,9 @@ test("a provider pulls its Behance projects into posts, with a credit link on ea
   test.setTimeout(120_000);
   const { handle } = await joinAgency(page, "bhnc");
   await page.goto("/en/studio/new");
+  // Behance is the first, highlighted way in on the new-post page.
+  const ways = page.locator('[data-testid="behance-import-link"], [data-testid="import-link"]');
+  await expect(ways.first()).toHaveAttribute("data-testid", "behance-import-link");
   await page.getByTestId("behance-import-link").click();
   await expect(page).toHaveURL(/\/en\/studio\/import\/behance/);
 
@@ -46,6 +49,10 @@ test("a provider pulls its Behance projects into posts, with a credit link on ea
   await expect(page).toHaveURL(/\/en\/p\//);
   await expect(page.getByTestId("post-source")).toHaveAttribute("href", "https://www.behance.net/gallery/101/rose-boutique-branding");
   await expect(page.getByTestId("post-client")).toContainText("Rose Boutique");
+
+  // With a first post published, the setup list no longer pushes the import.
+  await page.goto("/en/studio");
+  await expect(page.getByTestId("setup-behance")).toHaveCount(0);
 });
 
 test("the bookmarklet path: a Behance tab hands its page to the import tab", async ({ page }) => {
@@ -57,12 +64,17 @@ test("the bookmarklet path: a Behance tab hands its page to the import tab", asy
   // What the bookmarklet would post from behance.net: the page's JSON state and Open Graph tags.
   const html = (await import("node:fs")).readFileSync("tests/fixtures/behance/project-101.html", "utf8");
   const blobs = [...html.matchAll(/<script[^>]+type="application\/json"[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-  await page.evaluate(
-    ({ blobs }) => {
-      window.dispatchEvent(new MessageEvent("message", { origin: "https://www.behance.net", data: { type: "sawwiq-behance-page", url: "https://www.behance.net/gallery/101/rose-boutique-branding", blobs, meta: { title: "Rose Boutique | Branding on Behance" } } }));
-    },
-    { blobs },
-  );
+  // The real bookmarklet posts only after the page signals it is ready; here we
+  // re-send until the hydrated page picks the message up (the notice leaves "waiting").
+  await expect(async () => {
+    await page.evaluate(
+      ({ blobs }) => {
+        window.dispatchEvent(new MessageEvent("message", { origin: "https://www.behance.net", data: { type: "sawwiq-behance-page", url: "https://www.behance.net/gallery/101/rose-boutique-branding", blobs, meta: { title: "Rose Boutique | Branding on Behance" } } }));
+      },
+      { blobs },
+    );
+    await expect(page.getByTestId("behance-waiting")).toHaveCount(0, { timeout: 1000 });
+  }).toPass({ timeout: 30_000 });
   const review = page.getByTestId("behance-review");
   await expect(review).toBeVisible({ timeout: 30_000 });
   await expect(review.getByTestId("behance-draft")).toHaveCount(1);
