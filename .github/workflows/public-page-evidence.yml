@@ -7,7 +7,7 @@ permissions:
 jobs:
   capture:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 10
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -19,92 +19,80 @@ jobs:
           npm init -y
           npm install --ignore-scripts --no-audit --no-fund playwright@1.63.0
           npx playwright install --with-deps chromium
-      - name: Capture public landing and provider profiles
+      - name: Public browsing interactions only
         run: |
           cat > audit-browser/capture.cjs <<'PUBLIC_AUDIT_JS'
-          // Read-only production evidence. No sign-in, form submission, follow, or messaging.
-          const { chromium } = require('playwright');
-          const fs = require('node:fs');
-          const path = require('node:path');
-          const origin = 'https://sawwiq.org';
-          const out = path.join(process.env.GITHUB_WORKSPACE || process.cwd(), 'public-page-evidence');
-          fs.mkdirSync(out, { recursive: true });
-          const report = { startedAt: new Date().toISOString(), target: origin, environment: 'production public pages; fresh browser contexts', pages: [], endpoints: [] };
-          const cases = [
-           ['landing-ar-phone','/',390,'ar-JO'],
-           ['landing-ar-desktop','/ar',1440,'ar-JO'],
-           ['landing-en-phone','/en',390,'en-US'],
-           ['landing-en-desktop','/en',1440,'en-US'],
-           ['soon-ar-phone','/ar/soon',390,'ar-JO'],
-           ['soon-ar-desktop','/ar/soon',1440,'ar-JO'],
-           ['soon-en-phone','/en/soon',390,'en-US'],
-           ['bashiti-ar-phone','/ar/a/mahaalbashiti',390,'ar-JO'],
-           ['bashiti-en-desktop','/en/a/mahaalbashiti',1440,'en-US'],
-           ['meerobox-ar-phone','/ar/a/meerobox',390,'ar-JO'],
-           ['explore-agencies-phone','/ar/explore?tab=agencies',390,'ar-JO'],
-           ['join-ar-phone','/ar/join',390,'ar-JO'],
-           ['landing-sa-phone','/ar',390,'ar-SA','sa'],
-           ['landing-eg-phone','/ar',390,'ar-EG','eg'],
-           ['soon-sa-phone','/ar/soon',390,'ar-SA','sa'],
-           ['soon-eg-phone','/ar/soon',390,'ar-EG','eg'],
-          ];
-          (async () => {
-           const browser = await chromium.launch({ headless: true });
-           try {
-            for (const [name, route, width, locale, country] of cases) {
-             const context = await browser.newContext({ viewport:{width,height:width===390?844:1000}, locale, timezoneId:country==='sa'?'Asia/Riyadh':country==='eg'?'Africa/Cairo':'Asia/Amman', deviceScaleFactor:1, serviceWorkers:'block', extraHTTPHeaders:{'Cache-Control':'no-cache'} });
-             if(country) await context.addCookies([{name:'sw_country',value:country,domain:'sawwiq.org',path:'/',sameSite:'Lax',secure:true}]);
-             const page = await context.newPage();
-             const item = { name, requested:origin+route, width, country:country||'fresh, no country cookie', at:new Date().toISOString(), consoleErrors:[], failedResources:[] };
-             page.on('pageerror', error => item.consoleErrors.push(error.message));
-             page.on('requestfailed', request => { if(item.failedResources.length<15) item.failedResources.push({url:request.url().split('?')[0],reason:request.failure()?.errorText}); });
-             try {
-              const response = await page.goto(origin+route,{waitUntil:'domcontentloaded',timeout:45000});
-              item.status=response?.status(); item.finalUrl=page.url();
-              const headers=response?await response.allHeaders():{};
-              item.responseHeaders=Object.fromEntries(['date','x-vercel-id','x-vercel-cache','cache-control','age'].filter(k=>headers[k]).map(k=>[k,headers[k]]));
-              await page.waitForTimeout(2200);
-              item.intro = await page.locator('video').evaluateAll(vs=>vs.map(v=>({src:v.currentSrc,paused:v.paused,currentTime:v.currentTime,readyState:v.readyState,rect:{width:v.getBoundingClientRect().width,height:v.getBoundingClientRect().height}})));
-              const skip=page.getByRole('button',{name:/^skip$|تخطّي|تخطي/i}).first();
-              if(await skip.isVisible().catch(()=>false)) {await page.screenshot({path:path.join(out,name+'-intro.png')}); await skip.click({timeout:3000}).catch(()=>{}); item.skippedIntro=true;}
-              await page.evaluate(()=>Promise.race([document.fonts.ready,new Promise(resolve=>setTimeout(resolve,12000))]));
-              for(let n=0;n<12;n++) { const pos=await page.evaluate(()=>({y:window.scrollY,h:innerHeight,total:document.documentElement.scrollHeight})); if(pos.y+pos.h>=pos.total-3)break; await page.evaluate(()=>scrollBy(0,innerHeight*0.9)); await page.waitForTimeout(120); }
-              await page.evaluate(()=>scrollTo(0,0)); await page.waitForTimeout(600);
-              item.dom=await page.evaluate(()=>{
-               const visible=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(e).visibility!=='hidden'&&getComputedStyle(e).display!=='none';};
-               return {title:document.title,lang:document.documentElement.lang,dir:document.documentElement.dir,theme:document.documentElement.dataset.theme||null,viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,scrollHeight:document.documentElement.scrollHeight,h1:[...document.querySelectorAll('h1')].map(e=>e.innerText),headings:[...document.querySelectorAll('h2,h3')].filter(visible).map(e=>e.innerText),countryPickers:[...document.querySelectorAll('[data-testid="country-picker"]')].filter(visible).map(e=>({text:e.innerText,selected:e.querySelector('select')?.value})),selects:[...document.querySelectorAll('select')].filter(visible).map(e=>({label:e.getAttribute('aria-label'),value:e.value,selected:e.selectedOptions[0]?.textContent})),brokenImages:[...document.images].filter(e=>visible(e)&&e.complete&&!e.naturalWidth).map(e=>e.currentSrc),overflow:[...document.querySelectorAll('main *,header *,[data-testid="teaser-page"] *')].filter(visible).filter(e=>{const r=e.getBoundingClientRect();return r.left < -3 || r.right>innerWidth+3;}).slice(0,15).map(e=>({tag:e.tagName,text:e.innerText?.slice(0,70),className:String(e.className).slice(0,140)})),contactLinks:[...document.querySelectorAll('a')].filter(visible).filter(e=>/WhatsApp|واتساب|Instagram|إنستغرام|Website|الموقع|English|العربية/.test(e.innerText)).map(e=>({label:e.innerText,href:e.getAttribute('href')}))};
-              });
-              item.text=await page.locator('body').innerText();
-              await page.screenshot({path:path.join(out,name+'.png'),fullPage:true,animations:'disabled',timeout:20000});
-              fs.writeFileSync(path.join(out,name+'.txt'),item.text);
-              fs.writeFileSync(path.join(out,name+'.html'),await page.content());
-              if(name==='bashiti-ar-phone'){
-               item.tabs=[];
-               for(const tab of ['reviews','about']){
-                const tabResponse=await page.goto(origin+'/ar/a/mahaalbashiti?tab='+tab,{waitUntil:'domcontentloaded',timeout:30000});
-                await page.waitForTimeout(800);
-                item.tabs.push({tab,status:tabResponse?.status(),h1:await page.locator('h1').allTextContents(),text:(await page.locator('body').innerText()).slice(0,12000)});
-                await page.screenshot({path:path.join(out,name+'-'+tab+'.png'),fullPage:true,animations:'disabled'});
-               }
+          const {chromium} = require('playwright');
+          const fs=require('node:fs');
+          const path=require('node:path');
+          const origin='https://sawwiq.org';
+          const out=path.join(process.env.GITHUB_WORKSPACE,'public-interaction-evidence');
+          fs.mkdirSync(out,{recursive:true});
+          const report={startedAt:new Date().toISOString(),target:origin,pages:[],interactions:[]};
+          async function settle(page){await page.evaluate(()=>Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,8000))]));await page.waitForTimeout(800);}
+          async function dismiss(page){
+            const skip=page.getByRole('button',{name:/^skip$|تخطّي|تخطي/i}).first();
+            if(await skip.isVisible().catch(()=>false))await skip.click({timeout:4000}).catch(()=>{});
+            const browse=page.getByTestId('welcome-browse');
+            if(await browse.isVisible().catch(()=>false))await browse.click();
+            await settle(page);
+          }
+          async function capture(page,name){
+            await settle(page); await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(700);
+            const item=await page.evaluate(()=>({url:location.href,title:document.title,h1:[...document.querySelectorAll('h1')].map(e=>e.innerText),dir:document.documentElement.dir,theme:document.documentElement.dataset.theme||null,scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth,text:document.body.innerText,links:[...document.querySelectorAll('a')].map(e=>({text:e.innerText,href:e.getAttribute('href')}))}));
+            item.name=name;item.at=new Date().toISOString();
+            await page.screenshot({path:path.join(out,name+'-viewport.png'),animations:'disabled'});
+            await page.screenshot({path:path.join(out,name+'-full.png'),fullPage:true,animations:'disabled'});
+            report.pages.push(item);
+            console.log('PUBLIC_VIEW '+JSON.stringify({name,at:item.at,url:item.url,h1:item.h1,dir:item.dir,theme:item.theme,scrollWidth:item.scrollWidth,viewport:item.viewport}));
+          }
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const [lang,width] of [['ar',390],['ar',1440],['en',390],['en',1440]]){
+                const ctx=await browser.newContext({viewport:{width,height:width===390?844:1000},locale:lang==='ar'?'ar-JO':'en-US',timezoneId:'Asia/Amman',serviceWorkers:'block',extraHTTPHeaders:{'Cache-Control':'no-cache'}});
+                const page=await ctx.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+                await page.goto(origin+'/'+lang,{waitUntil:'domcontentloaded',timeout:45000});await page.waitForTimeout(2500);await dismiss(page);
+                await capture(page,'landing-'+lang+'-'+width+'-after-welcome');
+                if(lang==='ar'&&width===390){
+                  const select=page.getByTestId('country-picker').locator('select').first();
+                  for(const [value,word] of [['sa','السعودية'],['eg','مصر']]){
+                    await select.selectOption(value);
+                    await page.waitForFunction(word=>document.querySelector('h1')?.innerText.includes(word),word,{timeout:20000});
+                    await capture(page,'landing-after-country-'+value);
+                    report.interactions.push({action:'country selector',selected:value,url:page.url(),heading:await page.locator('h1').first().innerText()});
+                  }
+                  await page.locator('a[href="/en"]').first().click();await page.waitForURL('**/en');await dismiss(page);
+                  await capture(page,'landing-after-language-English');
+                  report.interactions.push({action:'language link',url:page.url(),dir:await page.locator('html').getAttribute('dir')});
+                }
+                report.interactions.push({page:lang+'-'+width,errors});await ctx.close();
               }
-              console.log('PUBLIC_PAGE '+JSON.stringify({name,status:item.status,url:item.finalUrl,at:item.at,headers:item.responseHeaders,h1:item.dom.h1,dir:item.dom.dir,countryPickers:item.dom.countryPickers,selects:item.dom.selects,scrollWidth:item.dom.scrollWidth,viewport:item.dom.viewport,brokenImages:item.dom.brokenImages,errors:item.consoleErrors}));
-             } catch(error){item.error=error.message;console.log('PUBLIC_PAGE_ERROR '+JSON.stringify({name,error:item.error}));}
-             report.pages.push(item);fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));await context.close();
-            }
-            const apiContext=await browser.newContext();
-            for(const route of ['/api/health','/api/version']){
-             try{const response=await apiContext.request.get(origin+route,{timeout:20000,headers:{'Cache-Control':'no-cache'}});const item={route,at:new Date().toISOString(),status:response.status(),body:(await response.text()).slice(0,3500)};report.endpoints.push(item);console.log('PUBLIC_ENDPOINT '+JSON.stringify(item));}catch(error){report.endpoints.push({route,error:error.message});}
-            }
-            await apiContext.close();
-           } finally {report.finishedAt=new Date().toISOString();fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));await browser.close();}
-           const summary=report.pages.map(p=>({page:p.name,status:p.status,error:p.error||null,h1:p.dom?.h1,overflow:p.dom?p.dom.scrollWidth>p.dom.viewport:null,brokenImages:p.dom?.brokenImages.length}));
-           console.log('AUDIT_SUMMARY '+JSON.stringify(summary));
-          })().catch(error=>{console.error(error);process.exitCode=1;});
+              const ctx=await browser.newContext({viewport:{width:390,height:844},locale:'ar-JO',timezoneId:'Asia/Amman'});
+              const page=await ctx.newPage();await page.goto(origin+'/ar',{waitUntil:'domcontentloaded'});await page.waitForTimeout(3000);
+              const skip=page.getByRole('button',{name:/تخطّي|تخطي/i}).first();if(await skip.isVisible().catch(()=>false))await skip.click().catch(()=>{});
+              const agency=page.getByTestId('welcome-agency');
+              if(await agency.isVisible().catch(()=>false)){
+                const before=page.url();await agency.click();await page.waitForURL('**/join');
+                report.interactions.push({action:'welcome agency or freelancer choice',from:before,to:page.url()});await capture(page,'provider-entry-destination');
+              }
+              await ctx.close();
+              for(const [handle,lang,width] of [['mahaalbashiti','ar',390],['mahaalbashiti','en',1440],['meerobox','ar',390]]){
+                const c=await browser.newContext({viewport:{width,height:width===390?844:1000},locale:lang==='ar'?'ar-JO':'en-US',timezoneId:'Asia/Amman'});
+                const p=await c.newPage();await p.goto(origin+'/'+lang+'/a/'+handle,{waitUntil:'domcontentloaded'});await settle(p);
+                const toggles=p.getByTestId('theme-toggle');let changed=false;
+                for(let i=0;i<await toggles.count();i++){if(await toggles.nth(i).isVisible()){await toggles.nth(i).click();changed=true;break;}}
+                await capture(p,handle+'-'+lang+'-'+width+'-dark');
+                report.interactions.push({action:'public dark theme toggle',handle,changed,theme:await p.locator('html').getAttribute('data-theme')});await c.close();
+              }
+            }catch(error){report.error=error.message;console.log('AUDIT_ERROR '+error.stack);process.exitCode=1;}
+            finally{report.finishedAt=new Date().toISOString();fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log('INTERACTIONS '+JSON.stringify(report.interactions));await browser.close();}
+          })().catch(e=>{console.error(e);process.exitCode=1});
           PUBLIC_AUDIT_JS
           node audit-browser/capture.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: public-page-evidence
-          path: public-page-evidence/
+          name: public-interaction-evidence
+          path: public-interaction-evidence/
           retention-days: 3
