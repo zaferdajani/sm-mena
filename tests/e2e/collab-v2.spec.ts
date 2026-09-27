@@ -99,7 +99,7 @@ test("publish a need, discover with availability, inquire, quote, compare, accep
   await freelancer.goto("/en/studio/collab/work");
   await expect(freelancer.getByTestId("supplying-row").filter({ hasText: "Café launch shoot" })).toHaveAttribute("data-status", "sent");
   await freelancer.getByTestId("supplying-row").filter({ hasText: "Café launch shoot" }).click();
-  await expect(freelancer.getByTestId("inquiry-supplier")).toContainText("Photo session × 1");
+  await expect(freelancer.getByTestId("inquiry-supplier")).toContainText("Photo session · 1 session");
   await expect(freelancer.getByTestId("inquiry-supplier")).toContainText(`Agency ${agencyHandle}`);
   await expect(freelancer.getByTestId("supplier-scope-note")).toBeVisible();
   await expect(freelancer.getByTestId("quotes-compare")).toHaveCount(0);
@@ -197,7 +197,9 @@ test("an invitation link makes two providers partners once, in Arabic on a phone
   expect(await sender.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 });
 
-test("the switch: coming soon refuses the pages, off hides the tab and 404s", async ({ browser }) => {
+test("the switch: coming soon refuses the pages, off hides the tab and 404s", async ({ browser, isMobile }) => {
+  // One global switch: the two viewport projects would race each other, and the switch does not depend on the viewport.
+  test.skip(Boolean(isMobile), "switch state is global; covered once on desktop");
   const admin = await (await browser.newContext()).newPage();
   await login(admin, "admin@sawwiq.test", "admin-pass-123");
   const agency = await (await browser.newContext()).newPage();
