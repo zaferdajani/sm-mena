@@ -1,6 +1,6 @@
 # 36. Import a PDF portfolio
 
-Most agencies already have a PDF portfolio. Studio → New post → "Have a PDF portfolio?" (or `/studio/import`) turns it into:
+Most agencies already have a PDF portfolio. (Portfolios kept on Behance have their own import: docs/47.) Studio → New post → "Have a PDF portfolio?" (or `/studio/import`) turns it into:
 - posts, one per project;
 - portfolio clients;
 - the About introduction and strengths.

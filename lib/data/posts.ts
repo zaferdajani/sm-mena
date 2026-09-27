@@ -20,6 +20,8 @@ export type PostInput = {
   app?: PostApp | null;
   /** Caption and result in the agency's other language. */
   translation?: PostTranslation;
+  /** Where the work was imported from (a Behance project), validated by the caller. */
+  sourceUrl?: string | null;
 };
 
 export type FeedFilters = {
@@ -61,6 +63,8 @@ export type PostView = {
   client: { id: string; name: string; nameTranslation: string | null; logoUrl: string | null } | null;
   /** The app this post shows, with its sandbox link, if any. */
   app: PostApp | null;
+  /** The Behance project this work was imported from, if any (credit link). */
+  sourceUrl: string | null;
   likeCount: number;
   saveCount: number;
   viewCount: number;
@@ -127,6 +131,7 @@ export async function createPostFromProcessed(
         result: input.result ?? null,
         clientId: input.clientId ?? null,
         app: input.app ?? null,
+        sourceUrl: input.sourceUrl ?? null,
         translation: input.translation ?? {},
         searchText: postSearchText(input, agency),
         ...(createdAt ? { createdAt } : {}),
@@ -276,6 +281,7 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     clientId: post.clientId,
     client: (post.clientId && clientById.get(post.clientId)) || null,
     app: post.app ?? null,
+    sourceUrl: post.sourceUrl ?? null,
     likeCount: post.likeCount,
     saveCount: post.saveCount,
     viewCount: post.viewCount,

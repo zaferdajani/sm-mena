@@ -71,6 +71,13 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
           <AppPanel app={post.app} />
         </div>
       )}
+      {post.sourceUrl && (
+        <p className="px-3 pt-2 text-xs text-muted-foreground">
+          <a href={post.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="hover:underline" data-testid="post-source">
+            {t("sourceBehance")} ↗
+          </a>
+        </p>
+      )}
       <div className="flex items-center justify-between gap-2 px-3 py-2">
         {clientName && post.client ? (
           <Link href={`/a/${post.agency.handle}/c/${post.client.id}`} className="flex min-w-0 items-center gap-1.5 truncate text-sm font-medium text-brand" data-testid="post-client">

@@ -282,7 +282,8 @@
         "android": "Android",
         "cross": "iOS & Android"
       }
-    }
+    },
+    "sourceBehance": "See this project on Behance"
   },
   "Profile": {
     "posts": "posts",
@@ -3269,5 +3270,77 @@
     "restore": "Count it again",
     "voidReason": "Reason it doesn't count",
     "void": "Don't count"
+  },
+  "BehanceImport": {
+    "title": "Import from Behance",
+    "intro": "Pull the projects you already published on Behance into your Sawwiq page. You review every project before anything is published, and each post keeps a link to its Behance project.",
+    "linkTitle": "Have a Behance portfolio?",
+    "linkBody": "Give us your Behance link and we'll prepare your projects for you to review.",
+    "inputLabel": "Your Behance profile or one project link",
+    "placeholder": "behance.net/yourname",
+    "read": "Read my Behance",
+    "reading": "Reading your Behance projects…",
+    "how1": "Sawwiq reads your public Behance profile: the projects it lists, their images, fields and descriptions. Nothing needs your Behance password.",
+    "how2": "Each project becomes a draft post with a caption, services and a client suggested from your own words.",
+    "how3": "You edit, untick or trim anything, then publish only what you keep. The Behance credit link stays on every post.",
+    "errors": {
+      "invalid": "That doesn't look like a Behance profile or project link.",
+      "notFound": "Behance has no profile or project at that address.",
+      "unreachable": "Behance didn't answer. Try again in a minute, or import your PDF portfolio instead.",
+      "empty": "No projects with images were found on that profile.",
+      "rateLimited": "Too many reads in a short time. Try again in an hour.",
+      "unavailable": "Importing is not available right now.",
+      "busy": "Behance is limiting reads from our servers right now. Try again in a few minutes, or import your PDF portfolio instead."
+    },
+    "ownershipVerified": "This Behance profile links back to you, so we know the work is yours.",
+    "ownershipUnverified": "We couldn't confirm this Behance account is yours (it doesn't link to your website or your Sawwiq page). Import only work you made; every post carries a link to its Behance project.",
+    "foundTitle": "{count, plural, =0 {No projects found} one {1 project ready to review} other {# projects ready to review}}",
+    "truncated": "Only the first {count} projects were read. Run the import again later for the rest.",
+    "reviewHint": "Untick anything you don't want. Nothing is published until you press Publish.",
+    "profileTitle": "For your page",
+    "useAbout": "Use my Behance bio as my introduction (About tab)",
+    "useWebsite": "Add the website from my Behance profile: {website}",
+    "useAvatar": "Use my Behance profile picture as my page picture",
+    "servicesAdd": "Add services your Behance work names",
+    "publishedOn": "Published on Behance {date}",
+    "images": "{kept} of {total} images kept",
+    "imageToggle": "Keep image {n}",
+    "caption": "Caption",
+    "services": "Services",
+    "platforms": "Platforms",
+    "industry": "Industry",
+    "industryNone": "Not set",
+    "client": "Client (account)",
+    "clientHint": "The business this work was for. It becomes an account on your Clients tab.",
+    "publish": "{count, plural, =0 {Nothing selected} one {Publish 1 post} other {Publish # posts}}",
+    "publishing": "Publishing {done} of {total}…",
+    "published": "Published",
+    "failed": "Couldn't publish: {reason}",
+    "reasons": {
+      "noImages": "no images kept",
+      "tooMany": "too many images",
+      "badImage": "an image couldn't be read",
+      "unreachable": "Behance didn't answer",
+      "limit": "your plan's post limit is reached",
+      "noServices": "pick at least one service",
+      "invalid": "something was missing",
+      "generic": "something went wrong"
+    },
+    "doneTitle": "Imported",
+    "doneBody": "{count, plural, =0 {No posts were published.} one {1 post published.} other {# posts published.}} Each one credits its Behance project.",
+    "viewPage": "See my page",
+    "again": "Import more",
+    "sourceNote": "Behance project",
+    "moreServices": "More services…",
+    "handoff": {
+      "title": "From your own browser, when Behance won't answer us",
+      "body": "Behance sometimes limits reads from servers. Your own browser is never limited: this bookmark takes the project page you have open and hands it to Sawwiq. No password, nothing installed.",
+      "step1": "Drag the green button to your bookmarks bar (on a phone: add this page to bookmarks, then edit the bookmark's address to the button's link).",
+      "step2": "Open one of your projects on behance.net.",
+      "step3": "Click the bookmark. This page opens with that project ready to review.",
+      "button": "Send to Sawwiq",
+      "dragHint": "Drag me to your bookmarks bar. Clicking here does nothing.",
+      "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
+    }
   }
 }

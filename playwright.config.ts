@@ -23,6 +23,8 @@ const e2eEnv = {
   FEATURE_DEFAULTS: "protected_payments=on,prelaunch_home=off",
   // Client sign-in codes are shown on screen (never in real production; docs/41).
   AUTH_SHOW_CODES: "true",
+  // The Behance import reads saved pages instead of the network (docs/47).
+  BEHANCE_FIXTURES: "tests/fixtures/behance",
 };
 
 export default defineConfig({

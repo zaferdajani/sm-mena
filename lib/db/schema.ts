@@ -327,6 +327,8 @@ export const posts = pgTable(
     clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
     // The app this post shows, with its "Try the app" sandbox link (lib/app-demo.ts).
     app: jsonb("app").$type<PostApp | null>(),
+    // Where the work was imported from (a Behance project link, docs/47); shown as credit on the post.
+    sourceUrl: text("source_url"),
     status: postStatus("status").notNull().default("published"),
     likeCount: integer("like_count").notNull().default(0),
     saveCount: integer("save_count").notNull().default(0),
