@@ -27,9 +27,9 @@ test("a new provider gets a founding seat and a share card in the studio", async
   const card = page.getByTestId("founding-panel");
   await expect(card).toBeVisible();
   await expect(card).toHaveAttribute("data-member", "true");
-
-
-
+  // Every approved benefit renders (a missing message key would break the page).
+  await expect(card.locator("li")).toHaveCount(7);
+  await expect(card).toContainText("7%");
 });
 
 test("the teaser carries the moving hero, the vault and an account link", async ({ page }) => {

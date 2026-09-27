@@ -89,7 +89,10 @@
     "joinServicesHint": "Pick what applies; you can add more later from your page.",
     "closed": "Your account is closed. Thank you for being part of Sawwiq.",
     "clientPrompt": "A business owner who wants to follow agencies?",
-    "clientLink": "Sign in with a code by email"
+    "clientLink": "Sign in with a code by email",
+    "phoneCountry": "Country code",
+    "refCode": "Agent code (optional)",
+    "refCodePlaceholder": "If a Sawwiq agent introduced you"
   },
   "Cities": {
     "amman": "Amman",
@@ -222,7 +225,8 @@
     "newPost": "New post",
     "hire": "Hire an agency",
     "match": "AI assistant",
-    "login": "Sign in"
+    "login": "Sign in",
+    "agent": "My referrals"
   },
   "Common": {
     "verified": "Business identity verified",
@@ -583,7 +587,8 @@
       "contentLangHint": "Write the name, bio and introduction below in this language, and add the other language if you like. Switching moves your texts between the two versions.",
       "langAr": "العربية",
       "langEn": "English",
-      "saveContinue": "Save and continue"
+      "saveContinue": "Save and continue",
+      "phoneCountry": "Country code"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -2981,7 +2986,7 @@
     "metaTitle": "Sawwiq: join before we open to clients",
     "metaDescription": "Agency, freelancer or creator? Put your work where future clients and collaborators can find it. Join free before Sawwiq opens to buyers; founder benefits are revealed gradually.",
     "badge": "The List is open · Before launch only",
-    "title": "The platform of platforms.",
+    "title": "Sawwiq: join before we open to clients",
     "tagline": "Every Arab social media maker under one roof. The top belongs to those who arrive first.",
     "subtitle": "Agencies, freelancers, content creators, influencers, photographers and designers. This is where clients across the Arab world will look for you, and the first names are being written now.",
     "seatLabel": "Next seat on The List",
@@ -3041,7 +3046,7 @@
     "finalTitle": "The door is open. Not forever.",
     "finalBody": "Seats claimed before launch are founding seats. After launch… they're just numbers.",
     "share": "Invite a colleague before your city fills up",
-    "shareText": "Sawwiq: the platform of platforms for Arab social media makers. Founding seats are free before launch:",
+    "shareText": "Sawwiq is opening soon: a place where agencies, freelancers and creators show their work to the clients and partners who need it. Joining is free before launch:",
     "copied": "Link copied",
     "have": "Have a seat? Sign in",
     "footnote": "Counts are registered provider profiles on Sawwiq (not verified businesses) and update continuously. Populations are approximate, from the latest official estimates.",
@@ -3062,7 +3067,8 @@
     },
     "vaultOpened": "Revealed thanks to the seat holders",
     "vaultAt": "Revealed at seat {seat}",
-    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}"
+    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}",
+    "whatsappText": "I joined Sawwiq before launch. If your work is in marketing, content or design, put it where clients can see it:"
   },
   "Seat": {
     "title": "Your seat on The List",
@@ -3075,7 +3081,7 @@
     "cardCity": "#{n} in {city}",
     "cardUrl": "sawwiq.org/soon",
     "whatsapp": "WhatsApp",
-    "whatsappText": "I just claimed my founding seat on Sawwiq, the platform of platforms for Arab social media makers. Seats are free before launch, claim yours:"
+    "whatsappText": "I joined Sawwiq before launch. If your work is in marketing, content or design, put it where clients can see it:"
   },
   "Account": {
     "title": "Sign-in details",
@@ -3208,11 +3214,129 @@
     "closed": "The founding cohort is closed. Normal registration remains open.",
     "notRank": "Founder status records that you helped the network start. It never overrides relevance, quality or client matching.",
     "benefits": {
-      "profile": { "what": "First Sawwiq project: 0% commission", "limit": "Applies to the first completed Sawwiq-acquired project after protected payments go live." },
-      "badge": { "what": "Permanent Founder status", "limit": "Dated 2026; never a quality certification or ranking." },
-      "premium": { "what": "Six months of Pro", "limit": "Starts when Pro actually launches. No surprise billing." },
-      "intros": { "what": "Early window on qualified opportunities", "limit": "Relevant work can reach founders earlier; relevance still comes first." },
-      "exposure": { "what": "7% founder platform rate", "limit": "After the first project, for the first year of live protected payments. Payment-provider charges, if any, are separate." },
-      "advisory": { "what": "Partner network + product voice", "limit": "Project collaboration opportunities and early access to provider tools." }
+      "firstProject": {
+        "what": "First Sawwiq project: 0% commission",
+        "limit": "Applies to the first completed Sawwiq-acquired project after protected payments go live."
+      },
+      "founderRate": {
+        "what": "7% founder platform rate",
+        "limit": "After the first project, for the first year of live protected payments. Payment-provider charges, if any, are separate."
+      },
+      "early": {
+        "what": "Early window on qualified opportunities",
+        "limit": "Relevant work can reach founders earlier; relevance still comes first."
+      },
+      "premium": {
+        "what": "Six months of Pro",
+        "limit": "Starts when Pro actually launches. No surprise billing."
+      },
+      "partners": {
+        "what": "Partner network + product voice",
+        "limit": "Project collaboration opportunities and early access to provider tools."
+      },
+      "status": {
+        "what": "Permanent Founder · 2026 status",
+        "limit": "A dated record that you helped the network start. Never a quality certification, a ranking or a matching boost."
+      },
+      "ownClients": {
+        "what": "Your existing clients",
+        "limit": "Founder terms for contracts and workflows with clients you already have are still to be decided, once real payment-provider costs are known."
+      }
     }
-  }}
+  },
+  "Agent": {
+    "title": "My referrals",
+    "hello": "Hi {name}",
+    "intro": "Bring agencies, freelancers and creators to Sawwiq. You earn {rate} for each account that becomes active, plus bonuses at each milestone.",
+    "paused": "Your agent account is paused. Contact the Sawwiq team.",
+    "yourLink": "Your personal link",
+    "qr": "QR code for your link",
+    "codeHint": "Or they type your code at sign-up:",
+    "whatsapp": "WhatsApp",
+    "share": "Share",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "shareText": "List your business on Sawwiq, the first Arabic platform for social media makers. Free before launch:",
+    "stats": {
+      "signedUp": "Signed up through you",
+      "active": "Active accounts",
+      "earned": "Earned",
+      "owed": "Owed to you"
+    },
+    "paidSoFar": "Paid to you so far: {amount}",
+    "payNote": "The Sawwiq team pays you directly, outside the platform.",
+    "bonusTitle": "Milestone bonuses",
+    "tier": "{at} active = +{bonus}",
+    "toNext": "{count, plural, one {# more active account for a {bonus} bonus} other {# more active accounts for a {bonus} bonus}}",
+    "referredTitle": "Who signed up through you",
+    "activeRule": "An account becomes active, and counts for you, once its page is complete (bio and services) and it posts its first work. Help them finish it.",
+    "status": {
+      "active": "Active",
+      "pending": "Not complete yet",
+      "void": "Not counted"
+    },
+    "needs": "Still needs: {items}",
+    "missing": {
+      "bio": "bio",
+      "services": "services",
+      "post": "first work"
+    },
+    "empty": "No one has signed up through you yet. Share your link, or show your QR code when you visit agencies.",
+    "boardTitle": "Leaderboard",
+    "yourRank": "You're #{rank} of {count}",
+    "boardActive": "{count, plural, one {# active} other {# active}}"
+  },
+  "AdminAgents": {
+    "nav": "Agents",
+    "title": "Marketing agents",
+    "intro": "Add the agents who bring agencies and freelancers. An account counts once it's active (complete page and first work). You pay agents outside the platform and record it here.",
+    "export": "Export CSV",
+    "totals": "{agents} agents · {signedUp} sign-ups · {active} active · {owed} owed",
+    "cols": {
+      "agent": "Agent",
+      "code": "Code",
+      "signedUp": "Sign-ups",
+      "active": "Active",
+      "earned": "Earned",
+      "paid": "Paid",
+      "owed": "Owed"
+    },
+    "paused": "paused",
+    "empty": "No agents yet.",
+    "add": "Add an agent",
+    "name": "Name",
+    "email": "Email (to sign in)",
+    "phone": "Phone",
+    "code": "Personal code",
+    "codeHint": "Lower-case letters and numbers, e.g. ahmad. Their link: sawwiq.org/j/<code>",
+    "rate": "Pay per active account (JOD)",
+    "note": "Note (optional)",
+    "addButton": "Add agent",
+    "created": "{name} was added.",
+    "createdLogin": "Their sign-in:",
+    "createdNote": "The password is shown only once. Send it to them; they can change it on their page or sign in with an emailed code.",
+    "errors": {
+      "invalid": "Check the details.",
+      "codeInvalid": "The code must be 3 to 24 lower-case letters or numbers.",
+      "codeTaken": "Another agent has this code.",
+      "emailTaken": "Another account uses this email.",
+      "tiers": "One milestone per line: count: bonus, e.g. 25: 30"
+    },
+    "payoutAmount": "Payout (JOD)",
+    "payoutNote": "Note",
+    "payoutNotePlaceholder": "e.g. CliQ transfer 5 Oct",
+    "recordPayout": "Record payout",
+    "tiersTitle": "Milestone bonuses",
+    "tiersHint": "One line per milestone: active accounts: bonus in JOD. e.g. 25: 30",
+    "saveTiers": "Save milestones",
+    "back": "All agents",
+    "summary": "{signedUp} sign-ups · {active} active · earned {earned} · paid {paid} · owed {owed}",
+    "saveRate": "Save pay",
+    "pause": "Pause agent",
+    "resume": "Resume agent",
+    "payoutsTitle": "Payouts",
+    "restore": "Count it again",
+    "voidReason": "Reason it doesn't count",
+    "void": "Don't count"
+  }
+}

@@ -1,4 +1,4 @@
-# 40 · Sawwiq Arabic voice system
+# 43 · Sawwiq Arabic voice system
 
 Sawwiq is Arabic-first, but Arabic marketing copy is **not** translated sentence-for-sentence from English.
 
