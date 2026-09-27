@@ -36,7 +36,7 @@ export default async function StudioLayout({ children }: { children: React.React
     pendingPartnerCount(agency.id),
   ]);
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div data-design-surface="workspace" className="sw-workspace mx-auto w-full max-w-4xl">
       <div className="flex items-center gap-3 px-4 pt-4 sm:pt-8">
         <AgencyAvatar name={agency.name} src={mediaUrl(agency.avatarKey)} size={44} />
         <div className="min-w-0 flex-1">
@@ -76,7 +76,7 @@ export default async function StudioLayout({ children }: { children: React.React
           ]}
         />
       </div>
-      <div className="px-4 py-5">{children}</div>
+      <div className="sw-workspace-body px-4 py-5">{children}</div>
     </div>
   );
 }

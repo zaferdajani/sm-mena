@@ -11,10 +11,10 @@ import type { CountryCode } from "@/lib/countries";
 import { landingCopy, type Lang } from "./copy";
 
 export const scrollScrubTheme: ScrollScrubTheme = {
-  accent: "#0E6B46",
-  background: "#F2F2ED",
-  ink: "#10231A",
-  muted: "#4C5C53",
+  accent: "#106B4C",
+  background: "#F8F6EF",
+  ink: "#102E25",
+  muted: "#4C6257",
 };
 
 const weights = [1.1, 1.4, 1.4, 1.4, 1.9];

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function StudioNav({ items }: { items: { href: string; label: string; badge?: number }[] }) {
   const pathname = usePathname();
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b px-2 [scrollbar-width:none]">
+    <nav className="sw-workspace-nav flex gap-1 overflow-x-auto border-b px-2 [scrollbar-width:none]">
       {items.map((item) => {
         // The first tab is the section root (/studio, /admin): active only on its own page.
         const active = item.href === items[0].href ? pathname === item.href : pathname.startsWith(item.href);

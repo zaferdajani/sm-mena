@@ -1,6 +1,6 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans_Arabic, Readex_Pro } from "next/font/google";
+import { Noto_Sans_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -16,32 +16,15 @@ import { directionOf, routing } from "@/i18n/routing";
 import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
+import "../styles/brochure.css";
 
-const plexArabic = IBM_Plex_Sans_Arabic({
-  variable: "--font-plex-arabic",
+// Approved reference: Sawwiq_Saudi_Brochure_Corrected.pdf.
+// One self-hosted variable family for all Arabic/Latin UI text and headings.
+const notoArabic = Noto_Sans_Arabic({
+  variable: "--font-noto-arabic",
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "700"],
   display: "swap",
-});
-
-// Display face for headings, from the landing site's identity.
-const readex = Readex_Pro({
-  variable: "--font-readex",
-  subsets: ["arabic", "latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-  // Headings swap in when ready; only the body face is preloaded, so fewer
-  // font files compete with the first paint on phones.
-  preload: false,
-});
-
-// Amounts, dates and handles.
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["500"],
-  display: "swap",
-  preload: false,
+  fallback: ["Arial", "sans-serif"],
 });
 
 export function generateStaticParams() {
@@ -90,7 +73,8 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       dir={directionOf(locale)}
-      className={`${plexArabic.variable} ${readex.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${notoArabic.variable} h-full antialiased`}
+      data-design-system="brochure-v1"
       // The head script may set data-theme="dark" before React loads.
       suppressHydrationWarning
     >

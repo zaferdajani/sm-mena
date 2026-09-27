@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- landing images are pre-sized WebP/PNG files with explicit dimensions and lazy loading */
 /* Page sections that follow the scroll journey. Chrome is bespoke per section. */
+import { BrandLockup } from "@/components/brand-lockup";
 import { CountryPicker } from "@/components/country-picker";
 import { COUNTRIES, type CountryCode } from "@/lib/countries";
 import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./ctas";
@@ -11,8 +12,7 @@ export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; cou
   return (
     <header className="sw-header">
       <a className="sw-header__brand" href={`/${lang}`}>
-        <img alt="" height={32} src="/assets/brand/mark.png" width={32} />
-        <span>{c.brand}</span>
+        <BrandLockup label={c.brand} />
       </a>
       <nav aria-label={lang === "ar" ? "أقسام الصفحة" : "Page sections"} className="sw-header__nav">
         {c.nav.map((item) => (
