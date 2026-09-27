@@ -3045,7 +3045,7 @@
     "kinds": "{agencies} agencies · {freelancers} freelancers",
     "finalTitle": "The door is open. Not forever.",
     "finalBody": "Seats claimed before launch are founding seats. After launch… they're just numbers.",
-    "share": "Invite a colleague before your city fills up",
+    "share": "Send it to a colleague whose work should be seen",
     "shareText": "Sawwiq is opening soon: a place where agencies, freelancers and creators show their work to the clients and partners who need it. Joining is free before launch:",
     "copied": "Link copied",
     "have": "Have a seat? Sign in",
@@ -3073,7 +3073,7 @@
   "Seat": {
     "title": "Your seat on The List",
     "city": "#{n} in {city}",
-    "note": "Your number is permanent and never repeats. Invite colleagues before your city fills up.",
+    "note": "Your founder status is permanent. Know someone whose work should be seen? Send them the link.",
     "share": "Share your card",
     "save": "Save image",
     "cardTop": "I'm on The List",
