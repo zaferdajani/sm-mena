@@ -50,8 +50,9 @@ async function newRequest(visitorId: string, invite: Ag[] = [a, b], source: "for
 }
 
 beforeAll(async () => {
-  a = await mk("chat.alpha");
-  b = await mk("chat.beta");
+  // Launch-ready founders (seat + bio + service + work) see a new brief at once (docs/45).
+  a = await mk("chat.alpha", { foundingSeat: 1, bio: "Ads and content for cafés.", postCount: 1 });
+  b = await mk("chat.beta", { foundingSeat: 2, bio: "Ads for shops.", postCount: 1 });
   demo = await mk("chat.demo", { isDemo: true });
 });
 beforeEach(() => resetRateLimits());

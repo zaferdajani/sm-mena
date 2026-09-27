@@ -827,12 +827,23 @@ export const contracts = pgTable(
     agencySignature: text("agency_signature"),
     agencySignIpHash: text("agency_sign_ip_hash"),
     clientSignature: text("client_signature"),
+    // Founder economics (docs/45): true on the one live, Sawwiq-acquired,
+    // protected contract that carries the first-project 0% platform fee. A
+    // partial unique index lets an agency hold at most one such contract that
+    // is not cancelled, so two contracts created at the same moment can never
+    // both get the waiver; cancelling the holder frees it (signed terms stay).
+    founderWaiver: boolean("founder_waiver").notNull().default(false),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("contracts_agency_idx").on(t.agencyId, t.createdAt), index("contracts_status_idx").on(t.status), index("contracts_client_agency_idx").on(t.clientAgencyId)],
+  (t) => [
+    index("contracts_agency_idx").on(t.agencyId, t.createdAt),
+    index("contracts_status_idx").on(t.status),
+    index("contracts_client_agency_idx").on(t.clientAgencyId),
+    uniqueIndex("contracts_founder_waiver_idx").on(t.agencyId).where(sql`${t.founderWaiver} and ${t.status} <> 'cancelled'`),
+  ],
 );
 
 export const milestones = pgTable(
