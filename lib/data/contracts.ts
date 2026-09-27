@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { currencyOf } from "@/lib/countries";
 import { canRequestChanges, clampRounds, DEFAULT_REVISION_ROUNDS, isHeld, reviewDaysSetting, reviewDeadline, roundsState } from "@/lib/contracts/rules";
 import { LEGAL_VERSION } from "@/lib/legal/jurisdictions";
@@ -19,6 +19,7 @@ import {
   milestoneDisputes,
   milestones,
   partnerRequests,
+  packages,
   reviewRequests,
   type CancellationProposal,
   type Contract,
@@ -33,6 +34,7 @@ import {
 import { seal, tryOpen } from "@/lib/auth/secret-box";
 import { paymentProvider } from "@/lib/payments/provider";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
+import { founderEligibility, founderMarketplaceFee } from "@/lib/founding";
 import { notifyContract } from "./contract-notify";
 import { isUniqueViolation, ledgerKey, settleMilestone } from "./escrow";
 import { hashToken, INVITE_DAYS } from "./reviews";
@@ -262,17 +264,18 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   if (input.clientAgencyId && !(await arePartners(agencyId, input.clientAgencyId))) return { error: "partner" };
   const number = contractNumber();
   const token = randomBytes(18).toString("base64url");
-  // Sawwiq's fee applies to protected payments only; a direct contract carries none.
-  const fee = input.paymentMode === "protected" ? feePercent() : 0;
+  const paymentsLive = input.paymentMode === "protected" && protectedPaymentsLive();
+  const [provider] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
+  const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId));
+  const founder = provider ? founderEligibility({ ...provider, packageCount: pkg?.n ?? 0 }) : { eligible: false };
+  const [history] = await db.select({ n: sql<number>`count(*)::int` }).from(contracts).where(and(eq(contracts.agencyId, agencyId), eq(contracts.status, "completed"), eq(contracts.paymentMode, "protected"), eq(contracts.paymentsLive, true), isNotNull(contracts.requestId)));
+  const acquiredBySawwiq = Boolean(input.requestId || input.proposalId);
+  const fee = input.paymentMode === "protected" ? founderMarketplaceFee({ eligible: founder.eligible, protectedPaymentsLive: paymentsLive, acquiredBySawwiq, priorCompletedSawwiqProjects: history?.n ?? 0, standardFeePercent: feePercent() }) : 0;
   const specialRequests = input.specialRequests;
-  const [{ country, city, name } = { country: "jo", city: "amman", name: "" }] = await db
-    .select({ country: agencies.country, city: agencies.city, name: agencies.name })
-    .from(agencies)
-    .where(eq(agencies.id, agencyId));
+  const { country = "jo", city = "amman", name = "" } = provider ?? {};
   const legal = { version: LEGAL_VERSION, jurisdiction: country, city };
   input.agencyLegalName ??= name;
   const reviewDays = reviewDaysSetting();
-  const paymentsLive = input.paymentMode === "protected" && protectedPaymentsLive();
   const terms = canonicalTerms({ ...input, specialRequests, number, agencyId, feePercent: fee, legal, reviewDays, paymentsLive });
   const totalFils = input.milestones.reduce((s, m) => s + m.amountFils, 0);
 
