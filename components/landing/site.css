@@ -159,10 +159,38 @@
   transition: filter var(--sw-fast) ease;
 }
 .sw-signin:hover { filter: brightness(1.08); }
+/* Sign up for new visitors: outlined next to the filled sign-in button. */
+.sw-join {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 2.5rem;
+  padding-inline: 0.9rem;
+  border: 2px solid var(--sw-green);
+  border-radius: var(--sw-pill);
+  color: var(--sw-green);
+  font-family: var(--sw-font-display);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sw-join:hover { background: color-mix(in srgb, var(--sw-green) 10%, transparent); }
+.sw-join__short { display: none; }
+/* The smallest phones (320–360 px): the logo mark alone, tighter tools, so
+   Join and Sign in both stay on screen. */
+@media (max-width: 360px) {
+  .sw-header { gap: 0.5rem; }
+  .sw-header__brand span { display: none; }
+  .sw-header__tools { gap: 0.375rem; }
+  .sw-join { padding-inline: 0.6rem; }
+}
 /* Narrow phones: the icon alone keeps the header on one line. */
 @media (max-width: 520px) {
   .sw-signin { width: 2.5rem; padding: 0; justify-content: center; }
   .sw-signin span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sw-join { padding-inline: 0.75rem; }
+  .sw-join__long { display: none; }
+  .sw-join__short { display: inline; }
 }
 .sw-switch__knob {
   position: absolute;

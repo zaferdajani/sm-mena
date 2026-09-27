@@ -50,8 +50,8 @@
     "explore": "Explore work"
   },
   "Auth": {
-    "loginTitle": "Agency sign in",
-    "loginSubtitle": "Manage your agency page, posts and client messages.",
+    "loginTitle": "Sign in",
+    "loginSubtitle": "For agencies, freelancers, creators and the Sawwiq team.",
     "email": "Email",
     "password": "Password",
     "loginButton": "Sign in",
@@ -92,7 +92,9 @@
     "clientLink": "Sign in with a code by email",
     "phoneCountry": "Country code",
     "refCode": "Agent code (optional)",
-    "refCodePlaceholder": "If a Sawwiq agent introduced you"
+    "refCodePlaceholder": "If a Sawwiq agent introduced you",
+    "newHere": "New to Sawwiq?",
+    "newHereLink": "Create a free account"
   },
   "Cities": {
     "amman": "Amman",
@@ -219,14 +221,15 @@
     "explore": "Explore",
     "saved": "Saved",
     "studio": "Studio",
-    "join": "For agencies",
+    "join": "Join free",
     "admin": "Admin",
     "menu": "Menu",
     "newPost": "New post",
     "hire": "Hire an agency",
     "match": "AI assistant",
     "login": "Sign in",
-    "agent": "My referrals"
+    "agent": "My referrals",
+    "joinShort": "Join"
   },
   "Common": {
     "verified": "Business identity verified",
@@ -3342,5 +3345,19 @@
       "dragHint": "Drag me to your bookmarks bar. Clicking here does nothing.",
       "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
     }
+  },
+  "Start": {
+    "metaTitle": "Join Sawwiq",
+    "title": "Join Sawwiq",
+    "subtitle": "Free. Pick the one that describes you:",
+    "providerTitle": "I offer marketing services",
+    "providerBody": "Agency, freelancer, content creator, photographer or designer. Show your work and let businesses find you.",
+    "providerCta": "Create your page for free",
+    "clientTitle": "I have a business and need marketing",
+    "clientBody": "Find the right agency or freelancer, save and follow the ones you like, and ask for quotes.",
+    "clientCta": "Create an account with an email code",
+    "clientBrowse": "Or browse providers without an account",
+    "have": "Already have an account?",
+    "signIn": "Sign in"
   }
 }

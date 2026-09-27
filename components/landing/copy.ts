@@ -22,6 +22,8 @@ export interface SiteCopy {
   otherLangName: string;
   nav: { href: string; label: string }[];
   country: { label: string; locate: string };
+  /** Header button for visitors who are not signed in; `short` on narrow phones. */
+  signUp: { label: string; short: string };
   cta: { match: string; browse: string; join: string; reviews: string };
   chapters: Chapter[];
   payments: {
@@ -63,6 +65,7 @@ const ar: SiteCopy = {
     { href: "#agencies", label: "للوكالات" },
   ],
   country: { label: "الدولة", locate: "حدّد دولتي من موقعي" },
+  signUp: { label: "انضم مجاناً", short: "انضم" },
   cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "اقرأ المراجعات" },
   chapters: [
     { id: "start", label: "البداية", title: "اعثر على وكالة التسويق المناسبة في الأردن", body: "لعيادتك الطبية، عيادة الأسنان، صيدليتك، مطعمك، متجرك ومكتبك العقاري. شاهد أعمالاً حقيقية، واسأل المطابق الذكي، وادفع على مراحل وأنت مطمئن." },
@@ -191,6 +194,7 @@ const en: SiteCopy = {
     { href: "#agencies", label: "For agencies" },
   ],
   country: { label: "Country", locate: "Use my location" },
+  signUp: { label: "Join free", short: "Join" },
   cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "Read reviews" },
   chapters: [
     { id: "start", label: "Start", title: "Find the right marketing agency in Jordan", body: "For your clinic, dental practice, pharmacy, restaurant, shop or real estate office. See real work, ask the AI matchmaker, and pay by milestone." },
