@@ -39,7 +39,16 @@ jobs:
       - run: npm run e2e
         env:
           CI: "true"
-      # Keep successful visual evidence as well as failures. Only seeded/test data.
+      - name: Collect screenshots and test metadata (no font files or traces)
+        if: always()
+        run: python3 scripts/collect-design-evidence.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: design-evidence
+          path: design-evidence/
+          retention-days: 7
+      # Preserve the existing full diagnostic report as well.
       - uses: actions/upload-artifact@v4
         if: always()
         with:

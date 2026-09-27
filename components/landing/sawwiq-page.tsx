@@ -18,7 +18,7 @@ export function SawwiqPage({ lang, country, chosen, account, paymentsLive = fals
     <>
       <IntroSting />
       <WelcomeChooser />
-      <div className={`sw ${rhythm.page}`} data-country={country} data-lang={lang}>
+      <div className={`sw ${rhythm.page}`} data-country={country} data-lang={lang} data-design-surface="landing">
         <SiteHeader account={account} chosen={chosen} country={country} lang={lang} />
         <main>
           <ScrollScrub scenes={scrollScrubScenes(lang, country)} theme={scrollScrubTheme} />

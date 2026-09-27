@@ -1,5 +1,5 @@
 import { LifeBuoy, LogIn } from "lucide-react";
-import Image from "next/image";
+import { BrandLockup } from "@/components/brand-lockup";
 import { getLocale, getTranslations } from "next-intl/server";
 import { CountryPicker } from "@/components/country-picker";
 import { DemoBanner } from "@/components/demo/demo-banner";
@@ -44,12 +44,11 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           : { href: "/start", label: t("join"), icon: "join" },
   ];
   return (
-    <div className="min-h-dvh md:flex">
+    <div className="sw-app min-h-dvh md:flex" data-design-surface="app">
       <InterfaceBackground />
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
         <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
-          <Image src="/brand/mark-192.png" alt="" width={32} height={32} className="rounded-lg" priority />
-          {th("brand")}
+          <BrandLockup label={th("brand")} />
         </Link>
         <nav aria-label={t("menu")}>
           <SideNav items={[
@@ -69,9 +68,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
       <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
         <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
-          <Image src="/brand/mark-192.png" alt="" width={28} height={28} className="rounded-md" priority />{th("brand")}
+          <BrandLockup label={th("brand")} compact />
         </Link>
-        <div className="flex min-w-0 items-center gap-1">
+        <div className="sw-app-tools flex min-w-0 items-center gap-1">
           {picker}<HeaderBell />
           {user ? (
             <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted"><LifeBuoy className="size-5" /></Link>

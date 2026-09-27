@@ -1,0 +1,35 @@
+/* Keep the brochure wordmark and newer Join entry visible together.
+   Two deliberate phone rows avoid squeezing Arabic labels or hiding the logo. */
+@media (max-width: 600px) {
+  .sw[data-design-surface="landing"] { --sw-header-h: 120px; }
+  .sw[data-design-surface="landing"] .sw-header {
+    flex-wrap: wrap;
+    align-content: center;
+    gap: .375rem;
+    padding-block: .5rem;
+  }
+  .sw[data-design-surface="landing"] .sw-header__brand { flex: 1 0 100%; }
+  .sw[data-design-surface="landing"] .sw-header__brand > .sw-brand-lockup { display: inline-flex; }
+  .sw[data-design-surface="landing"] .sw-brand-lockup > img { inline-size: 2rem; block-size: 2rem; }
+  .sw[data-design-surface="landing"] .sw-brand-wordmark { display: inline; font-size: 1.8rem; }
+  .sw[data-design-surface="landing"] .sw-header__tools {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    margin-inline-start: 0;
+    gap: .375rem;
+  }
+  .sw[data-design-surface="landing"] .sw-switch { inline-size: 4.5rem; }
+  .sw[data-design-surface="landing"] .sw-join { padding-inline: .7rem; }
+}
+
+/* The larger, readable admin controls must wrap, not widen the whole page. */
+.sw-workspace [data-testid="admin-agencies"] > li { min-inline-size: 0; grid-template-columns: minmax(0, 1fr); }
+.sw-workspace [data-testid="admin-agencies"] > li > div { min-inline-size: 0; max-inline-size: 100%; }
+.sw-workspace [data-testid="admin-agencies"] form { flex-wrap: wrap; gap: .5rem; max-inline-size: 100%; }
+.sw-workspace [data-testid="admin-agencies"] :where(select, input[type="date"]) { min-inline-size: 0; max-inline-size: 100%; min-block-size: 2.75rem; }
+.sw-workspace [data-testid="admin-agencies"] input[type="date"] { flex: 1 1 9rem; }
+.sw-workspace [data-testid="admin-agencies"] :where(.text-\[10px\]) { font-size: .8125rem; }
+.sw-workspace [role="search"] { min-inline-size: min(100%, 12rem); }
+@media (min-width: 800px) {
+  .sw-workspace [data-testid="admin-agencies"] > li { grid-template-columns: minmax(0, 1fr) minmax(0, auto); }
+}

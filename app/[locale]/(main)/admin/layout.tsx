@@ -44,7 +44,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/security", label: t("security"), perm: "dashboard.view" },
   ];
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div data-design-surface="workspace" className="sw-workspace mx-auto w-full max-w-5xl">
       <div className="flex items-center justify-between px-4 pt-4 sm:pt-8">
         <div>
           <h1 className="text-lg font-bold">{t("title")}</h1>
@@ -62,7 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="mt-3">
         <StudioNav items={nav.filter((i) => can(user.role, i.perm)).map(({ href, label, badge }) => ({ href, label, badge }))} />
       </div>
-      <div className="px-4 py-5">{children}</div>
+      <div className="sw-workspace-body px-4 py-5">{children}</div>
     </div>
   );
 }
