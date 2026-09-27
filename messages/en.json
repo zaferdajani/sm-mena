@@ -2983,10 +2983,10 @@
     "confirmed": "Confirmed by the client"
   },
   "Teaser": {
-    "metaTitle": "Sawwiq: the platform of platforms. The List is open before launch",
-    "metaDescription": "The Arabic network for social media agencies, freelancers, content creators and influencers. Claim your founding seat free before launch: every number is given once.",
+    "metaTitle": "Sawwiq: join before we open to clients",
+    "metaDescription": "Agency, freelancer or creator? Put your work where future clients and collaborators can find it. Join free before Sawwiq opens to buyers; founder benefits are revealed gradually.",
     "badge": "The List is open · Before launch only",
-    "title": "The platform of platforms.",
+    "title": "Sawwiq: join before we open to clients",
     "tagline": "Every Arab social media maker under one roof. The top belongs to those who arrive first.",
     "subtitle": "Agencies, freelancers, content creators, influencers, photographers and designers. This is where clients across the Arab world will look for you, and the first names are being written now.",
     "seatLabel": "Next seat on The List",
@@ -3046,7 +3046,7 @@
     "finalTitle": "The door is open. Not forever.",
     "finalBody": "Seats claimed before launch are founding seats. After launch… they're just numbers.",
     "share": "Invite a colleague before your city fills up",
-    "shareText": "Sawwiq: the platform of platforms for Arab social media makers. Founding seats are free before launch:",
+    "shareText": "Sawwiq is opening soon: a place where agencies, freelancers and creators show their work to the clients and partners who need it. Joining is free before launch:",
     "copied": "Link copied",
     "have": "Have a seat? Sign in",
     "footnote": "Counts are registered provider profiles on Sawwiq (not verified businesses) and update continuously. Populations are approximate, from the latest official estimates.",
@@ -3067,7 +3067,8 @@
     },
     "vaultOpened": "Revealed thanks to the seat holders",
     "vaultAt": "Revealed at seat {seat}",
-    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}"
+    "vaultLeft": "{count, plural, one {# seat left to reveal the next secret} other {# seats left to reveal the next secret}}",
+    "whatsappText": "I joined Sawwiq before launch. If your work is in marketing, content or design, put it where clients can see it:"
   },
   "Seat": {
     "title": "Your seat on The List",
@@ -3080,7 +3081,7 @@
     "cardCity": "#{n} in {city}",
     "cardUrl": "sawwiq.org/soon",
     "whatsapp": "WhatsApp",
-    "whatsappText": "I just claimed my founding seat on Sawwiq, the platform of platforms for Arab social media makers. Seats are free before launch, claim yours:"
+    "whatsappText": "I joined Sawwiq before launch. If your work is in marketing, content or design, put it where clients can see it:"
   },
   "Account": {
     "title": "Sign-in details",
@@ -3205,37 +3206,41 @@
     }
   },
   "Founding": {
-    "memberTitle": "Founding member · {year}",
-    "notMemberTitle": "The Founding 100",
-    "memberUntil": "Your founding benefits run until {date}.",
-    "memberPending": "Your premium tools start the day they become usable and run for {days} days from then; we'll tell you the date.",
-    "stillOpen": "{left, plural, =1 {1 founding seat left} other {# founding seats left}}: the first 100 accepted providers get hands-on help. Anyone can still register normally afterwards.",
-    "closed": "The founding cohort ({size} seats) is closed. Registration stays open and free during launch.",
-    "notRank": "A founding seat is a membership number in order of joining. It is not a quality certification, a search ranking or a share in the company.",
+    "memberTitle": "Sawwiq founder · {year}",
+    "notMemberTitle": "Founder advantages",
+    "memberUntil": "Your Founder Pro access runs until {date}.",
+    "memberPending": "You are a founder. Six months of Pro starts when paid tools actually launch, not when you registered.",
+    "stillOpen": "Founder eligibility is still open to qualifying providers before launch.",
+    "closed": "The founding cohort is closed. Normal registration remains open.",
+    "notRank": "Founder status records that you helped the network start. It never overrides relevance, quality or client matching.",
     "benefits": {
-      "profile": {
-        "what": "Assisted launch profile",
-        "limit": "We help turn three permitted examples of work into case studies. Limited by our onboarding capacity."
+      "firstProject": {
+        "what": "First Sawwiq project: 0% commission",
+        "limit": "Applies to the first completed Sawwiq-acquired project after protected payments go live."
       },
-      "badge": {
-        "what": "Founding-member badge and permanent number",
-        "limit": "Dated; never a certification or a ranking."
+      "founderRate": {
+        "what": "7% founder platform rate",
+        "limit": "After the first project, for the first year of live protected payments. Payment-provider charges, if any, are separate."
+      },
+      "early": {
+        "what": "Early window on qualified opportunities",
+        "limit": "Relevant work can reach founders earlier; relevance still comes first."
       },
       "premium": {
-        "what": "90 days of premium tools",
-        "limit": "Starts when the tools are usable. No surprise billing."
+        "what": "Six months of Pro",
+        "limit": "Starts when Pro actually launches. No surprise billing."
       },
-      "intros": {
-        "what": "Two partner introductions",
-        "limit": "Introductions to complementary providers, not guaranteed contracts."
+      "partners": {
+        "what": "Partner network + product voice",
+        "limit": "Project collaboration opportunities and early access to provider tools."
       },
-      "exposure": {
-        "what": "Launch exposure",
-        "limit": "Consideration for editorial showcases and events, by published criteria. No guaranteed leads."
+      "status": {
+        "what": "Permanent Founder · 2026 status",
+        "limit": "A dated record that you helped the network start. Never a quality certification, a ranking or a matching boost."
       },
-      "advisory": {
-        "what": "Founding advisory group",
-        "limit": "Real feedback sessions on the product. No ownership implied."
+      "ownClients": {
+        "what": "Your existing clients",
+        "limit": "Founder terms for contracts and workflows with clients you already have are still to be decided, once real payment-provider costs are known."
       }
     }
   },

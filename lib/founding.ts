@@ -10,7 +10,15 @@ export const FOUNDING = {
   /** The year on the badge; a dated badge never reads as a quality rank. */
   year: 2026,
   /** Days of premium tools once they are usable (counted from activation, never from joining). */
-  benefitDays: 90,
+  benefitDays: 180,
+  /** First Sawwiq-acquired completed protected project: Sawwiq platform fee is waived. */
+  firstMarketplaceFeePercent: 0,
+  /** Founder rate on subsequent Sawwiq-acquired protected work during the launch benefit year. */
+  marketplaceFeePercent: 7,
+  /** Founder rate lasts this many days from live protected-payment activation. */
+  feeBenefitDays: 365,
+  /** Qualified founder opportunities can be surfaced this much earlier during the launch window. */
+  opportunityHeadStartHours: 24,
 } as const;
 
 /** The cohort closes at FOUNDING_CLOSES_AT (ISO date) or when the seats run out, whichever comes first. */

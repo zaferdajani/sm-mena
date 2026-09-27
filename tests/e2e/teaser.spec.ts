@@ -7,10 +7,8 @@ import { ADMIN, joinAgency, login } from "./helpers";
 test("the teaser shows every country and sends providers to /join", async ({ page }) => {
   await page.goto("/ar/soon");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.getByTestId("teaser-map").locator("[data-country]")).toHaveCount(8);
-  await expect(page.getByTestId("teaser-countries").locator("li")).toHaveCount(8);
-  // The next founding seat is shown as #0001-style, and sharing starts with WhatsApp.
-  await expect(page.getByTestId("teaser-next-seat")).toHaveText(/^#\d{4,}$/);
+  await expect(page.getByTestId("founder-benefits")).toBeVisible();
+  await expect(page.getByTestId("founder-benefits")).toContainText("0%");
   await expect(page.getByTestId("teaser-whatsapp")).toHaveAttribute("href", /^https:\/\/wa\.me\/\?text=/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
   await page.getByTestId("teaser-cta").first().click();
@@ -20,26 +18,26 @@ test("the teaser shows every country and sends providers to /join", async ({ pag
 test("the teaser has an English version", async ({ page }) => {
   await page.goto("/en/soon");
   await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("platform of platforms");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Before the clients arrive");
 });
 
 test("a new provider gets a founding seat and a share card in the studio", async ({ page }) => {
   await joinAgency(page, "seat");
   await page.goto("/ar/studio");
-  const card = page.getByTestId("seat-card");
+  const card = page.getByTestId("founding-panel");
   await expect(card).toBeVisible();
-  await expect(page.getByTestId("seat-number")).toHaveText(/^#\d{4,}$/);
-  await expect(page.getByTestId("seat-whatsapp")).toHaveAttribute("href", /wa\.me/);
-  // The claimed seat is the first, already ticked, setup step.
-  await expect(page.getByTestId("setup-seat")).toHaveAttribute("data-done", "true");
+  await expect(card).toHaveAttribute("data-member", "true");
+  // Every approved benefit renders (a missing message key would break the page).
+  await expect(card.locator("li")).toHaveCount(7);
+  await expect(card).toContainText("7%");
 });
 
 test("the teaser carries the moving hero, the vault and an account link", async ({ page }) => {
   await page.goto("/ar/soon");
-  await expect(page.getByTestId("teaser-vault").locator("li")).toHaveCount(3);
-  await expect(page.getByTestId("teaser-vault-left")).toBeVisible();
+  await expect(page.getByTestId("founder-benefits")).toBeVisible();
+
   await expect(page.getByTestId("teaser-account")).toHaveAttribute("href", "/ar/login");
-  await expect(page.getByTestId("teaser-cta").first()).toContainText("#");
+  await expect(page.getByTestId("teaser-cta").first()).not.toContainText("#");
 });
 
 test("with the pre-launch switch in preview, staff see the teaser as the front page", async ({ page }, info) => {

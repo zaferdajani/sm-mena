@@ -10,7 +10,7 @@ import { FOUNDING, type FoundingStatus } from "@/lib/founding";
 export async function FoundingPanel({ status }: { status: FoundingStatus }) {
   const t = await getTranslations("Founding");
   const format = await getFormatter();
-  const benefits = ["profile", "badge", "premium", "intros", "exposure", "advisory"] as const;
+  const benefits = ["firstProject", "founderRate", "early", "premium", "partners", "status", "ownClients"] as const;
   return (
     <section className="rounded-xl border p-4" data-testid="founding-panel" data-member={status.member}>
       <h2 className="flex items-center gap-2 font-semibold">
