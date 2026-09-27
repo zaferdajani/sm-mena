@@ -70,3 +70,62 @@ export function foundingStatus(a: FoundingInput, seatsTaken: number, now = new D
     benefitsUntil: member && activated ? new Date(activated.getTime() + FOUNDING.benefitDays * 86_400_000) : null,
   };
 }
+
+
+/** Commercial founder perks require useful supply, not an email signup. */
+export type FounderEligibilityInput = FoundingInput & {
+  status?: "active" | "suspended" | "deactivated";
+  bio?: string;
+  services?: string[];
+  postCount?: number;
+  packageCount?: number;
+};
+
+export type FounderEligibility = {
+  eligible: boolean;
+  cohort: boolean;
+  coreProfile: boolean;
+  proofOfWork: boolean;
+  reasons: ("cohort" | "inactive" | "profile" | "proof")[];
+};
+
+/**
+ * Pure activation gate used by opportunities, Studio and future money features.
+ * KYC/payment-provider checks are deliberately separate: they apply when money
+ * features go live and must never be inferred from a completed profile.
+ */
+export function founderEligibility(a: FounderEligibilityInput, now = new Date()): FounderEligibility {
+  const cohort = isFoundingMember(a, now);
+  const active = (a.status ?? "active") === "active" && !a.isDemo;
+  const coreProfile = Boolean(a.bio?.trim() && (a.services?.length ?? 0) > 0);
+  const proofOfWork = (a.postCount ?? 0) > 0 || (a.packageCount ?? 0) > 0;
+  const reasons: FounderEligibility["reasons"] = [];
+  if (!cohort) reasons.push("cohort");
+  if (!active) reasons.push("inactive");
+  if (!coreProfile) reasons.push("profile");
+  if (!proofOfWork) reasons.push("proof");
+  return { eligible: cohort && active && coreProfile && proofOfWork, cohort, coreProfile, proofOfWork, reasons };
+}
+
+/** Founder platform rate after the first completed Sawwiq-acquired project. */
+export function founderMarketplaceFee(args: {
+  eligible: boolean;
+  protectedPaymentsLive: boolean;
+  acquiredBySawwiq: boolean;
+  priorCompletedSawwiqProjects: number;
+  activatedAt?: Date | null;
+  now?: Date;
+  standardFeePercent: number;
+}) {
+  const now = args.now ?? new Date();
+  if (!args.eligible || !args.protectedPaymentsLive || !args.acquiredBySawwiq) return args.standardFeePercent;
+  const activated = args.activatedAt ?? foundingActivatedAt();
+  if (!activated) return args.standardFeePercent;
+  if (now.getTime() > activated.getTime() + FOUNDING.feeBenefitDays * 86_400_000) return args.standardFeePercent;
+  return args.priorCompletedSawwiqProjects === 0 ? FOUNDING.firstMarketplaceFeePercent : FOUNDING.marketplaceFeePercent;
+}
+
+/** Non-founders wait this long before seeing an otherwise relevant open brief. */
+export function opportunityVisibleAt(createdAt: Date, eligibleFounder: boolean) {
+  return eligibleFounder ? createdAt : new Date(createdAt.getTime() + FOUNDING.opportunityHeadStartHours * 3_600_000);
+}
