@@ -39,6 +39,7 @@ jobs:
       - run: npm run e2e
         env:
           CI: "true"
+      # Keep successful visual evidence as well as failures. Only seeded/test data.
       - uses: actions/upload-artifact@v4
         if: always()
         with:

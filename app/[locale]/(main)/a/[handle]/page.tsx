@@ -20,6 +20,7 @@ import { Link } from "@/i18n/navigation";
 import { getAgencyByHandle } from "@/lib/data/agencies";
 import { localizedAgency } from "@/lib/content-lang";
 import { isFollowing, recordView } from "@/lib/data/interactions";
+import { getCurrentAgency } from "@/lib/auth/session";
 import { listPackages } from "@/lib/data/packages";
 import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/lib/data/reviews";
 import { getFeed } from "@/lib/data/posts";
@@ -134,6 +135,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       <ProfileHeader
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: agency.foundingSeat, founding: isFoundingMember(agency) }}
         following={following}
+        followersHref={(await getCurrentAgency())?.id === agency.id ? "/studio/followers" : undefined}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />

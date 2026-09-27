@@ -1,6 +1,6 @@
-import { and, desc, eq, gt, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, like, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, events, follows, inquiries, likes, posts, reports, saves } from "@/lib/db/schema";
+import { agencies, events, follows, inquiries, likes, posts, reports, saves, users } from "@/lib/db/schema";
 import { openInquiryConversation } from "./conversations";
 import { CONSENT_VERSION } from "./users";
 
@@ -156,6 +156,25 @@ export async function createReport(input: {
 
 /** The key follows, likes and saves are stored under for a signed-in account (docs/41). */
 export const accountKey = (userId: string) => `u:${userId}`;
+
+export type Follower = { userId: string; email: string; followedAt: Date };
+
+/**
+ * Who follows an agency: signed-in client accounts only, newest first (an
+ * anonymous device never counts, docs/41). For the agency's own studio; the
+ * page masks the address before showing it.
+ */
+export async function listFollowers(agencyId: string, limit = 200): Promise<Follower[]> {
+  const db = await getDb();
+  const rows = await db
+    .select({ userId: users.id, email: users.email, followedAt: follows.createdAt })
+    .from(follows)
+    .innerJoin(users, sql`${follows.visitorId} = 'u:' || ${users.id}::text`)
+    .where(and(eq(follows.agencyId, agencyId), like(follows.visitorId, "u:%")))
+    .orderBy(desc(follows.createdAt))
+    .limit(limit);
+  return rows;
+}
 
 /**
  * After signing in: this device's anonymous follows, likes and saves move to

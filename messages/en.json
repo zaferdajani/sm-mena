@@ -330,7 +330,8 @@
     "notConfirmed": "Listed by the agency",
     "card": "Behind-the-Page card",
     "foundingBadge": "Founding member {year}",
-    "foundingTitle": "One of the first 100 providers on Sawwiq. A dated badge, not a quality rank."
+    "foundingTitle": "One of the first 100 providers on Sawwiq. A dated badge, not a quality rank.",
+    "seeFollowers": "See who follows you"
   },
   "Explore": {
     "title": "Explore",
@@ -631,6 +632,14 @@
       "share": "Share",
       "copied": "Link copied",
       "saved": "Saved to your device; post it to your story."
+    },
+    "followers": "Followers",
+    "followersPage": {
+      "title": "{count, plural, =0 {No followers yet} one {# follower} other {# followers}}",
+      "intro": "Business owners who signed in and followed your page, newest first. A follower is interest in your work: keep posting and they see it.",
+      "empty": "Nobody follows your page yet. Share it with clients you already work with; a page with real work gets followed first.",
+      "followedAt": "followed {when}",
+      "privacy": "Addresses are shown partly hidden: followers are clients who chose to see your work, not a contact list. Write to them through Sawwiq when they send a request or message."
     }
   },
   "Admin": {
