@@ -37,17 +37,17 @@ describe("Founder commercial activation", () => {
   it("waives the first Sawwiq-acquired project then uses 7% during the founder year", () => {
     process.env.FOUNDING_ACTIVATED_AT = "2026-10-01T00:00:00Z";
     const common = { eligible: true, protectedPaymentsLive: true, acquiredBySawwiq: true, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2026-11-01T00:00:00Z"), standardFeePercent: 10 };
-    expect(founderMarketplaceFee({ ...common, priorCompletedSawwiqProjects: 0 })).toBe(0);
-    expect(founderMarketplaceFee({ ...common, priorCompletedSawwiqProjects: 1 })).toBe(7);
+    expect(founderMarketplaceFee({ ...common, priorFeeWaiverReservations: 0 })).toBe(0);
+    expect(founderMarketplaceFee({ ...common, priorFeeWaiverReservations: 1 })).toBe(7);
   });
 
   it("never discounts direct/existing-client or pre-live money flows", () => {
-    const common = { eligible: true, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2026-11-01T00:00:00Z"), standardFeePercent: 10, priorCompletedSawwiqProjects: 0 };
+    const common = { eligible: true, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2026-11-01T00:00:00Z"), standardFeePercent: 10, priorFeeWaiverReservations: 0 };
     expect(founderMarketplaceFee({ ...common, protectedPaymentsLive: false, acquiredBySawwiq: true })).toBe(10);
     expect(founderMarketplaceFee({ ...common, protectedPaymentsLive: true, acquiredBySawwiq: false })).toBe(10);
   });
 
   it("expires the founder rate after 365 days", () => {
-    expect(founderMarketplaceFee({ eligible: true, protectedPaymentsLive: true, acquiredBySawwiq: true, priorCompletedSawwiqProjects: 1, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2027-10-02T00:00:00Z"), standardFeePercent: 10 })).toBe(10);
+    expect(founderMarketplaceFee({ eligible: true, protectedPaymentsLive: true, acquiredBySawwiq: true, priorFeeWaiverReservations: 1, activatedAt: new Date("2026-10-01T00:00:00Z"), now: new Date("2027-10-02T00:00:00Z"), standardFeePercent: 10 })).toBe(10);
   });
 });
