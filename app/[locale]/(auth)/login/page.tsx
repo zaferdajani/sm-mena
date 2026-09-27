@@ -30,12 +30,14 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
           {t("clientLink")}
         </Link>
       </p>
-      <p className="mt-5 text-center text-sm text-muted-foreground">
-        {t("noAccount")}{" "}
-        <Link href="/join" className="font-medium text-brand">
-          {t("joinLink")}
-        </Link>
-      </p>
+      <Link
+        href="/start"
+        className="mt-5 flex items-center justify-center gap-1.5 rounded-lg border-2 border-brand/30 p-3 text-sm font-medium hover:border-brand hover:bg-brand-soft"
+        data-testid="login-join"
+      >
+        <span className="text-muted-foreground">{t("newHere")}</span>
+        <span className="text-brand">{t("newHereLink")}</span>
+      </Link>
     </>
   );
 }
