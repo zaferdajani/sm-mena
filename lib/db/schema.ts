@@ -1392,6 +1392,271 @@ export const partnerRequests = pgTable(
   ],
 );
 
+// ---------------------------------------------------------------------------
+// Collaboration V2 (docs/48-collaboration-v2.md): find, book and rehire other
+// providers. Everything here is a projection around the signed partner
+// contract (contracts.agency_id = supplier, client_agency_id = buyer) and
+// the disclosed milestone share; none of it moves money or changes terms.
+// ---------------------------------------------------------------------------
+
+/** How a provider likes to collaborate. Absent row = unknown (never assumed). */
+export const collabProfiles = pgTable("collab_profiles", {
+  agencyId: uuid("agency_id")
+    .primaryKey()
+    .references(() => agencies.id, { onDelete: "cascade" }),
+  // Relationship models the provider accepts: private | disclosed | referral.
+  modes: text("modes").array().notNull().default(sql`'{}'::text[]`),
+  // remote | on_site | travel
+  workModes: text("work_modes").array().notNull().default(sql`'{}'::text[]`),
+  // null = not answered; true/false = the provider's explicit choice.
+  openToWork: boolean("open_to_work"),
+  consentVersion: text("consent_version").notNull().default("collab-2026-09"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * A provider's own statement about a period: available, limited or busy,
+ * with the capacity it declares in Sawwiq. Stored as UTC instants plus the
+ * zone it was typed in. Freshness = confirmedAt/expiresAt; a window nobody
+ * confirmed recently reads as "needs confirmation", never as available.
+ */
+export const availabilityWindows = pgTable(
+  "availability_windows",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    timezone: text("timezone").notNull().default("Asia/Amman"),
+    // available | limited | busy
+    status: text("status").notNull().default("available"),
+    capacityUnits: integer("capacity_units"),
+    // days | hours | projects
+    capacityUnit: text("capacity_unit"),
+    // private | partners | public. Busy windows never show a counterparty.
+    visibility: text("visibility").notNull().default("partners"),
+    note: text("note").notNull().default(""),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("availability_windows_agency_idx").on(t.agencyId, t.startsAt), check("availability_windows_order", sql`${t.endsAt} > ${t.startsAt}`)],
+);
+
+/** A collaboration need an agency chooses to publish (never derived from seeks_roles). */
+export const collabNeeds = pgTable(
+  "collab_needs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    roles: text("roles").array().notNull().default(sql`'{}'::text[]`),
+    services: text("services").array().notNull().default(sql`'{}'::text[]`),
+    scope: text("scope").notNull().default(""),
+    // remote | on_site | travel
+    workMode: text("work_mode").notNull().default("remote"),
+    city: text("city"),
+    country: text("country").notNull().default("jo"),
+    languages: text("languages").array().notNull().default(sql`'{}'::text[]`),
+    startsOn: text("starts_on"), // YYYY-MM-DD
+    endsOn: text("ends_on"),
+    budgetMinFils: integer("budget_min_fils"),
+    budgetMaxFils: integer("budget_max_fils"),
+    currency: text("currency").notNull().default("JOD"),
+    modes: text("modes").array().notNull().default(sql`'{private}'::text[]`),
+    // public (every eligible provider) | partners (accepted partners only)
+    audience: text("audience").notNull().default("public"),
+    // draft | published | withdrawn | expired | filled
+    status: text("status").notNull().default("draft"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("collab_needs_open_idx").on(t.status, t.country, t.expiresAt), index("collab_needs_agency_idx").on(t.agencyId, t.status)],
+);
+
+/** A provider raising a hand on a published need. One per provider and need. */
+export const collabNeedReplies = pgTable(
+  "collab_need_replies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    needId: uuid("need_id")
+      .notNull()
+      .references(() => collabNeeds.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    note: text("note").notNull().default(""),
+    // interested | withdrawn | declined
+    status: text("status").notNull().default("interested"),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("collab_need_replies_pair_idx").on(t.needId, t.agencyId), index("collab_need_replies_agency_idx").on(t.agencyId)],
+);
+
+/**
+ * An agency's private roster: providers it keeps close, in its own groups,
+ * with notes and a negotiated-rate reference only that agency can read.
+ * Saving someone is not a partnership and tells the provider nothing.
+ */
+export const collabRoster = pgTable(
+  "collab_roster",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ownerAgencyId: uuid("owner_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    providerAgencyId: uuid("provider_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    groupName: text("group_name").notNull().default(""),
+    tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
+    notes: text("notes").notNull().default(""),
+    rateFils: integer("rate_fils"),
+    rateCurrency: text("rate_currency"),
+    // day | hour | project | month
+    rateUnit: text("rate_unit"),
+    lastEngagedAt: timestamp("last_engaged_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("collab_roster_pair_idx").on(t.ownerAgencyId, t.providerAgencyId), index("collab_roster_owner_idx").on(t.ownerAgencyId, t.groupName)],
+);
+
+/**
+ * A personal invitation link an agency hands to someone it already works
+ * with. Only a hash of the token is stored; the link expires, can be revoked,
+ * and accepting it makes the two accepted partners (no duplicate account).
+ */
+export const collabInvites = pgTable(
+  "collab_invites",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fromAgencyId: uuid("from_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    // A short label the sender types (a first name or a studio), never contact data.
+    label: text("label").notNull().default(""),
+    roles: text("roles").array().notNull().default(sql`'{}'::text[]`),
+    // pending | accepted | declined | expired | revoked
+    status: text("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAgencyId: uuid("accepted_agency_id").references(() => agencies.id, { onDelete: "set null" }),
+    respondedAt: timestamp("responded_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("collab_invites_from_idx").on(t.fromAgencyId, t.status)],
+);
+
+/** A provider that wants nothing from another one: no requests, invites or inquiries get through. */
+export const collabBlocks = pgTable(
+  "collab_blocks",
+  {
+    blockerAgencyId: uuid("blocker_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    blockedAgencyId: uuid("blocked_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.blockerAgencyId, t.blockedAgencyId] })],
+);
+
+/**
+ * A structured work inquiry from a buying agency to chosen suppliers. It is
+ * not a contract: replies are interest, a quote or a decline, and accepting a
+ * quote hands over to the existing partner-contract request.
+ */
+export const workInquiries = pgTable(
+  "work_inquiries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    buyerAgencyId: uuid("buyer_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    needId: uuid("need_id").references(() => collabNeeds.id, { onDelete: "set null" }),
+    // The buyer's own client contract this work feeds; private to the buyer, never sent to suppliers.
+    parentContractId: uuid("parent_contract_id").references(() => contracts.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    role: text("role").notNull().default(""),
+    deliverables: jsonb("deliverables").$type<DeliverableLine[]>().notNull().default([]),
+    assetsNote: text("assets_note").notNull().default(""),
+    scope: text("scope").notNull().default(""),
+    startsOn: text("starts_on"), // YYYY-MM-DD
+    dueOn: text("due_on"),
+    timezone: text("timezone").notNull().default("Asia/Amman"),
+    workMode: text("work_mode").notNull().default("remote"),
+    city: text("city"),
+    country: text("country").notNull().default("jo"),
+    budgetFils: integer("budget_fils"),
+    currency: text("currency").notNull().default("JOD"),
+    // private (subcontract; the buyer stays the client's face) | disclosed (co-delivery) | referral
+    privacyMode: text("privacy_mode").notNull().default("private"),
+    responseBy: timestamp("response_by", { withTimezone: true }),
+    // draft | sent | replied | converted | declined | expired | withdrawn
+    status: text("status").notNull().default("draft"),
+    version: integer("version").notNull().default(1),
+    acceptedQuoteId: uuid("accepted_quote_id"),
+    contractRequestId: uuid("contract_request_id").references(() => contractRequests.id, { onDelete: "set null" }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("work_inquiries_buyer_idx").on(t.buyerAgencyId, t.status)],
+);
+
+/** Who an inquiry was sent to, and where each supplier stands. */
+export const workInquiryRecipients = pgTable(
+  "work_inquiry_recipients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    inquiryId: uuid("inquiry_id")
+      .notNull()
+      .references(() => workInquiries.id, { onDelete: "cascade" }),
+    supplierAgencyId: uuid("supplier_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    // sent | viewed | quoted | declined | accepted | passed (another supplier was chosen) | expired
+    status: text("status").notNull().default("sent"),
+    viewedAt: timestamp("viewed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("work_inquiry_recipients_pair_idx").on(t.inquiryId, t.supplierAgencyId), index("work_inquiry_recipients_supplier_idx").on(t.supplierAgencyId, t.status)],
+);
+
+/** A supplier's reply with numbers: each counter is a new version; the buyer sees only its own inquiries' quotes. */
+export const workQuotes = pgTable(
+  "work_quotes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    inquiryId: uuid("inquiry_id")
+      .notNull()
+      .references(() => workInquiries.id, { onDelete: "cascade" }),
+    supplierAgencyId: uuid("supplier_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    version: integer("version").notNull().default(1),
+    amountFils: integer("amount_fils").notNull(),
+    currency: text("currency").notNull().default("JOD"),
+    startsOn: text("starts_on"),
+    dueOn: text("due_on"),
+    scopeNote: text("scope_note").notNull().default(""),
+    exclusions: text("exclusions").notNull().default(""),
+    // open | superseded | accepted | withdrawn | declined
+    status: text("status").notNull().default("open"),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("work_quotes_version_idx").on(t.inquiryId, t.supplierAgencyId, t.version), index("work_quotes_inquiry_idx").on(t.inquiryId, t.status)],
+);
+
 export type User = typeof users.$inferSelect;
 export type ServiceTag = typeof serviceTags.$inferSelect;
 export type PartnerRequest = typeof partnerRequests.$inferSelect;
@@ -1422,3 +1687,12 @@ export type Nda = typeof ndas.$inferSelect;
 export type Conversation = typeof conversations.$inferSelect;
 export type ConversationMessage = typeof conversationMessages.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+export type CollabProfile = typeof collabProfiles.$inferSelect;
+export type AvailabilityWindow = typeof availabilityWindows.$inferSelect;
+export type CollabNeed = typeof collabNeeds.$inferSelect;
+export type CollabNeedReply = typeof collabNeedReplies.$inferSelect;
+export type CollabRosterEntry = typeof collabRoster.$inferSelect;
+export type CollabInvite = typeof collabInvites.$inferSelect;
+export type WorkInquiry = typeof workInquiries.$inferSelect;
+export type WorkInquiryRecipient = typeof workInquiryRecipients.$inferSelect;
+export type WorkQuote = typeof workQuotes.$inferSelect;

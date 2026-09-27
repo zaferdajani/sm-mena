@@ -21,7 +21,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/join">):
 export default async function JoinPage({ params, searchParams }: PageProps<"/[locale]/join">) {
   const { locale } = await params;
   // An agent's code from their link (cookie) or ?ref= (docs/42).
-  const fromUrl = (await searchParams).ref;
+  const sp = await searchParams;
+  const fromUrl = sp.ref;
+  // A collaborator's invitation link (docs/48) hands its token to the form; the token itself is never shown.
+  const invite = typeof sp.invite === "string" && /^[A-Za-z0-9_-]{20,64}$/.test(sp.invite) ? sp.invite : "";
   const fromCookie = (await cookies()).get(REFERRAL_COOKIE)?.value;
   const refCode = [fromUrl, fromCookie].map(normalizeCode).find((c) => isReferralCode(c)) ?? "";
   setRequestLocale(locale);
@@ -39,7 +42,7 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
           <span>{tb("join")}</span>
         </p>
       )}
-      <JoinForm countries={countries} defaultCountry={country} phoneCountry={phoneFrom} refCode={refCode} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
+      <JoinForm countries={countries} defaultCountry={country} phoneCountry={phoneFrom} refCode={refCode} invite={invite} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("haveAccount")}{" "}
         <Link href="/login" className="font-medium text-brand">

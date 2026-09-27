@@ -26,6 +26,8 @@ export const FEATURES = [
   { key: "messaging", group: "discovery" },
   { key: "reviews", group: "trust" },
   { key: "partners", group: "network" },
+  // Collaboration V2 release 1: discovery, availability, private roster, work inquiries (docs/48).
+  { key: "collaboration", group: "network" },
   { key: "demo_view", group: "discovery" },
   // Off by default: the front page is the landing page; on makes it the pre-launch teaser (/soon, docs/39); "soon" previews it to staff.
   { key: "prelaunch_home", group: "launch" },

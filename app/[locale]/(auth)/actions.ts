@@ -152,6 +152,15 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   await assignFoundingSeats();
   await createSession(user.id);
   const locale = await getLocale();
+  // Came through a collaborator's invitation link (docs/48): accept it now, with the fresh account.
+  const invite = String(formData.get("invite") ?? "");
+  if (invite) {
+    const { acceptInvite } = await import("@/lib/data/collab-invites");
+    const { getAgencyByOwner } = await import("@/lib/data/agencies");
+    const me = await getAgencyByOwner(user.id);
+    const r = me ? await acceptInvite(me, invite).catch(() => null) : null;
+    if (r && "ok" in r) return redirect({ href: "/studio/profile?welcome=1&invited=1", locale });
+  }
   return redirect({ href: "/studio/profile?welcome=1", locale });
 }
 

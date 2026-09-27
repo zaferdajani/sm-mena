@@ -1,6 +1,8 @@
 import { purgeOldMessages } from "@/lib/data/conversations";
 import { runMilestoneJobs } from "@/lib/data/contract-jobs";
 import { purgeOldNotifications } from "@/lib/data/notifications";
+import { expireNeeds } from "@/lib/data/collab-needs";
+import { expireInquiries } from "@/lib/data/collab-inquiries";
 
 // The daily job (vercel.json; one cron keeps us within the Hobby plan's limit):
 // retention (docs/08-legal-compliance.md): chat messages after 24 months,
@@ -15,5 +17,7 @@ export async function GET(request: Request) {
   }
   const [messages, notifications] = await Promise.all([purgeOldMessages(), purgeOldNotifications()]);
   const milestones = await runMilestoneJobs();
-  return Response.json({ messages, notifications, milestones });
+  // Collaboration V2 (docs/48): published needs and work inquiries past their dates close for everyone.
+  const [needs, inquiries] = await Promise.all([expireNeeds(), expireInquiries()]);
+  return Response.json({ messages, notifications, milestones, needs, inquiries });
 }

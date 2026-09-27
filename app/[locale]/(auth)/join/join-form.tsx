@@ -13,13 +13,14 @@ import { ServicePicker } from "@/components/service-picker";
 import { TeamFields } from "@/components/studio/team-fields";
 import { join } from "../actions";
 
-export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = "", popular, roles }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; refCode?: string; popular: string[]; roles: { key: string; label: string }[] }) {
+export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = "", invite = "", popular, roles }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; refCode?: string; /** A collaborator's invitation token (docs/48), accepted once the page exists. */ invite?: string; popular: string[]; roles: { key: string; label: string }[] }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
   const f = state?.fields ?? {};
   return (
     <form action={action} className="grid gap-4">
+      {invite && <input type="hidden" name="invite" value={invite} />}
       <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
       <div className="grid gap-1.5">
         <Label htmlFor="name">{t("agencyName")}</Label>
