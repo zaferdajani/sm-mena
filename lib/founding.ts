@@ -112,7 +112,7 @@ export function founderMarketplaceFee(args: {
   eligible: boolean;
   protectedPaymentsLive: boolean;
   acquiredBySawwiq: boolean;
-  priorCompletedSawwiqProjects: number;
+  priorFeeWaiverReservations: number;
   activatedAt?: Date | null;
   now?: Date;
   standardFeePercent: number;
@@ -122,7 +122,7 @@ export function founderMarketplaceFee(args: {
   const activated = args.activatedAt ?? foundingActivatedAt();
   if (!activated) return args.standardFeePercent;
   if (now.getTime() > activated.getTime() + FOUNDING.feeBenefitDays * 86_400_000) return args.standardFeePercent;
-  return args.priorCompletedSawwiqProjects === 0 ? FOUNDING.firstMarketplaceFeePercent : FOUNDING.marketplaceFeePercent;
+  return args.priorFeeWaiverReservations === 0 ? FOUNDING.firstMarketplaceFeePercent : FOUNDING.marketplaceFeePercent;
 }
 
 /** Non-founders wait this long before seeing an otherwise relevant open brief. */
