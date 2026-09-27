@@ -1,0 +1,52 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  background: #f7f5ee;
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+/* Author display rules must never defeat the native hidden attribute. */
+.overlay[hidden] { display: none; }
+.overlay[data-leaving="true"] { opacity: 0; pointer-events: none; }
+.video {
+  display: block;
+  inline-size: min(80vw, 28rem);
+  block-size: min(70svh, 36rem);
+  max-inline-size: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.skip, .sound {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.skip {
+  inset-block-start: max(1rem, env(safe-area-inset-top));
+  inset-inline-end: max(1rem, env(safe-area-inset-right));
+  background: rgb(16 35 26 / 0.07);
+  color: #10231a;
+}
+.sound {
+  inset-block-end: max(1.5rem, env(safe-area-inset-bottom));
+  justify-self: center;
+  background: #0e6b46;
+  color: #fff;
+}
+.skip:focus-visible, .sound:focus-visible { outline: 3px solid #0e6b46; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .overlay { transition: none; }
+}
