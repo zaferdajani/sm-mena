@@ -1,0 +1,62 @@
+/* Route-scoped spacing contract. The legacy `.sw p/h2/ul/...` reset has
+   higher specificity than a single section class. These scoped rules restore
+   intentional component spacing without leaking into profile/app pages. */
+.page {
+  --sw-section: clamp(3.5rem, 6vw, 6rem);
+  --sw-gutter: clamp(1rem, 5vw, 5rem);
+}
+.page :global(.sw-h2) { font-size: clamp(1.9rem, 3.2vw, 3rem); }
+.page :global(.sw-lead) { margin-block-start: 1rem; line-height: 1.8; }
+.page :global(.sw-eyebrow) { margin-block-end: 1rem; }
+.page :global(.sw-trust__title) { margin-block-end: clamp(1.5rem, 3vw, 2.5rem); }
+.page :global(.sw-who__head), .page :global(.sw-svc__head) { margin-block-end: clamp(1.5rem, 3vw, 2.5rem); }
+.page :global(.sw-who__note) { padding-inline-start: 0.9rem; }
+.page :global(.sw-pay__points) { margin-block-start: 2rem; }
+.page :global(.sw-pay__direct) { margin-block-start: 1.5rem; padding-block-start: 1.25rem; }
+.page :global(.sw-bento__who) { margin-block-start: 1rem; }
+.page :global(.sw-bento__note) { margin-block-start: 0.75rem; }
+.page :global(.sw-bento__caption) { margin-block-start: 0.5rem; }
+.page :global(.sw-agency__rail) { margin-block: 2rem; }
+.page :global(.sw-cities__list) { margin-block: 2rem 3rem; }
+.page :global(.sw-who), .page :global(.sw-pay), .page :global(.sw-svc),
+.page :global(.sw-trust), .page :global(.sw-agency), .page :global(.sw-cities) {
+  scroll-margin-block-start: calc(var(--sw-header-h) + 1.5rem);
+}
+.page :global(.sw-trust) { border-block-start: 1px solid var(--sw-line); }
+.page :global(.sw-bento) {
+  gap: clamp(0.875rem, 1.5vw, 1.5rem);
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
+  grid-auto-rows: minmax(17rem, auto);
+}
+.page :global(.sw-bento) > * {
+  min-inline-size: 0;
+  border: 1px solid var(--sw-line);
+  border-radius: var(--sw-r);
+  overflow: hidden;
+}
+.page :global(.sw-bento__review) {
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 1.25rem;
+  padding: 3.5rem clamp(1.25rem, 2vw, 2rem) 1.75rem;
+}
+.page :global(.sw-bento__face) { inline-size: 5rem; block-size: 5rem; }
+.page :global(.sw-bento__rating) {
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 3.5rem clamp(1.25rem, 2vw, 2rem) 1.75rem;
+}
+.page :global(.sw-bento__numeral) {
+  font-size: clamp(4rem, 7vw, 6rem);
+  line-height: 1;
+  text-align: start;
+}
+.page :global(.sw-bento__photo) img { min-block-size: 17rem; }
+.page :global(.sw-signin) { color: #fff; }
+.release { padding: 0.5rem var(--sw-gutter) 1.25rem; border-block-start: 1px solid var(--sw-line); }
+@media (max-width: 640px) {
+  .page :global(.sw-bento__review) { grid-template-columns: minmax(0, 1fr); }
+  .page :global(.sw-bento__reviewbody) { min-inline-size: 0; }
+}
