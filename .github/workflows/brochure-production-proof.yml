@@ -1,0 +1,52 @@
+name: Verify brochure on production
+on:
+  push:
+    branches: [audit/brochure-visual-evidence]
+    paths: [.github/workflows/brochure-production-proof.yml]
+permissions:
+  contents: read
+jobs:
+  public-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      EXPECTED_SHA: a45aa17b982afc66899cf6680c57f9623c728a99
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Install isolated public browser engines
+        run: |
+          mkdir -p /tmp/sawwiq-brochure-browser
+          cd /tmp/sawwiq-brochure-browser
+          npm init -y >/dev/null
+          npm install playwright@1.63.0
+          npx playwright install --with-deps chromium webkit
+          cp "$GITHUB_WORKSPACE/scripts/verify-brochure-production.mjs" verify.mjs
+      - name: Wait for the exact production deployment
+        working-directory: /tmp/sawwiq-brochure-browser
+        run: |
+          node --input-type=module <<'JS'
+          for (let i = 0; i < 12; i++) {
+            try {
+              const r = await fetch('https://sawwiq.org/api/version', { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+              const v = await r.json();
+              console.log(JSON.stringify(v));
+              if (r.ok && v.commit === process.env.EXPECTED_SHA && v.revision === 'brochure-2026-09-27-v1' && v.environment === 'production') process.exit(0);
+            } catch (e) { console.log(String(e)); }
+            await new Promise(r => setTimeout(r, 15000));
+          }
+          throw new Error('Exact production deployment was not observed; do not claim verified');
+          JS
+      - name: Inspect public pages and real controls without account changes
+        working-directory: /tmp/sawwiq-brochure-browser
+        run: node verify.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: brochure-production-evidence
+          path: /tmp/sawwiq-brochure-browser/production-evidence/
+          retention-days: 7
