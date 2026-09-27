@@ -21,3 +21,15 @@
   .sw[data-design-surface="landing"] .sw-switch { inline-size: 4.5rem; }
   .sw[data-design-surface="landing"] .sw-join { padding-inline: .7rem; }
 }
+
+/* The larger, readable admin controls must wrap, not widen the whole page. */
+.sw-workspace [data-testid="admin-agencies"] > li { min-inline-size: 0; grid-template-columns: minmax(0, 1fr); }
+.sw-workspace [data-testid="admin-agencies"] > li > div { min-inline-size: 0; max-inline-size: 100%; }
+.sw-workspace [data-testid="admin-agencies"] form { flex-wrap: wrap; gap: .5rem; max-inline-size: 100%; }
+.sw-workspace [data-testid="admin-agencies"] :where(select, input[type="date"]) { min-inline-size: 0; max-inline-size: 100%; min-block-size: 2.75rem; }
+.sw-workspace [data-testid="admin-agencies"] input[type="date"] { flex: 1 1 9rem; }
+.sw-workspace [data-testid="admin-agencies"] :where(.text-\[10px\]) { font-size: .8125rem; }
+.sw-workspace [role="search"] { min-inline-size: min(100%, 12rem); }
+@media (min-width: 800px) {
+  .sw-workspace [data-testid="admin-agencies"] > li { grid-template-columns: minmax(0, 1fr) minmax(0, auto); }
+}
