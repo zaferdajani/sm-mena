@@ -38,6 +38,8 @@ export const PERMISSIONS = [
   "appearance.manage",
   "conversations.view",
   "features.manage",
+  // Referral agents: add them, set pay, record payouts, void referrals (docs/42).
+  "agents.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

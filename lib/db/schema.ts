@@ -28,7 +28,8 @@ import type { PostApp } from "@/lib/app-demo";
 // owner (the platform owner; cannot be removed by anyone else), admin, and
 // scoped team roles for engineering (backbone), maintenance and support.
 // "client": a business owner who signs in with an emailed code to follow, save and like (docs/41).
-export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support", "client"]);
+// "agent": a field marketing agent who brings agencies and freelancers to Sawwiq (docs/42).
+export const userRole = pgEnum("user_role", ["agency", "admin", "owner", "backbone", "maintenance", "support", "client", "agent"]);
 // deactivated: the account holder closed it (or the demo cleanup did); hidden
 // everywhere and sign-in is off, but its contracts and ledger stay (docs/32).
 export const agencyStatus = pgEnum("agency_status", ["active", "suspended", "deactivated"]);
@@ -144,6 +145,50 @@ export const loginCodes = pgTable(
   (t) => [index("login_codes_email_idx").on(t.email, t.createdAt)],
 );
 
+/**
+ * Field marketing agents who bring agencies and freelancers to Sawwiq
+ * (docs/42-referral-agents.md). Each has a personal code and link; a provider
+ * who signs up with it is theirs. An agent earns `rateFils` for each referred
+ * provider that becomes active, plus tier bonuses. Sawwiq records what is owed
+ * and what was paid; money itself is paid outside the platform.
+ */
+export const referralAgents = pgTable(
+  "referral_agents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "restrict" }),
+    name: text("name").notNull(),
+    code: text("code").notNull().unique(),
+    phone: text("phone"),
+    rateFils: integer("rate_fils").notNull().default(5000),
+    currency: text("currency").notNull().default("JOD"),
+    active: boolean("active").notNull().default(true),
+    note: text("note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+);
+export type ReferralAgent = typeof referralAgents.$inferSelect;
+
+/** Payouts recorded for agents (paid outside Sawwiq); append-only. */
+export const referralPayouts = pgTable(
+  "referral_payouts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agentId: uuid("agent_id")
+      .notNull()
+      .references(() => referralAgents.id, { onDelete: "restrict" }),
+    amountFils: integer("amount_fils").notNull(),
+    note: text("note"),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("referral_payouts_agent_idx").on(t.agentId, t.createdAt)],
+);
+
 /** Single-use invitations to join the staff with a given role (owner only). */
 export const staffInvites = pgTable(
   "staff_invites",
@@ -228,6 +273,9 @@ export const agencies = pgTable(
     teamSize: text("team_size"),
     isVerified: boolean("is_verified").notNull().default(false),
     isDemo: boolean("is_demo").notNull().default(false),
+    // The marketing agent who brought this provider (docs/42), and why an admin voided it, if they did.
+    referredByAgentId: uuid("referred_by_agent_id"),
+    referralVoidReason: text("referral_void_reason"),
     // Founding seat: 1, 2, 3… in the order real providers joined; never reused (docs/39).
     foundingSeat: integer("founding_seat").unique(),
     status: agencyStatus("status").notNull().default("active"),

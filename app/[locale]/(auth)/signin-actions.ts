@@ -34,7 +34,8 @@ export async function requestCodeAction(_: SignInState, formData: FormData): Pro
   if (!rateLimit(`code:${ip}`, 10, 60 * 60 * 1000) || !rateLimit(`code:${email}`, 5, 60 * 60 * 1000)) return { error: "rateLimited" };
   // Agencies and staff sign in with their password (and two-factor code).
   const existing = await getUserByEmail(email);
-  if (existing && existing.role !== "client") return { error: "useLogin" };
+  // Referral agents (docs/42) can use codes too; their accounts have no second factor.
+  if (existing && existing.role !== "client" && existing.role !== "agent") return { error: "useLogin" };
   const code = await issueCode(email);
   if (showCodesOnScreen()) return { step: "code", email, shownCode: code };
   if (!(await sendCodeEmail(email, code))) return { error: "sendFailed" };
@@ -49,10 +50,11 @@ export async function verifyCodeAction(_: SignInState, formData: FormData): Prom
   const result = await checkCode(parsed.data.email, parsed.data.code);
   if (result !== "ok") return { step: "code", email, error: result };
   let user = await getUserByEmail(parsed.data.email);
-  if (user && user.role !== "client") return { error: "useLogin" };
+  if (user && user.role !== "client" && user.role !== "agent") return { error: "useLogin" };
   // First sign-in creates the account. It has no usable password: codes only.
   if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client");
   await createSession(user.id);
   await mergeDeviceInteractions(await getVisitorId(), user.id);
-  nextRedirect(safeNext(formData.get("next"), await getLocale()));
+  const locale = await getLocale();
+  nextRedirect(user.role === "agent" ? `/${locale}/agent` : safeNext(formData.get("next"), locale));
 }

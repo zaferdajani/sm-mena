@@ -8,5 +8,7 @@ export async function accountLink(locale: string) {
   const ar = locale !== "en";
   if (!user) return { href: `/${locale}/login`, label: ar ? "تسجيل الدخول" : "Sign in" };
   if (isStaffRole(user.role)) return { href: `/${locale}/admin`, label: ar ? "لوحة الإدارة" : "Admin" };
+  if (user.role === "agent") return { href: `/${locale}/agent`, label: ar ? "إحالاتي" : "My referrals" };
+  if (user.role === "client") return { href: `/${locale}/saved`, label: ar ? "المحفوظات" : "Saved" };
   return { href: `/${locale}/studio`, label: ar ? "الاستوديو" : "Studio" };
 }
