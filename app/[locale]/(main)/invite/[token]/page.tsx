@@ -22,11 +22,11 @@ export default async function InvitePage({ params }: PageProps<"/[locale]/invite
   return (
     <div className="mx-auto max-w-md space-y-4 px-4 py-10" data-testid="invite-page">
       <Handshake className="size-8 text-brand" aria-hidden />
-      {!invite || gate === "off" ? (
+      {!invite || gate !== "open" ? (
         <p className="text-sm text-muted-foreground" data-testid="invite-missing">{t("missing")}</p>
       ) : (
         <>
-          <h1 className="text-xl font-bold" dir="auto">{t("heading", { name: invite.from.name })}</h1>
+          <h1 className="text-xl font-bold break-words">{t("heading", { name: invite.from.name })}</h1>
           <p className="text-sm text-muted-foreground">
             <Link href={`/a/${invite.from.handle}`} className="text-brand hover:underline">{invite.from.name}</Link> · {tc(`kinds.${invite.from.kind}`)} · {tCity(invite.from.city)}
           </p>

@@ -5,6 +5,7 @@ import { agencies, collabProfiles, partnerRequests, posts, type Agency } from "@
 import { inCountry } from "@/lib/data/agency-filters";
 import { page, rank, type Candidate, type Ranked } from "@/lib/collab/discovery";
 import { rangeIn } from "@/lib/collab/time";
+import { countryOf } from "@/lib/countries";
 import type { WorkMode } from "@/lib/collab/types";
 import { rolesOf, ROLE_KEYS } from "@/lib/services/catalog";
 import { mediaUrl } from "@/lib/storage";
@@ -58,7 +59,7 @@ export async function discoverCollaborators(me: Agency, q: DiscoverQuery, { incl
   if (!rows.length) return { items: [] as DiscoverCard[], next: null as number | null, total: 0, truncated: false };
   const ids = rows.map((r) => r.a.id);
   const [blocked, partners, saved] = await Promise.all([blockedSet(me.id), partnerIdsOf(me.id), rosterIds(me.id)]);
-  const period = q.from && q.to ? rangeIn(q.from, q.to, "Asia/Amman") : null;
+  const period = q.from && q.to ? rangeIn(q.from, q.to, countryOf(me.country).timeZones[0] ?? "Asia/Amman") : null;
   const availability = await availabilityStates(ids, period, { partnerIds: partners });
   // Portfolio evidence: published posts per service, one grouped query.
   const evidence = await db

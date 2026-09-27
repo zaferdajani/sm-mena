@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
@@ -151,9 +151,9 @@ export async function answerInviteAction(_: CollabState, fd: FormData): Promise<
   const t = token.safeParse(fd.get("token"));
   if (!t.success) return { error: "notFound" };
   if (fd.get("answer") === "decline") {
-    await declineInvite(s.agency, t.data);
+    const done = await declineInvite(s.agency, t.data);
     refresh();
-    return { ok: true };
+    return done ? { ok: true } : { error: "notFound" };
   }
   const r = await acceptInvite(s.agency, t.data);
   refresh();
@@ -225,7 +225,8 @@ export async function acceptQuoteAction(_: CollabState, fd: FormData): Promise<C
   if (!s) return { error: "unavailable" };
   const d = z.object({ inquiryId: uuid, quoteId: uuid }).safeParse(Object.fromEntries(fd));
   if (!d.success) return { error: "invalid" };
-  const r = await acceptQuote(s.agency, d.data.inquiryId, d.data.quoteId);
+  const tq = await getTranslations("Collab.quote");
+  const r = await acceptQuote(s.agency, d.data.inquiryId, d.data.quoteId, { excluded: tq("exclusions") });
   refresh();
   return "ok" in r ? { ok: true, id: r.handoff } : { error: r.error };
 }
@@ -237,6 +238,7 @@ export async function retryHandoffAction(fd: FormData) {
   if (!s || !id.success) return;
   const i = await inquiryForBuyer(s.agency.id, id.data);
   const winner = i?.quotes.find((q) => q.status === "accepted");
-  if (i && winner && i.status === "converted") await handoffAfterAccept(s.agency, i, winner.supplierAgencyId);
+  const tq = await getTranslations("Collab.quote");
+  if (i && winner && i.status === "converted") await handoffAfterAccept(s.agency, i, winner.supplierAgencyId, { excluded: tq("exclusions") });
   refresh();
 }

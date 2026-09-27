@@ -19,7 +19,7 @@ export function ChipGroup({
       {options.map((o) => (
         <label key={o.key} className="cursor-pointer">
           <input type={type} name={name} value={o.key} defaultChecked={defaultValues.includes(o.key)} className="peer sr-only" />
-          <span className="inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
+          <span className={cn("inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring", type === "radio" && "min-h-11 px-3.5")}>
             {o.label}
           </span>
         </label>
@@ -30,7 +30,7 @@ export function ChipGroup({
 
 export function Field({ label, hint, htmlFor, children }: { label: string; hint?: string; htmlFor?: string; children: React.ReactNode }) {
   return (
-    <div className="grid min-w-0 gap-1.5">
+    <div className="grid min-w-0 content-start gap-1.5">
       <label htmlFor={htmlFor} className="text-sm font-medium">
         {label}
       </label>

@@ -42,8 +42,9 @@ export type CreateResult = { ok: true; id: string } | { error: "recipients" | "p
 export async function sendInquiry(buyer: Agency, input: InquiryInput): Promise<CreateResult> {
   const db = await getDb();
   const blocked = await blockedSet(buyer.id);
-  const ids = [...new Set(input.recipients)].filter((id) => id !== buyer.id && !blocked.has(id));
-  if (!ids.length) return { error: "recipients" };
+  const asked = [...new Set(input.recipients)].filter((id) => id !== buyer.id);
+  const ids = asked.filter((id) => !blocked.has(id));
+  if (!ids.length || ids.length !== asked.length) return { error: "recipients" };
   const found = await db.select({ id: agencies.id, name: agencies.name, isDemo: agencies.isDemo }).from(agencies).where(and(inArray(agencies.id, ids), eq(agencies.status, "active")));
   const recipients = found.filter((a) => !a.isDemo || buyer.isDemo);
   if (recipients.length !== ids.length) return { error: "recipients" };
@@ -209,7 +210,7 @@ export async function withdrawInquiry(buyerId: string, id: string) {
     .set({ status: "withdrawn", updatedAt: new Date() })
     .where(and(eq(workInquiries.id, id), eq(workInquiries.buyerAgencyId, buyerId), inArray(workInquiries.status, ["sent", "replied"])))
     .returning({ id: workInquiries.id });
-  if (rows.length) await db.update(workInquiryRecipients).set({ status: "expired" }).where(and(eq(workInquiryRecipients.inquiryId, id), inArray(workInquiryRecipients.status, ["sent", "viewed", "quoted"])));
+  if (rows.length) await db.update(workInquiryRecipients).set({ status: "withdrawn" }).where(and(eq(workInquiryRecipients.inquiryId, id), inArray(workInquiryRecipients.status, ["sent", "viewed", "quoted"])));
   return rows.length > 0;
 }
 
@@ -222,7 +223,9 @@ export type AcceptOutcome = { ok: true; handoff: "contract_request" | "partner_r
  * contract request (the supplier writes the contract); others get a
  * partnership request first. Retrying returns the recorded outcome.
  */
-export async function acceptQuote(buyer: Agency, inquiryId: string, quoteId: string): Promise<AcceptOutcome> {
+export type BriefLabels = { excluded: string };
+
+export async function acceptQuote(buyer: Agency, inquiryId: string, quoteId: string, labels: BriefLabels): Promise<AcceptOutcome> {
   const db = await getDb();
   type Claim = { error: "notFound" | "closed"; inquiry?: undefined } | { error?: undefined; inquiry: WorkInquiry; quote: WorkQuote | null };
   const result: Claim = await db.transaction(async (tx): Promise<Claim> => {
@@ -248,20 +251,21 @@ export async function acceptQuote(buyer: Agency, inquiryId: string, quoteId: str
   if (result.error) return { error: result.error };
   const supplierId = result.quote ? result.quote.supplierAgencyId : (await db.select({ s: workQuotes.supplierAgencyId }).from(workQuotes).where(eq(workQuotes.id, quoteId)))[0]?.s;
   if (!supplierId) return { error: "notFound" };
-  await touchRoster(buyer.id, supplierId);
   if (result.inquiry.contractRequestId) return { ok: true, handoff: "contract_request" };
-  return handoffAfterAccept(buyer, result.inquiry, supplierId);
+  return handoffAfterAccept(buyer, result.inquiry, supplierId, labels);
 }
 
 /** Hands an accepted inquiry to the signed-contract path; safe to call again once partners. */
-export async function handoffAfterAccept(buyer: Agency, inquiry: WorkInquiry, supplierId: string): Promise<AcceptOutcome> {
+export async function handoffAfterAccept(buyer: Agency, inquiry: WorkInquiry, supplierId: string, labels: BriefLabels): Promise<AcceptOutcome> {
   const db = await getDb();
   if (inquiry.contractRequestId) return { ok: true, handoff: "contract_request" };
   const quote = inquiry.acceptedQuoteId ? (await db.select().from(workQuotes).where(eq(workQuotes.id, inquiry.acceptedQuoteId)))[0] : null;
   if (await arePartners(buyer.id, supplierId)) {
-    const r = await requestContractFromPartner(buyer, supplierId, { title: inquiry.title, brief: briefFor(inquiry, quote ?? null), budgetFils: quote?.amountFils ?? inquiry.budgetFils });
+    const r = await requestContractFromPartner(buyer, supplierId, { title: inquiry.title, brief: briefFor(inquiry, quote ?? null, labels), budgetFils: quote?.amountFils ?? inquiry.budgetFils });
     if ("ok" in r) {
       await db.update(workInquiries).set({ contractRequestId: r.id, updatedAt: new Date() }).where(eq(workInquiries.id, inquiry.id));
+      // The engagement is real once the contract is asked for: "Rehire" starts from here.
+      await touchRoster(buyer.id, supplierId);
       await audit(null, "collab.inquiry.converted", "work_inquiry", inquiry.id, { contractRequestId: r.id });
       return { ok: true, handoff: "contract_request" };
     }
@@ -271,8 +275,8 @@ export async function handoffAfterAccept(buyer: Agency, inquiry: WorkInquiry, su
   return { ok: true, handoff: "partner_request" };
 }
 
-function briefFor(i: WorkInquiry, q: WorkQuote | null) {
-  const lines = [i.scope, i.deliverables.length ? i.deliverables.map((d) => `${d.key} × ${d.quantity}${d.platform ? ` (${d.platform})` : ""}`).join("\n") : "", i.startsOn || i.dueOn ? `${i.startsOn ?? ""} → ${i.dueOn ?? ""}` : "", q?.scopeNote ?? "", q?.exclusions ? `Excluded: ${q.exclusions}` : ""].filter(Boolean);
+function briefFor(i: WorkInquiry, q: WorkQuote | null, labels: BriefLabels) {
+  const lines = [i.scope, i.deliverables.length ? i.deliverables.map((d) => `${d.key} × ${d.quantity}${d.platform ? ` (${d.platform})` : ""}`).join("\n") : "", i.startsOn || i.dueOn ? `${i.startsOn ?? ""} → ${i.dueOn ?? ""}` : "", q?.scopeNote ?? "", q?.exclusions ? `${labels.excluded}: ${q.exclusions}` : ""].filter(Boolean);
   return lines.join("\n\n").slice(0, 2000);
 }
 

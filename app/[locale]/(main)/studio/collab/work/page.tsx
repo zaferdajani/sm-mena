@@ -8,12 +8,9 @@ import { listBuying, listSupplying, openInquiryCount } from "@/lib/data/collab-i
 import { sharesForPartner } from "@/lib/data/milestone-shares";
 import { formatDate, formatFils } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { STATUS_STYLE } from "@/components/collab/status";
 import { collabPage } from "../gate";
 
-export const STATUS_STYLE: Record<string, string> = {
-  sent: "bg-brand-soft text-brand", replied: "bg-brand-soft text-brand", converted: "bg-brand text-white", declined: "bg-muted text-muted-foreground", expired: "bg-muted text-muted-foreground", withdrawn: "bg-muted text-muted-foreground", draft: "bg-muted",
-  viewed: "bg-brand-soft text-brand", quoted: "bg-brand-soft text-brand", accepted: "bg-brand text-white", passed: "bg-muted text-muted-foreground",
-};
 
 /** Studio → Collaborate → Work: buying (my inquiries), delivering (inquiries to me), disclosed co-delivery (existing shares). */
 export default async function CollabWorkPage({ params }: PageProps<"/[locale]/studio/collab/work">) {

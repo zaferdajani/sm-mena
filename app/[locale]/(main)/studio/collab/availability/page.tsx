@@ -8,6 +8,7 @@ import { listWindows, windowSummary } from "@/lib/data/collab-availability";
 import { openInquiryCount } from "@/lib/data/collab-inquiries";
 import { isFresh } from "@/lib/collab/availability";
 import { dateIn } from "@/lib/collab/time";
+import { countryOf } from "@/lib/countries";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { reconfirmAction, removeWindowAction } from "../actions";
@@ -31,7 +32,7 @@ export default async function CollabAvailabilityPage({ params }: PageProps<"/[lo
         {summary.count === 0 ? t("summaryNone") : summary.stale ? t("summaryStale", { count: summary.stale }) : t("summaryFresh", { count: summary.count })}
       </p>
       <p className="text-xs text-muted-foreground">{t("noSync")}</p>
-      <AvailabilityForm timezone="Asia/Amman" />
+      <AvailabilityForm timezone={countryOf(agency.country).timeZones[0] ?? "Asia/Amman"} />
       {rows.length === 0 ? (
         <EmptyState title={t("emptyTitle")} body={t("emptyBody")} />
       ) : (

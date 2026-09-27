@@ -162,6 +162,13 @@
       "when": 1790544618803,
       "tag": "0022_collaboration_v2",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1790548022310,
+      "tag": "0023_collab_indexes",
+      "breakpoints": true
     }
   ]
 }

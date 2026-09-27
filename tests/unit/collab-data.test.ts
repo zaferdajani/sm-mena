@@ -177,7 +177,7 @@ describe("work inquiries", () => {
 
     // Accept the open quote: converted, the loser passed, and (already partners) a contract request for the photographer to write the contract.
     const open = view.quotes.find((q) => q.status === "open")!;
-    const accepted = await acceptQuote(buyer, sent.id, open.id);
+    const accepted = await acceptQuote(buyer, sent.id, open.id, { excluded: "Excluded" });
     expect(accepted).toEqual({ ok: true, handoff: "contract_request" });
     const after = (await inquiryForBuyer(buyer.id, sent.id))!;
     expect(after.status).toBe("converted");
@@ -186,9 +186,9 @@ describe("work inquiries", () => {
     const requests = await listContractRequests(photo.id);
     expect(requests.incoming[0]).toMatchObject({ title: "Café launch shoot", budgetFils: 360_000, fromAgencyId: buyer.id });
     // Idempotent: accepting again returns the same outcome; another quote can no longer win.
-    expect(await acceptQuote(buyer, sent.id, open.id)).toEqual({ ok: true, handoff: "contract_request" });
-    expect(await acceptQuote(buyer, sent.id, view.quotes[1].id)).toEqual({ error: "closed" });
-    expect(await acceptQuote(rival, sent.id, open.id)).toEqual({ error: "notFound" });
+    expect(await acceptQuote(buyer, sent.id, open.id, { excluded: "Excluded" })).toEqual({ ok: true, handoff: "contract_request" });
+    expect(await acceptQuote(buyer, sent.id, view.quotes[1].id, { excluded: "Excluded" })).toEqual({ error: "closed" });
+    expect(await acceptQuote(rival, sent.id, open.id, { excluded: "Excluded" })).toEqual({ error: "notFound" });
   });
 
   it("route a non-partner acceptance to a partnership request first, and let the buyer withdraw", async () => {
@@ -196,7 +196,7 @@ describe("work inquiries", () => {
     if (!("ok" in sent)) throw new Error(sent.error);
     expect(await submitQuote(editor, sent.id, { amount: 90_000, currency: "JOD", startsOn: "", dueOn: "", scopeNote: "", exclusions: "" })).toEqual({ ok: true, version: 1 });
     const q = (await inquiryForBuyer(buyer.id, sent.id))!.quotes[0];
-    expect(await acceptQuote(buyer, sent.id, q.id)).toEqual({ ok: true, handoff: "partner_request" });
+    expect(await acceptQuote(buyer, sent.id, q.id, { excluded: "Excluded" })).toEqual({ ok: true, handoff: "partner_request" });
     const [pr] = await (await getDb()).select().from(partnerRequests).where(and(eq(partnerRequests.fromAgencyId, buyer.id), eq(partnerRequests.toAgencyId, editor.id)));
     expect(pr.status).toBe("pending");
 

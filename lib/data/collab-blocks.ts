@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, or } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { collabBlocks } from "@/lib/db/schema";
+import { agencies, collabBlocks } from "@/lib/db/schema";
 
 // A provider that blocks another receives nothing from it and is not shown
 // to it (docs/48). Blocks are private to the blocker.
@@ -29,7 +29,12 @@ export async function isBlockedEitherWay(a: string, b: string) {
   return (await blockedSet(a)).has(b);
 }
 
+/** The blocker's own list, with the public name only. */
 export async function myBlocks(agencyId: string) {
   const db = await getDb();
-  return db.select({ blockedAgencyId: collabBlocks.blockedAgencyId }).from(collabBlocks).where(eq(collabBlocks.blockerAgencyId, agencyId));
+  return db
+    .select({ blockedAgencyId: collabBlocks.blockedAgencyId, name: agencies.name, handle: agencies.handle })
+    .from(collabBlocks)
+    .innerJoin(agencies, eq(collabBlocks.blockedAgencyId, agencies.id))
+    .where(eq(collabBlocks.blockerAgencyId, agencyId));
 }

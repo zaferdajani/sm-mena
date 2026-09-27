@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, desc, eq, gt, or } from "drizzle-orm";
+import { and, desc, eq, gt, ne, or } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, collabInvites, collabRoster, partnerRequests, type Agency } from "@/lib/db/schema";
 import { addDays } from "@/lib/collab/time";
@@ -113,7 +113,7 @@ export async function declineInvite(me: Agency, token: string) {
   const rows = await db
     .update(collabInvites)
     .set({ status: "declined", respondedAt: new Date() })
-    .where(and(eq(collabInvites.tokenHash, hash(token)), eq(collabInvites.status, "pending")))
-    .returning({ id: collabInvites.id, fromAgencyId: collabInvites.fromAgencyId });
-  return rows.length > 0 && rows[0].fromAgencyId !== me.id;
+    .where(and(eq(collabInvites.tokenHash, hash(token)), eq(collabInvites.status, "pending"), ne(collabInvites.fromAgencyId, me.id)))
+    .returning({ id: collabInvites.id });
+  return rows.length > 0;
 }

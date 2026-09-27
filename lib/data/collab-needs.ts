@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 import { agencies, collabNeedReplies, collabNeeds, partnerRequests, type Agency, type CollabNeed } from "@/lib/db/schema";
 import { addDays } from "@/lib/collab/time";
 import type { NeedInput } from "@/lib/collab/schemas";
+import { currencyOf } from "@/lib/countries";
 import { rolesOf, ROLE_KEYS } from "@/lib/services/catalog";
 import { mediaUrl } from "@/lib/storage";
 import { blockedSet } from "./collab-blocks";
@@ -34,7 +35,7 @@ export async function publishNeed(agency: Agency, input: NeedInput): Promise<Col
       endsOn: input.endsOn || null,
       budgetMinFils: input.budgetMin === "" ? null : input.budgetMin,
       budgetMaxFils: input.budgetMax === "" ? null : input.budgetMax,
-      currency: agency.country ? currencyFor(agency.country) : "JOD",
+      currency: currencyOf(agency.country),
       modes: input.modes,
       audience: input.audience,
       status: "published",
@@ -44,11 +45,6 @@ export async function publishNeed(agency: Agency, input: NeedInput): Promise<Col
     })
     .returning();
   return row;
-}
-
-function currencyFor(country: string) {
-  const map: Record<string, string> = { jo: "JOD", sa: "SAR", ae: "AED", kw: "KWD", qa: "QAR", bh: "BHD", om: "OMR", eg: "EGP" };
-  return map[country] ?? "JOD";
 }
 
 export async function withdrawNeed(agencyId: string, id: string) {
@@ -101,7 +97,7 @@ export type OpenNeed = CollabNeed & { agency: { id: string; handle: string; name
  * by, and partner-only ones only from accepted partners. Bounded and ordered
  * newest first with the id as tie-break.
  */
-export async function listOpenNeedsFor(me: Agency, now = new Date(), limit = 50): Promise<OpenNeed[]> {
+export async function listOpenNeedsFor(me: Agency, now = new Date(), limit = 50, onlyId?: string): Promise<OpenNeed[]> {
   const mine = [...offeredRoles(me)];
   if (!mine.length) return [];
   const db = await getDb();
@@ -110,7 +106,7 @@ export async function listOpenNeedsFor(me: Agency, now = new Date(), limit = 50)
     .select({ need: collabNeeds, agency: { id: agencies.id, handle: agencies.handle, name: agencies.name, kind: agencies.kind, city: agencies.city, avatarKey: agencies.avatarKey, isDemo: agencies.isDemo } })
     .from(collabNeeds)
     .innerJoin(agencies, eq(collabNeeds.agencyId, agencies.id))
-    .where(and(eq(collabNeeds.status, "published"), gt(collabNeeds.expiresAt, now), ne(collabNeeds.agencyId, me.id), inArray(collabNeeds.country, countries), arrayOverlaps(collabNeeds.roles, mine), eq(agencies.status, "active")))
+    .where(and(eq(collabNeeds.status, "published"), gt(collabNeeds.expiresAt, now), ne(collabNeeds.agencyId, me.id), inArray(collabNeeds.country, countries), arrayOverlaps(collabNeeds.roles, mine), eq(agencies.status, "active"), onlyId ? eq(collabNeeds.id, onlyId) : undefined))
     .orderBy(desc(collabNeeds.publishedAt), desc(collabNeeds.id))
     .limit(limit * 2);
   if (!rows.length) return [];
@@ -130,7 +126,7 @@ export async function listOpenNeedsFor(me: Agency, now = new Date(), limit = 50)
 /** One open need for a provider that may see it, or null (an old link to a withdrawn need shows nothing). */
 export async function openNeedFor(me: Agency, id: string) {
   if (!/^[0-9a-f-]{36}$/.test(id)) return null;
-  return (await listOpenNeedsFor(me, new Date(), 200)).find((n) => n.id === id) ?? null;
+  return (await listOpenNeedsFor(me, new Date(), 1, id))[0] ?? null;
 }
 
 export type ReplyResult = { ok: true } | { error: "notFound" | "exists" | "self" };

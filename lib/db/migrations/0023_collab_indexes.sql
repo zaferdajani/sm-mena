@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS "collab_blocks_blocked_idx" ON "collab_blocks" USING btree ("blocked_agency_id");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "work_inquiries_open_idx" ON "work_inquiries" USING btree ("status","response_by");

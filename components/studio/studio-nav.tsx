@@ -1,12 +1,18 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 export function StudioNav({ items }: { items: { href: string; label: string; badge?: number }[] }) {
   const pathname = usePathname();
+  const nav = useRef<HTMLElement>(null);
+  // The strip scrolls; on a phone the active tab may start off-screen (Collaborate is the 8th), so bring it into view.
+  useEffect(() => {
+    nav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [pathname]);
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b px-2 [scrollbar-width:none]">
+    <nav ref={nav} className="flex gap-1 overflow-x-auto border-b px-2 [scrollbar-width:none]">
       {items.map((item) => {
         // The first tab is the section root (/studio, /admin): active only on its own page.
         const active = item.href === items[0].href ? pathname === item.href : pathname.startsWith(item.href);

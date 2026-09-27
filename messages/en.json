@@ -3512,7 +3512,8 @@
         "expired": "Expired",
         "filled": "Filled",
         "draft": "Draft"
-      }
+      },
+      "noneAgencyBody": "Agencies publish needs on purpose; when one matches your roles it shows here. You can publish your own too."
     },
     "network": {
       "title": "My network",
@@ -3536,7 +3537,7 @@
       "partner": "Accepted partner",
       "notPartner": "Not a partner yet",
       "lastEngaged": "last engaged {date}",
-      "rateRef": "your note: {amount} {currency} / {unit}",
+      "rateRef": "your note: {amount} / {unit}",
       "notesTitle": "Private notes and rate reference",
       "savedNotes": "Saved.",
       "group": "Group",
@@ -3685,7 +3686,8 @@
         "declined": "Declined",
         "accepted": "Accepted",
         "passed": "Not chosen",
-        "expired": "Expired"
+        "expired": "Expired",
+        "withdrawn": "Withdrawn"
       }
     },
     "inquiry": {

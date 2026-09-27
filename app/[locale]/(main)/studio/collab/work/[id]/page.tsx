@@ -11,11 +11,12 @@ import { currencyOf } from "@/lib/countries";
 import { arePartners } from "@/lib/data/contracts";
 import { inquiryForBuyer, inquiryForSupplier, type SupplierInquiry } from "@/lib/data/collab-inquiries";
 import { formatDate, formatFils } from "@/lib/format";
+import { lineLabel } from "@/lib/deliverables";
 import { roleLabel } from "@/lib/services/catalog";
 import { cn } from "@/lib/utils";
 import { declineInquiryAction, retryHandoffAction, withdrawInquiryAction } from "../../actions";
 import { collabPage } from "../../gate";
-import { STATUS_STYLE } from "../page";
+import { STATUS_STYLE } from "@/components/collab/status";
 
 /** One inquiry: the buyer compares quotes; a supplier answers. Anyone else: not found. */
 export default async function InquiryPage({ params, searchParams }: PageProps<"/[locale]/studio/collab/work/[id]">) {
@@ -31,6 +32,7 @@ export default async function InquiryPage({ params, searchParams }: PageProps<"/
   if (!supplierView) notFound();
   const tCity = await getTranslations("Cities");
   const tDel = await getTranslations("Deliverables");
+  const tPlat = await getTranslations("Platforms");
   const { inquiry, buyer, me, myQuotes } = supplierView;
   const open = ["sent", "replied"].includes(inquiry.status) && ["sent", "viewed", "quoted"].includes(me.status) && (!inquiry.responseBy || inquiry.responseBy > new Date());
   return (
@@ -45,7 +47,7 @@ export default async function InquiryPage({ params, searchParams }: PageProps<"/
           {inquiry.responseBy && <span className="rounded-full bg-muted px-2 py-0.5">{t("work.respondBy", { date: formatDate(inquiry.responseBy, locale) })}</span>}
         </p>
       </header>
-      <InquiryDetails i={inquiry} locale={locale} tCity={tCity} tDel={tDel} />
+      <InquiryDetails i={inquiry} locale={locale} tCity={tCity} tDel={tDel} tPlat={tPlat} />
       <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground" data-testid="supplier-scope-note">{t("inquiry.supplierSees")}</p>
       {myQuotes.length > 0 && (
         <section className="grid gap-2" data-testid="my-quotes">
@@ -70,6 +72,7 @@ async function BuyerPage({ v, locale, sent }: { v: NonNullable<Awaited<ReturnTyp
   const t = await getTranslations("Collab");
   const tCity = await getTranslations("Cities");
   const tDel = await getTranslations("Deliverables");
+  const tPlat = await getTranslations("Platforms");
   const open = ["sent", "replied"].includes(v.status);
   const winner = v.quotes.find((q) => q.status === "accepted");
   const partners = winner ? await arePartners(v.buyerAgencyId, winner.supplierAgencyId) : false;
@@ -88,7 +91,7 @@ async function BuyerPage({ v, locale, sent }: { v: NonNullable<Awaited<ReturnTyp
           {v.parentContractId && <span className="rounded-full bg-muted px-2 py-0.5" data-testid="parent-private">{t("inquiry.parentPrivate")}</span>}
         </p>
       </header>
-      <InquiryDetails i={v} locale={locale} tCity={tCity} tDel={tDel} />
+      <InquiryDetails i={v} locale={locale} tCity={tCity} tDel={tDel} tPlat={tPlat} />
 
       <section className="grid gap-2" data-testid="inquiry-recipients-status">
         <h2 className="font-semibold">{t("inquiry.recipientsTitle")}</h2>
@@ -140,11 +143,12 @@ async function BuyerPage({ v, locale, sent }: { v: NonNullable<Awaited<ReturnTyp
   );
 }
 
-function InquiryDetails({ i, locale, tCity, tDel }: { i: SupplierInquiry; locale: string; tCity: (k: string) => string; tDel: (k: string) => string }) {
+type T = (key: string, values?: Record<string, string | number>) => string;
+function InquiryDetails({ i, locale, tCity, tDel, tPlat }: { i: SupplierInquiry; locale: string; tCity: (k: string) => string; tDel: T; tPlat: (k: string) => string }) {
   return (
     <dl className="grid gap-2 rounded-2xl border p-4 text-sm sm:grid-cols-2" data-testid="inquiry-details">
       {i.role && <Row label="role" locale={locale}>{roleLabel(i.role, locale)}</Row>}
-      {i.deliverables.length > 0 && <Row label="deliverables" locale={locale}>{i.deliverables.map((d) => `${tDel(`items.${d.key}`)} × ${d.quantity}`).join(locale === "ar" ? "، " : ", ")}</Row>}
+      {i.deliverables.length > 0 && <Row label="deliverables" locale={locale}>{i.deliverables.map((d) => lineLabel(d, tDel, tPlat)).join(locale === "ar" ? "، " : ", ")}</Row>}
       {i.scope && <Row label="scope" locale={locale} wide><span className="whitespace-pre-line" dir="auto">{i.scope}</span></Row>}
       {i.assetsNote && <Row label="assetsNote" locale={locale}><span dir="auto">{i.assetsNote}</span></Row>}
       {(i.startsOn || i.dueOn) && <Row label="dates" locale={locale}><bdi dir="ltr">{i.startsOn ?? "…"} → {i.dueOn ?? "…"}</bdi> ({i.timezone})</Row>}
@@ -175,9 +179,9 @@ async function QuoteCard({ q, locale, supplier, children }: { q: { id: string; v
     <article className={cn("grid gap-2 rounded-2xl border p-3 text-sm", q.status === "accepted" && "border-brand bg-brand/5")} data-testid="quote-card" data-status={q.status}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="font-semibold">{supplier ?? t("version", { n: q.version })}</span>
-        <span className="text-lg font-bold tabular-nums" dir="ltr">{formatFils(q.amountFils, locale, q.currency)}</span>
+        <span className="text-lg font-bold tabular-nums">{formatFils(q.amountFils, locale, q.currency)}</span>
       </div>
-      <p className="text-xs text-muted-foreground">{t(`status.${q.status}`)}{supplier ? ` · ${t("version", { n: q.version })}` : ""} · {formatDate(q.createdAt, locale)}{q.startsOn || q.dueOn ? ` · ${q.startsOn ?? "…"} → ${q.dueOn ?? "…"}` : ""}</p>
+      <p className="text-xs text-muted-foreground">{t(`status.${q.status}`)}{supplier ? ` · ${t("version", { n: q.version })}` : ""} · {formatDate(q.createdAt, locale)}{q.startsOn || q.dueOn ? <> · <bdi dir="ltr">{q.startsOn ?? "…"} → {q.dueOn ?? "…"}</bdi></> : ""}</p>
       {q.scopeNote && <p className="whitespace-pre-line" dir="auto">{q.scopeNote}</p>}
       {q.exclusions && <p className="text-xs" dir="auto"><b>{t("exclusions")}:</b> {q.exclusions}</p>}
       {children}

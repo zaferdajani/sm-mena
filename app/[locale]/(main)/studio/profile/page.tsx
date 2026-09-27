@@ -13,9 +13,13 @@ import { mediaUrl } from "@/lib/storage";
 export default async function StudioProfilePage({ params, searchParams }: PageProps<"/[locale]/studio/profile">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const welcome = (await searchParams).welcome === "1";
+  const sp = await searchParams;
+  const welcome = sp.welcome === "1";
+  // Signed up through a collaborator's invitation link (docs/48): say so once.
+  const invited = sp.invited === "1";
   const { agency } = await requireAgency();
   const t = await getTranslations("Studio");
+  const tInv = await getTranslations("Collab.invites");
   const [tPlat, tInd, tLang, tTeam] = await Promise.all([
     getTranslations("Platforms"), getTranslations("Industries"), getTranslations("Languages"), getTranslations("TeamSize"),
   ]);
@@ -24,6 +28,7 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
       {welcome && (
         <div className="mb-5 space-y-3">
           <p className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="profile-welcome">{t("welcome")}</p>
+          {invited && <p role="status" className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="profile-invited">✓ {tInv("acceptedNote")}</p>}
           {/* The quickest start for someone who already has a portfolio (docs/47). */}
           <BehanceShortcut testId="welcome-behance" />
         </div>

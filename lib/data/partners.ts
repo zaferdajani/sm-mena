@@ -83,7 +83,7 @@ export async function sendPartnerRequest(from: Agency, toId: string, roles: stri
   return { ok: true };
 }
 
-type Side = { id: string; handle: string; name: string; kind: "agency" | "freelancer"; city: string; avatarUrl: string | null; whatsapp: string | null; email: string | null };
+type Side = { id: string; handle: string; name: string; kind: "agency" | "freelancer"; city: string; country: string; avatarUrl: string | null; whatsapp: string | null; email: string | null };
 export type PartnerRow = PartnerRequest & { other: Side; incoming: boolean };
 
 /** Requests sent and received; the other side's contact details only once accepted. */
@@ -103,7 +103,7 @@ export async function listPartnerRequests(agencyId: string): Promise<PartnerRow[
     const o = others.get(incoming ? r.fromAgencyId : r.toAgencyId);
     if (!o) return [];
     const open = r.status === "accepted";
-    return [{ ...r, incoming, other: { id: o.id, handle: o.handle, name: o.name, kind: o.kind, city: o.city, avatarUrl: mediaUrl(o.avatarKey), whatsapp: open ? o.whatsapp : null, email: open ? o.email : null } }];
+    return [{ ...r, incoming, other: { id: o.id, handle: o.handle, name: o.name, kind: o.kind, city: o.city, country: o.country, avatarUrl: mediaUrl(o.avatarKey), whatsapp: open ? o.whatsapp : null, email: open ? o.email : null } }];
   });
 }
 

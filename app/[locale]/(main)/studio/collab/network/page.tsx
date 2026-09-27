@@ -17,8 +17,7 @@ import { listInvites } from "@/lib/data/collab-invites";
 import { getCollabProfile } from "@/lib/data/collab-profile";
 import { listRoster } from "@/lib/data/collab-roster";
 import { listPartnerRequests, pendingPartnerCount } from "@/lib/data/partners";
-import { formatDate } from "@/lib/format";
-import { roleLabel } from "@/lib/services/catalog";
+import { formatDate, formatFils } from "@/lib/format";
 import { blockAction, removeRosterAction, revokeInviteAction } from "../actions";
 import { collabPage } from "../gate";
 
@@ -68,7 +67,7 @@ export default async function CollabNetworkPage({ params, searchParams }: PagePr
                   <p className="text-xs text-muted-foreground">
                     {partnerIds.has(r.providerAgencyId) ? t("roster.partner") : t("roster.notPartner")}
                     {r.lastEngagedAt ? ` · ${t("roster.lastEngaged", { date: formatDate(r.lastEngagedAt, locale) })}` : ""}
-                    {r.rateFils ? ` · ${t("roster.rateRef", { amount: (r.rateFils / 1000).toString(), currency: r.rateCurrency ?? currency, unit: t(`roster.rateUnits.${r.rateUnit ?? "day"}`) })}` : ""}
+                    {r.rateFils ? ` · ${t("roster.rateRef", { amount: formatFils(r.rateFils, locale, r.rateCurrency ?? currency), unit: t(`roster.rateUnits.${r.rateUnit ?? "day"}`) })}` : ""}
                   </p>
                   <RosterEditor providerAgencyId={r.providerAgencyId} groupName={r.groupName} tags={r.tags} notes={r.notes} rate={r.rateFils} rateUnit={r.rateUnit} currency={currency} />
                 </div>
@@ -80,7 +79,7 @@ export default async function CollabNetworkPage({ params, searchParams }: PagePr
           <div className="grid gap-2">
             <h3 className="text-sm font-semibold text-muted-foreground">{t("roster.partnersNotSaved")}</h3>
             {partnersOnly.map((r) => (
-              <ProviderCard key={r.id} card={{ ...r.other, country: agency.country, isVerified: false }} locale={locale} roles={r.roles.map((x) => roleLabel(x, locale))}>
+              <ProviderCard key={r.id} card={{ ...r.other, isVerified: false }} locale={locale} roles={r.roles}>
                 <Link href={{ pathname: "/studio/collab/work/new", query: { to: r.other.id } }} className={buttonVariants({ className: "h-11 w-full" })}>{t("inquiry.start")}</Link>
               </ProviderCard>
             ))}
@@ -116,7 +115,7 @@ export default async function CollabNetworkPage({ params, searchParams }: PagePr
           {blocks.map((b) => (
             <form key={b.blockedAgencyId} action={blockAction} className="flex items-center justify-between gap-2 rounded-xl border p-3">
               <input type="hidden" name="agencyId" value={b.blockedAgencyId} /><input type="hidden" name="undo" value="1" />
-              <span className="font-mono text-xs">{b.blockedAgencyId.slice(0, 8)}</span>
+              <span className="min-w-0 truncate" dir="auto">{b.name}</span>
               <SubmitButton variant="outline" className="h-9">{t("blocks.unblock")}</SubmitButton>
             </form>
           ))}

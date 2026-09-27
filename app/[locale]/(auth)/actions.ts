@@ -154,7 +154,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   const locale = await getLocale();
   // Came through a collaborator's invitation link (docs/48): accept it now, with the fresh account.
   const invite = String(formData.get("invite") ?? "");
-  if (invite) {
+  if (invite && (await (await import("@/lib/feature-gate")).canUse("collaboration"))) {
     const { acceptInvite } = await import("@/lib/data/collab-invites");
     const { getAgencyByOwner } = await import("@/lib/data/agencies");
     const me = await getAgencyByOwner(user.id);

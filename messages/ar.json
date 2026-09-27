@@ -3512,7 +3512,8 @@
         "expired": "منتهٍ",
         "filled": "تم ملؤه",
         "draft": "مسودة"
-      }
+      },
+      "noneAgencyBody": "تنشر الوكالات احتياجاتها عن قصد؛ عندما يطابق أحدها أدوارك يظهر هنا. يمكنك نشر احتياجك أيضاً."
     },
     "network": {
       "title": "شبكتي",
@@ -3536,7 +3537,7 @@
       "partner": "شريك مقبول",
       "notPartner": "ليس شريكاً بعد",
       "lastEngaged": "آخر تعامل {date}",
-      "rateRef": "ملاحظتك: {amount} {currency} / {unit}",
+      "rateRef": "ملاحظتك: {amount} / {unit}",
       "notesTitle": "ملاحظات خاصة ومرجع السعر",
       "savedNotes": "تم الحفظ.",
       "group": "المجموعة",
@@ -3685,7 +3686,8 @@
         "declined": "اعتذر",
         "accepted": "مقبول",
         "passed": "لم يُختر",
-        "expired": "منتهٍ"
+        "expired": "منتهٍ",
+        "withdrawn": "مسحوب"
       }
     },
     "inquiry": {

@@ -5,7 +5,7 @@ test("version is not cached and matches landing and app render stamps", async ({
   expect(response.ok()).toBe(true);
   expect(response.headers()["cache-control"]).toContain("no-store");
   const release = await response.json();
-  expect(release.revision).toBe("layout-2026-09-27-v1");
+  expect(release.revision).toBe("collaboration-v2-r1");
   expect(["production", "preview", "development", "unknown"]).toContain(release.environment);
   expect(release.commit === null || /^[a-f0-9]{40}$/.test(release.commit)).toBe(true);
   await page.addInitScript(() => localStorage.setItem("sw_role", "browse"));

@@ -44,7 +44,7 @@ export default async function StudioLayout({ children }: { children: React.React
       <div className="flex items-center gap-3 px-4 pt-4 sm:pt-8">
         <AgencyAvatar name={agency.name} src={mediaUrl(agency.avatarKey)} size={44} />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-bold">{agency.name}</p>
+          <p className="truncate font-bold" dir="auto">{agency.name}</p>
           <Link href={`/a/${agency.handle}`} className="flex items-center gap-1 text-xs text-brand">
             {t("viewPage")} <ExternalLink className="size-3" />
           </Link>

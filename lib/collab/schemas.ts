@@ -11,7 +11,8 @@ const tz = z.string().max(64).refine(isTimeZone, "timezone");
 const shortText = (max: number) => z.string().trim().max(max);
 const currency = z.string().regex(/^[A-Z]{3}$/);
 /** Money typed in whole currency units (with up to 3 decimals), stored as thousandths. */
-const money = z.coerce.number().min(0).max(10_000_000).transform((v) => Math.round(v * 1000));
+/** Whole currency units with up to 3 decimals, stored as thousandths in an int4 column (so at most 2,000,000). */
+const money = z.coerce.number().min(0).max(2_000_000).transform((v) => Math.round(v * 1000));
 
 export const collabProfileSchema = z.object({
   modes: z.array(z.enum(COLLAB_MODES)).max(3),

@@ -16,7 +16,6 @@ import { isDateString } from "@/lib/collab/time";
 import { WORK_MODES, type WorkMode } from "@/lib/collab/types";
 import { formatFils, timeAgo } from "@/lib/format";
 import { roleLabel } from "@/lib/services/catalog";
-import { demoMode } from "@/lib/demo-mode";
 import { collabPage } from "./gate";
 
 /** Studio → Collaborate → Discover (docs/48): agencies find providers; everyone sees published needs for their roles. */
@@ -39,7 +38,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
   const cursor = Math.max(0, Number(str("cursor")) || 0);
   const searched = Object.keys(sp).some((k) => ["role", "kind", "workMode", "from", "to", "confirmed", "q"].includes(k));
   const [results, needs, badge] = await Promise.all([
-    agency.kind === "agency" || searched ? discoverCollaborators(agency, { roles: roles.length ? roles : agency.seeksRoles, kind, workMode, from: from && to ? from : null, to: from && to ? to : null, confirmedOnly, cursor }, { includeDemo: (await demoMode()) || agency.isDemo }) : null,
+    agency.kind === "agency" || searched ? discoverCollaborators(agency, { roles: roles.length ? roles : agency.seeksRoles, kind, workMode, from: from && to ? from : null, to: from && to ? to : null, confirmedOnly, cursor }, { includeDemo: agency.isDemo }) : null,
     listOpenNeedsFor(agency),
     openInquiryCount(agency.id),
   ]);
@@ -77,7 +76,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
               <option value="agency">{t("kinds.agency")}</option>
             </select>
           </label>
-          <label className="grid gap-1 text-sm"><span className="font-medium">{t("workMode.label")}</span>
+          <label className="grid gap-1 text-sm sm:col-span-2 lg:col-span-1"><span className="font-medium">{t("workMode.label")}</span>
             <select name="workMode" defaultValue={workMode ?? ""} className={field}>
               <option value="">{t("discover.modeAny")}</option>
               {WORK_MODES.map((m) => <option key={m} value={m}>{t(`workMode.${m}`)}</option>)}
@@ -106,7 +105,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
                     <ProviderCard key={r.candidate.id} card={r.card} locale={locale} roles={r.matchedRoles} reasons={r.reasons} availability={r.candidate.availability}>
                       <Link href={{ pathname: "/studio/collab/work/new", query: { to: r.card.id } }} className={buttonVariants({ size: "lg", className: "h-11 w-full" })} data-testid="inquire-link">{t("inquiry.start")}</Link>
                       <SaveToRoster providerAgencyId={r.card.id} saved={r.candidate.saved} />
-                      {!r.candidate.partner && <PartnerRequestButton toAgencyId={r.card.id} name={r.card.name} roles={opts.roles} matched={r.matchedRoles.length ? r.matchedRoles : roles} />}
+                      {!r.candidate.partner && <PartnerRequestButton toAgencyId={r.card.id} name={r.card.name} roles={opts.roles} matched={r.matchedRoles.length ? r.matchedRoles : roles} large />}
                     </ProviderCard>
                   ))}
                 </div>
@@ -124,7 +123,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
       {agency.kind === "agency" && (
         <section className="grid gap-3" data-testid="open-needs">
           <h2 className="font-semibold">{t("needs.openTitleAgency")}</h2>
-          {needs.length === 0 ? <p className="text-sm text-muted-foreground">{t("needs.noneAgency")}</p> : needs.map((n) => <NeedRow key={n.id} n={n} locale={locale} />)}
+          {needs.length === 0 ? <EmptyState title={t("needs.noneAgency")} body={t("needs.noneAgencyBody")} action={<Link href="/studio/collab/needs" className={buttonVariants({ variant: "outline", className: "h-11" })}>{t("needs.publish")}</Link>} /> : needs.map((n) => <NeedRow key={n.id} n={n} locale={locale} />)}
         </section>
       )}
       <p className="text-xs text-muted-foreground">{t("discover.cityNote", { city: tCity(agency.city) })}</p>
@@ -149,7 +148,7 @@ async function NeedRow({ n, locale }: { n: Awaited<ReturnType<typeof listOpenNee
       <p className="flex flex-wrap gap-1">{n.matchedRoles.map((r) => <span key={r} className="rounded-full border border-brand-line bg-brand-soft px-2 py-0.5 text-xs">{roleLabel(r, locale)}</span>)}</p>
       {n.scope && <p className="text-sm whitespace-pre-line" dir="auto">{n.scope}</p>}
       <p className="text-xs text-muted-foreground">
-        {n.startsOn || n.endsOn ? `${n.startsOn ?? ""} → ${n.endsOn ?? ""} · ` : ""}
+        {n.startsOn || n.endsOn ? <><bdi dir="ltr">{n.startsOn ?? "…"} → {n.endsOn ?? "…"}</bdi> · </> : ""}
         {n.budgetMaxFils ? t("needs.budgetUpTo", { amount: formatFils(n.budgetMaxFils, locale, n.currency) }) : t("needs.budgetOpen")} · {n.modes.map((m) => t(`modes.${m}`)).join(locale === "ar" ? "، " : ", ")}
       </p>
       <NeedReply needId={n.id} replied={n.myReply === "interested"} />

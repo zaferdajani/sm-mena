@@ -17,7 +17,7 @@ export type Visibility = (typeof VISIBILITIES)[number];
 export const NEED_STATUSES = ["draft", "published", "withdrawn", "expired", "filled"] as const;
 export const INQUIRY_STATUSES = ["draft", "sent", "replied", "converted", "declined", "expired", "withdrawn"] as const;
 export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
-export const RECIPIENT_STATUSES = ["sent", "viewed", "quoted", "declined", "accepted", "passed", "expired"] as const;
+export const RECIPIENT_STATUSES = ["sent", "viewed", "quoted", "declined", "accepted", "passed", "expired", "withdrawn"] as const;
 export const QUOTE_STATUSES = ["open", "superseded", "accepted", "withdrawn", "declined"] as const;
 export const RATE_UNITS = ["day", "hour", "project", "month"] as const;
 

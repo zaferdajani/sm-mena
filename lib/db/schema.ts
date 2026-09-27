@@ -1567,7 +1567,7 @@ export const collabBlocks = pgTable(
       .references(() => agencies.id, { onDelete: "cascade" }),
     createdAt: createdAt(),
   },
-  (t) => [primaryKey({ columns: [t.blockerAgencyId, t.blockedAgencyId] })],
+  (t) => [primaryKey({ columns: [t.blockerAgencyId, t.blockedAgencyId] }), index("collab_blocks_blocked_idx").on(t.blockedAgencyId)],
 );
 
 /**
@@ -1610,7 +1610,7 @@ export const workInquiries = pgTable(
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("work_inquiries_buyer_idx").on(t.buyerAgencyId, t.status)],
+  (t) => [index("work_inquiries_buyer_idx").on(t.buyerAgencyId, t.status), index("work_inquiries_open_idx").on(t.status, t.responseBy)],
 );
 
 /** Who an inquiry was sent to, and where each supplier stands. */

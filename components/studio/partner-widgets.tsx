@@ -13,14 +13,14 @@ import { ChipGroup } from "./chips";
 type Option = { key: string; label: string };
 
 /** "Request partnership" on a suggested freelancer or agency: which roles, and a short note. */
-export function PartnerRequestButton({ toAgencyId, name, roles, matched }: { toAgencyId: string; name: string; roles: Option[]; matched: string[] }) {
+export function PartnerRequestButton({ toAgencyId, name, roles, matched, large = false }: { toAgencyId: string; name: string; roles: Option[]; matched: string[]; /** Secondary, full-width, 44px (provider cards in Collaborate). */ large?: boolean }) {
   const t = useTranslations("Partners");
   const [open, setOpen] = useState(false);
   const [state, action] = useActionState(sendPartnerRequestAction, undefined);
   if (state?.ok) return <p className="text-sm text-brand" role="status">✓ {t("sent")}</p>;
   if (!open)
     return (
-      <Button type="button" size="sm" className="gap-1.5" onClick={() => setOpen(true)} data-testid="partner-open">
+      <Button type="button" size={large ? "lg" : "sm"} variant={large ? "outline" : "default"} className={large ? "h-11 w-full gap-1.5" : "gap-1.5"} onClick={() => setOpen(true)} data-testid="partner-open">
         <Handshake className="size-4" /> {t("request")}
       </Button>
     );

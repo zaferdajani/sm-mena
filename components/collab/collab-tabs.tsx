@@ -16,7 +16,7 @@ export async function CollabTabs({ active, badges = {} }: { active: CollabView; 
     { key: "availability", href: "/studio/collab/availability", icon: CalendarClock },
   ];
   return (
-    <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 [scrollbar-width:none]" aria-label={t("label")} data-testid="collab-tabs">
+    <nav className="flex flex-wrap gap-1.5" aria-label={t("label")} data-testid="collab-tabs">
       {items.map(({ key, href, icon: Icon }) => (
         <Link
           key={key}
