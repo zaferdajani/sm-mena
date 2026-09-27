@@ -46,6 +46,7 @@ export async function saveCollabProfileAction(_: CollabState, fd: FormData): Pro
 export async function addWindowAction(_: CollabState, fd: FormData): Promise<CollabState> {
   const s = await gate();
   if (!s) return { error: "unavailable" };
+  if (!rateLimit(`collab-window:${s.agency.id}`, 60, 60 * 60 * 1000)) return { error: "rateLimited" };
   const d = availabilitySchema.safeParse(Object.fromEntries(fd));
   if (!d.success) return { error: "invalid" };
   const units = d.data.capacityUnits === "" ? null : d.data.capacityUnits;
@@ -198,6 +199,7 @@ export async function viewedInquiryAction(id: string) {
 export async function submitQuoteAction(_: CollabState, fd: FormData): Promise<CollabState> {
   const s = await gate();
   if (!s) return { error: "unavailable" };
+  if (!rateLimit(`collab-quote:${s.agency.id}`, 20, 60 * 60 * 1000)) return { error: "rateLimited" };
   const id = uuid.safeParse(fd.get("inquiryId"));
   const d = quoteSchema.safeParse({ ...Object.fromEntries(fd), currency: currencyOf(s.agency.country) });
   if (!id.success || !d.success) return { error: "invalid" };

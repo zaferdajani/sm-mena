@@ -9,6 +9,8 @@ import { agencies, collabBlocks } from "@/lib/db/schema";
 export async function blockProvider(blockerId: string, blockedId: string) {
   if (blockerId === blockedId) return false;
   const db = await getDb();
+  const [exists] = await db.select({ id: agencies.id }).from(agencies).where(eq(agencies.id, blockedId));
+  if (!exists) return false;
   await db.insert(collabBlocks).values({ blockerAgencyId: blockerId, blockedAgencyId: blockedId }).onConflictDoNothing();
   return true;
 }

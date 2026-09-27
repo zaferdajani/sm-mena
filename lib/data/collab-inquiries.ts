@@ -156,6 +156,8 @@ export async function markViewed(supplierId: string, id: string) {
 }
 
 export type ReplyError = "notFound" | "closed" | "expired";
+/** Counters per supplier and inquiry; beyond this the conversation belongs in a contract, not in quotes. */
+const MAX_QUOTE_VERSIONS = 20;
 
 type Open = { error: ReplyError; row?: undefined } | { error?: undefined; row: { i: WorkInquiry; r: WorkInquiryRecipient } };
 
@@ -179,6 +181,7 @@ export async function submitQuote(supplier: Agency, id: string, input: QuoteInpu
     if (open.error) return { error: open.error };
     const [last] = await tx.select({ v: sql<number>`coalesce(max(${workQuotes.version}), 0)::int` }).from(workQuotes).where(and(eq(workQuotes.inquiryId, id), eq(workQuotes.supplierAgencyId, supplier.id)));
     const version = (last?.v ?? 0) + 1;
+    if (version > MAX_QUOTE_VERSIONS) return { error: "closed" as const };
     await tx.update(workQuotes).set({ status: "superseded" }).where(and(eq(workQuotes.inquiryId, id), eq(workQuotes.supplierAgencyId, supplier.id), eq(workQuotes.status, "open")));
     await tx.insert(workQuotes).values({ inquiryId: id, supplierAgencyId: supplier.id, version, amountFils: input.amount, currency: input.currency, startsOn: input.startsOn || null, dueOn: input.dueOn || null, scopeNote: input.scopeNote, exclusions: input.exclusions });
     await tx.update(workInquiryRecipients).set({ status: "quoted" }).where(eq(workInquiryRecipients.id, open.row.r.id));
@@ -261,7 +264,10 @@ export async function handoffAfterAccept(buyer: Agency, inquiry: WorkInquiry, su
   if (inquiry.contractRequestId) return { ok: true, handoff: "contract_request" };
   const quote = inquiry.acceptedQuoteId ? (await db.select().from(workQuotes).where(eq(workQuotes.id, inquiry.acceptedQuoteId)))[0] : null;
   if (await arePartners(buyer.id, supplierId)) {
-    const r = await requestContractFromPartner(buyer, supplierId, { title: inquiry.title, brief: briefFor(inquiry, quote ?? null, labels), budgetFils: quote?.amountFils ?? inquiry.budgetFils });
+    // contract_requests has no currency column and is read in the buyer's currency: a quote in another
+    // currency stays in the brief text instead of being mislabelled as a budget figure.
+    const sameCurrency = quote && quote.currency === currencyOf(buyer.country);
+    const r = await requestContractFromPartner(buyer, supplierId, { title: inquiry.title, brief: briefFor(inquiry, quote ?? null, labels), budgetFils: sameCurrency ? quote.amountFils : inquiry.budgetFils });
     if ("ok" in r) {
       await db.update(workInquiries).set({ contractRequestId: r.id, updatedAt: new Date() }).where(eq(workInquiries.id, inquiry.id));
       // The engagement is real once the contract is asked for: "Rehire" starts from here.
@@ -276,7 +282,7 @@ export async function handoffAfterAccept(buyer: Agency, inquiry: WorkInquiry, su
 }
 
 function briefFor(i: WorkInquiry, q: WorkQuote | null, labels: BriefLabels) {
-  const lines = [i.scope, i.deliverables.length ? i.deliverables.map((d) => `${d.key} × ${d.quantity}${d.platform ? ` (${d.platform})` : ""}`).join("\n") : "", i.startsOn || i.dueOn ? `${i.startsOn ?? ""} → ${i.dueOn ?? ""}` : "", q?.scopeNote ?? "", q?.exclusions ? `${labels.excluded}: ${q.exclusions}` : ""].filter(Boolean);
+  const lines = [i.scope, i.deliverables.length ? i.deliverables.map((d) => `${d.key} × ${d.quantity}${d.platform ? ` (${d.platform})` : ""}`).join("\n") : "", i.startsOn || i.dueOn ? `${i.startsOn ?? ""} → ${i.dueOn ?? ""}` : "", q ? `${(q.amountFils / 1000).toString()} ${q.currency}` : "", q?.scopeNote ?? "", q?.exclusions ? `${labels.excluded}: ${q.exclusions}` : ""].filter(Boolean);
   return lines.join("\n\n").slice(0, 2000);
 }
 

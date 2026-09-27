@@ -113,7 +113,7 @@ export async function declineInvite(me: Agency, token: string) {
   const rows = await db
     .update(collabInvites)
     .set({ status: "declined", respondedAt: new Date() })
-    .where(and(eq(collabInvites.tokenHash, hash(token)), eq(collabInvites.status, "pending"), ne(collabInvites.fromAgencyId, me.id)))
+    .where(and(eq(collabInvites.tokenHash, hash(token)), eq(collabInvites.status, "pending"), gt(collabInvites.expiresAt, new Date()), ne(collabInvites.fromAgencyId, me.id)))
     .returning({ id: collabInvites.id });
   return rows.length > 0;
 }
