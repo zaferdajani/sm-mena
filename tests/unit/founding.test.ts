@@ -32,6 +32,10 @@ describe("founding cohort", () => {
     process.env.FOUNDING_ACTIVATED_AT = "2026-11-01T00:00:00Z";
     const after = foundingStatus({ foundingSeat: 2, createdAt: d("2026-09-01"), isDemo: false }, 100, d("2026-11-02"));
     expect(after.open).toBe(false);
-    expect(after.benefitsUntil?.toISOString()).toBe("2027-01-30T00:00:00.000Z");
+    expect(after.benefitsUntil?.toISOString()).toBe("2027-04-30T00:00:00.000Z");
+    expect(FOUNDING.firstMarketplaceFeePercent).toBe(0);
+    expect(FOUNDING.marketplaceFeePercent).toBe(7);
+    expect(FOUNDING.feeBenefitDays).toBe(365);
+    expect(FOUNDING.opportunityHeadStartHours).toBe(24);
   });
 });
