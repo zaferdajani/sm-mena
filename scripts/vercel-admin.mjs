@@ -159,8 +159,13 @@ async function runtimeLogs(project) {
   // Visit a few pages so fresh errors show up while the stream is open.
   const pages = (process.env.LOG_PATHS || "/ar,/ar/explore,/ar/requests").split(",");
   const sep = teamQuery ? `?${teamQuery}` : "";
+  // LOG_MINUTES keeps the stream open longer, e.g. while someone reproduces a
+  // problem; LOG_MATCH also prints every entry (not only errors) whose path matches.
+  const minutes = Number(process.env.LOG_MINUTES) || 0;
+  const match = process.env.LOG_MATCH ? new RegExp(process.env.LOG_MATCH) : null;
+  if (minutes) console.log(`Listening for ${minutes} minutes${match ? ` (all entries for ${match})` : ""}.`);
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), 25_000);
+  const timer = setTimeout(() => ctl.abort(), minutes ? minutes * 60_000 : 25_000);
   const res = await fetch(`${API}/v1/projects/${project.id}/deployments/${d.uid}/runtime-logs${sep}`, {
     headers: { Authorization: `Bearer ${TOKEN}` },
     signal: ctl.signal,
@@ -180,7 +185,10 @@ async function runtimeLogs(project) {
         } catch {
           continue;
         }
-        if (e.level === "error" || e.level === "warning" || /error/i.test(e.message ?? "")) {
+        if (match && match.test(e.requestPath ?? "")) {
+          const when = e.timestampInMs ? new Date(e.timestampInMs).toISOString() : "";
+          console.log(`${when} [${e.level ?? ""}] ${e.requestMethod ?? ""} ${e.requestPath} ${e.responseStatusCode ?? e.statusCode ?? ""} ${String(e.message ?? "").slice(0, 3000)}`);
+        } else if (e.level === "error" || e.level === "warning" || /error/i.test(e.message ?? "")) {
           console.log(`[${e.level}] ${e.requestPath ?? ""} ${String(e.message ?? "").slice(0, 3000)}`);
         }
       }

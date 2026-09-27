@@ -14,6 +14,14 @@ on:
         required: true
         type: choice
         options: [status, setup, deploy, logs]
+      minutes:
+        description: "logs: how many minutes to listen (empty = 25 seconds)"
+        required: false
+        type: string
+      match:
+        description: "logs: also print every entry whose path matches this (e.g. login|admin)"
+        required: false
+        type: string
 
 jobs:
   vercel:
@@ -39,4 +47,6 @@ jobs:
           GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_FROM: ${{ vars.EMAIL_FROM || secrets.EMAIL_FROM }}
+          LOG_MINUTES: ${{ inputs.minutes }}
+          LOG_MATCH: ${{ inputs.match }}
         run: node scripts/vercel-admin.mjs "${{ inputs.action }}"
