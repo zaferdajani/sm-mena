@@ -12,7 +12,8 @@ const cache: Cache = (globalCache.__sawwiqDb ??= {});
 
 /**
  * Returns the database.
- * - DATABASE_URL set: PostgreSQL via postgres-js (run `npm run db:migrate` first).
+ * - DATABASE_URL set: PostgreSQL, via node-postgres on Vercel and postgres-js
+ *   elsewhere (run `npm run db:migrate` first).
  * - Otherwise: PGlite (Postgres in WebAssembly) stored in PGLITE_DIR
  *   (default .data/pglite; "memory://" for tests). Migrations run automatically.
  * The instance is cached on globalThis so Next.js never opens the same
@@ -48,17 +49,29 @@ function runtimeUrl(url: string) {
 
 async function connect(): Promise<DB> {
   const url = process.env.DATABASE_URL;
+  if (url && serverless) {
+    // On Vercel, node-postgres rather than postgres.js. With prepare: false
+    // postgres.js sends every parameterized query in two steps (Parse +
+    // Describe + Flush, then Bind + Execute once the parameter types come
+    // back). Supabase's transaction pooler sometimes holds that Flush, so the
+    // app waits for the types while Postgres waits in ClientRead: the request
+    // hangs until the function times out (seen live on the admin console,
+    // docs/27). node-postgres sends Parse, Bind, Execute and Sync together.
+    const { Pool } = await import("pg");
+    const { drizzle } = await import("drizzle-orm/node-postgres");
+    const { attachDatabasePool } = await import("@vercel/functions");
+    const { pgPoolConfig } = await import("./pg-pool");
+    const pool = new Pool(pgPoolConfig(runtimeUrl(url)));
+    // Lets Vercel close idle connections before it suspends the instance, so
+    // no pooled connection is left half-used across a suspension.
+    attachDatabasePool(pool);
+    cache.close = () => pool.end();
+    return drizzle(pool, { schema }) as unknown as DB;
+  }
   if (url) {
     const { default: postgres } = await import("postgres");
     const { drizzle } = await import("drizzle-orm/postgres-js");
-    // max_pipeline: 1 — Supabase's transaction pooler (Supavisor) can stall when
-    // several queries are pipelined on one connection: the server sits in
-    // ClientRead and the request hangs until the function times out. Pages that
-    // run many queries at once (the admin dashboard) hit it first. One query in
-    // flight per connection; the pool still runs up to `max` in parallel.
-    // (max_pipeline is a runtime option of postgres.js that its types don't list.)
-    const serverlessOptions = { prepare: false, max: 3, idle_timeout: 20, connect_timeout: 10, max_pipeline: 1 };
-    const client = postgres(runtimeUrl(url), serverless ? serverlessOptions : { prepare: false, max: 10 });
+    const client = postgres(url, { prepare: false, max: 10 });
     cache.close = () => client.end();
     const db = drizzle(client, { schema });
     // drizzle turns postgres-js's date serializers into pass-throughs (it maps
