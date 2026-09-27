@@ -15,7 +15,7 @@ export async function requireAgency() {
   if (!user) return redirect({ href: "/login", locale });
   const agency = await getCurrentAgency();
   // Staff go to the console; client accounts (docs/41) to their saved list.
-  if (!agency) return redirect({ href: isStaffRole(user.role) ? "/admin" : user.role === "client" ? "/saved" : "/login", locale });
+  if (!agency) return redirect({ href: isStaffRole(user.role) ? "/admin" : user.role === "client" ? "/saved" : user.role === "agent" ? "/agent" : "/login", locale });
   return { user, agency };
 }
 
@@ -43,4 +43,15 @@ export async function requireUser() {
   const user = await getSessionUser();
   if (!user) return redirect({ href: "/login", locale: await getLocale() });
   return user;
+}
+
+/** A signed-in referral agent (docs/42), or redirect. */
+export async function requireAgent() {
+  const locale = await getLocale();
+  const user = await getSessionUser();
+  if (!user) return redirect({ href: "/login", locale });
+  const { agentForUser } = await import("@/lib/data/referrals");
+  const agent = user.role === "agent" ? await agentForUser(user.id) : null;
+  if (!agent) return redirect({ href: "/", locale });
+  return { user, agent };
 }

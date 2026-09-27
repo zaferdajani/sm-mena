@@ -13,7 +13,7 @@ import { ServicePicker } from "@/components/service-picker";
 import { TeamFields } from "@/components/studio/team-fields";
 import { join } from "../actions";
 
-export function JoinForm({ countries, defaultCountry, phoneCountry, popular, roles }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; popular: string[]; roles: { key: string; label: string }[] }) {
+export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = "", popular, roles }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; refCode?: string; popular: string[]; roles: { key: string; label: string }[] }) {
   const t = useTranslations("Auth");
   const [state, action] = useActionState(join, undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
@@ -61,6 +61,10 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, popular, rol
       <div className="grid gap-1.5">
         <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
         <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || phoneCountry} defaultValue={f.whatsapp} countryLabel={t("phoneCountry")} />
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="ref">{t("refCode")}</Label>
+        <Input id="ref" name="ref" dir="ltr" autoCapitalize="none" maxLength={24} defaultValue={f.ref || refCode} placeholder={t("refCodePlaceholder")} data-testid="join-ref" />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="email">{t("email")}</Label>

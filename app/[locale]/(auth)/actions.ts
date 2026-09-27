@@ -13,6 +13,7 @@ import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
 import { assignFoundingSeats } from "@/lib/data/teaser";
 import { mergeDeviceInteractions } from "@/lib/data/interactions";
+import { attributeReferral } from "@/lib/data/referrals";
 import { getVisitorId } from "@/lib/visitor";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
@@ -59,6 +60,7 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
 
 async function homeFor(userId: string, role: string) {
   if (isStaffRole(role)) return "/admin";
+  if (role === "agent") return "/agent";
   return (await getAgencyByOwner(userId)) ? "/studio" : "/";
 }
 
@@ -94,7 +96,7 @@ const joinSchema = z.object({
 
 export async function join(_: FormState, formData: FormData): Promise<FormState> {
   const raw = Object.fromEntries(formData) as Record<string, string>;
-  const fields = { name: raw.name ?? "", handle: raw.handle ?? "", city: raw.city ?? "", whatsapp: raw.whatsapp ?? "", whatsappCountry: raw.whatsappCountry ?? "", email: raw.email ?? "" };
+  const fields = { name: raw.name ?? "", handle: raw.handle ?? "", city: raw.city ?? "", whatsapp: raw.whatsapp ?? "", whatsappCountry: raw.whatsappCountry ?? "", ref: raw.ref ?? "", email: raw.email ?? "" };
   const ip = await clientIp();
   if (!rateLimit(`join:${ip}`, 5, 60 * 60 * 1000)) return { error: "rateLimited", fields };
 
@@ -126,7 +128,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     const picked = await resolveServices(null, all("services"), all("newServices"));
     const kind = formData.get("kind") === "freelancer" ? "freelancer" : "agency";
     const teamRoles = all("teamRoles").filter((r) => ROLE_KEYS.includes(r));
-    await createAgency(user.id, {
+    const created = await createAgency(user.id, {
       handle: data.handle,
       name: data.name,
       city: data.city,
@@ -139,6 +141,8 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
       // An agency is offered partners for the key roles it doesn't have in house (it can change this in the studio).
       seeksRoles: kind === "agency" ? JOIN_ROLES.filter((r) => !teamRoles.includes(r)) : [],
     });
+    // The marketing agent whose link or code brought them (docs/42).
+    await attributeReferral(created.id, formData.get("ref"), data.email).catch(() => false);
   } catch {
     // e.g. the handle was taken a moment ago; do not leave an orphan account
     await deleteUser(user.id);

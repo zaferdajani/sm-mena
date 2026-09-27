@@ -90,7 +90,9 @@
     "closed": "Your account is closed. Thank you for being part of Sawwiq.",
     "clientPrompt": "A business owner who wants to follow agencies?",
     "clientLink": "Sign in with a code by email",
-    "phoneCountry": "Country code"
+    "phoneCountry": "Country code",
+    "refCode": "Agent code (optional)",
+    "refCodePlaceholder": "If a Sawwiq agent introduced you"
   },
   "Cities": {
     "amman": "Amman",
@@ -223,7 +225,8 @@
     "newPost": "New post",
     "hire": "Hire an agency",
     "match": "AI assistant",
-    "login": "Sign in"
+    "login": "Sign in",
+    "agent": "My referrals"
   },
   "Common": {
     "verified": "Business identity verified",
@@ -3235,5 +3238,100 @@
         "limit": "Real feedback sessions on the product. No ownership implied."
       }
     }
+  },
+  "Agent": {
+    "title": "My referrals",
+    "hello": "Hi {name}",
+    "intro": "Bring agencies, freelancers and creators to Sawwiq. You earn {rate} for each account that becomes active, plus bonuses at each milestone.",
+    "paused": "Your agent account is paused. Contact the Sawwiq team.",
+    "yourLink": "Your personal link",
+    "qr": "QR code for your link",
+    "codeHint": "Or they type your code at sign-up:",
+    "whatsapp": "WhatsApp",
+    "share": "Share",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "shareText": "List your business on Sawwiq, the first Arabic platform for social media makers. Free before launch:",
+    "stats": {
+      "signedUp": "Signed up through you",
+      "active": "Active accounts",
+      "earned": "Earned",
+      "owed": "Owed to you"
+    },
+    "paidSoFar": "Paid to you so far: {amount}",
+    "payNote": "The Sawwiq team pays you directly, outside the platform.",
+    "bonusTitle": "Milestone bonuses",
+    "tier": "{at} active = +{bonus}",
+    "toNext": "{count, plural, one {# more active account for a {bonus} bonus} other {# more active accounts for a {bonus} bonus}}",
+    "referredTitle": "Who signed up through you",
+    "activeRule": "An account becomes active, and counts for you, once its page is complete (bio and services) and it posts its first work. Help them finish it.",
+    "status": {
+      "active": "Active",
+      "pending": "Not complete yet",
+      "void": "Not counted"
+    },
+    "needs": "Still needs: {items}",
+    "missing": {
+      "bio": "bio",
+      "services": "services",
+      "post": "first work"
+    },
+    "empty": "No one has signed up through you yet. Share your link, or show your QR code when you visit agencies.",
+    "boardTitle": "Leaderboard",
+    "yourRank": "You're #{rank} of {count}",
+    "boardActive": "{count, plural, one {# active} other {# active}}"
+  },
+  "AdminAgents": {
+    "nav": "Agents",
+    "title": "Marketing agents",
+    "intro": "Add the agents who bring agencies and freelancers. An account counts once it's active (complete page and first work). You pay agents outside the platform and record it here.",
+    "export": "Export CSV",
+    "totals": "{agents} agents · {signedUp} sign-ups · {active} active · {owed} owed",
+    "cols": {
+      "agent": "Agent",
+      "code": "Code",
+      "signedUp": "Sign-ups",
+      "active": "Active",
+      "earned": "Earned",
+      "paid": "Paid",
+      "owed": "Owed"
+    },
+    "paused": "paused",
+    "empty": "No agents yet.",
+    "add": "Add an agent",
+    "name": "Name",
+    "email": "Email (to sign in)",
+    "phone": "Phone",
+    "code": "Personal code",
+    "codeHint": "Lower-case letters and numbers, e.g. ahmad. Their link: sawwiq.org/j/<code>",
+    "rate": "Pay per active account (JOD)",
+    "note": "Note (optional)",
+    "addButton": "Add agent",
+    "created": "{name} was added.",
+    "createdLogin": "Their sign-in:",
+    "createdNote": "The password is shown only once. Send it to them; they can change it on their page or sign in with an emailed code.",
+    "errors": {
+      "invalid": "Check the details.",
+      "codeInvalid": "The code must be 3 to 24 lower-case letters or numbers.",
+      "codeTaken": "Another agent has this code.",
+      "emailTaken": "Another account uses this email.",
+      "tiers": "One milestone per line: count: bonus, e.g. 25: 30"
+    },
+    "payoutAmount": "Payout (JOD)",
+    "payoutNote": "Note",
+    "payoutNotePlaceholder": "e.g. CliQ transfer 5 Oct",
+    "recordPayout": "Record payout",
+    "tiersTitle": "Milestone bonuses",
+    "tiersHint": "One line per milestone: active accounts: bonus in JOD. e.g. 25: 30",
+    "saveTiers": "Save milestones",
+    "back": "All agents",
+    "summary": "{signedUp} sign-ups · {active} active · earned {earned} · paid {paid} · owed {owed}",
+    "saveRate": "Save pay",
+    "pause": "Pause agent",
+    "resume": "Resume agent",
+    "payoutsTitle": "Payouts",
+    "restore": "Count it again",
+    "voidReason": "Reason it doesn't count",
+    "void": "Don't count"
   }
 }

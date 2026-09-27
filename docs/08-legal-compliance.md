@@ -126,3 +126,8 @@ It holds no personal data. The partner sees only the shared milestone, its check
 - **Sign-in codes:** stored as keyed hashes only, deleted after 24 hours.
 - **Logs:** addresses are never logged, and the email that carries the code contains nothing else.
 - **Follows, likes and saves:** tied to the account key; staff remove them with the account when its owner asks for deletion (support).
+
+## Referral agents (docs/42)
+- **Agents' data:** name, email and phone. Admin enters it when hiring them, for signing in, contact and payouts. It's kept while they work with Sawwiq and for 24 months after (payout records).
+- **Visibility:** agents see only their referred providers' public page names and handles and what the pages are missing, never contact details. Other agents on the leaderboard show by first name only.
+- **Payout records** (amount and note) are kept with the accounts.
