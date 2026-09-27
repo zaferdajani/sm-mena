@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
-import { and, asc, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { currencyOf } from "@/lib/countries";
 import { canRequestChanges, clampRounds, DEFAULT_REVISION_ROUNDS, isHeld, reviewDaysSetting, reviewDeadline, roundsState } from "@/lib/contracts/rules";
 import { LEGAL_VERSION } from "@/lib/legal/jurisdictions";
@@ -268,9 +268,9 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
   const [provider] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
   const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId));
   const founder = provider ? founderEligibility({ ...provider, packageCount: pkg?.n ?? 0 }) : { eligible: false };
-  const [history] = await db.select({ n: sql<number>`count(*)::int` }).from(contracts).where(and(eq(contracts.agencyId, agencyId), eq(contracts.status, "completed"), eq(contracts.paymentMode, "protected"), eq(contracts.paymentsLive, true), isNotNull(contracts.requestId)));
+  const [history] = await db.select({ n: sql<number>`count(*)::int` }).from(contracts).where(and(eq(contracts.agencyId, agencyId), ne(contracts.status, "cancelled"), eq(contracts.paymentMode, "protected"), eq(contracts.paymentsLive, true), isNotNull(contracts.requestId)));
   const acquiredBySawwiq = Boolean(input.requestId || input.proposalId);
-  const fee = input.paymentMode === "protected" ? founderMarketplaceFee({ eligible: founder.eligible, protectedPaymentsLive: paymentsLive, acquiredBySawwiq, priorCompletedSawwiqProjects: history?.n ?? 0, standardFeePercent: feePercent() }) : 0;
+  const fee = input.paymentMode === "protected" ? founderMarketplaceFee({ eligible: founder.eligible, protectedPaymentsLive: paymentsLive, acquiredBySawwiq, priorFeeWaiverReservations: history?.n ?? 0, standardFeePercent: feePercent() }) : 0;
   const specialRequests = input.specialRequests;
   const { country = "jo", city = "amman", name = "" } = provider ?? {};
   const legal = { version: LEGAL_VERSION, jurisdiction: country, city };
