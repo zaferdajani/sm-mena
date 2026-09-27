@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { BehanceShortcut } from "@/components/studio/behance-shortcut";
 import { GoogleForm } from "@/components/studio/google-form";
 import { ProfileForm } from "@/components/studio/profile-form";
 import { requireAgency } from "@/lib/auth/guards";
@@ -20,7 +21,13 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
   ]);
   return (
     <div className="mx-auto max-w-xl">
-      {welcome && <p className="mb-5 rounded-xl border border-brand-line bg-brand-soft p-4 text-sm">{t("welcome")}</p>}
+      {welcome && (
+        <div className="mb-5 space-y-3">
+          <p className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="profile-welcome">{t("welcome")}</p>
+          {/* The quickest start for someone who already has a portfolio (docs/47). */}
+          <BehanceShortcut testId="welcome-behance" />
+        </div>
+      )}
       <div className="mb-6">
         <GoogleForm current={agency.googleMapsUrl ?? agency.googlePlaceId} />
       </div>

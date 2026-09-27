@@ -3344,6 +3344,13 @@
       "button": "Send to Sawwiq",
       "dragHint": "Drag me to your bookmarks bar. Clicking here does nothing.",
       "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
+    },
+    "shortcut": {
+      "title": "Already on Behance? Start from your portfolio",
+      "body": "Give us your Behance link: your projects become posts, and your bio, logo and services fill in. You review everything before it goes live.",
+      "cta": "Import from Behance",
+      "pdf": "Or import a PDF portfolio.",
+      "join": "Already have a Behance portfolio? After you create your page, import it in one step."
     }
   },
   "Start": {

@@ -11,7 +11,8 @@ import { FlagPolyfill } from "@/components/flag-polyfill";
 import { ServiceRegistry } from "@/components/service-registry";
 import { customTags } from "@/lib/services/tags";
 import { PageTracker } from "@/components/page-tracker";
-import { themeScript } from "@/components/theme-toggle";
+import { ThemeSync } from "@/components/theme-sync";
+import { themeScript } from "@/lib/theme";
 import { directionOf, routing } from "@/i18n/routing";
 import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -65,6 +66,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body className="min-h-full">
         <DirectionProvider direction={directionOf(locale)}>
+          <ThemeSync />
           <DomGuard />
           <NextIntlClientProvider>
             <ServiceRegistry tags={approvedTags} />

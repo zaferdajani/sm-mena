@@ -11,6 +11,7 @@ import { mediaUrl } from "@/lib/storage";
 import { seatOf } from "@/lib/data/teaser";
 import { founderEligibility, foundingStatus } from "@/lib/founding";
 import { FoundingPanel } from "@/components/studio/founding-panel";
+import { BehanceShortcut } from "@/components/studio/behance-shortcut";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
 export default async function StudioOverview({ params, searchParams }: PageProps<"/[locale]/studio">) {
@@ -55,6 +56,8 @@ export default async function StudioOverview({ params, searchParams }: PageProps
       {steps.some((x) => !x.done) && (
         <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">
           <h2 className="font-semibold">{t("setup.title")}</h2>
+          {/* New providers usually have a portfolio already: offer the Behance import before the manual steps (docs/47). */}
+          {agency.postCount === 0 && <BehanceShortcut testId="setup-behance" className="mt-3" />}
           <ol className="mt-3 grid gap-2">
             {steps.map((x) => (
               <li key={x.key}>
