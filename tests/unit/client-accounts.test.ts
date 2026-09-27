@@ -3,7 +3,8 @@ import { eq } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { checkCode, issueCode, MAX_TRIES } from "@/lib/auth/email-code";
 import { createAgency } from "@/lib/data/agencies";
-import { accountKey, isFollowing, mergeDeviceInteractions, toggleFollow } from "@/lib/data/interactions";
+import { accountKey, isFollowing, listFollowers, mergeDeviceInteractions, toggleFollow } from "@/lib/data/interactions";
+import { maskEmail } from "@/lib/format";
 import { createUser } from "@/lib/data/users";
 import { getDb } from "@/lib/db";
 import { agencies } from "@/lib/db/schema";
@@ -41,5 +42,21 @@ describe("moving a device's follows to the account", () => {
     expect(await isFollowing(accountKey(client.id), agency.id)).toBe(true);
     const [row] = await (await getDb()).select({ n: agencies.followerCount }).from(agencies).where(eq(agencies.id, agency.id));
     expect(row.n).toBe(1);
+  });
+
+  it("lists an agency's followers as signed-in accounts only, newest first, and masks their addresses", async () => {
+    const owner = await createUser("agency@list.jo", "password-1234");
+    const agency = await createAgency(owner.id, { handle: "list.agency", name: "List", city: "amman", services: ["smm_management"] });
+    const first = await createUser("first@list.jo", "x".repeat(20), "client");
+    const second = await createUser("second@list.jo", "x".repeat(20), "client");
+    await toggleFollow(agency.id, accountKey(first.id));
+    await toggleFollow(agency.id, "0f0f0f0f-0000-4000-8000-000000000002"); // an anonymous device never shows
+    await toggleFollow(agency.id, accountKey(second.id));
+    const followers = await listFollowers(agency.id);
+    expect(followers.map((f) => f.email)).toEqual(["second@list.jo", "first@list.jo"]);
+    expect(followers.map((f) => maskEmail(f.email))).toEqual(["se…@list.jo", "fi…@list.jo"]);
+    expect(maskEmail("a@b.co")).toBe("a…@b.co");
+    await toggleFollow(agency.id, accountKey(second.id)); // unfollow
+    expect((await listFollowers(agency.id)).map((f) => f.email)).toEqual(["first@list.jo"]);
   });
 });

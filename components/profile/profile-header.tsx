@@ -47,7 +47,7 @@ export type ProfileData = {
   googleMapsUrl: string | null;
 };
 
-export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null }) {
+export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set for the agency's own owner: the followers counter opens the list. */ followersHref?: string }) {
   const t = useTranslations("Profile");
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
@@ -67,10 +67,17 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
             <dt className="text-sm text-muted-foreground">{t("posts")}</dt>
             <dd className="text-lg font-bold" data-testid="post-count">{compactNumber(agency.postCount, locale)}</dd>
           </div>
-          <div className="flex flex-col-reverse">
-            <dt className="text-sm text-muted-foreground">{t("followers")}</dt>
-            <dd className="text-lg font-bold" data-testid="follower-count">{compactNumber(followers, locale)}</dd>
-          </div>
+          {followersHref ? (
+            <Link href={followersHref} className="flex flex-col-reverse rounded-lg px-2 hover:bg-accent" data-testid="followers-link" title={t("seeFollowers")}>
+              <dt className="text-sm text-muted-foreground">{t("followers")}</dt>
+              <dd className="text-lg font-bold" data-testid="follower-count">{compactNumber(followers, locale)}</dd>
+            </Link>
+          ) : (
+            <div className="flex flex-col-reverse">
+              <dt className="text-sm text-muted-foreground">{t("followers")}</dt>
+              <dd className="text-lg font-bold" data-testid="follower-count">{compactNumber(followers, locale)}</dd>
+            </div>
+          )}
         </dl>
       </div>
 
