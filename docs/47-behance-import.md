@@ -6,6 +6,17 @@ Many agencies, designers and photographers already keep their portfolio on Behan
 
 As with the PDF import (docs/36), the provider reviews everything and nothing is written until they press Publish. Every imported post keeps a **credit link to its Behance project**, shown under the post.
 
+## Where a new provider meets it
+
+The import is offered as the quick start everywhere a new provider decides how to begin, so nobody rebuilds a portfolio by hand that already exists (`components/studio/behance-shortcut.tsx`):
+- the join page says up front that a Behance portfolio carries over (`join-behance`);
+- the profile welcome straight after joining shows the shortcut card with the import button and a PDF alternative (`welcome-behance`);
+- the packages welcome offers it next to "skip and post your first work" (`packages-behance`);
+- the studio setup list leads with it until the first post exists (`setup-behance`);
+- on New post, Behance is the first, highlighted way in, the PDF import second.
+
+All of it follows the `portfolio_import` switch: off or "soon" hides every entry point.
+
 ## Where the data comes from
 
 Behance closed its public API to new applications years ago, so there is no key to apply for. The import reads what Behance publishes for everyone:

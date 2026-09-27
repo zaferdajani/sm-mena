@@ -1,5 +1,6 @@
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { FileSignature } from "lucide-react";
+import { BehanceShortcut } from "@/components/studio/behance-shortcut";
 import { PackageForm } from "@/components/studio/package-form";
 import { Link } from "@/i18n/navigation";
 import { PLATFORMS } from "@/lib/labels";
@@ -28,7 +29,10 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
       {welcome && (
         <div role="status" className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="packages-welcome">
           <p className="font-medium">✓ {ts("packagesWelcome")}</p>
-          <Link href="/studio/new" className="mt-2 inline-block text-brand underline-offset-4 hover:underline">{ts("packagesSkip")}</Link>
+          <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Link href="/studio/new" className="text-brand underline-offset-4 hover:underline">{ts("packagesSkip")}</Link>
+            <BehanceShortcut testId="packages-behance" compact />
+          </p>
         </div>
       )}
       <p className="text-sm text-muted-foreground">{t("studio.intro")}</p>
