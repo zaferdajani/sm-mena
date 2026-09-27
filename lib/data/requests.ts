@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { and, arrayOverlaps, desc, eq, gt, inArray, isNull, ne, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, events, projectRequests, proposals, requestMatches, type ProjectRequest } from "@/lib/db/schema";
+import { agencies, events, packages, projectRequests, proposals, requestMatches, type ProjectRequest } from "@/lib/db/schema";
+import { founderEligibility, opportunityVisibleAt } from "@/lib/founding";
 import { toSummary } from "./agencies";
 import { addNotifications, type NewNotification } from "./notifications";
 import { hashToken } from "./reviews";
@@ -167,7 +168,7 @@ export type Opportunity = {
 };
 
 /** The agency fields opportunities depend on. Demo requests are shown to demo agencies only. */
-export type OpportunityAgency = { id: string; services: string[]; isDemo?: boolean };
+export type OpportunityAgency = { id: string; services: string[]; isDemo?: boolean; foundingSeat?: number | null; createdAt?: Date; status?: "active" | "suspended" | "deactivated"; bio?: string; postCount?: number };
 
 /** Seeded demo requests stay invisible to real agencies. */
 const demoVisibility = (agency: OpportunityAgency) => (agency.isDemo ? undefined : ne(projectRequests.source, "demo"));
@@ -177,6 +178,8 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
   const db = await getDb();
   const now = new Date();
   const conditions = [eq(projectRequests.status, "open"), gt(projectRequests.expiresAt, now), demoVisibility(agency), only ? eq(projectRequests.id, only.requestId) : undefined];
+  const [pkg] = await db.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agency.id));
+  const founder = founderEligibility({ foundingSeat: agency.foundingSeat ?? null, createdAt: agency.createdAt ?? now, isDemo: Boolean(agency.isDemo), status: agency.status, bio: agency.bio, services: agency.services, postCount: agency.postCount, packageCount: pkg?.n ?? 0 }, now);
   const rows = await db
     .select({ request: projectRequests, match: requestMatches })
     .from(projectRequests)
@@ -191,7 +194,8 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
     )
     .orderBy(desc(sql`coalesce(${requestMatches.invited}, false)`), desc(projectRequests.createdAt))
     .limit(50);
-  const ids = rows.map((r) => r.request.id);
+  const visibleRows = rows.filter((r) => now >= opportunityVisibleAt(r.request.createdAt, founder.eligible));
+  const ids = visibleRows.map((r) => r.request.id);
   const [counts, mine] = ids.length
     ? await Promise.all([
         db.select({ requestId: proposals.requestId, n: sql<number>`count(*)::int` }).from(proposals).where(inArray(proposals.requestId, ids)).groupBy(proposals.requestId),
@@ -200,7 +204,7 @@ export async function listOpportunities(agency: OpportunityAgency, only?: { requ
     : [[], []];
   const countBy = new Map(counts.map((c) => [c.requestId, c.n]));
   const mineBy = new Map(mine.map((p) => [p.requestId, p]));
-  return rows.map((r) => ({
+  return visibleRows.map((r) => ({
     request: r.request,
     invited: r.match?.invited ?? false,
     score: r.match?.score ?? null,
