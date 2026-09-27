@@ -13,8 +13,8 @@
   gap: 1.5rem;
   padding: 1.25rem;
   border: 1px solid var(--border);
-  border-block-start: 4px solid var(--primary);
-  border-radius: 1.5rem;
+  border-block-start: 4px solid var(--gold);
+  border-radius: var(--radius-xl);
   background: var(--card);
   color: var(--card-foreground);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--foreground) 4%, transparent);
@@ -25,16 +25,16 @@
   flex: 0 0 auto;
   padding: .25rem;
   border: 1px solid var(--border);
-  border-radius: 1.5rem;
+  border-radius: var(--radius-xl);
   background: var(--background);
 }
 .avatar > span > span { border-radius: 1.1rem; }
 .name {
   margin: .25rem 0 .5rem;
-  font-family: var(--font-readex), sans-serif;
+  font-family: var(--font-heading);
   font-size: clamp(1.5rem, 3.2vw, 2.25rem);
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 800;
   text-wrap: pretty;
 }
 .badges { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
@@ -46,21 +46,21 @@
   padding: .25rem .6rem;
   border: 1px solid var(--border);
   border-radius: 999px;
-  font-size: .7rem;
+  font-size: .8125rem;
   line-height: 1.6;
   font-weight: 500;
   background: var(--background);
 }
 .founderBadge {
-  background: color-mix(in srgb, #c69e43 12%, var(--card));
-  border-color: color-mix(in srgb, #c69e43 40%, var(--border));
+  background: color-mix(in srgb, var(--gold) 12%, var(--card));
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--border));
 }
-.meta { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; margin-block-start: 1rem; color: var(--muted-foreground); font-size: .85rem; }
+.meta { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; margin-block-start: 1rem; color: var(--muted-foreground); font-size: .9375rem; }
 .metaItem { display: inline-flex; align-items: center; gap: .35rem; min-inline-size: 0; }
 .metaItem svg { flex: 0 0 auto; }
 .handle { unicode-bidi: isolate; direction: ltr; }
-.serves { margin-block-start: .5rem; font-size: .8rem; line-height: 1.8; color: var(--primary); }
-.bio { margin-block-start: 1rem; font-size: .95rem; line-height: 1.9; white-space: pre-line; }
+.serves { margin-block-start: .5rem; font-size: .875rem; line-height: 1.8; color: var(--primary); }
+.bio { margin-block-start: 1rem; font-size: 1rem; line-height: 1.9; white-space: pre-line; }
 .services { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: 1.25rem; }
 .service {
   display: inline-flex;
@@ -71,7 +71,7 @@
   border: 1px solid var(--border);
   border-radius: .75rem;
   background: var(--background);
-  font-size: .8rem;
+  font-size: .875rem;
   line-height: 1.7;
   color: var(--foreground);
   transition: border-color .15s ease, background .15s ease;
@@ -79,17 +79,17 @@
 .service:hover { border-color: var(--primary); background: var(--accent); }
 .stats { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-block-start: 1.25rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); }
 .stats > div { display: flex; align-items: baseline; gap: .4rem; }
-.stats dt { order: 2; font-size: .8rem; color: var(--muted-foreground); }
+.stats dt { order: 2; font-size: .875rem; color: var(--muted-foreground); }
 .stats dd { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .contactPanel {
   align-self: start;
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: 1.1rem;
-  background: color-mix(in srgb, var(--primary) 4%, var(--card));
+  background: var(--brand-tint);
 }
 .price { display: grid; gap: .4rem; margin-block-end: 1rem; }
-.price dt { font-size: .8rem; color: var(--muted-foreground); }
+.price dt { font-size: .875rem; color: var(--muted-foreground); }
 .price dd { font-size: 1.1rem; line-height: 1.8; font-weight: 700; }
 .ratings { display: grid; gap: .75rem; margin-block-end: 1rem; }
 .ratings a { display: inline-flex; align-items: center; min-block-size: 2.75rem; max-inline-size: 100%; padding: .5rem .75rem; border: 1px solid var(--border); border-radius: .75rem; background: var(--card); }
@@ -111,10 +111,10 @@
 .secondaryActions { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .65rem; }
 .secondaryActions > button { min-inline-size: 0; min-block-size: 2.75rem; block-size: auto; white-space: normal; padding: .65rem .5rem; border-radius: .75rem; background: var(--card); color: var(--foreground); border: 1px solid var(--border); }
 .contactLinks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; margin-block-start: .75rem; }
-.contactLink { display: flex; align-items: center; justify-content: center; gap: .4rem; min-block-size: 2.75rem; padding: .5rem; border: 1px solid var(--border); border-radius: .75rem; font-size: .8rem; line-height: 1.7; background: var(--card); }
+.contactLink { display: flex; align-items: center; justify-content: center; gap: .4rem; min-block-size: 2.75rem; padding: .5rem; border: 1px solid var(--border); border-radius: .75rem; font-size: .875rem; line-height: 1.7; background: var(--card); }
 .contactLink svg { flex: 0 0 auto; }
 .contactLink:hover { background: var(--accent); }
-.member { margin-block-start: .9rem; text-align: center; font-size: .7rem; color: var(--muted-foreground); }
+.member { margin-block-start: .9rem; text-align: center; font-size: .8125rem; color: var(--muted-foreground); }
 .header :where(a, button):focus-visible,
 .frame [role="tab"]:focus-visible,
 .frame [data-testid="account-tile"]:focus-visible,
@@ -145,7 +145,7 @@
   padding: .65rem .8rem;
   border: 0;
   border-radius: .7rem;
-  font-size: .85rem;
+  font-size: .9375rem;
   line-height: 1.6;
 }
 .frame [role="tab"] > svg { flex: 0 0 auto; }
@@ -170,21 +170,21 @@
 .accountCaption { display: flex; align-items: center; gap: .6rem; padding: .75rem; }
 .accountLogo { inline-size: 2rem; block-size: 2rem; flex: 0 0 auto; border: 1px solid var(--border); border-radius: .6rem; object-fit: contain; background: var(--background); }
 .accountInitial { display: grid; place-items: center; font-weight: 700; }
-.accountName { display: block; font-size: .85rem; font-weight: 600; line-height: 1.65; }
-.accountCount { display: block; font-size: .75rem; color: var(--muted-foreground); line-height: 1.8; }
+.accountName { display: block; font-size: .9375rem; font-weight: 600; line-height: 1.65; }
+.accountCount { display: block; font-size: .8125rem; color: var(--muted-foreground); line-height: 1.8; }
 .packageGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .packageCard { min-inline-size: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem; background: var(--card); }
-.packageCategory { color: var(--primary); font-size: .75rem; line-height: 1.8; }
+.packageCategory { color: var(--primary); font-size: .8125rem; line-height: 1.8; }
 .packageName { margin-block-start: .5rem; font-size: 1.05rem; font-weight: 600; line-height: 1.65; }
 .packagePrice { display: flex; align-items: baseline; flex-wrap: wrap; gap: .4rem; margin-block: .9rem; }
 .packagePrice bdi { font-size: 1.5rem; font-weight: 700; line-height: 1.6; }
-.packagePrice span { font-size: .8rem; color: var(--muted-foreground); }
-.packageDescription { font-size: .85rem; line-height: 1.85; color: var(--muted-foreground); white-space: pre-line; }
-.packageItems { margin-block-start: 1rem; display: grid; gap: .6rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); font-size: .85rem; line-height: 1.8; }
+.packagePrice span { font-size: .875rem; color: var(--muted-foreground); }
+.packageDescription { font-size: .9375rem; line-height: 1.85; color: var(--muted-foreground); white-space: pre-line; }
+.packageItems { margin-block-start: 1rem; display: grid; gap: .6rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); font-size: .9375rem; line-height: 1.8; }
 .packageItems > li { min-inline-size: 0; display: flex; align-items: flex-start; gap: .5rem; }
 .packageItems svg { flex: 0 0 auto; }
 .packageItems > li > span { min-inline-size: 0; }
-.delivery { display: flex; align-items: center; gap: .4rem; margin-block-start: auto; padding-block-start: 1rem; font-size: .8rem; color: var(--muted-foreground); }
+.delivery { display: flex; align-items: center; gap: .4rem; margin-block-start: auto; padding-block-start: 1rem; font-size: .875rem; color: var(--muted-foreground); }
 @media (min-width: 640px) {
   .header { padding: 1.75rem; }
   .frame [data-testid="post-grid"], .accountGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }

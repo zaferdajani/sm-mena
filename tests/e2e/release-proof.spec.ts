@@ -1,15 +1,16 @@
 import { expect, test } from "@playwright/test";
+import { UI_REVISION } from "../../lib/release";
 
 test("version is not cached and matches landing and app render stamps", async ({ page, request }) => {
   const response = await request.get("/api/version");
   expect(response.ok()).toBe(true);
   expect(response.headers()["cache-control"]).toContain("no-store");
   const release = await response.json();
-  expect(release.revision).toBe("layout-2026-09-27-v1");
+  expect(release.revision).toBe(UI_REVISION);
   expect(["production", "preview", "development", "unknown"]).toContain(release.environment);
   expect(release.commit === null || /^[a-f0-9]{40}$/.test(release.commit)).toBe(true);
   await page.addInitScript(() => localStorage.setItem("sw_role", "browse"));
-  for (const route of ["/ar?intro=0", "/en/explore?tab=agencies"]) {
+  for (const route of ["/ar?intro=0", "/en/explore?tab=agencies", "/ar/soon"]) {
     await page.goto(route);
     const stamp = page.getByTestId("release-stamp");
     await expect(stamp).toHaveAttribute("data-ui-revision", release.revision);
