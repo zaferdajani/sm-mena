@@ -1,5 +1,6 @@
 "use server";
 
+import { internationalPhone } from "@/lib/dial-codes";
 import { canUse } from "@/lib/feature-gate";
 
 import { revalidatePath } from "next/cache";
@@ -28,7 +29,7 @@ import { SITE_URL } from "@/lib/site";
 import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
 import { cleanApp, type AppError } from "@/lib/app-demo";
-import { instagramHandle, normalizePhone, normalizeUrl, validateHandle } from "@/lib/text";
+import { instagramHandle, normalizeUrl, validateHandle } from "@/lib/text";
 import { agencyTranslationSchema, clientTranslationSchema, contentLang, packageTranslationSchema, postTranslationSchema, readTranslation } from "@/lib/content-lang";
 
 export type StudioState = { ok?: boolean; error?: string } | undefined;
@@ -150,8 +151,9 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   if (handleCheck === "reserved") return { error: "handleReserved" };
   if (await isHandleTaken(d.handle, agency.id)) return { error: "handleTaken" };
 
-  const whatsapp = d.whatsapp ? normalizePhone(d.whatsapp) : null;
-  const phone = d.phone ? normalizePhone(d.phone) : null;
+  // Each number joins its own country picker (lib/dial-codes.ts).
+  const whatsapp = d.whatsapp ? internationalPhone(String(formData.get("whatsappCountry") ?? ""), d.whatsapp) : null;
+  const phone = d.phone ? internationalPhone(String(formData.get("phoneCountry") ?? ""), d.phone) : null;
   if ((whatsapp && !/^\+?\d{8,15}$/.test(whatsapp)) || (phone && !/^\+?\d{8,15}$/.test(phone))) return { error: "phone" };
   const website = d.website ? normalizeUrl(d.website) : null;
   if (d.website && !website) return { error: "website" };

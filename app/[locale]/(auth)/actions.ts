@@ -18,7 +18,8 @@ import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { CITIES } from "@/lib/labels";
-import { normalizePhone, validateHandle } from "@/lib/text";
+import { validateHandle } from "@/lib/text";
+import { internationalPhone } from "@/lib/dial-codes";
 
 export type FormState = { error?: string; fields?: Record<string, string> } | undefined;
 
@@ -93,7 +94,7 @@ const joinSchema = z.object({
 
 export async function join(_: FormState, formData: FormData): Promise<FormState> {
   const raw = Object.fromEntries(formData) as Record<string, string>;
-  const fields = { name: raw.name ?? "", handle: raw.handle ?? "", city: raw.city ?? "", whatsapp: raw.whatsapp ?? "", email: raw.email ?? "" };
+  const fields = { name: raw.name ?? "", handle: raw.handle ?? "", city: raw.city ?? "", whatsapp: raw.whatsapp ?? "", whatsappCountry: raw.whatsappCountry ?? "", email: raw.email ?? "" };
   const ip = await clientIp();
   if (!rateLimit(`join:${ip}`, 5, 60 * 60 * 1000)) return { error: "rateLimited", fields };
 
@@ -114,7 +115,8 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   if (handleCheck === "reserved") return { error: "handleReserved", fields };
   if (await isHandleTaken(data.handle)) return { error: "handleTaken", fields };
   if (await getUserByEmail(data.email)) return { error: "emailTaken", fields };
-  const whatsapp = normalizePhone(data.whatsapp);
+  // The number as typed plus the country picked beside it (lib/dial-codes.ts).
+  const whatsapp = internationalPhone(String(formData.get("whatsappCountry") ?? ""), data.whatsapp);
   if (!/^\+?\d{8,15}$/.test(whatsapp)) return { error: "invalidPhone", fields };
 
   const user = await createUser(data.email, data.password).catch(() => null);

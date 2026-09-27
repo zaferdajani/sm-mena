@@ -26,3 +26,15 @@ export async function detectedCountry(): Promise<CountryCode | null> {
 export async function currentCountry(): Promise<CountryCode> {
   return (await chosenCountry()) ?? (await detectedCountry()) ?? DEFAULT_COUNTRY;
 }
+
+/**
+ * The country a phone field starts with: the visitor's country from the IP
+ * address (any country in the world, not only the ones Sawwiq serves), else
+ * their chosen or detected Sawwiq country.
+ */
+export async function phoneCountry(): Promise<string> {
+  const { isDialCountry } = await import("@/lib/dial-codes");
+  const ip = (await headers()).get(IP_COUNTRY_HEADER)?.toUpperCase();
+  if (isDialCountry(ip)) return ip;
+  return (await currentCountry()).toUpperCase();
+}

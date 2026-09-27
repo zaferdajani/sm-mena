@@ -17,6 +17,8 @@ import { langAttrs, OtherLanguage } from "./other-language";
 import { ServesField } from "./serves-field";
 import { TeamFields } from "./team-fields";
 import { ServicePicker } from "@/components/service-picker";
+import { PhoneField } from "@/components/forms/phone-field";
+import { splitPhone } from "@/lib/dial-codes";
 
 type Option = { key: string; label: string };
 
@@ -31,6 +33,9 @@ export type ProfileFormProps = {
 
 export function ProfileForm({ agency, options, welcome = false }: ProfileFormProps & { welcome?: boolean }) {
   const t = useTranslations("Studio.profileForm");
+  // Saved numbers split back into their country picker and local part.
+  const wa = splitPhone(agency.whatsapp, agency.country.toUpperCase());
+  const tel = splitPhone(agency.phone, agency.country.toUpperCase());
   const [state, action] = useActionState(updateProfileAction, undefined);
   const [preview, setPreview] = useState<string | null>(null);
   const [compressing, setCompressing] = useState(false);
@@ -159,8 +164,8 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-sm font-medium">{t("contact")}</legend>
-        <Field label={t("whatsapp")} htmlFor="whatsapp"><Input id="whatsapp" name="whatsapp" type="tel" dir="ltr" defaultValue={agency.whatsapp ?? ""} /></Field>
-        <Field label={t("phone")} htmlFor="phone"><Input id="phone" name="phone" type="tel" dir="ltr" defaultValue={agency.phone ?? ""} /></Field>
+        <Field label={t("whatsapp")} htmlFor="whatsapp"><PhoneField id="whatsapp" name="whatsapp" defaultCountry={wa.country} defaultValue={wa.local} countryLabel={t("phoneCountry")} /></Field>
+        <Field label={t("phone")} htmlFor="phone"><PhoneField id="phone" name="phone" defaultCountry={tel.country} defaultValue={tel.local} countryLabel={t("phoneCountry")} /></Field>
         <Field label={t("email")} htmlFor="email"><Input id="email" name="email" type="email" dir="ltr" defaultValue={agency.email ?? ""} /></Field>
         <Field label={t("website")} htmlFor="website"><Input id="website" name="website" dir="ltr" defaultValue={agency.website ?? ""} /></Field>
         <Field label={t("instagram")} htmlFor="instagram"><Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={agency.instagram ?? ""} /></Field>
