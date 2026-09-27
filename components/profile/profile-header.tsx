@@ -1,12 +1,11 @@
 "use client";
 
-import { Camera, Globe, Mail, MessageCircle, Phone } from "lucide-react";
+import { Camera, Globe, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { ContactLink } from "@/components/post/contact-link";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { compactNumber, whatsappLink } from "@/lib/text";
@@ -16,6 +15,7 @@ import { SITE_URL } from "@/lib/site";
 import { RatingBadge } from "@/components/reviews/stars";
 import { Link } from "@/i18n/navigation";
 import { FollowButton } from "./follow-button";
+import styles from "./profile-layout.module.css";
 
 export type ProfileData = {
   id: string;
@@ -29,7 +29,7 @@ export type ProfileData = {
   isVerified: boolean;
   isDemo: boolean;
   memberNo?: number | null;
-  /** In the Founding 100 cohort (lib/founding.ts): a dated badge, not a rank. */
+  /** Dated founding-cohort recognition, never a quality rank. */
   founding?: boolean;
   postCount: number;
   followerCount: number;
@@ -56,41 +56,67 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
   const tr = useTranslations("Reviews");
   const locale = useLocale();
   const [followers, setFollowers] = useState(agency.followerCount);
-  const iconLink = buttonVariants({ variant: "secondary", className: "size-9 px-0" });
+  const hasContactLinks = Boolean(agency.phone || agency.email || agency.website || agency.instagram);
 
   return (
-    <header className="space-y-4 px-4 pt-4 sm:pt-8">
-      <div className="flex items-center gap-5 sm:gap-10">
-        <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={84} ring className="sm:scale-125" />
-        <dl className="flex flex-1 justify-around text-center">
-          <div className="flex flex-col-reverse">
-            <dt className="text-sm text-muted-foreground">{t("posts")}</dt>
-            <dd className="text-lg font-bold" data-testid="post-count">{compactNumber(agency.postCount, locale)}</dd>
+    <header className={styles.header} data-testid="provider-profile-header">
+      <div className={styles.identity}>
+        <div className={styles.identityTop}>
+          <div className={styles.avatar}>
+            <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={76} />
           </div>
-          <div className="flex flex-col-reverse">
-            <dt className="text-sm text-muted-foreground">{t("followers")}</dt>
-            <dd className="text-lg font-bold" data-testid="follower-count">{compactNumber(followers, locale)}</dd>
+          <div className={styles.identityText}>
+            <h1 className={styles.name}><bdi dir="auto">{agency.name}</bdi></h1>
+            <div className={styles.badges}>
+              {agency.isVerified && (
+                <span className={styles.badge}>
+                  <VerifiedBadge label={tc("verified")} className="size-4 shrink-0" />
+                  <span aria-hidden>{tc("verified")}</span>
+                </span>
+              )}
+              {agency.kind === "freelancer" && <span className={styles.badge} data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
+              {agency.isDemo && <span className={styles.badge}>{tc("demo")}</span>}
+              {agency.founding && <span className={cn(styles.badge, styles.founderBadge)} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
+            </div>
+          </div>
+        </div>
+        <div className={styles.meta}>
+          <bdi dir="ltr" className={styles.handle}>@{agency.handle}</bdi>
+          <span className={styles.metaItem}>
+            <MapPin className="size-4" aria-hidden />
+            <span>{COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)}</span>
+          </span>
+        </div>
+        {servesNote && <p className={styles.serves} data-testid="serves-note">{servesNote}</p>}
+        {agency.bio && <p className={styles.bio} dir="auto">{agency.bio}</p>}
+        {agency.services.length > 0 && (
+          <div className={styles.services} data-testid="profile-services">
+            {agency.services.map((s) => (
+              <Link key={s} href={`/hire/${s}`} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></Link>
+            ))}
+          </div>
+        )}
+        <dl className={styles.stats}>
+          <div>
+            <dt>{t("posts")}</dt>
+            <dd data-testid="post-count"><bdi>{compactNumber(agency.postCount, locale)}</bdi></dd>
+          </div>
+          <div>
+            <dt>{t("followers")}</dt>
+            <dd data-testid="follower-count"><bdi>{compactNumber(followers, locale)}</bdi></dd>
           </div>
         </dl>
       </div>
 
-      <div className="space-y-1">
-        <div className="flex items-center gap-1.5">
-          {/* The heading is the agency's name only: badges sit beside it. */}
-          <h1 className="text-base font-bold">{agency.name}</h1>
-          {agency.isVerified && <VerifiedBadge label={tc("verified")} className="size-5" />}
-          {agency.kind === "freelancer" && <span className="rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand" data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
-          {agency.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">{tc("demo")}</span>}
-          {agency.founding && <span className="rounded bg-amber-100 px-1.5 text-[11px] font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100" data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)}
-          {agency.memberNo ? <span className="ms-2 rounded-full border px-1.5 text-[11px] font-medium text-muted-foreground" data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</span> : null}
-          {agency.startingPriceJod ? ` · ${tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}` : ""}
-        </p>
-        {servesNote && <p className="text-xs font-medium text-brand" data-testid="serves-note">{servesNote}</p>}
+      <div className={styles.contactPanel} data-testid="profile-contact-panel">
+        {agency.startingPriceJod ? (
+          <dl className={styles.price}>
+            <dt>{t("startingPrice")}</dt>
+            <dd>{tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}</dd>
+          </dl>
+        ) : null}
         {(agency.ratingAverage !== null || agency.googleRating !== null) && (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          <div className={styles.ratings}>
             {agency.ratingAverage !== null && (
               <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "reviews" } }}>
                 <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} label={tr("tab")} />
@@ -103,54 +129,30 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
             )}
           </div>
         )}
-        {agency.bio && <p className="whitespace-pre-line text-sm" dir="auto">{agency.bio}</p>}
-        {agency.services.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {agency.services.map((s) => (
-              <Link key={s} href={`/hire/${s}`} className="rounded-full bg-accent px-2.5 py-0.5 text-xs text-accent-foreground hover:underline">
-                {serviceLabel(s, locale)}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="flex gap-2">
-        <FollowButton agencyId={agency.id} following={following} count={followers} onCount={setFollowers} />
         {agency.whatsapp && (
           <ContactLink
             agencyId={agency.id}
             channel="whatsapp"
             href={whatsappLink(agency.whatsapp, `${tp("whatsappMessage")} ${SITE_URL}/${locale}/a/${agency.handle}`)}
-            className={cn(buttonVariants(), "h-9 flex-1 gap-1.5 bg-[#25D366] text-white hover:bg-[#1ebe5b]")}
+            className={styles.primaryContact}
           >
-            <MessageCircle className="size-4" />
+            <MessageCircle className="size-5 shrink-0" aria-hidden />
             {tp("whatsapp")}
           </ContactLink>
         )}
-        {inquirySlot}
-      </div>
-      <div className="flex gap-2">
-        {agency.phone && (
-          <ContactLink agencyId={agency.id} channel="phone" href={`tel:${agency.phone}`} className={iconLink} label={t("call")}>
-            <Phone className="size-4" />
-          </ContactLink>
+        <div className={styles.secondaryActions}>
+          {inquirySlot}
+          <FollowButton agencyId={agency.id} following={following} count={followers} onCount={setFollowers} />
+        </div>
+        {hasContactLinks && (
+          <div className={styles.contactLinks}>
+            {agency.phone && <ContactLink agencyId={agency.id} channel="phone" href={`tel:${agency.phone}`} className={styles.contactLink} label={t("call")}><Phone className="size-4" aria-hidden /><span>{t("call")}</span></ContactLink>}
+            {agency.email && <ContactLink agencyId={agency.id} channel="email" href={`mailto:${agency.email}`} className={styles.contactLink} label={t("email")}><Mail className="size-4" aria-hidden /><span>{t("email")}</span></ContactLink>}
+            {agency.website && <ContactLink agencyId={agency.id} channel="website" href={agency.website} className={styles.contactLink} label={t("website")}><Globe className="size-4" aria-hidden /><span>{t("website")}</span></ContactLink>}
+            {agency.instagram && <ContactLink agencyId={agency.id} channel="instagram" href={`https://instagram.com/${agency.instagram}`} className={styles.contactLink} label={t("instagram")}><Camera className="size-4" aria-hidden /><span>{t("instagram")}</span></ContactLink>}
+          </div>
         )}
-        {agency.email && (
-          <ContactLink agencyId={agency.id} channel="email" href={`mailto:${agency.email}`} className={iconLink} label={t("email")}>
-            <Mail className="size-4" />
-          </ContactLink>
-        )}
-        {agency.website && (
-          <ContactLink agencyId={agency.id} channel="website" href={agency.website} className={iconLink} label={t("website")}>
-            <Globe className="size-4" />
-          </ContactLink>
-        )}
-        {agency.instagram && (
-          <ContactLink agencyId={agency.id} channel="instagram" href={`https://instagram.com/${agency.instagram}`} className={iconLink} label={t("instagram")}>
-            <Camera className="size-4" />
-          </ContactLink>
-        )}
+        {agency.memberNo ? <p className={styles.member} data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</p> : null}
       </div>
     </header>
   );
