@@ -67,7 +67,11 @@ for (const locale of ["ar", "en"]) {
   test(`${locale} provider profile supports dark mode and readable portfolio tiles`, async ({ page }, info) => {
     await page.setViewportSize(info.project.name === "mobile" ? { width: 390, height: 844 } : { width: 1440, height: 1000 });
     await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+    // Sawwiq deliberately ignores OS dark mode unless the visitor chooses it.
+    // Exercise the same saved preference that its theme toggle/head script use.
+    await page.addInitScript(() => localStorage.setItem("sw_theme", "dark"));
     await page.goto(`/${locale}/a/${DEMO_AGENCY.handle}`);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.getByTestId("provider-profile-header")).toBeVisible();
     const grid = page.getByTestId("post-grid");
     if (await grid.count()) {
