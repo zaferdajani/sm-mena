@@ -49,6 +49,15 @@ export async function createProjectRequest(input: RequestInput, matches: { agenc
       if (row.source === "demo") {
         const demo = await tx.select({ id: agencies.id }).from(agencies).where(and(inArray(agencies.id, invited), eq(agencies.isDemo, true)));
         invited = demo.map((a) => a.id);
+      } else if (invited.length) {
+        // During the 24h launch head start, do not notify a non-Founder about a brief they cannot open yet.
+        const candidates = await tx.select().from(agencies).where(inArray(agencies.id, invited));
+        const founderIds: string[] = [];
+        for (const a of candidates) {
+          const [pkg] = await tx.select({ n: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, a.id));
+          if (founderEligibility({ ...a, packageCount: pkg?.n ?? 0 }, row.createdAt).eligible) founderIds.push(a.id);
+        }
+        invited = invited.filter((id) => founderIds.includes(id));
       }
       await addNotifications(
         invited.map((agencyId) => ({ agencyId, kind: "request_invited" as const, href: `/studio/opportunities/${row.id}`, params: { services: row.services.join(",") }, requestId: row.id })),
