@@ -36,3 +36,15 @@ export function formatFils(fils: number, locale: string, currency = "JOD"): stri
   const symbol = locale === "ar" ? (COUNTRIES.find((c) => c.currency === currency)?.currencyAr ?? currency) : currency;
   return `${(fils / 1000).toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { minimumFractionDigits: 0, maximumFractionDigits: 3 })} ${symbol}`;
 }
+
+/**
+ * An email address a third party may see: the first two letters of the local
+ * part and the domain ("ma…@gmail.com"). Enough to recognise a contact, not
+ * enough to write to them (docs/41: client addresses stay private).
+ */
+export function maskEmail(email: string): string {
+  const at = email.indexOf("@");
+  if (at <= 0) return "…";
+  const local = email.slice(0, at);
+  return `${local.slice(0, Math.min(2, local.length))}…@${email.slice(at + 1)}`;
+}

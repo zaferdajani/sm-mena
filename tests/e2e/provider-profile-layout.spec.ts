@@ -35,8 +35,9 @@ for (const locale of ["ar", "en"]) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(header.getByTestId("post-count")).toBeVisible();
     await expect(header.getByTestId("follower-count")).toBeVisible();
+    // The newer main feature stays owner-only; public visitors do not get the private followers link.
+    await expect(header.getByTestId("followers-link")).toHaveCount(0);
     await expect(page.getByTestId("contact-whatsapp")).toHaveAttribute("href", /wa\.me/);
-    // Each contact action is a touch target, not an unexplained tiny icon.
     for (const button of await page.getByTestId("profile-contact-panel").locator("a, button").all()) {
       const box = await button.boundingBox();
       if (box) expect(box.height).toBeGreaterThanOrEqual(44);
@@ -68,7 +69,6 @@ for (const locale of ["ar", "en"]) {
     await page.setViewportSize(info.project.name === "mobile" ? { width: 390, height: 844 } : { width: 1440, height: 1000 });
     await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
     // Sawwiq deliberately ignores OS dark mode unless the visitor chooses it.
-    // Exercise the same saved preference that its theme toggle/head script use.
     await page.addInitScript(() => localStorage.setItem("sw_theme", "dark"));
     await page.goto(`/${locale}/a/${DEMO_AGENCY.handle}`);
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -84,7 +84,7 @@ for (const locale of ["ar", "en"]) {
   });
 }
 
-test("a new provider has a usable profile without a logo, prices or reviews", async ({ page }, info) => {
+test("a new provider has a usable profile and keeps its private followers link", async ({ page }, info) => {
   const { handle } = await joinAgency(page, "layout");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/ar/a/${handle}`);
@@ -94,6 +94,12 @@ test("a new provider has a usable profile without a logo, prices or reviews", as
   await expect(page.getByTestId("google-rating")).toHaveCount(0);
   await expect(page.getByTestId("package-list")).toHaveCount(0);
   await fitsViewport(page);
+  const followersLink = page.getByTestId("followers-link");
+  await expect(followersLink).toHaveAttribute("href", "/ar/studio/followers");
+  await followersLink.click();
+  await expect(page).toHaveURL(/\/ar\/studio\/followers$/);
+  await expect(page.getByTestId("followers-empty")).toBeVisible();
+  await page.goto(`/ar/a/${handle}`);
   // Presentation stress fixture only; no mutation of the provider's stored data.
   await page.getByRole("heading", { level: 1 }).evaluate((el) => {
     el.textContent = "استوديو التسويق AgencyWithALongUnbrokenNameForInternationalCreativeProduction";

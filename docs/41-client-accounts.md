@@ -20,3 +20,6 @@ Until now, business owners browsed with no account, and follows, likes and saves
 ## Without email
 - `/api/health` reports `email: true/false`. With no `RESEND_API_KEY`, production can't send codes and `/signin` says sign-in is unavailable.
 - Development and the e2e server show the code on screen instead (`AUTH_SHOW_CODES=true` in `playwright.config.ts`). Never set that in production.
+
+## Followers list
+- The agency sees who follows it at `/studio/followers` (also by tapping the followers counter on its own page): signed-in client accounts only, newest first, with the address partly hidden ("ma…@gmail.com"). A follower is a lead signal, not a contact list; the agency writes back through Sawwiq when the client sends a request or a message.

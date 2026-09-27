@@ -61,6 +61,7 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/packages", label: tp("studio.tab") },
             { href: "/studio/new", label: t("newPost") },
             { href: "/studio/posts", label: t("posts") },
+            { href: "/studio/followers", label: t("followers") },
             { href: "/studio/clients", label: t("clients") },
             ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
             { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },

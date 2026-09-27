@@ -47,7 +47,7 @@ export type ProfileData = {
   googleMapsUrl: string | null;
 };
 
-export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null }) {
+export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set only for the profile owner by the server. */ followersHref?: string }) {
   const t = useTranslations("Profile");
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
@@ -103,7 +103,13 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote }: { 
           </div>
           <div>
             <dt>{t("followers")}</dt>
-            <dd data-testid="follower-count"><bdi>{compactNumber(followers, locale)}</bdi></dd>
+            <dd data-testid="follower-count">
+              {followersHref ? (
+                <Link href={followersHref} className="inline-flex min-h-11 items-center rounded-md px-2 text-brand underline-offset-4 hover:bg-accent hover:underline" data-testid="followers-link" title={t("seeFollowers")} aria-label={t("seeFollowers")}>
+                  <bdi>{compactNumber(followers, locale)}</bdi>
+                </Link>
+              ) : <bdi>{compactNumber(followers, locale)}</bdi>}
+            </dd>
           </div>
         </dl>
       </div>
