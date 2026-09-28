@@ -11,6 +11,9 @@ import { listRoster } from "@/lib/data/collab-roster";
 import { listAgencyContracts } from "@/lib/data/contracts";
 import { getDb } from "@/lib/db";
 import { agencies } from "@/lib/db/schema";
+import { rehireDraft, TEMPLATES, isTemplateKey } from "@/lib/collab/templates";
+import { workspaceFor } from "@/lib/data/work-orders";
+import { canUse } from "@/lib/feature-gate";
 import { collabPage } from "../../gate";
 
 /** Studio → Collaborate → New inquiry: to people from the roster, partners, or the one picked in Discover. */
@@ -21,7 +24,21 @@ export default async function NewInquiryPage({ params, searchParams }: PageProps
   if (soon) return <ComingSoon feature="collaboration" />;
   const sp = await searchParams;
   const t = await getTranslations("Collab");
-  const to = (typeof sp.to === "string" ? sp.to.split(",") : []).filter((x) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 8);
+  let to = (typeof sp.to === "string" ? sp.to.split(",") : []).filter((x) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 8);
+  // R3 (docs/50): a template or a rehire prefills the draft scope only; dates, budget, permissions and people are confirmed anew.
+  let initial: { title: string; scope: string; deliverables: { key: string; quantity: number; platform: string | null }[]; note: "template" | "rehire" } | null = null;
+  if (await canUse("collaboration_intelligence")) {
+    const tt = await getTranslations("Templates");
+    if (typeof sp.template === "string" && isTemplateKey(sp.template)) initial = { title: tt(`${sp.template}.name`), scope: tt(`${sp.template}.scope`), deliverables: TEMPLATES[sp.template].deliverables.map((d) => ({ key: d.key, quantity: d.quantity, platform: d.platform ?? null })), note: "template" };
+    else if (typeof sp.rehire === "string" && /^[0-9a-f-]{36}$/.test(sp.rehire)) {
+      const w = await workspaceFor(agency.id, sp.rehire);
+      if (w && w.role === "buyer" && w.current) {
+        const d = rehireDraft(w.current);
+        initial = { title: w.order.title, scope: d.scope, deliverables: d.deliverables, note: "rehire" };
+        to = [w.supplier.id];
+      }
+    }
+  }
   const needId = typeof sp.need === "string" && /^[0-9a-f-]{36}$/.test(sp.need) ? sp.need : "";
   const [roster, partnerIds, blocked, opts, contracts] = await Promise.all([listRoster(agency.id), partnerIdsOf(agency.id), blockedSet(agency.id), collabOptions(locale, agency.country), listAgencyContracts(agency.id)]);
   const ids = [...new Set([...to, ...roster.map((r) => r.providerAgencyId), ...partnerIds])].filter((id) => id !== agency.id && !blocked.has(id));
@@ -34,7 +51,7 @@ export default async function NewInquiryPage({ params, searchParams }: PageProps
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="inquiry-new">
       <CollabTabs active="work" />
       <CollabHeader title={t("inquiry.title")} intro={t("inquiry.intro")} />
-      <InquiryForm recipients={recipients} preselected={to} roles={opts.roles} platforms={opts.platforms} cities={opts.cities} currency={currencyOf(agency.country)} defaultCity={agency.city} needId={needId} parentContracts={parents} />
+      <InquiryForm recipients={recipients} preselected={to} roles={opts.roles} platforms={opts.platforms} cities={opts.cities} currency={currencyOf(agency.country)} defaultCity={agency.city} needId={needId} parentContracts={parents} initial={initial} />
     </div>
   );
 }

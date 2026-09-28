@@ -16,6 +16,9 @@ import { isDateString } from "@/lib/collab/time";
 import { WORK_MODES, type WorkMode } from "@/lib/collab/types";
 import { formatFils, timeAgo } from "@/lib/format";
 import { roleLabel } from "@/lib/services/catalog";
+import { NextActionsPanel } from "@/components/collab/next-actions";
+import { nextActions } from "@/lib/data/collab-next";
+import { canUse } from "@/lib/feature-gate";
 import { collabPage } from "./gate";
 
 /** Studio → Collaborate → Discover (docs/48): agencies find providers; everyone sees published needs for their roles. */
@@ -37,10 +40,12 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
   const confirmedOnly = str("confirmed") === "1";
   const cursor = Math.max(0, Number(str("cursor")) || 0);
   const searched = Object.keys(sp).some((k) => ["role", "kind", "workMode", "from", "to", "confirmed", "q"].includes(k));
-  const [results, needs, badge] = await Promise.all([
+  const intel = await canUse("collaboration_intelligence");
+  const [results, needs, badge, actions] = await Promise.all([
     agency.kind === "agency" || searched ? discoverCollaborators(agency, { roles: roles.length ? roles : agency.seeksRoles, kind, workMode, from: from && to ? from : null, to: from && to ? to : null, confirmedOnly, cursor }, { includeDemo: agency.isDemo }) : null,
     listOpenNeedsFor(agency),
     workBadgeCount(agency.id),
+    intel ? nextActions(agency) : null,
   ]);
   const field = "h-11 w-full rounded-lg border bg-background px-2 text-sm";
 
@@ -48,6 +53,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="collab-discover">
       <CollabTabs active="discover" badges={{ work: badge }} />
       <CollabHeader title={t("discover.title")} intro={agency.kind === "freelancer" ? t("discover.introFreelancer") : t("discover.intro")} />
+      {actions && <NextActionsPanel actions={actions} locale={locale} />}
 
       {agency.kind === "freelancer" && (
         <section className="grid gap-3" data-testid="open-needs">

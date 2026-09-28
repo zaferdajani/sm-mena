@@ -4,6 +4,7 @@ import { FilterChips } from "@/components/admin/filter-chips";
 import { StatTiles } from "@/components/admin/stat-tiles";
 import { requireStaff } from "@/lib/auth/guards";
 import { marketplaceStats, RANGES, trafficStats } from "@/lib/data/stats";
+import { collabMetrics } from "@/lib/data/collab-metrics";
 import { countryName, countryOfZone } from "@/lib/i18n/country";
 
 export default async function AdminStats({ params, searchParams }: PageProps<"/[locale]/admin/stats">) {
@@ -13,7 +14,7 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
   const sp = await searchParams;
   const days = RANGES.find((r) => String(r) === sp.days) ?? 30;
   const t = await getTranslations("AdminStats");
-  const [traffic, market] = await Promise.all([trafficStats(days), marketplaceStats(days)]);
+  const [traffic, market, collab] = await Promise.all([trafficStats(days), marketplaceStats(days), collabMetrics(days)]);
   const nf = new Intl.NumberFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
   const fmt = (n: number) => nf.format(n);
   const dateFmt = new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { day: "numeric", month: "short" });
@@ -51,6 +52,15 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
       />
       <section className="rounded-xl border p-4">
         <ColumnChart title={weekly ? t("viewsPerWeek") : t("viewsPerDay")} data={columns} fmt={fmt} tableLabels={[t("showTable"), t("viewsPerDay")]} />
+      </section>
+      <section className="rounded-xl border p-4" data-testid="collab-metrics">
+        <BarList title={t("collab.title")} funnel fmt={fmt} rows={collab.funnel.map((f) => ({ label: t(`collab.steps.${f.key}`), value: f.n }))} />
+        <dl className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+          <div className="rounded-lg border p-2"><dt>{t("collab.repeat")}</dt><dd className="text-sm font-semibold text-foreground" data-testid="collab-repeat">{collab.repeat.rate === null ? t("collab.noCohort") : `${collab.repeat.rate}%`}</dd><dd>{t("collab.repeatDenominator", { cohort: collab.repeat.cohort, repeated: collab.repeat.repeated, days: collab.repeat.windowDays })}</dd></div>
+          <div className="rounded-lg border p-2"><dt>{t("collab.protectedDelay")}</dt><dd className="text-sm font-semibold text-foreground">{collab.payment.protected.medianDays === null ? "—" : t("collab.days", { n: collab.payment.protected.medianDays })}</dd><dd>{t("collab.n", { n: collab.payment.protected.n })}</dd></div>
+          <div className="rounded-lg border p-2"><dt>{t("collab.directConfirmed")}</dt><dd className="text-sm font-semibold text-foreground">{collab.payment.direct.n}</dd><dd>{t("collab.directNote")}</dd></div>
+        </dl>
+        <p className="mt-2 text-[11px] text-muted-foreground">{t("collab.note", { demo: collab.excluded.demo, staff: collab.excluded.staff, days })}</p>
       </section>
       <div className="grid gap-4 md:grid-cols-2">
         <section className="rounded-xl border p-4">

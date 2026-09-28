@@ -21,7 +21,8 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
   const { agency, soon } = await collabPage();
   if (soon) return <ComingSoon feature="collaboration" />;
   const t = await getTranslations("Collab");
-  const delivery = await canUse("collaboration_delivery");
+  const [delivery, intel] = await Promise.all([canUse("collaboration_delivery"), canUse("collaboration_intelligence")]);
+  const tt = intel ? await getTranslations("Templates") : null;
   const [buying, supplying, shares, inquiries, orders, pending] = await Promise.all([listBuying(agency.id), listSupplying(agency.id), sharesForPartner(agency.id), openInquiryCount(agency.id), delivery ? listWorkOrders(agency.id) : [], delivery ? pendingOrderCount(agency.id) : 0]);
   const badge = inquiries + pending;
   const to = await getTranslations("Orders");
@@ -88,10 +89,22 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
                     </span>
                     <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", ORDER_STYLE[order.status] ?? "bg-muted")}>{to(`status.${order.status}`)}</span>
                   </Link>
+                  {intel && role === "buyer" && ["approved", "closed"].includes(order.status) && <Link href={`/studio/collab/work/new?rehire=${order.id}`} className="mt-1 inline-block text-xs font-medium text-brand" data-testid="order-rehire">{to("list.rehire")}</Link>}
                 </li>
               ))}
             </ul>
           )}
+        </section>
+      )}
+
+      {intel && tt && (
+        <section className="grid gap-2 rounded-2xl border p-4 text-sm" data-testid="work-templates">
+          <h2 className="font-semibold">{tt("title")}</h2>
+          <p className="text-muted-foreground">{tt("intro")}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {(["shoot", "reels", "arabic_copy", "ad_creative", "monthly_calendar"] as const).map((k) => <Link key={k} href={`/studio/collab/work/new?template=${k}`} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9" })} data-testid={`template-${k}`}>{tt(`${k}.name`)}</Link>)}
+          </div>
+          <Link href="/studio/collab/worksheet" className="font-medium text-brand" data-testid="work-worksheet">{tt("worksheet")}</Link>
         </section>
       )}
 

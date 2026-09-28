@@ -22,11 +22,11 @@ export type Recipient = { id: string; name: string; kind: "agency" | "freelancer
  * exactly the fields a supplier receives (SUPPLIER_FIELDS, the same list the
  * server projects), so what the buyer approves is what is sent.
  */
-export function InquiryForm({ recipients, preselected, roles, platforms, cities, currency, defaultCity, needId = "", parentContracts }: { recipients: Recipient[]; preselected: string[]; roles: Option[]; platforms: Option[]; cities: Option[]; currency: string; defaultCity: string; needId?: string; parentContracts: Option[] }) {
+export function InquiryForm({ recipients, preselected, roles, platforms, cities, currency, defaultCity, needId = "", parentContracts, initial }: { recipients: Recipient[]; preselected: string[]; roles: Option[]; platforms: Option[]; cities: Option[]; currency: string; defaultCity: string; needId?: string; parentContracts: Option[]; initial?: { title: string; scope: string; deliverables: DeliverableLine[]; note: "template" | "rehire" } | null }) {
   const t = useTranslations("Collab.inquiry");
   const tc = useTranslations("Collab");
   const [state, action] = useActionState(sendInquiryAction, undefined);
-  const [lines, setLines] = useState<DeliverableLine[]>([]);
+  const [lines, setLines] = useState<DeliverableLine[]>(initial?.deliverables ?? []);
   const [chosen, setChosen] = useState<string[]>(preselected.filter((id) => recipients.some((r) => r.id === id)));
   const [preview, setPreview] = useState(false);
   const tz = useSyncExternalStore(() => () => {}, () => Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Amman", () => "Asia/Amman");
@@ -40,6 +40,7 @@ export function InquiryForm({ recipients, preselected, roles, platforms, cities,
       <input type="hidden" name="needId" value={needId} />
       {chosen.map((id) => <input key={id} type="hidden" name="recipients" value={id} />)}
       <FormError message={state?.error ? errors[state.error] ?? tc("errors.invalid") : undefined} />
+      {initial && <p className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="inquiry-prefill" data-from={initial.note}>{initial.note === "rehire" ? t("rehireNote") : t("templateNote")}</p>}
 
       <section className="grid gap-2">
         <h2 className="font-semibold">{t("toTitle")}</h2>
@@ -62,7 +63,7 @@ export function InquiryForm({ recipients, preselected, roles, platforms, cities,
 
       <section className="grid gap-4">
         <h2 className="font-semibold">{t("whatTitle")}</h2>
-        <Field label={t("title")} htmlFor="inq-title"><Input id="inq-title" name="title" required minLength={3} maxLength={120} dir="auto" /></Field>
+        <Field label={t("title")} htmlFor="inq-title"><Input id="inq-title" name="title" required minLength={3} maxLength={120} dir="auto" defaultValue={initial?.title ?? ""} /></Field>
         <Field label={t("role")}>
           <select name="role" defaultValue="" className="h-11 w-full rounded-lg border bg-background px-2 text-sm">
             <option value="">{t("roleAny")}</option>
@@ -70,7 +71,7 @@ export function InquiryForm({ recipients, preselected, roles, platforms, cities,
           </select>
         </Field>
         <Field label={t("deliverables")} hint={t("deliverablesHint")}><DeliverablesPicker value={lines} onChange={setLines} platforms={platforms} /></Field>
-        <Field label={t("scope")} htmlFor="inq-scope"><Textarea id="inq-scope" name="scope" rows={4} maxLength={3000} dir="auto" placeholder={t("scopeHint")} /></Field>
+        <Field label={t("scope")} htmlFor="inq-scope"><Textarea id="inq-scope" name="scope" rows={4} maxLength={3000} dir="auto" placeholder={t("scopeHint")} defaultValue={initial?.scope ?? ""} /></Field>
         <Field label={t("assets")} hint={t("assetsHint")} htmlFor="inq-assets"><Input id="inq-assets" name="assetsNote" maxLength={500} dir="auto" /></Field>
       </section>
 

@@ -1,19 +1,22 @@
-import { CalendarClock, Compass, Handshake, Inbox, Users } from "lucide-react";
+import { CalendarClock, Compass, Handshake, Inbox, LayoutList, Users } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { canUse } from "@/lib/feature-gate";
 import { cn } from "@/lib/utils";
 
-export type CollabView = "discover" | "network" | "work" | "availability" | "needs";
+export type CollabView = "discover" | "network" | "work" | "availability" | "needs" | "plan";
 
 /** The four collaboration views (docs/48 §1) plus the agency's own needs. One line, scrolls on a phone. */
 export async function CollabTabs({ active, badges = {} }: { active: CollabView; badges?: Partial<Record<CollabView, number>> }) {
   const t = await getTranslations("Collab.tabs");
+  const plan = await canUse("collaboration_intelligence");
   const items: { key: CollabView; href: string; icon: typeof Compass }[] = [
     { key: "discover", href: "/studio/collab", icon: Compass },
     { key: "needs", href: "/studio/collab/needs", icon: Handshake },
     { key: "network", href: "/studio/collab/network", icon: Users },
     { key: "work", href: "/studio/collab/work", icon: Inbox },
     { key: "availability", href: "/studio/collab/availability", icon: CalendarClock },
+    ...(plan ? [{ key: "plan" as const, href: "/studio/collab/plan", icon: LayoutList }] : []),
   ];
   return (
     <nav className="flex flex-wrap gap-1.5" aria-label={t("label")} data-testid="collab-tabs">

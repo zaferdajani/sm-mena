@@ -30,6 +30,8 @@ export const FEATURES = [
   { key: "collaboration", group: "network" },
   // Collaboration V2 release 2: work orders, shared threads, file versions, review, capacity holds (docs/49).
   { key: "collaboration_delivery", group: "network" },
+  // Collaboration V2 release 3: planner, cost worksheet and templates, collaborator feedback, next actions (docs/50).
+  { key: "collaboration_intelligence", group: "network" },
   { key: "demo_view", group: "discovery" },
   // Off by default: the front page is the landing page; on makes it the pre-launch teaser (/soon, docs/39); "soon" previews it to staff.
   { key: "prelaunch_home", group: "launch" },
@@ -123,4 +125,9 @@ export async function setFeature(key: FeatureKey, setting: FeatureSetting, by: s
 /** Tests only: forget the cached switches. */
 export function resetFeatureCache() {
   cache = null;
+}
+
+/** The switch's global state, for places without a viewer (public pages, cron): pilots do not apply. */
+export async function featureOnGlobally(key: FeatureKey) {
+  return (await getFeatures())[key].state === "on";
 }

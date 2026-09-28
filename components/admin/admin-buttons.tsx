@@ -8,7 +8,7 @@ import {
   resolveReportAction,
   setPostStatusAction,
   setPromotionStatusAction,
-  setReviewStatusAction,
+  setCollabFeedbackStatusAction, setReviewStatusAction,
   setStatusAction,
   setVerifiedAction,
 } from "@/app/[locale]/(main)/admin/actions";
@@ -86,6 +86,16 @@ export function PromotionButtons({ id, status }: { id: string; status: "active" 
       </ActionButton>
       <ActionButton variant="destructive" onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
     </div>
+  );
+}
+
+export function CollabFeedbackStatusButton({ id, status }: { id: string; status: string }) {
+  const t = useTranslations("Reviews.admin");
+  return (
+    <span className="flex flex-wrap gap-2">
+      {status !== "published" && <ActionButton variant="outline" testId="collab-feedback-publish" onRun={() => setCollabFeedbackStatusAction(id, "published")}>{t("show")}</ActionButton>}
+      {status !== "hidden" && <ActionButton variant="destructive" testId="collab-feedback-moderate" onRun={() => setCollabFeedbackStatusAction(id, "hidden")}>{t("hide")}</ActionButton>}
+    </span>
   );
 }
 

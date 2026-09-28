@@ -1219,7 +1219,32 @@
     "direct": "Direct / unknown",
     "noData": "No data yet for this period.",
     "countries": "Countries (from device time zone)",
-    "unknownCountry": "Unknown"
+    "unknownCountry": "Unknown",
+    "collab": {
+      "title": "Collaboration funnel (real agencies only)",
+      "steps": {
+        "inquiry_created": "Inquiry created",
+        "inquiry_sent": "Sent",
+        "reply": "Got a reply",
+        "quote_accepted": "Quote accepted",
+        "contract_requested": "Contract requested",
+        "work_accepted": "Work order accepted",
+        "delivered": "Delivered",
+        "approved": "Approved",
+        "payout_initiated": "Payout initiated (protected)",
+        "direct_confirmed": "Direct payment confirmed",
+        "repeat_engagement": "Repeat engagement (30 days)"
+      },
+      "repeat": "30-day repeat rate",
+      "noCohort": "No cohort with a full window yet",
+      "repeatDenominator": "{repeated} of {cohort} buyer–supplier pairs whose first work order is at least {days} days old",
+      "protectedDelay": "Approval → payout initiated (protected)",
+      "days": "{n} days median",
+      "n": "n = {n}",
+      "directConfirmed": "Direct payments confirmed received",
+      "directNote": "Recorded confirmations, not protection; delay not measured",
+      "note": "Counted from the records themselves, so retries cannot inflate a step. Excluded: {demo} demo and {staff} staff-owned agencies. Window: the last {days} days by creation date. Payout initiated is not receipt."
+    }
   },
   "Billing": {
     "current": "Your plan",
@@ -2393,7 +2418,14 @@
       "work_order_message": "{name} wrote in “{title}”",
       "work_order_submitted": "{name} submitted work on “{title}”",
       "work_order_approved": "{name} approved your work on “{title}”",
-      "work_order_changes": "{name} asked for changes on “{title}”"
+      "work_order_changes": "{name} asked for changes on “{title}”",
+      "collab_feedback": "{name} left collaborator feedback on “{title}”",
+      "reminder_offer_to_answer": "Reminder: a work order offer is waiting for you: “{title}”",
+      "reminder_submission_to_review": "Reminder: work submitted for your review: “{title}”",
+      "reminder_amendment_to_answer": "Reminder: an amendment is waiting for your answer: “{title}”",
+      "reminder_inquiry_to_answer": "Reminder: an inquiry is waiting for your reply: “{title}”",
+      "reminder_hold_expiring": "Reminder: the capacity hold on “{title}” expires soon",
+      "reminder_availability_stale": "Reminder: your availability needs confirming"
     }
   },
   "PortfolioClients": {
@@ -2793,6 +2825,11 @@
         "name": "Work orders",
         "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration (V2, release 2).",
         "soon": "Work orders are under construction. Inquiries and quotes keep working."
+      },
+      "collaboration_intelligence": {
+        "name": "Planner, worksheet and feedback",
+        "desc": "Scope-to-team planner, private cost worksheet and templates, collaborator feedback, next actions and reminders (V2, release 3).",
+        "soon": "The planner, worksheet and feedback tools are under construction. Work orders keep working."
       }
     },
     "golive": {
@@ -3412,7 +3449,8 @@
       "needs": "My needs",
       "network": "My network",
       "work": "Work",
-      "availability": "Availability"
+      "availability": "Availability",
+      "plan": "Plan"
     },
     "reasons": {
       "role": "covers the role",
@@ -3770,7 +3808,9 @@
         "currency": "Currency",
         "privacyMode": "Way of working",
         "responseBy": "Reply deadline"
-      }
+      },
+      "templateNote": "Started from a template: deliverables and a scope skeleton only. Add dates, budget, recipients and any permissions yourself.",
+      "rehireNote": "A fresh draft from a finished engagement: the deliverables and scope were copied; dates, budget, permissions and files were not. Confirm each before sending."
     },
     "quote": {
       "title": "Your quote",
@@ -4045,7 +4085,204 @@
       "noneBody": "Accept a quote on an inquiry, then start a work order from it.",
       "start": "Start a work order",
       "buying": "Buying from {name}",
-      "delivering": "Delivering to {name}"
+      "delivering": "Delivering to {name}",
+      "rehire": "Rehire with a new draft"
+    }
+  },
+  "Planner": {
+    "title": "Plan a team from a brief",
+    "intro": "Deliverables in, work packages out, with who could cover each role: in house, a partner, a candidate, or still open. Nobody is booked by a plan.",
+    "worksheetLink": "Cost worksheet →",
+    "form": {
+      "title": "Brief title",
+      "startFrom": "Start from:",
+      "deliverables": "Deliverables",
+      "scope": "Brief (redacted)",
+      "scopeHint": "What the client needs, in your own words. Contact details, links and anything after “private:” are removed before an assistant sees it; never paste client secrets or rates.",
+      "assistant": "Let the assistant group and name the packages",
+      "assistantHint": "Optional. The assistant sees only this redacted brief and the catalogue keys; it cannot pick people, send anything or book capacity. If it fails or takes too long, the rule-based plan is used.",
+      "assistantOff": "No assistant is configured on this server; the rule-based planner is used.",
+      "submit": "Draft the plan"
+    },
+    "errors": {
+      "invalid": "Add at least one deliverable and a title.",
+      "rateLimited": "Too many plans in a short time. Try again in a while.",
+      "unavailable": "The planner is not available right now.",
+      "notFound": "Not found."
+    },
+    "previous": "Previous plans",
+    "noneTitle": "No plans yet",
+    "noneBody": "Your first plan appears here.",
+    "packages": "{count, plural, one {# package} other {# packages}}",
+    "withAssistant": "with assistant",
+    "back": "← All plans",
+    "byRules": "Drafted by rules",
+    "byAssistant": "Packages shaped by the assistant ({name}); coverage by rules",
+    "fallback": {
+      "timeout": "The assistant did not answer in time; this is the rule-based draft.",
+      "error": "The assistant failed; this is the rule-based draft.",
+      "invalid": "The assistant's answer did not fit the brief and was discarded; this is the rule-based draft.",
+      "no_json": "The assistant's answer was unusable; this is the rule-based draft.",
+      "budget": "Today's assistant budget is used up; this is the rule-based draft.",
+      "no_provider": "No assistant is configured; this is the rule-based draft.",
+      "forbidden_content": "The brief contained content that must not leave the server; this is the rule-based draft."
+    },
+    "disclaimer": "A plan is a draft for you. Suggested people are not team members, nothing is reserved, and client matching is not affected.",
+    "brief": "Brief as used",
+    "briefNote": "This is the redacted text. Contact details and links were removed.",
+    "kind": {
+      "in_house": "In house",
+      "partner": "Accepted partner",
+      "candidate": "Candidate",
+      "unfilled": "Still open"
+    },
+    "source": {
+      "partner": "partner",
+      "roster": "your roster",
+      "discovery": "discovery"
+    },
+    "findRole": "Find a {role}",
+    "openRoles": "{count, plural, one {# role} other {# roles}} still need someone from outside.",
+    "sources": "Where the candidates came from",
+    "delete": "Delete this plan",
+    "editAsNew": "Edit as a new plan",
+    "sourceTool": {
+      "partners": "Accepted partners",
+      "roster": "Your roster",
+      "discover": "Discovery"
+    },
+    "sourceIds": "{count, plural, =0 {no ids} one {# id} other {# ids}}"
+  },
+  "Templates": {
+    "title": "Templates",
+    "intro": "Reusable scopes for the work you repeat. Each starts a fresh inquiry draft; dates, budget and permissions are always confirmed again.",
+    "worksheet": "Open the cost worksheet",
+    "shoot": {
+      "name": "Product shoot + posts",
+      "scope": "One photo session and 12 edited posts for the feed. Formats, locations and the shot list to be agreed."
+    },
+    "reels": {
+      "name": "Reels day",
+      "scope": "One shoot day and 4 edited reels. Scripts, captions and music rights to be agreed."
+    },
+    "arabic_copy": {
+      "name": "Arabic copy",
+      "scope": "20 captions and 2 articles in Arabic. Tone of voice and review cycle to be agreed."
+    },
+    "ad_creative": {
+      "name": "Ad creative + campaign",
+      "scope": "6 ad creatives and one campaign setup. Audiences, budget handling and reporting to be agreed."
+    },
+    "monthly_calendar": {
+      "name": "Monthly content calendar",
+      "scope": "One monthly calendar, 12 posts and 8 stories. Approval flow and posting responsibility to be agreed."
+    }
+  },
+  "Worksheet": {
+    "title": "Cost worksheet",
+    "intro": "Your suppliers' accepted quotes and work orders next to your own client contract. Only you see this.",
+    "note": "Estimates from accepted quotes, not signed amounts or commitments. Unknown costs stay unknown. Amounts in different currencies are never added together.",
+    "noneTitle": "Nothing to work out yet",
+    "noneBody": "Accepted quotes and work orders appear here.",
+    "noParent": "Not linked to a client contract",
+    "clientPrice": "Client price",
+    "contractStatus": "contract {status}",
+    "acceptedQuote": "Accepted quote",
+    "unknown": "unknown",
+    "costs": "Supplier costs ({currency})",
+    "unknownLines": "Lines without an amount",
+    "mixedCurrency": "Supplier costs are in a different currency from the client contract, so no margin is shown: convert on a reviewed basis first.",
+    "margin": "Margin on the client price",
+    "marginPartial": "excluding unknown lines"
+  },
+  "CollabFeedback": {
+    "sectionTitle": "Collaborator feedback",
+    "sectionIntro": "Between the two of you, about this engagement. It is a separate class from client reviews and never changes a rating.",
+    "title": "How was working with {name}?",
+    "intro": "Once per engagement and side. You can choose to keep it between the parties or let it appear on their public page without naming the client or the work.",
+    "communication": "Communication",
+    "reliability": "Reliability",
+    "quality": "Quality",
+    "body": "Notes",
+    "bodyHint": "Do not name the client or describe confidential work.",
+    "visibilityHint": "The other side always sees it. Public means it may appear on their page as collaborator feedback.",
+    "parties": "The two of us only",
+    "public": "May appear on their public page",
+    "submit": "Leave feedback",
+    "done": "Feedback recorded.",
+    "yours": "Your feedback",
+    "theirs": "Feedback from {name}",
+    "dispute": "Dispute this",
+    "disputeHint": "Why this record is unfair or wrong; staff will review it. It leaves public view meanwhile.",
+    "disputeSend": "Send dispute",
+    "disputeDone": "Disputed. Staff will review it.",
+    "publicTitle": "Collaborator feedback",
+    "publicIntro": "{count, plural, one {# record} other {# records}} from providers who worked with this page through Sawwiq. Not client reviews; the clients and the work stay confidential.",
+    "role": {
+      "buyer": "hired them",
+      "supplier": "worked for them"
+    },
+    "status": {
+      "published": "Published",
+      "disputed": "Disputed",
+      "hidden": "Hidden"
+    },
+    "optOutTitle": "Collaborator feedback on your page",
+    "optOutLabel": "Show collaborator feedback on my public page",
+    "optOutHint": "Off: nothing appears publicly; the two parties still see their records.",
+    "adminTitle": "Collaborator feedback",
+    "adminIntro": "Disputed records first. Hiding removes a record from public view; the parties still see it. Text is never edited.",
+    "by": "by {name}",
+    "disputeLabel": "Dispute",
+    "errors": {
+      "invalid": "Please rate all three and try again.",
+      "rateLimited": "Too many actions in a short time.",
+      "unavailable": "Not available right now.",
+      "notFound": "Not yours to change.",
+      "notFinished": "Feedback opens once the work order is approved or closed."
+    },
+    "visibilityLabel": "Who may see it",
+    "visibility": {
+      "parties": "Between the parties",
+      "public": "Public"
+    }
+  },
+  "NextActions": {
+    "title": "Next actions",
+    "prefsLink": "Reminders",
+    "empty": "Nothing waits on you right now.",
+    "overdue": "overdue",
+    "due": "by {date}",
+    "more": "{count} more",
+    "kinds": {
+      "offer_to_answer": "Answer a work order offer",
+      "submission_to_review": "Review submitted work",
+      "amendment_to_answer": "Answer an amendment",
+      "inquiry_to_answer": "Reply to an inquiry",
+      "quotes_to_compare": "Compare the quotes",
+      "hold_expiring": "Capacity hold expiring",
+      "availability_stale": "Confirm your availability",
+      "feedback_to_leave": "Leave collaborator feedback"
+    },
+    "prefs": {
+      "title": "Reminders and preferences",
+      "intro": "One reminder per open item per day, in the app. Mute the kinds you do not want and set quiet hours.",
+      "remindersTitle": "Reminders",
+      "remindersHint": "Reminders never contain amounts, files or links to anything you cannot already open.",
+      "mute": "Mute: {kind}",
+      "quietTitle": "Quiet hours",
+      "quietHint": "Reminders due during quiet hours are delivered when they end (your country's time).",
+      "quietFrom": "From",
+      "quietTo": "Until",
+      "none": "None",
+      "save": "Save preferences",
+      "saved": "Saved."
+    },
+    "errors": {
+      "invalid": "Please check the fields.",
+      "rateLimited": "Too many changes in a short time.",
+      "unavailable": "Not available right now.",
+      "notFound": "Not found."
     }
   }
 }

@@ -1,6 +1,7 @@
 import { REVIEW_LABEL } from "@/components/reviews/review-list";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ReviewStatusButton } from "@/components/admin/admin-buttons";
+import { CollabFeedbackStatusButton, ReviewStatusButton } from "@/components/admin/admin-buttons";
+import { feedbackForAdmin } from "@/lib/data/collab-feedback";
 import { Stars } from "@/components/reviews/stars";
 import { Link } from "@/i18n/navigation";
 import { requireStaff } from "@/lib/auth/guards";
@@ -12,9 +13,30 @@ export default async function AdminReviews({ params }: PageProps<"/[locale]/admi
   setRequestLocale(locale);
   await requireStaff("content.moderate");
   const t = await getTranslations("Reviews");
-  const rows = await recentReviewsForAdmin();
-  if (!rows.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t("none")}</p>;
+  const [rows, collab, tf] = await Promise.all([recentReviewsForAdmin(), feedbackForAdmin(), getTranslations("CollabFeedback")]);
+  const collabList = collab.length > 0 && (
+    <section className="space-y-2" data-testid="admin-collab-feedback">
+      <h2 className="font-semibold">{tf("adminTitle")}</h2>
+      <p className="text-xs text-muted-foreground">{tf("adminIntro")}</p>
+      <ul className="divide-y rounded-xl border">
+        {collab.map(({ f, author, about, aboutHandle }) => (
+          <li key={f.id} className="flex flex-wrap items-start justify-between gap-3 p-3 text-sm" data-testid="admin-collab-feedback-row" data-status={f.status}>
+            <div className="min-w-0 flex-1 space-y-1">
+              <p><Link href={`/a/${aboutHandle}?tab=reviews`} className="font-semibold">{about}</Link> · {tf("by", { name: author })} · <span className="text-muted-foreground">{tf(`role.${f.authorRole}`)} · {tf(`visibility.${f.visibility}`)}</span></p>
+              <p className="text-xs text-muted-foreground">{tf("communication")} {f.communication} · {tf("reliability")} {f.reliability} · {tf("quality")} {f.quality} · {timeAgo(f.createdAt.toISOString(), locale)}{f.status !== "published" ? <span className="text-destructive"> · {tf(`status.${f.status}`)}</span> : null}</p>
+              {f.body && <p className="line-clamp-3"><bdi>{f.body}</bdi></p>}
+              {f.disputeNote && <p className="rounded-lg bg-muted p-2 text-xs"><b>{tf("disputeLabel")}:</b> <bdi>{f.disputeNote}</bdi></p>}
+            </div>
+            <CollabFeedbackStatusButton id={f.id} status={f.status} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+  if (!rows.length && !collab.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t("none")}</p>;
   return (
+    <div className="space-y-6">
+    {collabList}
     <ul className="divide-y rounded-xl border" data-testid="admin-reviews">
       {rows.map(({ review: r, handle, name }) => (
         <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 p-3 text-sm">
@@ -33,5 +55,6 @@ export default async function AdminReviews({ params }: PageProps<"/[locale]/admi
         </li>
       ))}
     </ul>
+    </div>
   );
 }

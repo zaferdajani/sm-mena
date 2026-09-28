@@ -1832,6 +1832,98 @@ export const capacityReservations = pgTable(
   (t) => [uniqueIndex("capacity_reservations_live_idx").on(t.workOrderId).where(sql`${t.status} in ('tentative', 'confirmed')`), index("capacity_reservations_provider_idx").on(t.providerAgencyId, t.status, t.startsAt), check("capacity_reservations_order", sql`${t.endsAt} > ${t.startsAt}`)],
 );
 
+/**
+ * R3 (docs/50): a scope-to-team plan the buyer drafted from a redacted brief.
+ * Packages, coverage and candidate ids come from deterministic rules and
+ * authorized reads; the optional model only shapes the draft. Nothing here
+ * commits anyone: a candidate is never a team member, a hold or a booking.
+ */
+export const collabPlans = pgTable(
+  "collab_plans",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    // The brief exactly as approved by the agency after redaction (what a model may see).
+    brief: text("brief").notNull().default(""),
+    deliverables: jsonb("deliverables").$type<DeliverableLine[]>().notNull().default([]),
+    packages: jsonb("packages").$type<PlanPackage[]>().notNull().default([]),
+    // Which sources produced the candidates: tool name, query and the ids it returned, for inspection.
+    sources: jsonb("sources").$type<PlanSource[]>().notNull().default([]),
+    // none | basic | <provider>: whether a model shaped the packages; candidates never come from it.
+    assistant: text("assistant").notNull().default("none"),
+    // Whether the agency asked for the assistant (counted for the daily budget even when it fell back).
+    assistantRequested: boolean("assistant_requested").notNull().default(false),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("collab_plans_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
+export type PlanCandidate = { agencyId: string; source: "partner" | "roster" | "discovery"; reasons: string[] };
+export type PlanPackage = {
+  key: string;
+  title: string;
+  deliverables: DeliverableLine[];
+  roles: string[];
+  // Per role: who could cover it. in_house | partner | candidate | unfilled, decided by rules only.
+  coverage: { role: string; kind: "in_house" | "partner" | "candidate" | "unfilled"; candidates: PlanCandidate[] }[];
+};
+export type PlanSource = { tool: string; query: Record<string, unknown>; ids: string[] };
+
+/**
+ * R3 (docs/50): collaborator feedback, a class of its own. One record per
+ * work order and side; only the two parties may write; confidential by
+ * default (no client or asset identity); the provider may opt out of public
+ * display; moderation and dispute states mirror reviews but never merge
+ * with client reviews, Google ratings or paid-project provenance.
+ */
+export const collabFeedback = pgTable(
+  "collab_feedback",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    authorAgencyId: uuid("author_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    aboutAgencyId: uuid("about_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    // buyer | supplier: the author's side of the engagement.
+    authorRole: text("author_role").notNull(),
+    communication: integer("communication").notNull(),
+    reliability: integer("reliability").notNull(),
+    quality: integer("quality").notNull(),
+    body: text("body").notNull().default(""),
+    // parties | public: how far the author consented to publish it.
+    visibility: text("visibility").notNull().default("parties"),
+    // published | disputed | hidden
+    status: text("status").notNull().default("published"),
+    disputeNote: text("dispute_note"),
+    disputedAt: timestamp("disputed_at", { withTimezone: true }),
+    moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("collab_feedback_once_idx").on(t.workOrderId, t.authorAgencyId), index("collab_feedback_about_idx").on(t.aboutAgencyId, t.status, t.createdAt)],
+);
+
+/** R3 (docs/50): per-agency collaboration notification preferences: muted reminder kinds and quiet hours (local hours, 0–23). */
+export const collabPrefs = pgTable("collab_prefs", {
+  agencyId: uuid("agency_id")
+    .primaryKey()
+    .references(() => agencies.id, { onDelete: "cascade" }),
+  mutedKinds: text("muted_kinds").array().notNull().default(sql`'{}'::text[]`),
+  quietStart: integer("quiet_start"),
+  quietEnd: integer("quiet_end"),
+  // Whether collaborator feedback about this agency may appear on its public page (opt-out, docs/50).
+  showFeedback: boolean("show_feedback").notNull().default(true),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type User = typeof users.$inferSelect;
 export type ServiceTag = typeof serviceTags.$inferSelect;
 export type PartnerRequest = typeof partnerRequests.$inferSelect;
@@ -1878,3 +1970,6 @@ export type WorkOrderAsset = typeof workOrderAssets.$inferSelect;
 export type WorkOrderComment = typeof workOrderComments.$inferSelect;
 export type WorkOrderSubmission = typeof workOrderSubmissions.$inferSelect;
 export type CapacityReservation = typeof capacityReservations.$inferSelect;
+export type CollabPlan = typeof collabPlans.$inferSelect;
+export type CollabFeedbackRow = typeof collabFeedback.$inferSelect;
+export type CollabPrefs = typeof collabPrefs.$inferSelect;

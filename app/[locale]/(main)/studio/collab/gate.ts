@@ -18,3 +18,11 @@ export async function deliveryPage() {
   if (delivery === "off") notFound();
   return { ...base, soonFeature: base.soon ? ("collaboration" as const) : delivery === "soon" ? ("collaboration_delivery" as const) : null };
 }
+
+/** R3 pages (planner, worksheet, preferences): the collaboration switch plus "collaboration_intelligence". */
+export async function intelligencePage() {
+  const base = await collabPage();
+  const intel = await featureGate("collaboration_intelligence");
+  if (intel === "off") notFound();
+  return { ...base, soonFeature: base.soon ? ("collaboration" as const) : intel === "soon" ? ("collaboration_intelligence" as const) : null };
+}

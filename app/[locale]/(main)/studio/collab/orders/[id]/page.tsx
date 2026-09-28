@@ -10,7 +10,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { OPEN_STATUSES, TERMINAL_STATUSES, type PaymentStage } from "@/lib/collab/work-orders";
 import { workBadgeCount, workspaceFor, type Workspace } from "@/lib/data/work-orders";
+import { feedbackForOrder } from "@/lib/data/collab-feedback";
+import { canUse } from "@/lib/feature-gate";
 import { lineLabel } from "@/lib/deliverables";
+import { DisputeForm, FeedbackForm } from "@/components/collab/intel-widgets";
 import { formatDate, formatFils, formatIsoDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { deliveryPage } from "../../gate";
@@ -33,6 +36,9 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/[l
   if (!w) notFound();
   const [t, tDel, tPlat, tCollab, opts, badge] = await Promise.all([getTranslations("Orders"), getTranslations("Deliverables"), getTranslations("Platforms"), getTranslations("Collab"), collabOptions(locale, agency.country), workBadgeCount(agency.id)]);
   const { order: o, role, current } = w;
+  const intel = await canUse("collaboration_intelligence");
+  const feedback = intel && ["approved", "closed"].includes(o.status) ? await feedbackForOrder(o.id) : [];
+  const tf = await getTranslations("CollabFeedback");
   const other = role === "buyer" ? w.supplier : w.buyer;
   const terminal = TERMINAL_STATUSES.includes(o.status as never);
   const open = OPEN_STATUSES.includes(o.status as never);
@@ -179,6 +185,21 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/[l
         </section>
       )}
 
+      {intel && ["approved", "closed"].includes(o.status) && (
+        <section id="feedback" className="grid gap-3" data-testid="order-feedback">
+          <h2 className="font-semibold">{tf("sectionTitle")}</h2>
+          <p className="text-xs text-muted-foreground">{tf("sectionIntro")}</p>
+          {feedback.map((f) => (
+            <article key={f.id} className="grid gap-1 rounded-2xl border p-3 text-sm" data-testid="feedback-record" data-author={f.authorAgencyId === agency.id ? "me" : "other"} data-status={f.status}>
+              <p className="flex flex-wrap items-center justify-between gap-2"><b>{f.authorAgencyId === agency.id ? tf("yours") : tf("theirs", { name: other.name })}</b><span className="text-xs text-muted-foreground">{tf(`visibility.${f.visibility}`)} · {formatDate(f.createdAt, locale)}{f.status !== "published" ? ` · ${tf(`status.${f.status}`)}` : ""}</span></p>
+              <p className="text-xs text-muted-foreground">{tf("communication")} {f.communication}/5 · {tf("reliability")} {f.reliability}/5 · {tf("quality")} {f.quality}/5</p>
+              {f.body && <p className="whitespace-pre-line"><bdi>{f.body}</bdi></p>}
+              {f.aboutAgencyId === agency.id && f.status === "published" && <DisputeForm id={f.id} />}
+            </article>
+          ))}
+          {!feedback.some((f) => f.authorAgencyId === agency.id) && <FeedbackForm workOrderId={o.id} aboutName={other.name} />}
+        </section>
+      )}
       {role === "supplier" && <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground" data-testid="supplier-order-note">{t("supplierSees")}</p>}
     </div>
   );

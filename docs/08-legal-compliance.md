@@ -157,3 +157,13 @@ Consent: the collaboration preference records `consent_version` (`collab-2026-09
 | Capacity holds (`capacity_reservations`) | the provider; the buyer sees only its own hold's state | released/expired rows stay as the record of the hold and are never listed |
 
 No contact data is added. Notifications carry names and titles only. Audit: `collab.work_order.approved`, `collab.work_order.changes_requested`.
+
+## Collaboration V2, release 3 (docs/50)
+
+| Data | Who sees it | Retention |
+|---|---|---|
+| Plans (`collab_plans`: title, redacted brief, deliverables, packages, candidate ids, sources) | the agency that drafted it only; the redacted brief is the only text an optional model may receive, and it never receives contact data, roster notes, rates or client identities | until the agency deletes it |
+| Collaborator feedback (`collab_feedback`: three scores, a note, publication choice, dispute note) | the two parties of the work order; publicly only the author's name, role, scores and note when the author chose "public", the record is published and the subject has not opted out; never the work order, client or files; staff for moderation | with the work order; hidden or disputed records stay for the parties |
+| Reminder preferences (`collab_prefs`: muted kinds, quiet hours, public-feedback opt-out) | the agency only | until changed |
+| Reminders (`reminder_*` notifications: kind, title, link) | the agency | 90 days like other notifications |
+| Funnel metrics | staff, as counts only; demo and staff-owned agencies excluded | computed on request from existing rows; nothing stored |

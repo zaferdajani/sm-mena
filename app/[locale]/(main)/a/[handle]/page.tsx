@@ -23,6 +23,9 @@ import { isFollowing, recordView } from "@/lib/data/interactions";
 import { getCurrentAgency } from "@/lib/auth/session";
 import { listPackages } from "@/lib/data/packages";
 import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/lib/data/reviews";
+import { publicFeedbackFor } from "@/lib/data/collab-feedback";
+import { featureOnGlobally } from "@/lib/features";
+import { CollaboratorFeedback } from "@/components/collab/collaborator-feedback";
 import { getFeed } from "@/lib/data/posts";
 import { feedPage } from "@/lib/feed";
 import { formatJod } from "@/lib/format";
@@ -89,6 +92,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   ]);
   // Always rendered (every tab), so search engines see reviews and prices on the canonical URL.
   const latestReviews = await listReviews(agency.id, { limit: 3 });
+  const collaborator = tab === "reviews" && (await featureOnGlobally("collaboration_intelligence")) ? await publicFeedbackFor(agency.id) : null;
   const tiles = tab === "work" ? await accountTiles(agency.id) : [];
   const [tSeo, tHire] = await Promise.all([getTranslations("Seo"), getTranslations("Hire")]);
   const rating = ratingSummary(agency);
@@ -168,6 +172,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
           {canReview && <WriteReviewDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} />}
           <ReviewList reviews={reviewRows} agencyName={agency.name} />
+          {collaborator && collaborator.count > 0 && <CollaboratorFeedback data={collaborator} locale={locale} />}
         </div>
       )}
       {tab === "work" && (pkgs?.length || latestReviews.length) ? (

@@ -43,4 +43,4 @@ Code: rules in `lib/collab/` (`time.ts`, `availability.ts`, `discovery.ts`, `sch
 
 ## Not in R1 (HOLD or later releases)
 
-No work-order workspace, threads, asset versions or reviewer flow (R2); no planner, cost worksheet, templates or collaborator feedback (R3). No new money rail, fee, Founder change, paid vendor, automatic renewal, bulk outreach or public rate exposure.
+Work orders, threads, asset versions and the reviewer flow arrived in R2 (docs/49); the planner, cost worksheet, templates and collaborator feedback in R3 (docs/50). No new money rail, fee, Founder change, paid vendor, automatic renewal, bulk outreach or public rate exposure.

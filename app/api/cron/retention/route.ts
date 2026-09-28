@@ -4,12 +4,16 @@ import { purgeOldNotifications } from "@/lib/data/notifications";
 import { expireNeeds } from "@/lib/data/collab-needs";
 import { expireInquiries } from "@/lib/data/collab-inquiries";
 import { expireHolds } from "@/lib/data/capacity";
+import { sendCollabReminders } from "@/lib/data/collab-next";
+import { featureOnGlobally } from "@/lib/features";
 
 // The daily job (vercel.json; one cron keeps us within the Hobby plan's limit):
 // retention (docs/08-legal-compliance.md): chat messages after 24 months,
 // notifications after 90 days; then the milestone jobs (docs/14): review
 // reminders, deemed acceptance and closed appeal windows. Protected by CRON_SECRET.
 export const dynamic = "force-dynamic";
+// The reminder job reads per active agency; give the invocation room (Vercel functions default to 10 s on Hobby).
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -20,5 +24,7 @@ export async function GET(request: Request) {
   const milestones = await runMilestoneJobs();
   // Collaboration V2 (docs/48): published needs and work inquiries past their dates close for everyone.
   const [needs, inquiries, holds] = await Promise.all([expireNeeds(), expireInquiries(), expireHolds()]);
-  return Response.json({ messages, notifications, milestones, needs, inquiries, holds });
+  // R3 (docs/50): one deduplicated reminder per open collaboration item and day, after quiet hours.
+  const reminders = (await featureOnGlobally("collaboration_intelligence")) ? await sendCollabReminders() : 0;
+  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders });
 }

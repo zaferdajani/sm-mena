@@ -2,6 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { moderateFeedback } from "@/lib/data/collab-feedback";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/guards";
 import { adminResetMfa } from "@/lib/auth/mfa";
@@ -120,6 +121,15 @@ export async function setPromotionStatusAction(id: string, status: "active" | "p
   await setPromotionStatus(uuid.parse(id), z.enum(["active", "paused", "ended"]).parse(status));
   await audit(admin.id, `promotion.${status}`, "promotion", id);
   refresh();
+}
+
+export async function setCollabFeedbackStatusAction(id: string, status: "published" | "hidden") {
+  const admin = await requireStaff("content.moderate");
+  const feedbackId = z.string().uuid().parse(id);
+  const next = z.enum(["published", "hidden"]).parse(status);
+  await moderateFeedback(feedbackId, next);
+  await audit(admin.id, `collab_feedback.${next}`, "collab_feedback", feedbackId);
+  revalidatePath("/[locale]", "layout");
 }
 
 export async function setReviewStatusAction(reviewId: string, status: "published" | "hidden") {
