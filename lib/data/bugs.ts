@@ -2,7 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { errorEvents, supportRequests } from "@/lib/db/schema";
+import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
 
 // Automatic error journal (browser and server errors) and user-submitted
 // problem reports, triaged in Admin → Bugs. Modelled on OneClickConvert's bug
@@ -115,6 +115,12 @@ export async function resolveStaleErrors(adminId: string, patch: { hours: number
     .where(staleWhere(patch.hours))
     .returning({ id: errorEvents.id });
   return rows.length;
+}
+
+/** The latest automatic site checks (lib/db/site-check.ts), newest first. */
+export async function listSiteChecks(limit = 12) {
+  const db = await getDb();
+  return db.select().from(siteChecks).orderBy(desc(siteChecks.ranAt)).limit(limit);
 }
 
 export type SupportInput = { kind: "bug" | "question" | "suggestion"; message: string; email?: string | null; path?: string | null; locale?: string | null; userAgent?: string | null; userId?: string | null; visitorId?: string | null };

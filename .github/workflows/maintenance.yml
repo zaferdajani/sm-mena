@@ -7,6 +7,7 @@
 #   recover-owner       owner locked out: clears the owner's 2FA and, with OWNER_RECOVERY_PASSWORD, sets a new password
 #   db-activity         what the live database is busy with (connection states, long waits); read-only
 #   pooler-check        read-only: runs admin-style queries through Supabase's transaction pooler with both drivers, counts stalls
+#   traffic-breakdown   read-only: how many of the last 30 days' views, clicks and visitors come from the same browser (no IPs are kept)
 # Every Sunday at 02:17 UTC it also runs rebuild-demo-media, so the shared demo at
 # /demo starts the week clean (docs/37-demo-link.md). Only demo agencies are touched.
 # Uses the repository secrets DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
@@ -20,7 +21,7 @@ on:
         description: What to run
         required: true
         type: choice
-        options: [migrate, seed-demo, rebuild-demo-media, reset-staff-2fa, recover-owner, db-activity, pooler-check]
+        options: [migrate, seed-demo, rebuild-demo-media, reset-staff-2fa, recover-owner, db-activity, pooler-check, traffic-breakdown]
   schedule:
     - cron: "17 2 * * 0"
 
@@ -65,6 +66,7 @@ jobs:
             rebuild-demo-media) npm run --silent db:migrate && npx tsx lib/db/rebuild-demo-media.ts ;;
             reset-staff-2fa) npx tsx lib/db/reset-staff-2fa.ts ;;
             db-activity) npx tsx lib/db/db-activity.ts ;;
+            traffic-breakdown) npx tsx lib/db/traffic-breakdown.ts ;;
             pooler-check) npx tsx lib/db/pooler-check.ts ;;
             recover-owner)
               [ -n "$OWNER_RECOVERY_EMAIL" ] || { echo "::error::Add the OWNER_RECOVERY_EMAIL secret (and OWNER_RECOVERY_PASSWORD for a new password)."; exit 1; }

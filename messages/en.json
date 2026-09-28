@@ -1176,6 +1176,16 @@
       "body": "They are marked fixed with the note below, and it is recorded in the audit log. Errors that still happen are left alone, and any that comes back reopens by itself.",
       "notesDefault": "Cause fixed; not seen since.",
       "button": "Mark {count, plural, one {it} other {them}} fixed"
+    },
+    "checks": {
+      "title": "Automatic checks",
+      "none": "No check has run yet.",
+      "allOk": "Last check {ago}: all {count} pages work.",
+      "failing": "Last check {ago}: {count, plural, one {# page is failing} other {# pages are failing}}.",
+      "body": "Every 30 minutes the key pages of the live site and the health check are opened. A page that fails or is very slow is recorded here as an open error; errors not seen for 3 days are closed automatically with a note (and reopen if they come back); all of it goes to the audit log. A failing check also sends you an email from GitHub.",
+      "runOk": "All pages work",
+      "runFailed": "{count, plural, one {# page failed} other {# pages failed}}",
+      "closed": "closed {count, plural, one {# old error} other {# old errors}}"
     }
   },
   "AdminStats": {
