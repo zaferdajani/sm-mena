@@ -10,3 +10,11 @@ export async function collabPage() {
   if (gate === "off") notFound();
   return { agency, user, soon: gate === "soon" };
 }
+
+/** Work-order pages (R2): both switches; "collaboration_delivery" alone may be coming soon. */
+export async function deliveryPage() {
+  const base = await collabPage();
+  const delivery = await featureGate("collaboration_delivery");
+  if (delivery === "off") notFound();
+  return { ...base, soonFeature: base.soon ? ("collaboration" as const) : delivery === "soon" ? ("collaboration_delivery" as const) : null };
+}

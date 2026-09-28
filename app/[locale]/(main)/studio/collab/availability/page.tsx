@@ -5,7 +5,7 @@ import { CollabHeader, CollabTabs, EmptyState } from "@/components/collab/collab
 import { AvailabilityForm } from "@/components/collab/widgets";
 import { SubmitButton } from "@/components/submit-button";
 import { listWindows, windowSummary } from "@/lib/data/collab-availability";
-import { openInquiryCount } from "@/lib/data/collab-inquiries";
+import { workBadgeCount } from "@/lib/data/work-orders";
 import { isFresh } from "@/lib/collab/availability";
 import { dateIn } from "@/lib/collab/time";
 import { countryOf } from "@/lib/countries";
@@ -21,7 +21,7 @@ export default async function CollabAvailabilityPage({ params }: PageProps<"/[lo
   const { agency, soon } = await collabPage();
   if (soon) return <ComingSoon feature="collaboration" />;
   const t = await getTranslations("Collab.availability");
-  const [rows, badge] = await Promise.all([listWindows(agency.id), openInquiryCount(agency.id)]);
+  const [rows, badge] = await Promise.all([listWindows(agency.id), workBadgeCount(agency.id)]);
   const summary = windowSummary(rows);
   const now = new Date();
   return (

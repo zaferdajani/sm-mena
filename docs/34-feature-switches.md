@@ -35,6 +35,7 @@ Things that already exist keep working whatever the switch says: a signed contra
 | `reviews` | on | Review invite and review links show Coming soon; creating invites is refused. |
 | `partners` | on | Studio → Partners shows Coming soon (off: hidden from the studio menu). |
 | `collaboration` | on | Collaboration V2 release 1 (docs/48): Studio → Collaborate (discover, needs, network, work, availability) and invitation links show Coming soon; off hides the tab, the pages 404 and every action refuses. Accepted partnerships, contract requests and shares made through it keep working under `partners` and `contracts`. |
+| `collaboration_delivery` | on | Collaboration V2 release 2 (docs/49): work orders, shared threads, file versions and review, capacity holds. Coming soon: the order pages show Coming soon and every action refuses; off: the order pages 404 and the Work page hides the section. The contracts a work order pointed at keep working under `contracts`; the rows stay in the database. |
 | `demo_view` | on | "Explore the demo" is hidden; off also ignores an existing demo cookie. |
 | `prelaunch_home` | off | Off: the front page is the landing page (the teaser stays at `/soon`). On: the teaser is the front page. "Coming soon": only staff see the teaser there. The owner turned it off on 26 Sep 2026: the teaser as a front page was too dark and too busy. |
 

@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { currencyOf } from "@/lib/countries";
 import { arePartners } from "@/lib/data/contracts";
+import { canUse } from "@/lib/feature-gate";
 import { inquiryForBuyer, inquiryForSupplier, type SupplierInquiry } from "@/lib/data/collab-inquiries";
 import { formatDate, formatFils } from "@/lib/format";
 import { lineLabel } from "@/lib/deliverables";
@@ -76,6 +77,8 @@ async function BuyerPage({ v, locale, sent }: { v: NonNullable<Awaited<ReturnTyp
   const open = ["sent", "replied"].includes(v.status);
   const winner = v.quotes.find((q) => q.status === "accepted");
   const partners = winner ? await arePartners(v.buyerAgencyId, winner.supplierAgencyId) : false;
+  const delivery = winner ? await canUse("collaboration_delivery") : false;
+  const to = await getTranslations("Orders");
   const openQuotes = v.quotes.filter((q) => q.status === "open");
   const currencies = new Set(openQuotes.map((q) => q.currency));
   return (
@@ -135,6 +138,7 @@ async function BuyerPage({ v, locale, sent }: { v: NonNullable<Awaited<ReturnTyp
             <p data-testid="handoff-waiting">{t("handoff.partnerPending")}</p>
           )}
           <p className="text-xs text-muted-foreground">{t("handoff.notSigned")}</p>
+          {delivery && <Link href={`/studio/collab/orders/new?inquiry=${v.id}`} className={buttonVariants({ className: "h-11 justify-self-start" })} data-testid="handoff-order">{to("list.start")}</Link>}
         </section>
       )}
 

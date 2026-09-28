@@ -145,3 +145,15 @@ It holds no personal data. The partner sees only the shared milestone, its check
 | Work inquiries, recipients and quotes (`work_inquiries`, `work_inquiry_recipients`, `work_quotes`) | Studio → Collaborate → Work | the buyer sees everything about its own inquiry; each supplier sees one fixed projection (`SUPPLIER_FIELDS`) and only its own quotes; the buyer's linked client contract is never sent | expire on the reply deadline; kept as the record behind a contract request |
 
 Consent: the collaboration preference records `consent_version` (`collab-2026-09`). No new contact data is collected; contact details still open only through an accepted partnership (docs/30). Audit rows: `collab.inquiry.sent`, `collab.inquiry.converted`.
+
+## Collaboration V2, release 2 (docs/49)
+
+| Data | Who sees it | Retention |
+|---|---|---|
+| Work orders and versions (`work_orders`, `work_order_versions`: scope, dates, permission scope, compensation reference; no amounts) | buyer and supplier of that work order; the buyer's parent client contract id: the buyer only | with the pages; accepted versions are frozen |
+| Messages (`work_order_messages`): private notes and the shared thread | private: the buyer only; shared: both parties | with the work order |
+| Files and comments (`work_order_assets`, `work_order_comments`) | both parties, through `/api/collab/assets/<id>` only (private storage prefix `collab/`: a private bucket in production, no public URL exists) | with the work order; superseded versions kept as the review record |
+| Submissions and decisions (`work_order_submissions`, incl. the effect on the contract) | both parties | with the work order |
+| Capacity holds (`capacity_reservations`) | the provider; the buyer sees only its own hold's state | released/expired rows stay as the record of the hold and are never listed |
+
+No contact data is added. Notifications carry names and titles only. Audit: `collab.work_order.approved`, `collab.work_order.changes_requested`.

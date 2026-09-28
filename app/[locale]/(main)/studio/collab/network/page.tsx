@@ -12,7 +12,7 @@ import { currencyOf } from "@/lib/countries";
 import { availabilityStates } from "@/lib/data/collab-availability";
 import { myBlocks } from "@/lib/data/collab-blocks";
 import { partnerIdsOf } from "@/lib/data/collab-discovery";
-import { openInquiryCount } from "@/lib/data/collab-inquiries";
+import { workBadgeCount } from "@/lib/data/work-orders";
 import { listInvites } from "@/lib/data/collab-invites";
 import { getCollabProfile } from "@/lib/data/collab-profile";
 import { listRoster } from "@/lib/data/collab-roster";
@@ -30,7 +30,7 @@ export default async function CollabNetworkPage({ params, searchParams }: PagePr
   const invited = (await searchParams).invited === "1";
   const t = await getTranslations("Collab");
   const [roster, invites, profile, partnerIds, requests, pending, blocks, opts, badge] = await Promise.all([
-    listRoster(agency.id), listInvites(agency.id), getCollabProfile(agency.id), partnerIdsOf(agency.id), listPartnerRequests(agency.id), pendingPartnerCount(agency.id), myBlocks(agency.id), collabOptions(locale, agency.country), openInquiryCount(agency.id),
+    listRoster(agency.id), listInvites(agency.id), getCollabProfile(agency.id), partnerIdsOf(agency.id), listPartnerRequests(agency.id), pendingPartnerCount(agency.id), myBlocks(agency.id), collabOptions(locale, agency.country), workBadgeCount(agency.id),
   ]);
   const availability = await availabilityStates(roster.map((r) => r.providerAgencyId), null, { partnerIds });
   const groups = [...new Set(roster.map((r) => r.groupName))].sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b)));

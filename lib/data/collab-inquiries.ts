@@ -117,7 +117,7 @@ export async function listBuying(buyerId: string) {
     .from(workInquiryRecipients)
     .where(inArray(workInquiryRecipients.inquiryId, rows.map((r) => r.id)))
     .groupBy(workInquiryRecipients.inquiryId, workInquiryRecipients.status);
-  return rows.map((r) => ({ ...r, recipients: counts.filter((c) => c.inquiryId === r.id).reduce((n, c) => n + c.n, 0), quoted: counts.filter((c) => c.inquiryId === r.id && c.status === "quoted").reduce((n, c) => n + c.n, 0) }));
+  return rows.map((r) => ({ ...r, recipients: counts.filter((c) => c.inquiryId === r.id).reduce((n, c) => n + c.n, 0), quoted: counts.filter((c) => c.inquiryId === r.id && ["quoted", "accepted"].includes(c.status)).reduce((n, c) => n + c.n, 0) }));
 }
 
 export type SupplierView = { inquiry: SupplierInquiry; buyer: Party; me: WorkInquiryRecipient; myQuotes: WorkQuote[] };

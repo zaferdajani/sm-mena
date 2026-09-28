@@ -26,6 +26,16 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   inquiry_declined: XCircle,
   quote_accepted: BadgeCheck,
   invite_accepted: Handshake,
+  work_order_offered: FileText,
+  work_order_accepted: BadgeCheck,
+  work_order_declined: XCircle,
+  work_order_cancelled: XCircle,
+  work_order_amendment: RotateCcw,
+  work_order_amendment_accepted: BadgeCheck,
+  work_order_message: MessagesSquare,
+  work_order_submitted: PackageCheck,
+  work_order_approved: BadgeCheck,
+  work_order_changes: RotateCcw,
   contract_signed: FileSignature,
   contract_funded: ShieldCheck,
   milestone_submitted: PackageCheck,
@@ -83,8 +93,8 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
                 <Icon className="size-4" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className={cn("block text-sm", !n.readAt && "font-semibold")} dir="auto">
-                  {t(`kinds.${kind}`, values)}
+                <span className={cn("block text-sm", !n.readAt && "font-semibold")}>
+                  <bdi>{t(`kinds.${kind}`, values)}</bdi>
                 </span>
                 <span suppressHydrationWarning className="text-xs text-muted-foreground">{timeAgo(n.createdAt.toISOString(), locale)}</span>
               </span>

@@ -7,7 +7,7 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { openInquiryCount } from "@/lib/data/collab-inquiries";
+import { workBadgeCount } from "@/lib/data/work-orders";
 import { listMyNeeds } from "@/lib/data/collab-needs";
 import { formatDate } from "@/lib/format";
 import { roleLabel } from "@/lib/services/catalog";
@@ -23,7 +23,7 @@ export default async function CollabNeedsPage({ params }: PageProps<"/[locale]/s
   if (soon) return <ComingSoon feature="collaboration" />;
   const t = await getTranslations("Collab");
   const tCity = await getTranslations("Cities");
-  const [needs, opts, badge] = await Promise.all([listMyNeeds(agency.id), collabOptions(locale, agency.country), openInquiryCount(agency.id)]);
+  const [needs, opts, badge] = await Promise.all([listMyNeeds(agency.id), collabOptions(locale, agency.country), workBadgeCount(agency.id)]);
   const STATUS: Record<string, string> = { published: "bg-brand-soft text-brand", withdrawn: "bg-muted text-muted-foreground", expired: "bg-muted text-muted-foreground", filled: "bg-brand text-white" };
   return (
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="collab-needs">

@@ -6,9 +6,11 @@ import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { listBuying, listSupplying, openInquiryCount } from "@/lib/data/collab-inquiries";
 import { sharesForPartner } from "@/lib/data/milestone-shares";
-import { formatDate, formatFils } from "@/lib/format";
+import { listWorkOrders, pendingOrderCount } from "@/lib/data/work-orders";
+import { canUse } from "@/lib/feature-gate";
+import { formatDate, formatFils, formatIsoDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { STATUS_STYLE } from "@/components/collab/status";
+import { ORDER_STYLE, STATUS_STYLE } from "@/components/collab/status";
 import { collabPage } from "../gate";
 
 
@@ -19,7 +21,11 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
   const { agency, soon } = await collabPage();
   if (soon) return <ComingSoon feature="collaboration" />;
   const t = await getTranslations("Collab");
-  const [buying, supplying, shares, badge] = await Promise.all([listBuying(agency.id), listSupplying(agency.id), sharesForPartner(agency.id), openInquiryCount(agency.id)]);
+  const delivery = await canUse("collaboration_delivery");
+  const [buying, supplying, shares, inquiries, orders, pending] = await Promise.all([listBuying(agency.id), listSupplying(agency.id), sharesForPartner(agency.id), openInquiryCount(agency.id), delivery ? listWorkOrders(agency.id) : [], delivery ? pendingOrderCount(agency.id) : 0]);
+  const badge = inquiries + pending;
+  const to = await getTranslations("Orders");
+  const ordered = new Set(orders.filter((o) => o.order.inquiryId).map((o) => o.order.inquiryId));
   const pill = (s: string, label: string) => <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_STYLE[s] ?? "bg-muted")}>{label}</span>;
   return (
     <div className="mx-auto grid max-w-3xl gap-6" data-testid="collab-work">
@@ -60,11 +66,34 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
                   </span>
                   {pill(i.status, t(`work.status.${i.status}`))}
                 </Link>
+                {delivery && i.status === "converted" && !ordered.has(i.id) && <Link href={`/studio/collab/orders/new?inquiry=${i.id}`} className="mt-1 inline-block text-xs font-medium text-brand" data-testid="order-start">{to("list.start")}</Link>}
               </li>
             ))}
           </ul>
         )}
       </section>
+
+      {delivery && (
+        <section className="grid gap-2" data-testid="work-orders">
+          <h2 className="font-semibold">{to("list.title")}</h2>
+          <p className="text-xs text-muted-foreground">{to("list.intro")}</p>
+          {orders.length === 0 ? <EmptyState title={to("list.none")} body={to("list.noneBody")} /> : (
+            <ul className="grid gap-2">
+              {orders.map(({ order, role, other, version }) => (
+                <li key={order.id}>
+                  <Link href={`/studio/collab/orders/${order.id}`} className="flex items-center gap-3 rounded-2xl border p-3 hover:bg-muted/50" data-testid="order-row" data-status={order.status} data-role={role}>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium" dir="auto">{order.title}</span>
+                      <span className="block text-xs text-muted-foreground"><bdi>{to(`list.${role === "buyer" ? "buying" : "delivering"}`, { name: other.name })}</bdi>{version?.dueOn ? <> · <bdi dir="ltr">{formatIsoDate(version.dueOn, locale)}</bdi></> : null} · {to(`mode.${order.mode}`)}</span>
+                    </span>
+                    <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", ORDER_STYLE[order.status] ?? "bg-muted")}>{to(`status.${order.status}`)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       <section className="grid gap-2 rounded-2xl border p-4 text-sm" data-testid="work-disclosed">
         <h2 className="font-semibold">{t("work.disclosed")}</h2>

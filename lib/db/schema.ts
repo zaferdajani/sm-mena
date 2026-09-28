@@ -1657,6 +1657,181 @@ export const workQuotes = pgTable(
   (t) => [uniqueIndex("work_quotes_version_idx").on(t.inquiryId, t.supplierAgencyId, t.version), index("work_quotes_inquiry_idx").on(t.inquiryId, t.status)],
 );
 
+// ---------------------------------------------------------------------------
+// Collaboration V2, release 2 (docs/49-work-orders.md): the delivery workspace
+// around an accepted inquiry. It references the signed supplier→buyer
+// contract and one of its milestones; it never holds terms or money itself.
+// ---------------------------------------------------------------------------
+
+export const workOrders = pgTable(
+  "work_orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    buyerAgencyId: uuid("buyer_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    supplierAgencyId: uuid("supplier_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    inquiryId: uuid("inquiry_id").references(() => workInquiries.id, { onDelete: "set null" }),
+    // The authoritative agreement: a contract where agency_id = supplier and client_agency_id = buyer.
+    contractId: uuid("contract_id").references(() => contracts.id, { onDelete: "set null" }),
+    milestoneId: uuid("milestone_id").references(() => milestones.id, { onDelete: "set null" }),
+    // The buyer's own client contract this work feeds; never shown to the supplier.
+    parentContractId: uuid("parent_contract_id").references(() => contracts.id, { onDelete: "set null" }),
+    // private (subcontracting; the buyer reviews) | disclosed (co-delivery; the end client reviews through the share)
+    mode: text("mode").notNull().default("private"),
+    title: text("title").notNull(),
+    // draft | offered | accepted | in_progress | submitted | changes_requested | approved | closed | declined | withdrawn | cancelled
+    status: text("status").notNull().default("draft"),
+    currentVersion: integer("current_version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("work_orders_buyer_idx").on(t.buyerAgencyId, t.status), index("work_orders_supplier_idx").on(t.supplierAgencyId, t.status), index("work_orders_contract_idx").on(t.contractId)],
+);
+
+/** The scope at one point in time. Accepted versions are frozen by a trigger; a change is a new version. */
+export const workOrderVersions = pgTable(
+  "work_order_versions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    deliverables: jsonb("deliverables").$type<DeliverableLine[]>().notNull().default([]),
+    scope: text("scope").notNull().default(""),
+    revisionAllowance: integer("revision_allowance").notNull().default(2),
+    dueOn: text("due_on"),
+    reviewDays: integer("review_days").notNull().default(7),
+    // A reference to where the money is agreed (contract number / milestone), never an amount of its own.
+    compensationNote: text("compensation_note").notNull().default(""),
+    // What the supplier may use, show or reuse.
+    permissionScope: text("permission_scope").notNull().default(""),
+    proposedBy: text("proposed_by").notNull(), // buyer | supplier
+    // proposed | accepted | superseded | declined
+    status: text("status").notNull().default("proposed"),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    termsHash: text("terms_hash"),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("work_order_versions_idx").on(t.workOrderId, t.version)],
+);
+
+/** One line in one of two audiences: private (buyer's own notes) or shared (buyer and supplier). Scope never changes. */
+export const workOrderMessages = pgTable(
+  "work_order_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    authorAgencyId: uuid("author_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    scope: text("scope").notNull(), // private | shared
+    body: text("body").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("work_order_messages_idx").on(t.workOrderId, t.scope, t.createdAt)],
+);
+
+/** A file version in the workspace (images through the existing pipeline). New versions never delete old ones. */
+export const workOrderAssets = pgTable(
+  "work_order_assets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    // Versions of the same deliverable share a group id.
+    groupId: uuid("group_id").notNull().defaultRandom(),
+    version: integer("version").notNull().default(1),
+    uploadedByAgencyId: uuid("uploaded_by_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    storageKey: text("storage_key").notNull(),
+    thumbKey: text("thumb_key").notNull(),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    bytes: integer("bytes").notNull(),
+    // current | superseded
+    status: text("status").notNull().default("current"),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("work_order_assets_version_idx").on(t.groupId, t.version), index("work_order_assets_wo_idx").on(t.workOrderId, t.status)],
+);
+
+/** Feedback anchored to one asset version, optionally to a point on it (percent of width/height). */
+export const workOrderComments = pgTable(
+  "work_order_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    assetId: uuid("asset_id")
+      .notNull()
+      .references(() => workOrderAssets.id, { onDelete: "cascade" }),
+    authorAgencyId: uuid("author_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    x: real("x"),
+    y: real("y"),
+    createdAt: createdAt(),
+  },
+  (t) => [index("work_order_comments_idx").on(t.assetId, t.createdAt)],
+);
+
+/** Each hand-over and its answer. Earlier submissions stay as the record. */
+export const workOrderSubmissions = pgTable(
+  "work_order_submissions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    round: integer("round").notNull(),
+    note: text("note").notNull().default(""),
+    submittedAt: createdAt(),
+    // approved | changes_requested
+    decision: text("decision"),
+    decisionNote: text("decision_note"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    // What the decision did on the authoritative contract, if anything (e.g. milestone approved / changes requested / none).
+    contractEffect: text("contract_effect"),
+  },
+  (t) => [uniqueIndex("work_order_submissions_idx").on(t.workOrderId, t.round)],
+);
+
+/**
+ * A hold on the capacity a provider declared in Sawwiq (availability window
+ * units) for one work order: tentative while offered, confirmed atomically on
+ * acceptance, released or expired otherwise. Nothing here reads an external calendar.
+ */
+export const capacityReservations = pgTable(
+  "capacity_reservations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    providerAgencyId: uuid("provider_agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    workOrderId: uuid("work_order_id")
+      .notNull()
+      .references(() => workOrders.id, { onDelete: "cascade" }),
+    startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    units: integer("units").notNull().default(1),
+    // tentative | confirmed | released | expired
+    status: text("status").notNull().default("tentative"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("capacity_reservations_live_idx").on(t.workOrderId).where(sql`${t.status} in ('tentative', 'confirmed')`), index("capacity_reservations_provider_idx").on(t.providerAgencyId, t.status, t.startsAt), check("capacity_reservations_order", sql`${t.endsAt} > ${t.startsAt}`)],
+);
+
 export type User = typeof users.$inferSelect;
 export type ServiceTag = typeof serviceTags.$inferSelect;
 export type PartnerRequest = typeof partnerRequests.$inferSelect;
@@ -1696,3 +1871,10 @@ export type CollabInvite = typeof collabInvites.$inferSelect;
 export type WorkInquiry = typeof workInquiries.$inferSelect;
 export type WorkInquiryRecipient = typeof workInquiryRecipients.$inferSelect;
 export type WorkQuote = typeof workQuotes.$inferSelect;
+export type WorkOrder = typeof workOrders.$inferSelect;
+export type WorkOrderVersion = typeof workOrderVersions.$inferSelect;
+export type WorkOrderMessage = typeof workOrderMessages.$inferSelect;
+export type WorkOrderAsset = typeof workOrderAssets.$inferSelect;
+export type WorkOrderComment = typeof workOrderComments.$inferSelect;
+export type WorkOrderSubmission = typeof workOrderSubmissions.$inferSelect;
+export type CapacityReservation = typeof capacityReservations.$inferSelect;

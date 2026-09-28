@@ -10,7 +10,7 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { discoverCollaborators } from "@/lib/data/collab-discovery";
-import { openInquiryCount } from "@/lib/data/collab-inquiries";
+import { workBadgeCount } from "@/lib/data/work-orders";
 import { listOpenNeedsFor } from "@/lib/data/collab-needs";
 import { isDateString } from "@/lib/collab/time";
 import { WORK_MODES, type WorkMode } from "@/lib/collab/types";
@@ -40,7 +40,7 @@ export default async function CollabDiscoverPage({ params, searchParams }: PageP
   const [results, needs, badge] = await Promise.all([
     agency.kind === "agency" || searched ? discoverCollaborators(agency, { roles: roles.length ? roles : agency.seeksRoles, kind, workMode, from: from && to ? from : null, to: from && to ? to : null, confirmedOnly, cursor }, { includeDemo: agency.isDemo }) : null,
     listOpenNeedsFor(agency),
-    openInquiryCount(agency.id),
+    workBadgeCount(agency.id),
   ]);
   const field = "h-11 w-full rounded-lg border bg-background px-2 text-sm";
 

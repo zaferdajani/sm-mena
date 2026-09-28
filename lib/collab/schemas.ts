@@ -1,5 +1,6 @@
 // Shared input rules for Collaboration V2 (client and server validate the same way).
 import { z } from "zod";
+import { deliverable } from "@/lib/deliverables";
 import { COUNTRY_CODES } from "@/lib/countries";
 import { CITIES } from "@/lib/labels";
 import { AVAILABILITY_STATUSES, CAPACITY_UNITS, COLLAB_MODES, RATE_UNITS, VISIBILITIES, WORK_MODES, MAX_RECIPIENTS } from "./types";
@@ -68,7 +69,7 @@ export const inviteSchema = z.object({
   roles: z.array(z.string().max(60)).max(6),
 });
 
-export const deliverableLineSchema = z.object({ key: z.string().max(60), quantity: z.coerce.number().int().min(1).max(1000), platform: z.string().max(30).nullable().optional() });
+export const deliverableLineSchema = z.object({ key: z.string().max(60).refine((k) => Boolean(deliverable(k)), "unknown deliverable"), quantity: z.coerce.number().int().min(1).max(1000), platform: z.string().max(30).nullable().optional() });
 
 export const inquirySchema = z
   .object({

@@ -26,6 +26,11 @@ export function formatJod(value: number, locale: string, currency = "JOD"): stri
   }).format(value);
 }
 
+/** A calendar date stored as YYYY-MM-DD, shown like every other date (no timezone shift). */
+export function formatIsoDate(iso: string, locale: string): string {
+  return formatDate(new Date(`${iso}T12:00:00Z`), locale);
+}
+
 export function formatDate(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }

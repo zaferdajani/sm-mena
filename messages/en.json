@@ -2383,7 +2383,17 @@
       "inquiry_quoted": "{name} quoted on “{title}”",
       "inquiry_declined": "{name} declined “{title}”",
       "quote_accepted": "{name} accepted your quote on “{title}”. Next: the contract.",
-      "invite_accepted": "{name} accepted your invitation. You're partners."
+      "invite_accepted": "{name} accepted your invitation. You're partners.",
+      "work_order_offered": "{name} offered you a work order: “{title}”",
+      "work_order_accepted": "{name} accepted the work order “{title}”",
+      "work_order_declined": "{name} declined the work order “{title}”",
+      "work_order_cancelled": "{name} ended the work order “{title}”",
+      "work_order_amendment": "{name} proposed a change to “{title}”",
+      "work_order_amendment_accepted": "{name} accepted your change to “{title}”",
+      "work_order_message": "{name} wrote in “{title}”",
+      "work_order_submitted": "{name} submitted work on “{title}”",
+      "work_order_approved": "{name} approved your work on “{title}”",
+      "work_order_changes": "{name} asked for changes on “{title}”"
     }
   },
   "PortfolioClients": {
@@ -2778,6 +2788,11 @@
         "name": "Collaboration",
         "desc": "Discover collaborators, availability, private roster, structured work inquiries (V2, release 1).",
         "soon": "Collaboration tools are under construction."
+      },
+      "collaboration_delivery": {
+        "name": "Work orders",
+        "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration (V2, release 2).",
+        "soon": "Work orders are under construction. Inquiries and quotes keep working."
       }
     },
     "golive": {
@@ -3807,6 +3822,230 @@
     "blocks": {
       "title": "Blocked",
       "unblock": "Unblock"
+    }
+  },
+  "Orders": {
+    "cancel": "Cancel",
+    "supplierSees": "You see the agreed scope, the shared thread, the files and the review rounds. The buyer's own client contract and private notes are never shown here.",
+    "errors": {
+      "invalid": "Please check the fields and try again.",
+      "rateLimited": "Too many actions in a short time. Try again in a while.",
+      "unavailable": "Work orders are not available right now.",
+      "notFound": "This work order is not yours to change.",
+      "locked": "This step is no longer possible; the work order moved on.",
+      "contract": "That contract is not between you two, or it is cancelled.",
+      "capacity": "No declared capacity is left for that date. Ask the supplier to adjust availability or the due date.",
+      "expired": "The offer's capacity hold expired. Ask the buyer to offer again.",
+      "image": "That file is not an image we can store.",
+      "too_large": "That file is too large.",
+      "unsupported": "Only JPEG, PNG, WebP or HEIC images.",
+      "too_small": "That image is too small.",
+      "rounds": "The revision allowance is used up. Agree an amendment before another round.",
+      "max_files": "This work order already holds the maximum number of files."
+    },
+    "status": {
+      "draft": "Draft",
+      "offered": "Offered",
+      "accepted": "Accepted",
+      "in_progress": "In progress",
+      "submitted": "Submitted for review",
+      "changes_requested": "Changes requested",
+      "approved": "Approved",
+      "closed": "Closed",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn",
+      "cancelled": "Cancelled"
+    },
+    "header": {
+      "youBuy": "Delivered to you by {name}",
+      "youDeliver": "You deliver to {name}"
+    },
+    "actions": {
+      "offer": "Offer to the supplier",
+      "accept": "Accept the work order",
+      "decline": "Decline",
+      "withdraw": "Withdraw",
+      "cancel": "End this work order",
+      "close": "Close"
+    },
+    "new": {
+      "heading": "New work order",
+      "intro": "The scope both sides will work from. Money stays in the contract; this records what, by when and how many rounds.",
+      "for": "For {name}, from the accepted quote.",
+      "title": "Title",
+      "offer": "Offer to the supplier",
+      "saveDraft": "Save as draft",
+      "needsInquiry": "A work order starts from an accepted quote. Open the inquiry and accept a quote first.",
+      "backToWork": "Back to Work",
+      "quoteNote": "Supplier's quote note"
+    },
+    "mode": {
+      "label": "How the client sees this",
+      "hint": "Private: you stay the client's face and review the work yourself. Disclosed: the supplier delivers a milestone your client knows about, through a partner share.",
+      "private": "Private subcontracting",
+      "disclosed": "Disclosed co-delivery"
+    },
+    "terms": {
+      "title": "Agreed scope · v{n}",
+      "deliverables": "Deliverables",
+      "scope": "Scope",
+      "scopeHint": "What exactly is delivered, in what formats, and what is out of scope.",
+      "revisions": "Revision rounds",
+      "revisionsHint": "Rounds of changes included before an amendment is needed.",
+      "dueOn": "Due on",
+      "reviewDays": "Review window (days)",
+      "compensation": "Compensation reference",
+      "compensationHint": "Which contract or milestone pays for this. Never an amount: money is agreed in the contract.",
+      "permission": "Permission scope",
+      "permissionHint": "What the supplier may use, show or reuse afterwards.",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "tampered": "The stored terms no longer match what was accepted. Do not rely on this version; contact support.",
+      "offeredTitle": "Offered scope · v{n}"
+    },
+    "versions": {
+      "current": "v{n}",
+      "proposed": "Amendment sent. It applies once the other side accepts it.",
+      "propose": "Propose an amendment",
+      "proposeTitle": "Propose an amendment",
+      "proposeHint": "A new version of the scope. The accepted version stays in force until the other side accepts this one.",
+      "send": "Send the amendment",
+      "offerTitle": "{name} offers this scope",
+      "offerHint": "Accepting freezes this version and reserves your declared capacity for the due date. Nothing is paid here; money follows the contract.",
+      "amendmentTitle": "{name} proposes v{n}",
+      "amendmentHint": "Accept to replace the current terms, or decline to keep them.",
+      "accept": "Accept v{n}",
+      "decline": "Keep the current terms",
+      "history": "{count, plural, one {# version} other {# versions}}",
+      "waiting": "Your amendment is with {name}.",
+      "status": {
+        "proposed": "Proposed",
+        "accepted": "Accepted",
+        "superseded": "Superseded",
+        "declined": "Declined"
+      },
+      "edit": "Edit the offer",
+      "editHint": "You can change the scope until the supplier accepts it; the supplier sees the latest version.",
+      "saveEdit": "Save the offer",
+      "edited": "Offer updated."
+    },
+    "hold": {
+      "tentative": "Capacity held until accepted · {date}",
+      "confirmed": "Capacity reserved · {date}",
+      "released": "Capacity released",
+      "expired": "Capacity hold expired"
+    },
+    "link": {
+      "title": "Contract and milestone",
+      "intro": "Attach the contract this work is paid under so review and payout stay in step. You can do this later.",
+      "contract": "Contract",
+      "later": "Attach later",
+      "milestone": "Milestone",
+      "noMilestone": "Whole contract",
+      "parent": "Your client contract (private)",
+      "parentHint": "Only you see this reference. The supplier never learns which client contract this serves.",
+      "noParent": "Not linked",
+      "link": "Attach"
+    },
+    "money": {
+      "title": "Money, as the contract records it",
+      "milestone": "Milestone “{title}”",
+      "noMilestone": "No milestone attached",
+      "stages": {
+        "agreement": "Signed",
+        "funding": "Funded",
+        "delivery": "Delivered",
+        "approval": "Approved",
+        "payout": "Payout initiated",
+        "receipt": "Received"
+      },
+      "headline": {
+        "no_contract": "No contract attached: nothing here is owed or paid.",
+        "awaiting_signature": "Waiting for both signatures on the contract.",
+        "awaiting_funding": "Waiting for the milestone to be funded.",
+        "in_delivery": "Signed. Work is in delivery; the stages above show what is funded.",
+        "awaiting_review": "Submitted on the contract; waiting for the buyer's review.",
+        "approved_payout_initiated": "Approved. Payout initiated by the payment partner; not yet confirmed as received.",
+        "approved_direct_pending": "Approved. Direct payment outside Sawwiq; the supplier has not confirmed receipt.",
+        "received": "Approved and confirmed received.",
+        "refunded": "Refunded.",
+        "cancelled": "The contract was cancelled."
+      },
+      "protectedLive": "Protected payment through the payment partner.",
+      "protectedTest": "Protected payment in test mode: no real money moves.",
+      "direct": "Direct payment outside Sawwiq, recorded by both sides.",
+      "noContractHint": "Approving work here only records your decision until a contract and milestone are attached.",
+      "askContract": "Open Contracts to request one",
+      "parentPrivate": "Linked to one of your client contracts. Only you see that link.",
+      "submittedNotOnContract": "Submitted here for your review; the contract milestone itself has not been submitted yet."
+    },
+    "review": {
+      "roundsTitle": "Review rounds",
+      "round": "Round {n}",
+      "decision": {
+        "pending": "Waiting for review",
+        "approved": "Approved",
+        "changes_requested": "Changes requested"
+      },
+      "submitTitle": "Submit round {round} for review",
+      "submitHint": "{left, plural, =0 {No rounds left after this one} one {# round left after this one} other {# rounds left after this one}}",
+      "submitNote": "What changed, what to look at",
+      "submit": "Submit for review",
+      "decideTitle": "Your review",
+      "decideNote": "Notes for the supplier (required when asking for changes)",
+      "approve": "Approve",
+      "changes": "Request changes",
+      "hintMilestone": "Approving also approves the milestone “{title}” on the contract, which is what releases its payment.",
+      "hintNoMilestone": "No milestone is attached: this records your decision and nothing is paid from here.",
+      "hintDisclosed": "Disclosed co-delivery: your client reviews the milestone through the partner share. Your decision here is a record for you two.",
+      "openShare": "Open the partner milestone",
+      "effects": {
+        "milestone_approved": "Milestone approved on the contract; the payout follows the contract's rules.",
+        "milestone_changes_requested": "A revision round was opened on the contract milestone.",
+        "milestone_not_submitted": "Recorded here. The contract milestone was not yet submitted, so it is unchanged.",
+        "milestone_locked": "Recorded here. The contract milestone could not be changed; check it in Contracts.",
+        "no_milestone": "Recorded. No milestone attached, so nothing was paid.",
+        "disclosed_client_reviews": "Recorded. The client reviews the milestone through the partner share."
+      }
+    },
+    "files": {
+      "title": "{count, plural, =0 {Files} one {# file} other {# files}}",
+      "none": "No files yet. Upload drafts and deliverables here; each re-upload becomes a new version.",
+      "add": "Add a file",
+      "added": "Uploaded.",
+      "asVersionOf": "New version of",
+      "newFile": "A new file",
+      "hint": "Images up to 10 MB; stored privately for the two of you.",
+      "upload": "Upload",
+      "pinAt": "Pinned at {x}%, {y}%",
+      "pinHint": "Tap the image to pin your comment to a spot.",
+      "commentHint": "Your comment",
+      "comment": "Comment",
+      "older": "{count, plural, one {# earlier version} other {# earlier versions}}",
+      "choose": "Choose an image",
+      "noFile": "No file chosen yet",
+      "open": "Open"
+    },
+    "thread": {
+      "sharedTitle": "Shared thread",
+      "sharedEmpty": "Nothing yet. Both of you see this thread.",
+      "privateTitle": "Private notes",
+      "privateIntro": "Only you. {name} never sees these.",
+      "privateEmpty": "No private notes.",
+      "audiencePrivate": "Private note · only you",
+      "audienceShared": "Shared with {name}",
+      "privateHint": "A note for yourself",
+      "sharedHint": "A message both sides see",
+      "saveNote": "Save note",
+      "send": "Send to {name}"
+    },
+    "list": {
+      "title": "Work orders",
+      "intro": "Agreed scope, files and review rounds, with money read from the contract.",
+      "none": "No work orders yet",
+      "noneBody": "Accept a quote on an inquiry, then start a work order from it.",
+      "start": "Start a work order",
+      "buying": "Buying from {name}",
+      "delivering": "Delivering to {name}"
     }
   }
 }

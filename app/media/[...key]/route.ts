@@ -1,4 +1,4 @@
-import { isSafeKey, storage } from "@/lib/storage";
+import { isPrivateKey, isSafeKey, storage } from "@/lib/storage";
 
 const TYPES: Record<string, string> = { png: "image/png", jpg: "image/jpeg", webp: "image/webp", mp4: "video/mp4", webm: "video/webm" };
 
@@ -7,7 +7,7 @@ const TYPES: Record<string, string> = { png: "image/png", jpg: "image/jpeg", web
 // backgrounds) answer range requests, which Safari needs to play them.
 export async function GET(req: Request, { params }: RouteContext<"/media/[...key]">) {
   const key = (await params).key.join("/");
-  if (!isSafeKey(key)) return new Response("Not found", { status: 404 });
+  if (!isSafeKey(key) || isPrivateKey(key)) return new Response("Not found", { status: 404 });
   const body = await storage().get(key);
   if (!body) return new Response("Not found", { status: 404 });
   const type = TYPES[key.split(".").pop() ?? ""] ?? "application/octet-stream";
