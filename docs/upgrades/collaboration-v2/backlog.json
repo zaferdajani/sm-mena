@@ -725,9 +725,10 @@
       ],
       "deliverable": "Deterministic taxonomy-first work-package drafts and authorized candidate explanations; optional budgeted AI, prompt-injection tests, minimal model context and safe no-key fallback.",
       "status": "deployed",
-      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "implementation_commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json"
       ],
       "stages": {
         "implemented": {
@@ -735,24 +736,25 @@
           "at": "2026-09-28T03:45:00Z",
           "evidence": [
             "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#implementation_commits (hardening of AC23 redaction and budget)"
           ]
         },
         "tested": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:25:00Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#checks",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (first run of the slice, 9fb1e11/944fa98)"
           ]
         },
         "deployed": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:30:22Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment (first deploy of the slice, 944fa98)"
           ]
         }
       },
@@ -775,9 +777,10 @@
       ],
       "deliverable": "Finance-scoped quote/margin planning, explicit unknown/currency handling and reusable production/rehire templates; every cycle requires new confirmation, with no auto-charge or renewal.",
       "status": "deployed",
-      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "implementation_commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json"
       ],
       "stages": {
         "implemented": {
@@ -785,24 +788,25 @@
           "at": "2026-09-28T03:45:00Z",
           "evidence": [
             "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#implementation_commits (hardening of AC23 redaction and budget)"
           ]
         },
         "tested": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:25:00Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#checks",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (first run of the slice, 9fb1e11/944fa98)"
           ]
         },
         "deployed": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:30:22Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment (first deploy of the slice, 944fa98)"
           ]
         }
       },
@@ -824,9 +828,10 @@
       ],
       "deliverable": "Create a separate transaction-linked collaborator-feedback class with consent, confidentiality, moderation and dispute paths; preserve all existing client/Google/payment provenance.",
       "status": "deployed",
-      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "implementation_commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json"
       ],
       "stages": {
         "implemented": {
@@ -834,24 +839,25 @@
           "at": "2026-09-28T03:45:00Z",
           "evidence": [
             "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#implementation_commits (hardening of AC23 redaction and budget)"
           ]
         },
         "tested": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:25:00Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#checks",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (first run of the slice, 9fb1e11/944fa98)"
           ]
         },
         "deployed": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:30:22Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment (first deploy of the slice, 944fa98)"
           ]
         }
       },
@@ -875,9 +881,10 @@
       ],
       "deliverable": "Reuse notification adapters/jobs for deduplicated privacy-safe next actions; add opt-outs and instrument pseudonymous funnel and cohort metrics without fabricating demand.",
       "status": "deployed",
-      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "implementation_commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json"
       ],
       "stages": {
         "implemented": {
@@ -885,24 +892,25 @@
           "at": "2026-09-28T03:45:00Z",
           "evidence": [
             "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#implementation_commits (hardening of AC23 redaction and budget)"
           ]
         },
         "tested": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:25:00Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#checks",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (first run of the slice, 9fb1e11/944fa98)"
           ]
         },
         "deployed": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:30:22Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment (first deploy of the slice, 944fa98)"
           ]
         }
       },
@@ -935,10 +943,11 @@
       ],
       "deliverable": "Validate all delivered software and production evidence, prepare the consent-based pilot, and report real measured outcomes only. Longitudinal business results may remain pending after software release.",
       "status": "deployed",
-      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "implementation_commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
-        "docs/upgrades/collaboration-v2/pilot-protocol.md"
+        "docs/upgrades/collaboration-v2/pilot-protocol.md",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json"
       ],
       "stages": {
         "implemented": {
@@ -946,24 +955,25 @@
           "at": "2026-09-28T03:45:00Z",
           "evidence": [
             "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#implementation_commits (hardening of AC23 redaction and budget)"
           ]
         },
         "tested": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:25:00Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#checks",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (first run of the slice, 9fb1e11/944fa98)"
           ]
         },
         "deployed": {
-          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
-          "at": "2026-09-28T03:45:00Z",
+          "commit": "aff277876529339a3929bf31062fd4fe016e4ac7",
+          "at": "2026-09-28T09:30:22Z",
           "evidence": [
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
-            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment (first deploy of the slice, 944fa98)"
           ]
         }
       },
