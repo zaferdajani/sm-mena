@@ -3929,8 +3929,8 @@
       "edited": "Offer updated."
     },
     "hold": {
-      "tentative": "Capacity held until accepted · {date}",
-      "confirmed": "Capacity reserved · {date}",
+      "tentative": "Capacity held until accepted",
+      "confirmed": "Capacity reserved",
       "released": "Capacity released",
       "expired": "Capacity hold expired"
     },
