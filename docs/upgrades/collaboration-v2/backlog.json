@@ -49,7 +49,7 @@
         "app/[locale]/(main)/studio/partners/page.tsx"
       ],
       "deliverable": "Inspect existing data, guards, regression tests and current UI; record measured baseline and reuse/repair decisions. No production mutation.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json",
@@ -73,7 +73,7 @@
         "lib/auth/guards.ts"
       ],
       "deliverable": "Map/reuse existing provider and partner-contract records; add only necessary opt-in preferences, private roster and inquiry structures with authorized projections and safe migration tests.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
@@ -96,7 +96,7 @@
         "lib/matching/"
       ],
       "deliverable": "Explicitly published needs for freelancers, complementary provider search for agencies, hard filters, stable pagination and explainable portfolio-based ranking; leave client matching untouched.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
@@ -117,7 +117,7 @@
         "app/[locale]/(main)/studio/profile"
       ],
       "deliverable": "Implement private/opt-in availability intervals, timezone handling, freshness/expiry and explicit unknown states without implying external-calendar synchronization.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
@@ -139,7 +139,7 @@
         "components/studio/partner-widgets.tsx"
       ],
       "deliverable": "Save providers into tenant-private groups with restricted notes; consented expiring invitations, deduplication, blocking/cooldowns and existing-account linking.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
@@ -163,7 +163,7 @@
         "app/[locale]/(main)/studio/partners/page.tsx"
       ],
       "deliverable": "Project-linked or standalone scope/date/currency/mode inquiry with recipient preview, replies/counteroffers and clear handoff into the existing supplier-authored partner contract.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
@@ -193,7 +193,7 @@
         "tests/e2e/"
       ],
       "deliverable": "Deliver a complete mobile/desktop discover-to-contract handoff and rehire path. No unfinished R2/R3 UI. Record source, checks, migrations, screenshots, rollback and production evidence separately.",
-      "status": "implemented",
+      "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"

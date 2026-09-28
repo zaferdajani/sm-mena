@@ -1,0 +1,221 @@
+{
+  "template": false,
+  "status": "deployed_and_verified_with_limits",
+  "release": "R1",
+  "recorded_at_utc": "2026-09-28T00:05:00Z",
+  "recorded_at_asia_amman": "2026-09-28T03:05:00+03:00",
+  "implementation_commits": [
+    "69fe1af",
+    "bc318d9",
+    "38b6f1d",
+    "96c124a",
+    "70ddb54",
+    "43a3607 (merge of origin/main a45aa17)",
+    "a303d45"
+  ],
+  "main_commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+  "completed_task_ids": [
+    "COL00",
+    "COL10",
+    "COL11",
+    "COL12",
+    "COL13",
+    "COL14",
+    "COL15"
+  ],
+  "planning_validation": {
+    "result": "pass",
+    "note": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test: PASS, 18 tasks, 36 acceptance criteria, 11 invalid-plan self-tests rejected (self-test mutation #5 corrected so it stays invalid once tasks carry real evidence). Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "pass (eslint, a303d45)",
+    "typecheck": "pass (next typegen + tsc --noEmit, a303d45)",
+    "unit_and_integration": "pass: 65 files / 372 tests on merged head 43a3607; collab-data + collab-rules re-run on a303d45 (19 passed); the security fixes touch only lib/data/collab-* and actions.ts",
+    "build": "pass: next build, a303d45, 148 static pages",
+    "full_playwright": "pass: 293 passed, 11 skipped, 0 failed, 0 flaky, exit 0, 11.6 min, head a303d45, mobile+desktop, CI=1 (earlier run on merged head 43a3607: 292 passed, 1 flaky in countries.spec.ts)"
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "pass: fresh store .data/mig-test migrated to 0022 and 0022 re-applied without error (idempotent); 0023 applied via migrate.ts",
+    "postgres": "pass: PostgreSQL 16.13 disposable cluster (127.0.0.1:5499), database 'fresh': all migrations 0000-0023 applied, 57 public tables",
+    "populated_upgrade": "pass: database 'populated' migrated to 0021, seeded demo data, a protected contract created and client-signed before 0022; after 0022+0023: same terms_hash, status active, 2 milestones render, 47 -> 57 tables; the new flow (need, discovery, roster, inquiry, two quote versions, accept -> contract request, invite accept) ran on real Postgres",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "scratchpad/pg-before.json",
+      ".data/pg-rehearsal.pgtest.ts (local only)"
+    ]
+  },
+  "reviews": {
+    "implementation": "done by a separate subagent on ecfcdda..bc318d9+38b6f1d: 0 blocking, 16 non-blocking; all 16 applied in 96c124a",
+    "security_and_payments": "done by a separate bounded subagent on 43a3607: 0 blocking, 2 should-fix (quote rate limit/version cap; currency-safe budget handoff), 5 notes; both should-fixes and two notes applied in a303d45; money/contract invariants confirmed untouched (escrow, money-out, payments, contract rules/terms/hash, milestone shares, contract-requests, Founder: zero diff)",
+    "visual_qa": "done by a separate subagent on 58 fixture captures (320/390/768/1440, ar/en, dark, zoom): 2 blocking (dark capture method, phone tab strip), 5 should-fix, 8 nits; all applied in 96c124a except native date placeholders (accepted) and a header-action emphasis nit; re-captured after fixes: active tabs on-screen at 320/390, zoom 200% at 320 CSS px overflow 0, dark theme rendered"
+  },
+  "deployment": {
+    "id": "Vercel Git integration deploy of main b40ee6a (not listed from this session; identifier not read)",
+    "environment": "production",
+    "source_sha": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+    "result": "live: /api/version returned the pushed SHA 3m27s after the push (pushed 2026-09-27T23:49:01Z, observed 23:52:28Z)"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "status": 200,
+      "cache_control": "no-store, max-age=0",
+      "body": {
+        "revision": "collaboration-v2-r1",
+        "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+        "environment": "production"
+      }
+    },
+    "rendered_stamp_match": "12/12: /ar, /en, /ar/explore?tab=agencies, /en/explore?tab=agencies, /ar/a/mahaalbashiti, /en/hire at 390px (mobile emulation) and 1440px all render data-ui-revision=collaboration-v2-r1, data-release-sha=b40ee6a…, environment=production",
+    "ancestry_verified": "b40ee6a is a descendant of a45aa17 (previous main, brochure) and contains the R1 commits; main fast-forwarded a45aa17..b40ee6a",
+    "real_intro_playback": "partial: /ar?intro=1 and /en?intro=1 show the overlay at t=0 (data-intro=playing) and it is opacity 0 / visibility hidden by 4s (phone) and 11s (desktop), i.e. the bounded exit works; the webm itself did not load through this container's egress proxy (readyState 0, media/static requests intermittently 502 / ERR_TOO_MANY_RETRIES from the proxy), so uncropped video playback was NOT observed from here",
+    "authenticated_smoke": "blocked: no authorized production provider account is available to this session, and creating one would consume a founding seat; the collaboration pages were verified only on the local build (fixtures). Public proof that the migration ran on production: /en/invite/<bogus> renders the 'invitation not valid' state (a query on collab_invites) with status 200",
+    "routes": [
+      {
+        "path": "/api/version",
+        "status": 200
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "body": {
+          "ok": true,
+          "database": "postgres",
+          "storage": "supabase"
+        }
+      },
+      {
+        "path": "/ar?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/ar/explore?tab=agencies",
+        "status": "200 on retry (first attempt dropped by the sandbox proxy)",
+        "overflow": 0
+      },
+      {
+        "path": "/en/explore?tab=agencies",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/ar/a/mahaalbashiti",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/hire",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/invite/not-a-real-token-abcdefghijklmn",
+        "status": 200,
+        "note": "noindex,nofollow meta; robots.txt disallows /ar/invite/ and /en/invite/; sitemap has no /invite or /studio entries"
+      },
+      {
+        "path": "/en/studio/collab",
+        "status": "307 -> /en/login"
+      }
+    ],
+    "artifact_refs": [
+      "session scratchpad prod-r1/*.png (phone/desktop, ar/en), prod-r1/report.json, prod-r1/intro-*-{0,4,11}s.png (private, not committed)"
+    ],
+    "console_errors": "only sandbox-proxy failures (ERR_TOO_MANY_RETRIES, 502 on static chunks/media through the proxy); none attributable to the application",
+    "checked_at_utc": "2026-09-27T23:55:00Z to 2026-09-28T00:03:00Z"
+  },
+  "rollback": {
+    "previous_deployment": "main a45aa17 (brochure design, revision brochure-2026-09-27-v1)",
+    "strategy": "forward revert of application code; migrations 0022/0023 are additive and old code ignores the new tables; the collaboration switch (Admin -> Features) stops creation while existing inquiries, roster and contract requests stay readable",
+    "rehearsal": "switch states on/soon/off exercised in tests/e2e/collab-v2.spec.ts (soon: Coming soon on every page and actions refuse; off: tab hidden, pages 404)"
+  },
+  "remaining_tasks": [
+    "COL20",
+    "COL21",
+    "COL22",
+    "COL23",
+    "COL24",
+    "COL25",
+    "COL30",
+    "COL31",
+    "COL32",
+    "COL33",
+    "COL34"
+  ],
+  "blockers": [
+    "Authenticated production smoke of the collaboration views: no authorized production account (creating one consumes a founding seat). Owner can open /ar/studio/collab as a real provider to complete AC34 for the signed-in surfaces.",
+    "Real intro video playback on production could not be observed from this container (egress proxy blocks/502s media); overlay bound verified only."
+  ],
+  "business_validation": {
+    "pilot_status": "not_run",
+    "participants": null,
+    "baseline_comparison": "R0 baseline recorded in docs/upgrades/collaboration-v2/R0-baseline.md (11 steps discover->contact->scope today); R1 scripted path not yet measured with participants",
+    "longitudinal_outcomes": null
+  },
+  "decision": "R1 deployed; verified except the two limits above. Not V2 completion.",
+  "deviations": [
+    "No per-agency staff roles exist (one login per agency), so 'buyer finance / authorized staff' collapses to the agency owner in R1.",
+    "Availability is manual date ranges only; no capacity reservation objects yet (R2 COL24).",
+    "Invitation links carry no email/phone; recipients are matched by whoever opens the link while signed in."
+  ],
+  "task_updates": {
+    "COL00": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json",
+        "docs/upgrades/collaboration-v2/R0-baseline.md"
+      ]
+    },
+    "COL10": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL11": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL12": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL13": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL14": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    },
+    "COL15": {
+      "status": "verified",
+      "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+      ]
+    }
+  },
+  "tested_head": "a303d451794d0a2b6041cc6c761b9a64dc7300e2"
+}

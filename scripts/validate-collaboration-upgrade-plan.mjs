@@ -76,7 +76,8 @@ function selfTest(plan, text) {
     (p) => { p.tasks[0].depends_on = ['COL99']; },
     (p) => { p.tasks[1].depends_on = [p.tasks[1].id]; },
     (p) => { p.tasks[0].release = 'R9'; },
-    (p) => { p.tasks[0].status = 'verified'; },
+    // Verified without evidence must fail even once the task really has a commit and evidence.
+    (p) => { p.tasks[0].status = 'verified'; p.tasks[0].implementation_commit = null; p.tasks[0].evidence = []; },
     (p) => { p.tasks[0].acceptance_ids = ['AC99']; },
     (p) => { p.tasks[0].acceptance_ids = []; },
     (p) => { p.hold_items = []; },
