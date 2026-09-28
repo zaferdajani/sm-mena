@@ -358,9 +358,11 @@
         "lib/services/catalog.ts"
       ],
       "deliverable": "Deterministic taxonomy-first work-package drafts and authorized candidate explanations; optional budgeted AI, prompt-injection tests, minimal model context and safe no-key fallback.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
     },
     {
       "id": "COL31",
@@ -378,9 +380,11 @@
         "lib/contracts/"
       ],
       "deliverable": "Finance-scoped quote/margin planning, explicit unknown/currency handling and reusable production/rehire templates; every cycle requires new confirmation, with no auto-charge or renewal.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
     },
     {
       "id": "COL32",
@@ -397,9 +401,11 @@
         "lib/data/reviews.ts"
       ],
       "deliverable": "Create a separate transaction-linked collaborator-feedback class with consent, confidentiality, moderation and dispute paths; preserve all existing client/Google/payment provenance.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
     },
     {
       "id": "COL33",
@@ -418,9 +424,11 @@
         "app/[locale]/(main)/studio"
       ],
       "deliverable": "Reuse notification adapters/jobs for deduplicated privacy-safe next actions; add opt-outs and instrument pseudonymous funnel and cohort metrics without fabricating demand.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
     },
     {
       "id": "COL34",
@@ -448,9 +456,12 @@
         "docs/upgrades/collaboration-v2/"
       ],
       "deliverable": "Validate all delivered software and production evidence, prepare the consent-based pilot, and report real measured outcomes only. Longitudinal business results may remain pending after software release.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/pilot-protocol.md"
+      ]
     }
   ],
   "branch_base_sha": "34554e35db6b26a0ba2d8fd48198a5ba9c84b38e"

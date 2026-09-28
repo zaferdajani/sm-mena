@@ -1,0 +1,200 @@
+{
+  "template": false,
+  "status": "deployed_and_verified_with_limits",
+  "release": "R3",
+  "recorded_at_utc": "2026-09-28T03:45:00Z",
+  "recorded_at_asia_amman": "2026-09-28T06:45:00+03:00",
+  "implementation_commits": [
+    "9fb1e11 (R3 implementation, fully validated)",
+    "944fa98 (visual-review fixes: layout, tap targets, wording, plus plain-viewport e2e checks)"
+  ],
+  "main_commit": "944fa98e8f859c27107a9218328d81227971dd54",
+  "completed_task_ids": [
+    "COL30",
+    "COL31",
+    "COL32",
+    "COL33",
+    "COL34"
+  ],
+  "planning_validation": {
+    "result": "pass",
+    "note": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test: PASS, 18 tasks, 36 acceptance criteria, 11 invalid-plan self-tests rejected. Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "pass (eslint: 0 errors; 3 unused-variable warnings in local, git-ignored .data/ capture scripts only)",
+    "typecheck": "pass (next typegen + tsc --noEmit)",
+    "unit_and_integration": "pass: 67 files / 388 tests (adds tests/unit/collab-r3.test.ts: 10 tests covering planner grouping and coverage, model output validation, redaction incl. Arabic-Indic digits and obfuscated emails, forbidden markers never leaving, injection/no-JSON/invalid/timeout/budget fallbacks, rehire copy, quiet hours and reminder dedupe on consecutive cron days, feedback once per side with dispute/opt-out/moderation, funnel excluding demo agencies and a 30-day repeat cohort, worksheet with unknowns, mixed currencies and withdrawn engagements)",
+    "build": "pass: next build on 9fb1e11 and again on 944fa98",
+    "full_playwright": "pass: 301 passed, 13 skipped, 0 failed, 0 flaky, exit 0, 12.9 min, head 9fb1e11, mobile+desktop, CI=1 (adds tests/e2e/collab-r3.spec.ts: preferences, plan from a template with redaction visible, inquiry → quote → accept → work order → approval, feedback both ways, public block, dispute, admin moderation, rehire and template prefill, worksheet, Arabic phone overflow, switch on/soon/off). On 944fa98 (layout and wording changes) collab-r3.spec.ts, work-orders.spec.ts and release-proof.spec.ts re-run: 10 passed, 2 skipped, incl. new plain-viewport overflow checks at 320/390 with real titles and candidates."
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "pass: 0025_collaboration_r3 applied by migrate on the in-memory unit store and on the e2e store (db:reset before every Playwright run)",
+    "postgres": "pass: PostgreSQL 16 disposable cluster (127.0.0.1:5499), database 'fresh': 0000-0025 applied, 64 -> 67 public tables, collab_profiles.show_collaborator_feedback present, collab_feedback_once_idx present; migrate re-run on 'fresh' without error (idempotent)",
+    "populated_upgrade": "pass: database 'populated' (legacy contract signed before 0022; R1 and R2 rows) migrated with 0025: terms_hash unchanged, status active, 64 -> 67 tables; the R3 flow ran on real Postgres (.data/pg-rehearsal-r3.pgtest.ts): plan drafted with the phone number redacted and coverage in_house/unfilled/partner, assistant 'none' (no provider) recorded as reason no_provider; feedback once per side (second write returned the same id, duplicate=true; unique index on Postgres); public feedback count 1; next actions listed; 3 reminders written then 0 on the same day (dedupe); funnel counted 29 demo agencies as excluded; worksheet grouped 6 lines in JOD with no margin (no parent contract)",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "scratchpad/pg-before.json",
+      ".data/pg-rehearsal-r3.pgtest.ts (local only)"
+    ]
+  },
+  "reviews": {
+    "implementation": "done by a separate subagent on the uncommitted candidate: 1 blocking (the rehire entry point was missing because an earlier edit had changed the Work-row markup), 12 should-fix, 10 nits; applied: rehire link, dedupe against the delivery time (consecutive-day test added), cancelled/withdrawn/declined engagements no longer counted in the worksheet (test added), stale-availability reminders reach agencies with windows, maxDuration and a smaller ordered bound on the cron, public feedback and the cron gated on the global switch, 'Edit as a new plan' prefill (AC22 editability, documented as re-running the rules), DB-counted assistant budget, admin action validation + audit + Publish/Hide for disputed records, back link per locale, demo/staff suppliers excluded from metrics, repeat-rate cohort test with backdated rows, tautological assertion replaced, source ids consistent with coverage, dead imports removed, timer cleared, contract status label, Arabic tab noun, bdi in admin rows, readable sources; not applied: review-due from the last submission timestamp (uses the order's updated time), custom templates, BarList label width (shared admin component)",
+    "security_and_payments": "done by a separate subagent on the uncommitted candidate: 0 blocking, 9 should-fix, 6 nits; applied: global-switch gating of public feedback and the cron, model roles dropped (taxonomy only) and model titles redacted, redaction extended (invisible/bidi characters, Arabic-Indic digits, obfuscated emails, handles after punctuation, phone runs of 9+ digits so ISO dates survive; the marker check documented as a tripwire), budget counted from collab_plans per UTC day, AI_PROVIDER=mock/basic/off never calls a provider and the provider order follows AI_PROVIDER, admin moderation validated and audited, dedupe fixed, cron bounded, opt-out stored on collab_prefs (no consent row created as a side effect), public feedback count and averages over all visible rows; verdict: payment and signed-contract invariants hold (no write to contracts, milestones, ledger, versions or money fields; worksheet and metrics read only; no new rail, charge, renewal, exclusivity, outreach or vendor); AI isolation holds (no tools, redacted input, ids and roles never from the model, hard fallback on every failure)",
+    "visual_qa": "done by a separate subagent on 94 captures of the real flow plus probes (320/390/1440, ar/en, dark; plan, worksheet, preferences, next actions, feedback, public block, admin lists, stats): 1 blocking (next-actions rows did not truncate, so a real title widened the page at 320/390; mobile emulation had masked it), 8 should-fix, 5 nits; applied in 944fa98: truncating rows with the title isolated for Arabic, candidate cards that wrap, worksheet lines readable on phones, prominent estimates note, 44px rehire/template/dispute/reminder/find-role controls, rating scale hint with an anchored validity message, dark-mode pill contrast, preferences under Plan, admin names not broken mid-word, score tiles stacking on narrow phones, no translated label stored in a scope; not applied: BarList label width on the admin stats page (shared component). The e2e spec now checks overflow on plain 320/390 viewports with a pending action and a plan with candidates in both locales."
+  },
+  "deployment": {
+    "id": "Vercel Git integration deploy of main 944fa98 (buildCommand: npm run db:migrate && npm run build; identifier not read from this session)",
+    "environment": "production",
+    "source_sha": "944fa98e8f859c27107a9218328d81227971dd54",
+    "result": "live: /api/version returned the pushed SHA 3m16s after the push (pushed 2026-09-28T03:32:09Z, observed 03:35:25Z)"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "status": 200,
+      "cache_control": "no-store, max-age=0",
+      "body": {
+        "revision": "collaboration-v2-r3",
+        "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+        "environment": "production"
+      }
+    },
+    "rendered_stamp_match": "12/12: /ar?intro=1, /en?intro=1, /ar/explore?tab=agencies, /en/explore?tab=agencies, /ar/a/mahaalbashiti, /en/hire at 390px (mobile emulation) and 1440px all render data-ui-revision=collaboration-v2-r3, data-release-sha=944fa98…, environment=production (read in the browser; also confirmed by direct HTML fetches)",
+    "ancestry_verified": "944fa98 is a descendant of af86e67 (previous main) and contains the R3 commits 9fb1e11 and 944fa98; main fast-forwarded af86e67..944fa98; origin/main had not moved (behind 0) when fetched immediately before the push",
+    "real_intro_playback": "partial, unchanged: the overlay is present on fresh visits (phone ar/en, desktop en) and the webm does not load through this container's egress proxy (502 / ERR_TOO_MANY_RETRIES on static and media), so uncropped playback was not observed from here",
+    "authenticated_smoke": "blocked on production (no authorized provider account; creating one consumes a founding seat). Substitutes: the full R3 flow ran on the local production build in tests/e2e/collab-r3.spec.ts and in 94 reviewed captures; on production the new routes exist and are guarded: /en/studio/collab/plan, /ar/studio/collab/worksheet, /en/studio/collab/preferences and /en/studio/collab/plan/<uuid> -> 307 to login; /en/a/mahaalbashiti?tab=reviews -> 200 with no collaborator-feedback block (none exists yet; the block renders only for published public records)",
+    "routes": [
+      {
+        "path": "/api/version",
+        "status": 200
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "body": {
+          "ok": true,
+          "database": "postgres",
+          "storage": "supabase",
+          "email": true
+        }
+      },
+      {
+        "path": "/ar?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/ar/explore?tab=agencies",
+        "status": "200 (one desktop attempt dropped by the sandbox proxy; phone attempt and direct fetch 200 with the r3 stamp)",
+        "overflow": 0
+      },
+      {
+        "path": "/en/explore?tab=agencies",
+        "status": "200 (one phone attempt dropped by the sandbox proxy; desktop attempt and direct fetch 200 with the r3 stamp)",
+        "overflow": 0
+      },
+      {
+        "path": "/ar/a/mahaalbashiti",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/hire",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/studio/collab/plan",
+        "status": "307 -> /en/login"
+      },
+      {
+        "path": "/ar/studio/collab/worksheet",
+        "status": "307 -> /ar/login"
+      },
+      {
+        "path": "/en/studio/collab/preferences",
+        "status": "307 -> /en/login"
+      },
+      {
+        "path": "/en/a/mahaalbashiti?tab=reviews",
+        "status": 200,
+        "note": "no collaborator-feedback block (no records yet)"
+      }
+    ],
+    "artifact_refs": [
+      "session scratchpad prod-r3/*.png (phone/desktop, ar/en), prod-r3/report.json; local captures .data/shots-r3/ (94 captures + probes); private, not committed"
+    ],
+    "console_errors": "only sandbox-proxy failures (502 / ERR_TOO_MANY_RETRIES on static chunks and images through the proxy); none attributable to the application",
+    "checked_at_utc": "2026-09-28T03:35:25Z to 2026-09-28T03:44:00Z"
+  },
+  "rollback": {
+    "previous_deployment": "main af86e67 (collaboration-v2-r2 code at 85b5c11 plus the R2 evidence commit)",
+    "strategy": "forward revert of application code; migration 0025 is additive (three tables and one defaulted column) and old code ignores them; the collaboration_intelligence switch (Admin -> Features) removes the planner, worksheet, preferences, templates, next actions and feedback sections while inquiries and work orders keep working",
+    "rehearsal": "switch states on/soon/off exercised in tests/e2e/collab-r3.spec.ts (soon: Coming soon on the plan page, no Plan tab and no next-actions panel; off: worksheet 404, Work page without templates, work orders still open)"
+  },
+  "remaining_tasks": [],
+  "blockers": [
+    "Authenticated production smoke of the R3 pages: no authorized production provider account is available to this session, and creating one would consume a founding seat; verified on the local production build (e2e + captures) and by route guards on production. The owner can open /ar/studio/collab/plan as a real provider to complete AC34 for the signed-in surfaces.",
+    "Real intro video playback on production cannot be observed from this container (egress proxy blocks/502s media); overlay bound verified only.",
+    "AC36 business validation: the pilot protocol is prepared, not run; no participants, timings or repeat rates exist yet and none are claimed."
+  ],
+  "business_validation": {
+    "pilot_status": "prepared, not run: docs/upgrades/collaboration-v2/pilot-protocol.md (consent-based, 5 agencies + 10 freelancers proposed, 8 weeks + 30-day follow-up, denominators and guardrails defined)",
+    "participants": null,
+    "baseline_comparison": "R0 baseline in R0-baseline.md (11 steps discover->contact->scope); the scripted repeat-hire path now exists (Work -> Rehire -> send) but no participant timing has been measured",
+    "longitudinal_outcomes": null
+  },
+  "decision": "not_verified",
+  "deviations": [
+    "AC24 'buyer finance' vs 'nonfinance staff': one login per agency (no staff roles inside an agency), so the owner is the only finance viewer; suppliers and end clients cannot open the worksheet (own rows only).",
+    "AC23 budget: the assistant's per-agency daily budget is kept in process memory; on serverless each instance counts separately, so the effective cap is per instance per day, documented in docs/50. The timeout (20 s) and the no-key/invalid/injection fallbacks are enforced per request.",
+    "AC27 'expired invitations': R1 invitation links already expire (14 days) and expired holds are treated as absent; reminders are in-app only (no email adapter is wired for collaboration), so 'missing email provider' cannot break delivery.",
+    "AC28 direct-payment delay: the milestone row has no timestamp for the agency's direct confirmation, so direct confirmations are counted but their delay is not measured (shown as such).",
+    "Planner candidates come from discovery, roster and partners only; the assistant regroups and retitles packages and cannot add ids (unit test plants an id in the brief and asserts it is absent).",
+    "Templates are code constants (five production templates); agencies cannot yet save custom templates."
+  ],
+  "task_updates": {
+    "COL30": {
+      "status": "verified",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
+    },
+    "COL31": {
+      "status": "verified",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
+    },
+    "COL32": {
+      "status": "verified",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
+    },
+    "COL33": {
+      "status": "verified",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
+      ]
+    },
+    "COL34": {
+      "status": "verified",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
+        "docs/upgrades/collaboration-v2/pilot-protocol.md"
+      ]
+    }
+  }
+}
