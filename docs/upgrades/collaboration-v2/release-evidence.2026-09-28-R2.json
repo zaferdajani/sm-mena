@@ -1,0 +1,209 @@
+{
+  "template": false,
+  "status": "deployed_and_verified_with_limits",
+  "release": "R2",
+  "recorded_at_utc": "2026-09-28T02:05:00Z",
+  "recorded_at_asia_amman": "2026-09-28T05:05:00+03:00",
+  "implementation_commits": [
+    "0fd8707 (R2 implementation, fully validated)",
+    "85b5c11 (two message strings: capacity pill placeholder)"
+  ],
+  "main_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+  "completed_task_ids": [
+    "COL20",
+    "COL21",
+    "COL22",
+    "COL23",
+    "COL24",
+    "COL25"
+  ],
+  "planning_validation": {
+    "result": "pass",
+    "note": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test: PASS, 18 tasks, 36 acceptance criteria, 11 invalid-plan self-tests rejected. Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "pass (eslint, 0fd8707; changed files re-linted after each review round)",
+    "typecheck": "pass (next typegen + tsc --noEmit, 0fd8707 and 85b5c11)",
+    "unit_and_integration": "pass: 66 files / 378 tests on 0fd8707 (adds tests/unit/work-orders.test.ts: 6 tests incl. supplier cannot rewrite or self-accept an offer, drafts hidden from the supplier, parent contract never in the supplier projection, frozen accepted and superseded versions, revision bound, hold follows the due date, disclosed decision leaves the milestone untouched, capacity race and expiry); tests/unit/messages.test.ts re-run on 85b5c11",
+    "build": "pass: next build on 0fd8707 and again on 85b5c11",
+    "full_playwright": "pass: 296 passed, 12 skipped, 0 failed, 0 flaky, exit 0, 12.8 min, head 0fd8707, mobile+desktop, CI=1 (adds tests/e2e/work-orders.spec.ts: buyer and supplier sessions, signed and funded partner contract, offer/accept/upload/pin/version/submit/changes/approve releasing the protected milestone, private notes never reach the supplier, files 404 for strangers and signed-out; switch on/soon/off). On 85b5c11 (message-only change) work-orders.spec.ts and release-proof.spec.ts re-run: 5 passed, 1 skipped."
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "pass: 0024_collaboration_r2 applied by migrate on the e2e store (db:reset before every Playwright run) and on the in-memory unit store; the freeze trigger refuses content changes to accepted and superseded versions (tests/unit/work-orders.test.ts)",
+    "postgres": "pass: PostgreSQL 16 disposable cluster (127.0.0.1:5499), database 'fresh': 0000-0024 applied, 57 -> 64 public tables, trigger work_order_versions_frozen_trg and partial unique index capacity_reservations_live_idx present",
+    "populated_upgrade": "pass: database 'populated' (legacy contract signed before 0022, R1 rows) migrated with 0024: terms_hash unchanged, status active, 57 -> 64 tables; the R2 flow ran on real Postgres (.data/pg-rehearsal-r2.pgtest.ts): two concurrent acceptances against one declared unit -> one ok (capacityLeft 0) and one 'capacity'; UPDATE of an accepted version refused by the trigger; buyer sees private+shared messages, supplier only shared; version intact; approval with no milestone -> effect no_milestone. The corrected trigger function (superseded history frozen, cascades allowed) was re-applied with CREATE OR REPLACE on both databases before the re-run.",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "scratchpad/pg-before.json",
+      ".data/pg-rehearsal-r2.pgtest.ts (local only)"
+    ]
+  },
+  "reviews": {
+    "implementation": "done by a separate subagent on the uncommitted candidate: 1 blocking (supplier could replace and self-accept the offered terms), 18 should-fix, 12 nits; blocking fixed (buyer-only proposals before acceptance, acceptance requires a buyer-proposed version, covered by unit test); applied: amendment label values, listWorkOrders supplier projection, real parent-contract leak test, disclosed-mode and revision-bound tests, holds follow the due date (offer edit and accepted amendment), decision claimed before the contract is touched, advisory locks around version/round numbering, expired hold treated as absent, 10 MB upload text, answerVersion errors surfaced and offer failure shown, pin image as a labelled button with alt, version labels via messages, RTL arrow removed, draft editing for the buyer, capacity retention doc corrected, badge and action gate respect both switches, TRANSITIONS reuse, dead code removed, max-files error, RFC 5987 filename, Arabic plurals for versions/days, hold pill shows the due date; not applied: MAX_ASSETS check inside the transaction and storage orphan on a failed insert (same posture as posts), keyboard pin drops at the centre",
+    "security_and_payments": "done by a separate subagent on the uncommitted candidate: 1 blocking (same as above), 10 should-fix, 8 nits; applied: drafts invisible to the supplier, provider lock taken before reading state in acceptance, expired hold no dead end, linkContract refuses once linked or terminal and only sent/active contracts attach, freeze trigger also protects superseded rows and lets cascades through, work-order files moved to a private storage prefix (private Supabase bucket created on first use, local /media route refuses collab/ keys, no public URL), rate limit on every action, both switches on actions, honest money headlines, failed ledger releases not counted as payout initiated, audit actor recorded; verdict: contracts, milestones, escrow ledger, shares, commission and Founder code untouched; the only contract mutations go through setCheck/approveMilestone/requestChanges with the buyer's own client view; HOLD list respected",
+    "visual_qa": "done by a separate subagent on 146 captures of the real flow (320/390/1440, ar/en, dark, buyer and supplier, every status, notifications, Work page): 0 blocking, 11 should-fix, 9 nits; applied: file input replaced by a labelled 44px button (also removed the 1px overflow at 320), older file versions and their comments kept visible, outline action buttons, 'Offered scope' before acceptance, formatted due dates, notifications no longer flip LTR on a Latin name (bdi), isolated Arabic titles and notes, review block moved below the files, Work-row copy and status colours unified, terms grid alignment, own-message bubble border, image height capped, pill sizes, amendment button width, labelled quote note, bdi in the money line, submitted-but-not-on-contract note; re-captured on the fixed build: 143 captures, overflow 0 at 320/390/1440 in both locales, which also caught a literal {date} placeholder in the capacity pill (fixed in 85b5c11). Not applied: DeliverablesPicker tab strip affordance (shared, pre-existing)"
+  },
+  "deployment": {
+    "id": "Vercel Git integration deploy of main 85b5c11 (buildCommand: npm run db:migrate && npm run build; identifier not read from this session)",
+    "environment": "production",
+    "source_sha": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+    "result": "live: /api/version returned the pushed SHA 3m00s after the push (pushed 2026-09-28T01:50:21Z, observed 01:53:21Z)"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "status": 200,
+      "cache_control": "no-store, max-age=0",
+      "body": {
+        "revision": "collaboration-v2-r2",
+        "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+        "environment": "production"
+      }
+    },
+    "rendered_stamp_match": "12/12: /ar?intro=1, /en?intro=1, /ar/explore?tab=agencies, /en/explore?tab=agencies, /ar/a/mahaalbashiti, /en/hire at 390px (mobile emulation) and 1440px render data-ui-revision=collaboration-v2-r2, data-release-sha=85b5c11…, environment=production (10 read in the browser; phone /en/hire and desktop /en?intro=1 were dropped by the sandbox proxy on the first attempt and confirmed by a direct fetch of the HTML)",
+    "ancestry_verified": "85b5c11 is a descendant of 7d6e51d (previous main, collaboration-v2-r1) and contains the R2 commit 0fd8707; main fast-forwarded 7d6e51d..85b5c11; origin/main had not moved (behind 0) when fetched immediately before the push",
+    "real_intro_playback": "partial, unchanged from R1: the overlay is present on a fresh /ar visit; the webm does not load through this container's egress proxy (ERR_TOO_MANY_RETRIES / 502 on media), so uncropped playback was not observed from here",
+    "authenticated_smoke": "blocked on production (no authorized provider account; creating one consumes a founding seat). Substitutes: the full work-order flow ran on the local production build in tests/e2e/work-orders.spec.ts and in 143 reviewed captures; on production the order routes exist and are guarded: /en/studio/collab/orders/new -> 307 /en/login, /ar/studio/collab/orders/<uuid> -> 307 /ar/login, /api/collab/assets/<uuid> -> 404 signed-out, /media/collab/x/y.png -> 404; robots disallows /ar/studio and /en/studio",
+    "routes": [
+      {
+        "path": "/api/version",
+        "status": 200
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "body": {
+          "ok": true,
+          "database": "postgres",
+          "storage": "supabase",
+          "email": true
+        }
+      },
+      {
+        "path": "/ar?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en?intro=1",
+        "status": "200 (desktop attempt through the proxy returned 502; direct fetch 200 with the r2 stamp)",
+        "overflow": 0
+      },
+      {
+        "path": "/ar/explore?tab=agencies",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/explore?tab=agencies",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/ar/a/mahaalbashiti",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/hire",
+        "status": "200 (phone attempt through the proxy timed out; direct fetch 200 with the r2 stamp)",
+        "overflow": 0
+      },
+      {
+        "path": "/en/studio/collab/orders/new",
+        "status": "307 -> /en/login"
+      },
+      {
+        "path": "/ar/studio/collab/orders/00000000-0000-0000-0000-000000000000",
+        "status": "307 -> /ar/login"
+      },
+      {
+        "path": "/api/collab/assets/00000000-0000-0000-0000-000000000000",
+        "status": 404
+      },
+      {
+        "path": "/media/collab/x/y.png",
+        "status": 404
+      }
+    ],
+    "artifact_refs": [
+      "session scratchpad prod-r2/*.png (phone/desktop, ar/en), prod-r2/report.json; local captures .data/shots-r2/ (before fixes, 146) and .data/shots-r2b/ (after fixes, 143); private, not committed"
+    ],
+    "console_errors": "only sandbox-proxy failures (ERR_TOO_MANY_RETRIES, 502 on static chunks/media through the proxy); none attributable to the application",
+    "checked_at_utc": "2026-09-28T01:53:21Z to 2026-09-28T02:05:00Z"
+  },
+  "rollback": {
+    "previous_deployment": "main 7d6e51d (collaboration-v2-r1)",
+    "strategy": "forward revert of application code; migration 0024 is additive and old code ignores the new tables; the collaboration_delivery switch (Admin -> Features) stops new work orders while linked contracts keep working under contracts",
+    "rehearsal": "switch states on/soon/off exercised in tests/e2e/work-orders.spec.ts (soon: Coming soon on the order pages, Work page hides the section; off: order pages 404)"
+  },
+  "remaining_tasks": [
+    "COL30",
+    "COL31",
+    "COL32",
+    "COL33",
+    "COL34"
+  ],
+  "blockers": [
+    "Authenticated production smoke of the work-order pages: no authorized production provider account is available to this session, and creating one would consume a founding seat; the order pages were verified on the local production build (e2e and 143 captures). Public production proof: /en/studio/collab/orders/new and /ar/studio/collab/orders/<id> redirect to login (307), /api/collab/assets/<id> answers 404 signed-out, /media/collab/... is refused (404). Migration 0024 ran on production as part of the Vercel build command (a failed migration fails the build), which /api/version at 85b5c11 confirms indirectly.",
+    "Real intro video playback on production still cannot be observed from this container (egress proxy blocks/502s media); overlay bound verified only."
+  ],
+  "business_validation": {
+    "pilot_status": "not_run",
+    "participants": null,
+    "baseline_comparison": "R0 baseline in docs/upgrades/collaboration-v2/R0-baseline.md; R2 delivery path not yet measured with participants",
+    "longitudinal_outcomes": null
+  },
+  "decision": "not_verified",
+  "deviations": [
+    "AC21 'dispute' and 'old contract access': disputes stay on the contract (docs/14) and are untouched; work orders reference contracts in status sent/active only; provider suspension is enforced at creation (inactive supplier -> notFound) and by the existing session guards.",
+    "AC30 performance: not measured against R0 on large fixtures in this release; workspace reads are bounded (messages 500, assets 60, versions per order) and no N+1 was found in review.",
+    "Capacity concurrency proved on real Postgres in the rehearsal (advisory lock); on PGlite transactions are serialised by the driver so the unit test proves ordering, not locking.",
+    "Comments and uploads are images only (existing processImage pipeline); no PDF/video deliverables in R2."
+  ],
+  "task_updates": {
+    "COL20": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    },
+    "COL21": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    },
+    "COL22": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    },
+    "COL23": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    },
+    "COL24": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    },
+    "COL25": {
+      "status": "verified",
+      "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
+    }
+  }
+}

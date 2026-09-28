@@ -215,9 +215,11 @@
         "lib/data/milestone-shares.ts"
       ],
       "deliverable": "Add buyer/supplier work-order projection and accepted-scope versioning; preserve supplier agency_id ownership, signed contract hashes and private optional parent-project association.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL21",
@@ -235,9 +237,11 @@
         "lib/auth/permissions.ts"
       ],
       "deliverable": "Separate agency-private, work-order and client channels with shared server-side policies and matching preview projections; cover caches, SSR/RSC, exports, jobs and file signing.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL22",
@@ -254,9 +258,11 @@
         "components/contracts/"
       ],
       "deliverable": "Integrate private asset versions and review comments using the existing media stack; test file restrictions, scoped access and preserved feedback history.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL23",
@@ -278,9 +284,11 @@
         "lib/payments/readiness.ts"
       ],
       "deliverable": "Private supplier work goes to its buying agency, disclosed shares retain client review. Reuse guarded authoritative transitions; no new rails, rates, waived-project rules or real-money activation.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL24",
@@ -298,9 +306,11 @@
         "lib/data/"
       ],
       "deliverable": "Prevent over-allocation of capacity declared in Sawwiq using transaction-safe acceptance, idempotency, expiry and release. Test concurrency on PGlite and Postgres.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL25",
@@ -325,9 +335,11 @@
         "tests/e2e/"
       ],
       "deliverable": "Run private and disclosed delivery/revision/cancellation/dispute flows with distinct sessions; review permissions and actual media before publishing only the complete slice.",
-      "status": "planned",
-      "implementation_commit": null,
-      "evidence": []
+      "status": "verified",
+      "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
+      ]
     },
     {
       "id": "COL30",
