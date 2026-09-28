@@ -52,7 +52,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json",
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json",
         "docs/upgrades/collaboration-v2/R0-baseline.md"
       ]
     },
@@ -76,7 +76,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
@@ -99,7 +99,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
@@ -120,7 +120,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
@@ -142,7 +142,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
@@ -166,7 +166,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
@@ -196,7 +196,7 @@
       "status": "verified",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
-        "docs/upgrades/collaboration-v2/release-evidence.2026-09-27-R1.json"
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
       ]
     },
     {
