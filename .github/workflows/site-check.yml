@@ -1,0 +1,33 @@
+# Automatic site check (docs/52): every 30 minutes, check the live site's key
+# pages, record failures in Admin → Bugs, close errors not seen for 3 days and
+# log the run (Admin → Bugs → Automatic checks). A failed run makes GitHub email
+# the repository owner. Uses the DATABASE_URL repository secret.
+name: Site check
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: site-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SITE_URL: https://sawwiq.org
+    steps:
+      - name: Check the secret is there
+        run: '[ -n "$DATABASE_URL" ] || { echo "::error::Add the DATABASE_URL repository secret (docs/25-supabase.md)."; exit 1; }'
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --include=dev
+      - name: Check, fix and log
+        run: npx tsx lib/db/site-check.ts

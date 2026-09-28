@@ -3,7 +3,7 @@ import { StatTiles } from "@/components/admin/stat-tiles";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
-import { bugCounts, listErrors, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
+import { bugCounts, listErrors, listSiteChecks, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
@@ -29,7 +29,7 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
   const sp = await searchParams;
   const tab = sp.tab === "reports" || !canErrors ? "reports" : "errors";
   const t = await getTranslations("AdminBugs");
-  const counts = await bugCounts();
+  const [counts, checks] = await Promise.all([bugCounts(), canErrors ? listSiteChecks() : []]);
   const ago = (d: Date) => timeAgo(d.toISOString(), locale);
 
   return (
@@ -44,6 +44,7 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
           { label: t("tiles.newReports"), value: counts.newReports, tone: counts.newReports ? "bad" : undefined },
         ]}
       />
+      {canErrors && <SiteChecks checks={checks} t={t} ago={ago} />}
       <FilterChips
         param="tab"
         current={tab}
@@ -58,6 +59,40 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
 }
 
 type T = Awaited<ReturnType<typeof getTranslations<"AdminBugs">>>;
+
+/** Automatic checks every 30 minutes (docs/52): the latest run and the recent history. */
+function SiteChecks({ checks, t, ago }: { checks: Awaited<ReturnType<typeof listSiteChecks>>; t: T; ago: (d: Date) => string }) {
+  const last = checks[0];
+  return (
+    <details className="rounded-xl border p-3 text-sm" data-testid="site-checks">
+      <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2">
+        <span className={cn("size-2.5 rounded-full", !last ? "bg-muted-foreground" : last.ok ? "bg-brand" : "bg-destructive")} aria-hidden />
+        <span className="font-medium">{t("checks.title")}</span>
+        <span className="text-muted-foreground">
+          {!last ? t("checks.none") : last.ok ? t("checks.allOk", { ago: ago(last.ranAt), count: last.results.length }) : t("checks.failing", { ago: ago(last.ranAt), count: last.failures })}
+        </span>
+      </summary>
+      <p className="mt-2 text-xs text-muted-foreground">{t("checks.body")}</p>
+      {checks.length > 0 && (
+        <ul className="mt-2 space-y-1 text-xs">
+          {checks.map((c) => (
+            <li key={c.id} className="flex flex-wrap items-baseline gap-x-2">
+              <span className={c.ok ? "text-brand" : "text-destructive"}>{c.ok ? "✓" : "✕"}</span>
+              <span className="text-muted-foreground">{ago(c.ranAt)}</span>
+              <span>{c.ok ? t("checks.runOk") : t("checks.runFailed", { count: c.failures })}</span>
+              {c.closed > 0 && <span className="text-muted-foreground">· {t("checks.closed", { count: c.closed })}</span>}
+              {!c.ok && (
+                <span className="basis-full text-muted-foreground" dir="ltr">
+                  {c.results.filter((r) => !r.ok).map((r) => `${r.path}: ${r.problem}`).join(" · ")}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
+  );
+}
 
 /** Default window for "not seen since": a day without the error after a fix is deployed. */
 const STALE_HOURS = 24;

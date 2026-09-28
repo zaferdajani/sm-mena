@@ -1198,6 +1198,23 @@ export const errorEvents = pgTable(
   (t) => [uniqueIndex("error_events_fingerprint").on(t.fingerprint), index("error_events_status_idx").on(t.status, t.lastSeenAt)],
 );
 
+/**
+ * Automatic site checks (docs/52): every run of the scheduled check, what it
+ * found and what it closed. Kept 90 days; shown in Admin → Bugs.
+ */
+export const siteChecks = pgTable(
+  "site_checks",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    ranAt: timestamp("ran_at", { withTimezone: true }).notNull().defaultNow(),
+    ok: boolean("ok").notNull(),
+    failures: integer("failures").notNull().default(0),
+    closed: integer("closed").notNull().default(0),
+    results: jsonb("results").$type<{ path: string; status: number; ms: number; ok: boolean; problem?: string }[]>().notNull().default([]),
+  },
+  (t) => [index("site_checks_ran_idx").on(t.ranAt)],
+);
+
 export const supportRequests = pgTable(
   "support_requests",
   {
