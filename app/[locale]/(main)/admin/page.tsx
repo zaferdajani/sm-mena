@@ -21,7 +21,7 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
   const s = await platformStats();
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
   const tiles: [string, number][] = [
-    ["agencies", s.agencies.active], ["verified", s.agencies.verified], ["demo", s.agencies.demo], ["paid", s.agencies.paid],
+    ["agencies", s.agencies.active], ["verified", s.agencies.verified], ["paid", s.agencies.paid],
     ["posts", s.posts.total], ["postsRecent", s.posts.recent], ["visitors", s.visitors30d], ["views", s.views30d],
     ["contacts", s.contacts30d], ["inquiries", s.inquiries30d], ["contactsPerAgency", s.contactsPerAgency], ["openReports", s.openReports],
   ];
@@ -49,6 +49,7 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
           )}
         </p>
       )}
+      {showStats && <p className="text-xs text-muted-foreground" data-testid="real-data-note">{t("realOnly")}</p>}
       {showStats && (
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-testid="admin-stats">
           {tiles.map(([key, value]) => (

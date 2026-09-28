@@ -40,6 +40,7 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
   return (
     <div className="space-y-6" data-testid="admin-stats-page">
       <FilterChips param="days" current={String(days)} options={RANGES.map((r) => ({ value: String(r), label: t("range", { days: r }) }))} />
+      <p className="text-xs text-muted-foreground" data-testid="real-data-note">{t("realOnly")}</p>
       <StatTiles
         locale={locale}
         tiles={[

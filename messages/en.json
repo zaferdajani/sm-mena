@@ -655,7 +655,6 @@
     "stats": {
       "agencies": "Active agencies",
       "verified": "Verified",
-      "demo": "Demo",
       "paid": "On paid plans",
       "posts": "Posts",
       "postsRecent": "Posts, last 30 days",
@@ -756,7 +755,8 @@
     "deactivatedDemo": "{count, plural, one {# demo agency that took part in contracts was deactivated instead; its test transactions stay on record.} other {# demo agencies that took part in contracts were deactivated instead; their test transactions stay on record.}}",
     "testLedgerTitle": "Test transactions",
     "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
-    "testLedgerExport": "Download test transactions (CSV)"
+    "testLedgerExport": "Download test transactions (CSV)",
+    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted."
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -1244,7 +1244,8 @@
       "directConfirmed": "Direct payments confirmed received",
       "directNote": "Recorded confirmations, not protection; delay not measured",
       "note": "Counted from the records themselves, so retries cannot inflate a step. Excluded: {demo} demo and {staff} staff-owned agencies. Window: the last {days} days by creation date. Payout initiated is not receipt."
-    }
+    },
+    "realOnly": "Real numbers only: demo pages, team test pages and visits to the admin console are not counted."
   },
   "Billing": {
     "current": "Your plan",

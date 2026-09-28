@@ -1,7 +1,8 @@
 import "server-only";
-import { and, count, desc, eq, gte, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, events, inquiries, pageViews, posts, projectRequests, proposals, reviews } from "@/lib/db/schema";
+import { notAdminPath, ofRealAgency, ofRealAgencyOrNone } from "@/lib/data/real-data";
 
 // First-party statistics for Admin → Statistics (modelled on OneClickConvert's
 // traffic page): where visitors come from, what they look at, and how far they
@@ -64,7 +65,8 @@ export const RANGES = [7, 30, 90, 365] as const;
 export async function trafficStats(days: number, now = new Date()) {
   const db = await getDb();
   const since = new Date(now.getTime() - days * DAY_MS);
-  const inRange = gte(pageViews.createdAt, since);
+  // Visitor traffic only: the team's own admin-console pages are left out.
+  const inRange = and(gte(pageViews.createdAt, since), notAdminPath(pageViews.path))!;
   const who = sql`coalesce(${pageViews.visitorId}, ${pageViews.sessionId})`;
   // TZ is a constant, inlined so GROUP BY sees one identical expression.
   const day = sql<string>`to_char(${pageViews.createdAt} at time zone ${sql.raw(`'${TZ}'`)}, 'YYYY-MM-DD')`;
@@ -107,22 +109,25 @@ export async function trafficStats(days: number, now = new Date()) {
 export async function marketplaceStats(days: number, now = new Date()) {
   const db = await getDb();
   const since = new Date(now.getTime() - days * DAY_MS);
+  // Real activity only (lib/data/real-data.ts): nothing on demo or staff test pages, no seeded demo requests.
   const ev = (type: (typeof events.type.enumValues)[number]) =>
-    db.select({ n: sql<number>`count(distinct ${events.visitorId})::int`, total: count() }).from(events).where(and(eq(events.type, type), gte(events.createdAt, since)));
+    db.select({ n: sql<number>`count(distinct ${events.visitorId})::int`, total: count() }).from(events).where(and(eq(events.type, type), gte(events.createdAt, since), ofRealAgencyOrNone(db, events.agencyId)));
+  const realRequest = ne(projectRequests.source, "demo");
+  const realProposal = and(ofRealAgency(db, proposals.agencyId), inArray(proposals.requestId, db.select({ id: projectRequests.id }).from(projectRequests).where(realRequest)))!;
   const [[browsed], [viewed], [contacted], [inquired], [chatted], aiByProvider, [requests], [quotes], [accepted], [newAgencies], [newPosts], [newReviews], [messages]] = await Promise.all([
-    db.select({ n: sql<number>`count(distinct coalesce(${pageViews.visitorId}, ${pageViews.sessionId}))::int` }).from(pageViews).where(gte(pageViews.createdAt, since)),
+    db.select({ n: sql<number>`count(distinct coalesce(${pageViews.visitorId}, ${pageViews.sessionId}))::int` }).from(pageViews).where(and(gte(pageViews.createdAt, since), notAdminPath(pageViews.path))),
     ev("profile_view"),
     ev("contact_click"),
     ev("inquiry"),
     ev("ai_chat"),
     db.select({ key: sql<string>`coalesce(${events.detail}, 'basic')`, n: sql<number>`count(*)::int` }).from(events).where(and(eq(events.type, "ai_chat"), gte(events.createdAt, since))).groupBy(sql`1`).orderBy(desc(sql`2`)),
-    db.select({ n: sql<number>`count(*)::int` }).from(projectRequests).where(gte(projectRequests.createdAt, since)),
-    db.select({ n: sql<number>`count(*)::int` }).from(proposals).where(gte(proposals.createdAt, since)),
-    db.select({ n: sql<number>`count(*)::int` }).from(proposals).where(and(eq(proposals.status, "accepted"), gte(proposals.createdAt, since))),
-    db.select({ n: sql<number>`count(*)::int` }).from(agencies).where(and(gte(agencies.createdAt, since), eq(agencies.isDemo, false))),
-    db.select({ n: sql<number>`count(*)::int` }).from(posts).where(gte(posts.createdAt, since)),
-    db.select({ n: sql<number>`count(*)::int` }).from(reviews).where(gte(reviews.createdAt, since)),
-    db.select({ n: sql<number>`count(*)::int` }).from(inquiries).where(gte(inquiries.createdAt, since)),
+    db.select({ n: sql<number>`count(*)::int` }).from(projectRequests).where(and(gte(projectRequests.createdAt, since), realRequest)),
+    db.select({ n: sql<number>`count(*)::int` }).from(proposals).where(and(gte(proposals.createdAt, since), realProposal)),
+    db.select({ n: sql<number>`count(*)::int` }).from(proposals).where(and(eq(proposals.status, "accepted"), gte(proposals.createdAt, since), realProposal)),
+    db.select({ n: sql<number>`count(*)::int` }).from(agencies).where(and(gte(agencies.createdAt, since), ofRealAgency(db, agencies.id))),
+    db.select({ n: sql<number>`count(*)::int` }).from(posts).where(and(gte(posts.createdAt, since), ofRealAgency(db, posts.agencyId))),
+    db.select({ n: sql<number>`count(*)::int` }).from(reviews).where(and(gte(reviews.createdAt, since), ofRealAgency(db, reviews.agencyId))),
+    db.select({ n: sql<number>`count(*)::int` }).from(inquiries).where(and(gte(inquiries.createdAt, since), ofRealAgency(db, inquiries.agencyId))),
   ]);
 
   return {

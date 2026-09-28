@@ -3,26 +3,29 @@ import { getDb } from "@/lib/db";
 import { agencies, appSettings, auditLogs, contracts, events, inquiries, postImages, posts, projectRequests, promotions, reports, users } from "@/lib/db/schema";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
+import { ofRealAgency, ofRealAgencyOrNone } from "@/lib/data/real-data";
 
 const DAY = 24 * 3600 * 1000;
 
 export async function platformStats(now = new Date()) {
   const db = await getDb();
   const since = new Date(now.getTime() - 30 * DAY);
+  // Real activity only: demo pages, staff test pages and everything on them are left out (lib/data/real-data.ts).
+  const realAgency = ofRealAgency(db, agencies.id);
+  const realEvent = ofRealAgencyOrNone(db, events.agencyId);
   const [[a], [p], [v], byType, [openReports], perAgency] = await Promise.all([
     db.select({
       total: sql<number>`count(*)::int`,
       active: sql<number>`count(*) filter (where ${agencies.status} = 'active')::int`,
       verified: sql<number>`count(*) filter (where ${agencies.isVerified})::int`,
-      demo: sql<number>`count(*) filter (where ${agencies.isDemo})::int`,
       paid: sql<number>`count(*) filter (where ${agencies.plan} <> 'free')::int`,
-    }).from(agencies),
-    db.select({ total: sql<number>`count(*)::int`, recent: sql<number>`count(*) filter (where ${posts.createdAt} >= ${since})::int` }).from(posts),
-    db.select({ n: sql<number>`count(distinct ${events.visitorId})::int` }).from(events).where(gte(events.createdAt, since)),
-    db.select({ type: events.type, n: sql<number>`count(*)::int` }).from(events).where(gte(events.createdAt, since)).groupBy(events.type),
-    db.select({ n: sql<number>`count(*)::int` }).from(reports).where(eq(reports.status, "open")),
+    }).from(agencies).where(realAgency),
+    db.select({ total: sql<number>`count(*)::int`, recent: sql<number>`count(*) filter (where ${posts.createdAt} >= ${since})::int` }).from(posts).where(ofRealAgency(db, posts.agencyId)),
+    db.select({ n: sql<number>`count(distinct ${events.visitorId})::int` }).from(events).where(and(gte(events.createdAt, since), realEvent)),
+    db.select({ type: events.type, n: sql<number>`count(*)::int` }).from(events).where(and(gte(events.createdAt, since), realEvent)).groupBy(events.type),
+    db.select({ n: sql<number>`count(*)::int` }).from(reports).where(and(eq(reports.status, "open"), ofRealAgencyOrNone(db, reports.agencyId))),
     db.select({ n: sql<number>`count(*)::int` }).from(events)
-      .where(and(eq(events.type, "contact_click"), gte(events.createdAt, since)))
+      .where(and(eq(events.type, "contact_click"), gte(events.createdAt, since), ofRealAgency(db, events.agencyId)))
       .groupBy(events.agencyId),
   ]);
   const t = Object.fromEntries(byType.map((r) => [r.type, r.n])) as Record<string, number>;
@@ -48,7 +51,7 @@ export async function platformStats(now = new Date()) {
 export function monetizationReadiness(s: Awaited<ReturnType<typeof platformStats>>) {
   return [
     { key: "visitors", value: s.visitors30d, target: 20000 },
-    { key: "agencies", value: s.agencies.active - s.agencies.demo, target: 150 },
+    { key: "agencies", value: s.agencies.active, target: 150 },
     { key: "medianContacts", value: s.medianContactsPerAgency, target: 10 },
   ].map((c) => ({ ...c, met: c.value >= c.target }));
 }
