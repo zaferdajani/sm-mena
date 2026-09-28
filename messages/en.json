@@ -1170,7 +1170,13 @@
     "commit": "Fix commit or PR",
     "note": "Note",
     "noErrors": "No errors here. 🎉",
-    "noReports": "No reports here."
+    "noReports": "No reports here.",
+    "stale": {
+      "title": "{count, plural, one {# error has} other {# errors have}} not happened in {hours} hours",
+      "body": "They are marked fixed with the note below, and it is recorded in the audit log. Errors that still happen are left alone, and any that comes back reopens by itself.",
+      "notesDefault": "Cause fixed; not seen since.",
+      "button": "Mark {count, plural, one {it} other {them}} fixed"
+    }
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",

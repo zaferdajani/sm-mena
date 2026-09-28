@@ -3,10 +3,10 @@ import { StatTiles } from "@/components/admin/stat-tiles";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
-import { bugCounts, listErrors, listSupportRequests, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
+import { bugCounts, listErrors, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { updateErrorAction, updateSupportAction } from "../bug-actions";
+import { resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
 
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-destructive/10 text-destructive",
@@ -52,16 +52,20 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
           { value: "reports", label: t("tabs.reports", { count: counts.newReports }) },
         ]}
       />
-      {tab === "errors" ? <ErrorList filter={sp.filter} t={t} ago={ago} /> : <ReportList status={sp.status} t={t} ago={ago} locale={locale} />}
+      {tab === "errors" ? <ErrorList filter={sp.filter} hours={sp.hours} t={t} ago={ago} /> : <ReportList status={sp.status} t={t} ago={ago} locale={locale} />}
     </div>
   );
 }
 
 type T = Awaited<ReturnType<typeof getTranslations<"AdminBugs">>>;
 
-async function ErrorList({ filter: raw, t, ago }: { filter: unknown; t: T; ago: (d: Date) => string }) {
+/** Default window for "not seen since": a day without the error after a fix is deployed. */
+const STALE_HOURS = 24;
+
+async function ErrorList({ filter: raw, hours: rawHours, t, ago }: { filter: unknown; hours: unknown; t: T; ago: (d: Date) => string }) {
   const filter = raw === "resolved" || raw === "all" ? raw : "unresolved";
-  const rows = await listErrors(filter);
+  const hours = Math.min(24 * 90, Math.max(1, Number.parseInt(String(rawHours ?? ""), 10) || STALE_HOURS));
+  const [rows, stale] = await Promise.all([listErrors(filter), filter === "unresolved" ? staleErrorCount(hours) : 0]);
   return (
     <section className="space-y-3">
       <FilterChips
@@ -70,6 +74,18 @@ async function ErrorList({ filter: raw, t, ago }: { filter: unknown; t: T; ago: 
         keep={{ tab: "errors" }}
         options={(["unresolved", "resolved", "all"] as const).map((f) => ({ value: f, label: t(`filters.${f}`) }))}
       />
+      {stale > 0 && (
+        <form action={resolveStaleErrorsAction} className="grid gap-2 rounded-xl border border-brand/30 bg-brand-soft p-3 text-sm" data-testid="resolve-stale">
+          <p className="font-medium">{t("stale.title", { count: stale, hours })}</p>
+          <p className="text-xs text-muted-foreground">{t("stale.body")}</p>
+          <input type="hidden" name="hours" value={hours} />
+          <textarea name="notes" required minLength={3} defaultValue={t("stale.notesDefault")} rows={2} className="rounded-md border bg-background p-2" dir="auto" />
+          <input name="commit" placeholder={t("commit")} className="h-9 rounded-md border bg-background px-2" dir="ltr" />
+          <button type="submit" className="w-fit rounded-md bg-primary px-3 py-2 font-medium text-primary-foreground" data-testid="resolve-stale-button">
+            {t("stale.button", { count: stale })}
+          </button>
+        </form>
+      )}
       {!rows.length && <p className="py-8 text-center text-sm text-muted-foreground">{t("noErrors")}</p>}
       <ul className="space-y-2" data-testid="error-list">
         {rows.map((e) => (
