@@ -1,0 +1,298 @@
+{
+  "template": false,
+  "status": "deployed_and_verified_with_limits",
+  "release": "R3-hardening-2",
+  "recorded_at_utc": "2026-09-28T10:55:00Z",
+  "recorded_at_asia_amman": "2026-09-28T13:55:00+03:00",
+  "implementation_commits": [
+    "394b9c36f38f1f6200df070a6ede6443aadfa05b (scanner-based private-marker redaction, Arabic clitic grammar, canary regressions, UI_REVISION collaboration-v2-r3.2)"
+  ],
+  "main_commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+  "completed_task_ids": [],
+  "planning_validation": {
+    "result": "pass",
+    "note": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test: PASS (18 tasks, 36 acceptance criteria, 17 invalid-plan self-tests rejected). Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "pass on 394b9c36f38f1f6200df070a6ede6443aadfa05b (eslint: 0 errors; 3 unused-variable warnings in local, git-ignored .data/ capture scripts only)",
+    "typecheck": "pass on 394b9c36f38f1f6200df070a6ede6443aadfa05b (next typegen + tsc --noEmit)",
+    "unit_and_integration": "pass on 394b9c36f38f1f6200df070a6ede6443aadfa05b: entire suite, 69 files / 408 tests, 0 failed, 0 skipped, 0 todo (adds tests/unit/redaction-canaries.test.ts: 9 tests reproducing every canary against redactBrief and plannerRequest with marker position × decoration × LF/CRLF × Latin/Arabic × tashkeel × 23 Arabic prefix combinations × nesting × matched/unmatched delimiters, word-boundary false-positive protection, and a plan-creation integration case that captures the injected model call with every private form, roster notes, private notes and the agency record present and asserts none reaches the payload while public text after each valid boundary survives)",
+    "build": "pass on 394b9c3: rm -rf .next && next build, after the unit run and before the Playwright run, no source change in between",
+    "full_playwright": "pass on 394b9c3 against that same build: 302 passed, 0 failed, 0 flaky, 9 skipped, exit 0, 13.5 min, CI=1, retries 1, mobile + desktop + switches (teardown) projects. The 9 skipped are the suite's standing viewport-conditional skips (one project only each): admin-console upgrade (mobile), demo-isolation empty-state (mobile+desktop, needs a real-visitor state), features checklist (mobile), feed desktop card list (mobile), media ffmpeg.wasm (mobile), referral-agents (mobile), feed phone snap (desktop), sign-up-entry phone header (desktop). UI_REVISION was set once, before the commit; nothing changed during the run."
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "unchanged: no schema change in this commit (0026 remains the latest migration; applied on the unit store and the e2e store)",
+    "postgres": "unchanged from the R3-hardening record (0026 rehearsed on the disposable cluster; no new migration)",
+    "populated_upgrade": "not needed: no migration in this commit",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "tests/postgres/collab-ai-usage.pgtest.ts"
+    ]
+  },
+  "reviews": {
+    "implementation": "the change was driven by the independent reproduction quoted in 'corrections'; each reported form was reproduced against the imported functions before the fix and is a named regression test after it",
+    "security_and_payments": "policy for malformed spans defined and documented in docs/50 and lib/collab/redact.ts: unclosed tagged span -> to the end of the text; unclosed bracketed note -> to the end of its paragraph; stray closing tag -> plain text. Structural exclusion unchanged (PlannerBrief whitelist; plannerRequest throws on extra keys; private_notes, roster, partner and agency data never enter the object). Provider configuration, keys, budget, payment gates, contract invariants and Founder rules untouched.",
+    "visual_qa": "no UI change in this commit beyond the revision stamp; the R3-hardening captures stand"
+  },
+  "deployment": {
+    "id": "Vercel deployment dpl_7CsCLTHDw5H3fAV8jVLgHaXkrysC (project sm-mena, target production, githubCommitRef main, githubCommitSha 394b9c3…, created 2026-09-28T10:41:36Z, state READY; a preview deployment dpl_7gFPb2uf3NTRAkoxBjpfdtvdS9EG of the fix branch at the same SHA also built READY)",
+    "environment": "production",
+    "source_sha": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+    "result": "live: state READY on Vercel; /api/version returned the pushed SHA 2m52s after the push (pushed 2026-09-28T10:41:34Z, observed 10:44:26Z)"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "status": 200,
+      "cache_control": "no-store, max-age=0",
+      "body": {
+        "revision": "collaboration-v2-r3.2",
+        "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+        "environment": "production"
+      }
+    },
+    "rendered_stamp_match": "12/12: in the browser (390px mobile emulation and 1440px) 11 of 12 page loads rendered data-ui-revision=collaboration-v2-r3.2, data-release-sha=394b9c3…, environment=production; the twelfth (phone /en?intro=1) was a 502 from the sandbox egress proxy and was confirmed by a direct HTML fetch of /en?intro=1 carrying the same three values (direct fetches of /en/hire, /ar?intro=1, /ar/a/mahaalbashiti, /ar/explore?tab=agencies and /en/explore?tab=agencies also match)",
+    "ancestry_verified": "394b9c3 is a descendant of 9aa5e4c (previous main) and contains aff2778 and 9aa5e4c; main fast-forwarded 9aa5e4c..394b9c3; origin/main had not moved when fetched immediately before the push",
+    "real_intro_playback": {
+      "summary": "blocked from this container for direct playback: four direct attempts (phone and desktop, ar and en, no media interception) at 2026-09-28T10:22:29.887Z loaded the document but the sandbox egress proxy dropped the page's static chunks (ERR_TOO_MANY_RETRIES; unstyled 720x1280 box on desktop), so the intro effect never started the video, no media request was made and no 'ended' event could be observed. The R3-hardening record holds the closest observations: real 720x1280 frames decoded and drawn uncropped on the production page with the downloaded production bytes, and full-duration playback with the overlay closing on the identical build. Complete playback with an 'ended' event directly from production still needs a browser outside this sandbox.",
+      "direct_attempts": [
+        {
+          "surface": "phone /ar?intro=1",
+          "media_requests": [
+            {
+              "url": "sawwiq-intro-poster.jpg",
+              "status": 200
+            }
+          ],
+          "video_events": [],
+          "ended_event": false,
+          "max_currentTime_s": 0,
+          "frame": null,
+          "note": "the document loaded but the page's static chunks were dropped by the sandbox egress proxy (poster failed or unstyled 720x1280 box), so the intro effect never started the video; no media request was made"
+        },
+        {
+          "surface": "phone /en?intro=1",
+          "media_requests": [
+            {
+              "url": "sawwiq-intro-poster.jpg",
+              "failed": "net::ERR_TOO_MANY_RETRIES"
+            }
+          ],
+          "video_events": [],
+          "ended_event": false,
+          "max_currentTime_s": 0,
+          "frame": null,
+          "note": "the document loaded but the page's static chunks were dropped by the sandbox egress proxy (poster failed or unstyled 720x1280 box), so the intro effect never started the video; no media request was made"
+        },
+        {
+          "surface": "desktop /ar?intro=1",
+          "media_requests": [
+            {
+              "url": "sawwiq-intro-poster.jpg",
+              "status": 200
+            }
+          ],
+          "video_events": [],
+          "ended_event": false,
+          "max_currentTime_s": 0,
+          "frame": null,
+          "note": "the document loaded but the page's static chunks were dropped by the sandbox egress proxy (poster failed or unstyled 720x1280 box), so the intro effect never started the video; no media request was made"
+        },
+        {
+          "surface": "desktop /en?intro=1",
+          "media_requests": [
+            {
+              "url": "sawwiq-intro-poster.jpg",
+              "status": 200
+            }
+          ],
+          "video_events": [],
+          "ended_event": false,
+          "max_currentTime_s": 0,
+          "frame": null,
+          "note": "the document loaded but the page's static chunks were dropped by the sandbox egress proxy (poster failed or unstyled 720x1280 box), so the intro effect never started the video; no media request was made"
+        }
+      ]
+    },
+    "authenticated_smoke": "blocked, unchanged: no explicitly authorized existing provider and consenting freelancer accounts are available to this session; no account was created, no password was probed in this pass, no permission was bypassed and nothing was charged. Signed-in production acceptance stays open.",
+    "routes": [
+      {
+        "path": "/api/version",
+        "status": 200
+      },
+      {
+        "path": "/api/health",
+        "status": 200,
+        "body": {
+          "ok": true,
+          "database": "postgres",
+          "storage": "supabase",
+          "ai": "basic",
+          "email": true
+        },
+        "note": "ai=basic: provider configuration unchanged; no model key on production, the planner falls back to rules (no_provider) and the daily budget is not consumed"
+      },
+      {
+        "path": "/ar?intro=1",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en?intro=1",
+        "status": "200 by direct fetch (browser attempt 502 from the sandbox proxy)",
+        "overflow": 0
+      },
+      {
+        "path": "/ar/explore?tab=agencies",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/explore?tab=agencies",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/ar/a/mahaalbashiti",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/hire",
+        "status": 200,
+        "overflow": 0
+      },
+      {
+        "path": "/en/studio/collab/plan",
+        "status": "307 -> /en/login"
+      },
+      {
+        "path": "/ar/studio/collab/worksheet",
+        "status": "307 -> /ar/login"
+      },
+      {
+        "path": "/en/studio/collab/orders/new",
+        "status": "307 -> /en/login"
+      },
+      {
+        "path": "/api/collab/assets/<uuid>",
+        "status": "404 signed out"
+      },
+      {
+        "path": "/en/a/mahaalbashiti?tab=reviews",
+        "status": 200
+      }
+    ],
+    "artifact_refs": [
+      "session scratchpad prod-intro-direct/report.json (private, not committed)"
+    ],
+    "console_errors": "only sandbox-proxy failures (ERR_TOO_MANY_RETRIES and 502 on static chunks and media, 'refused to apply style … text/plain' from a 502 body); none attributable to the application",
+    "checked_at_utc": "2026-09-28T10:44:26Z to 2026-09-28T10:51:39Z"
+  },
+  "rollback": {
+    "previous_deployment": "main 9aa5e4c (collaboration-v2-r3.1 code at aff2778 plus its evidence commit)",
+    "strategy": "forward revert of application code; no migration in this commit",
+    "rehearsal": "not needed for a code-only change; the collaboration_intelligence switch still removes the planner (tests/e2e/switches.spec.ts)"
+  },
+  "remaining_tasks": [],
+  "blockers": [
+    "Signed-in production acceptance of the agency-to-freelancer journey: needs explicitly authorized existing provider and consenting freelancer accounts on production; none are available to this session and none may be created (founding seats).",
+    "Complete intro playback directly from production with an 'ended' event: not observable through this container's egress proxy; needs a browser outside the sandbox (phone and desktop, ar and en).",
+    "AC36 business validation: the pilot protocol is prepared, not run."
+  ],
+  "business_validation": {
+    "pilot_status": "prepared, not run: docs/upgrades/collaboration-v2/pilot-protocol.md",
+    "participants": null,
+    "baseline_comparison": null,
+    "longitudinal_outcomes": null
+  },
+  "decision": "not_verified",
+  "stage_status": {
+    "note": "Separate stages (DEPLOYMENT.md §7). A later stage never implies an earlier one.",
+    "implemented": {
+      "result": "pass",
+      "commits": [
+        "394b9c36f38f1f6200df070a6ede6443aadfa05b"
+      ],
+      "evidence": [
+        "#implementation_commits",
+        "#corrections (what aff2778 still leaked and how it was closed)"
+      ]
+    },
+    "tested": {
+      "result": "pass",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "#checks (entire unit suite 408/408, lint, typecheck, build, full Playwright 302 passed / 0 failed / 0 flaky / 9 standing skips, all on this commit and one build)"
+      ]
+    },
+    "deployed": {
+      "result": "pass",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "#deployment (Vercel READY)",
+        "#production.version_response",
+        "#production.rendered_stamp_match",
+        "#production.ancestry_verified"
+      ]
+    },
+    "production_accepted": {
+      "result": "blocked",
+      "evidence": [
+        "#production.routes (guards and public pages on the deployed commit)"
+      ],
+      "blockers": [
+        "Signed-in production acceptance of the agency-to-freelancer journey: needs explicitly authorized existing provider and consenting freelancer accounts on production; none are available to this session and none may be created (founding seats).",
+        "Complete intro playback directly from production with an 'ended' event: not observable through this container's egress proxy; needs a browser outside the sandbox (phone and desktop, ar and en).",
+        "AC36 business validation: the pilot protocol is prepared, not run."
+      ]
+    }
+  },
+  "supersedes": "release-evidence.2026-09-28-R3-hardening.json (kept unchanged as the historical record; see 'corrections')",
+  "corrections": [
+    "The R3-hardening record's checks.unit_and_integration described a 398-test run made before the reviewer's fixes and a 22-test re-run after them; it did not establish a full unit-suite pass on the final source of aff2778. This record's unit run is the entire suite on the frozen candidate.",
+    "The R3-hardening record's deviations list said 'the one flaky test in the final full run is listed in full_playwright'; the final full run recorded there had 0 flaky tests (the flaky and failed tests belonged to the earlier runs it also describes). The statement was stale and is withdrawn here; the original file is not edited.",
+    "Four private-marker forms survived aff2778's redaction and reached plannerRequest (independent reproduction, confirmed here against the imported functions before the fix): '**private:**' with the payload on the next line, '(private: … [note] …)' cut at the square bracket, a nested [private] span whose inner close exposed the outer tail, and Arabic markers with composed prefixes (بالخاص, فالخاص). Privacy hardening was therefore not complete at aff2778; this record covers the fix."
+  ],
+  "deviations": [
+    "Privacy hardening is not marked complete: the redaction now passes every known canary and the structural exclusion holds, but production acceptance (signed-in journey) has not been performed, so backlog tasks stay at 'deployed' with no production_accepted stage."
+  ],
+  "task_updates": {
+    "COL30": {
+      "status": "deployed",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening-2.json"
+      ]
+    },
+    "COL31": {
+      "status": "deployed",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening-2.json"
+      ]
+    },
+    "COL32": {
+      "status": "deployed",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening-2.json"
+      ]
+    },
+    "COL33": {
+      "status": "deployed",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening-2.json"
+      ]
+    },
+    "COL34": {
+      "status": "deployed",
+      "commit": "394b9c36f38f1f6200df070a6ede6443aadfa05b",
+      "evidence": [
+        "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3-hardening-2.json"
+      ]
+    }
+  }
+}
