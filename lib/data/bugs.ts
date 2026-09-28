@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import { and, count, desc, eq, inArray, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { errorEvents, supportRequests } from "@/lib/db/schema";
 
@@ -91,6 +91,30 @@ export async function setErrorStatus(id: number, adminId: string, patch: { statu
       resolvedBy: resolved ? adminId : null,
     })
     .where(eq(errorEvents.id, id));
+}
+
+const staleWhere = (hours: number) => and(inArray(errorEvents.status, ["open", "investigating"]), lt(errorEvents.lastSeenAt, new Date(Date.now() - hours * 3600 * 1000)));
+
+/** Unresolved errors that have not happened in the last `hours` (candidates for "fixed"). */
+export async function staleErrorCount(hours: number) {
+  const db = await getDb();
+  const [row] = await db.select({ n: count() }).from(errorEvents).where(staleWhere(hours));
+  return row.n;
+}
+
+/**
+ * Marks every unresolved error not seen in the last `hours` as fixed, with
+ * one note. Errors that still happen are left alone, and recordError()
+ * reopens any of these if it comes back. Returns how many were closed.
+ */
+export async function resolveStaleErrors(adminId: string, patch: { hours: number; notes: string; commit?: string }) {
+  const db = await getDb();
+  const rows = await db
+    .update(errorEvents)
+    .set({ status: "fixed", resolutionNotes: clip(patch.notes, 2000), resolutionCommit: clip(patch.commit, 80), resolvedAt: new Date(), resolvedBy: adminId })
+    .where(staleWhere(patch.hours))
+    .returning({ id: errorEvents.id });
+  return rows.length;
 }
 
 export type SupportInput = { kind: "bug" | "question" | "suggestion"; message: string; email?: string | null; path?: string | null; locale?: string | null; userAgent?: string | null; userId?: string | null; visitorId?: string | null };
