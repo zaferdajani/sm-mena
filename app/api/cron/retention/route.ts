@@ -5,6 +5,7 @@ import { expireNeeds } from "@/lib/data/collab-needs";
 import { expireInquiries } from "@/lib/data/collab-inquiries";
 import { expireHolds } from "@/lib/data/capacity";
 import { sendCollabReminders } from "@/lib/data/collab-next";
+import { purgeAssistantUsage } from "@/lib/data/collab-ai-usage";
 import { featureOnGlobally } from "@/lib/features";
 
 // The daily job (vercel.json; one cron keeps us within the Hobby plan's limit):
@@ -26,5 +27,7 @@ export async function GET(request: Request) {
   const [needs, inquiries, holds] = await Promise.all([expireNeeds(), expireInquiries(), expireHolds()]);
   // R3 (docs/50): one deduplicated reminder per open collaboration item and day, after quiet hours.
   const reminders = (await featureOnGlobally("collaboration_intelligence")) ? await sendCollabReminders() : 0;
-  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders });
+  // Assistant-budget rows older than the retention window (docs/50): today's row is all the budget reads.
+  const assistantUsage = await purgeAssistantUsage();
+  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders, assistantUsage });
 }

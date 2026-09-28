@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, lt, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { collabAiUsage } from "@/lib/db/schema";
 
@@ -38,4 +38,15 @@ export async function assistantCallsUsed(agencyId: string, now = new Date()) {
   const db = await getDb();
   const [row] = await db.select({ used: collabAiUsage.used }).from(collabAiUsage).where(and(eq(collabAiUsage.agencyId, agencyId), eq(collabAiUsage.day, usageDay(now))));
   return row?.used ?? 0;
+}
+
+/** Days of assistant-usage rows kept; the budget only ever reads today's row, the rest is history. */
+export const ASSISTANT_USAGE_RETENTION_DAYS = 400;
+
+/** Deletes usage rows older than the retention window (the daily cron). Returns the number removed. */
+export async function purgeAssistantUsage(now = new Date(), keepDays = ASSISTANT_USAGE_RETENTION_DAYS) {
+  const db = await getDb();
+  const cutoff = usageDay(new Date(now.getTime() - keepDays * 86_400_000));
+  const rows = await db.delete(collabAiUsage).where(lt(collabAiUsage.day, cutoff)).returning({ day: collabAiUsage.day });
+  return rows.length;
 }

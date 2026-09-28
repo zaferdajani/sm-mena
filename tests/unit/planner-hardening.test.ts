@@ -5,7 +5,7 @@ import { plannerRequest, structureBrief, type PlannerBrief } from "@/lib/ai/plan
 import { REDACTED, redactBrief } from "@/lib/collab/redact";
 import { TEMPLATES } from "@/lib/collab/templates";
 import { createAgency } from "@/lib/data/agencies";
-import { ASSISTANT_DAILY_BUDGET, assistantCallsUsed, reserveAssistantCall, usageDay } from "@/lib/data/collab-ai-usage";
+import { ASSISTANT_DAILY_BUDGET, assistantCallsUsed, purgeAssistantUsage, reserveAssistantCall, usageDay } from "@/lib/data/collab-ai-usage";
 import { createPlan, deletePlan, getPlan } from "@/lib/data/collab-plans";
 import { saveRosterEntry } from "@/lib/data/collab-roster";
 import { createUser } from "@/lib/data/users";
@@ -173,6 +173,16 @@ describe("the daily assistant budget is an atomic, durable reservation", () => {
       if (prev === undefined) delete process.env.AI_PROVIDER; else process.env.AI_PROVIDER = prev;
     }
     expect(await assistantCallsUsed(paths.id, at)).toBe(5);
+  });
+  it("purges only rows older than the retention window and never today's budget", async () => {
+    const old = new Date("2025-01-01T12:00:00Z");
+    const today = new Date("2026-03-01T12:00:00Z");
+    expect(await reserveAssistantCall(other.id, old)).toBe(true);
+    expect(await reserveAssistantCall(other.id, today)).toBe(true);
+    expect(await purgeAssistantUsage(today)).toBeGreaterThanOrEqual(1); // the 2025 row (400 days before 2026-03-01 is 2025-01-26)
+    expect(await assistantCallsUsed(other.id, old)).toBe(0);
+    expect(await assistantCallsUsed(other.id, today)).toBe(1);
+    expect(await purgeAssistantUsage(today)).toBe(0);
   });
   it("is independent of plan rows: deleting plans refunds nothing and plans without the assistant cost nothing", async () => {
     const at = new Date("2026-10-08T09:00:00Z");
