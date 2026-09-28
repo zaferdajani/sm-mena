@@ -19,26 +19,118 @@ const URL = /\b(?:https?:\/\/|www\.)\S+/gi;
 const HANDLE = /(?<![\w])@[\w.]{2,}/g;
 const SECRET = /\b(?:api[_ -]?key|password|passcode|token|secret|iban|otp)\b[^\n]*/gi;
 
-// Private markers, Latin and Arabic (matched after tashkeel is stripped):
-// "private:", "**private:**", "(private: …)", "[private] … [/private]",
-// "<private>…</private>", "خاص:", "سري:", "داخلي:", "لا يُرسل:", "ملاحظة خاصة:".
-// The rule errs toward removal:
-//  - a tagged span is removed exactly;
-//  - a bracketed note "(private: …)" is removed to its closing bracket;
-//  - a marker that starts a line opens a section, removed to the next blank
-//    line, to an "end:/public:/عام:/نهاية:" line, or to the end of the text;
-//  - a marker in the middle of a line removes the rest of that line.
-const MARKER = "(?:private(?:\\s+notes?)?|internal|confidential|do\\s+not\\s+send|not\\s+for\\s+the\\s+supplier|(?:و|ف|ال|وال|لل)?(?:خاص|سري|داخلي)|لا\\s*يرسل|ملاحظة\\s+خاصة|للداخل)";
+// Private markers, Latin and Arabic (matched after tashkeel is stripped and CRLF is normalised).
+//
+// Grammar. A marker word is one of: private, private note(s), internal, confidential,
+// do not send, not for the supplier, خاص, سري, داخلي, لا يرسل, ملاحظة خاصة, للداخل.
+// An Arabic word may carry the clitic prefixes of written Arabic: an optional conjunction
+// (و or ف), then an optional preposition (ب, ك or ل) and/or the article (ال), with ل+ال
+// written لل: خاص, الخاص, بالخاص, للخاص, وخاص, والخاص, فبالخاص, ولخاص … The whole token must
+// start at a word boundary (not preceded by a letter, digit or underscore), so "privately:"
+// and words that merely end in a marker are not markers. Markdown decoration (* _ ~ ` " ' « »)
+// may surround the word and follow the colon.
+//
+// Forms and policy (the rule errs toward removal, and never removes text after a valid
+// closing boundary):
+//  - tagged span  [private] … [/private]  or  <private> … </private>: removed exactly; tags
+//    nest (an inner [/private] closes only the inner span); an unclosed span runs to the end
+//    of the text (malformed = conservative);
+//  - bracketed note  (private: …)  [private: …]  {private: …}: removed to the matching close
+//    of the same bracket kind (other brackets inside do not close it); if never closed, to
+//    the end of its paragraph (next blank line) or the end of the text;
+//  - section  a marker that starts its line (after a bullet, number or heading mark), or a
+//    marker after which the rest of the line is empty (decoration aside): removed to the next
+//    blank line, to a line starting with end:/public:/عام:/نهاية:, or to the end of the text;
+//  - inline  a marker inside a line with text after it: the rest of that line is removed.
+const AR_PREFIX = "(?:[وف]?(?:لل|[بكل]?(?:ال)?))";
+const WORD = `(?:private(?:\\s+notes?)?|internal|confidential|do\\s+not\\s+send|not\\s+for\\s+the\\s+supplier|${AR_PREFIX}(?:خاص|سري|داخلي)|لا\\s*يرسل|ملاحظة\\s+خاصة|للداخل)`;
 const DECOR = "[*_~`\"'«»]*";
+const DECOR_OR_SPACE = /[*_~`"'«»\s]/gu;
 const NOT_IN_WORD = "(?<![\\p{L}\\p{N}_])";
-// What may precede a section marker on its line: list bullets, numbering, Markdown headings.
-const LINE_LEAD = "[ \\t]*(?:[•\\-*+]|\\d+[.)]|#{1,6})?[ \\t]*";
-const TAGGED = new RegExp(`\\[\\s*${MARKER}\\s*\\][\\s\\S]*?(?:\\[\\s*/\\s*${MARKER}\\s*\\]|$)|<\\s*${MARKER}\\s*>[\\s\\S]*?(?:<\\s*/\\s*${MARKER}\\s*>|$)`, "giu");
-const BRACKETED = new RegExp(`[(\\[{]\\s*${DECOR}${MARKER}${DECOR}\\s*[:：][^)\\]}]*(?:[)\\]}]|$)`, "giu");
-const SECTION_END = "(?=\\n[ \\t]*\\n|\\n[ \\t]*(?:end|public|عام|نهاية)\\s*[:：]|$)";
-const SECTION = new RegExp(`(^|\\n)${LINE_LEAD}${DECOR}${MARKER}${DECOR}\\s*[:：][\\s\\S]*?${SECTION_END}`, "giu");
-// A marker inside a line: the rest of that line goes; when nothing follows the marker on its line, the section below it goes too.
-const INLINE = new RegExp(`${NOT_IN_WORD}${DECOR}${MARKER}${DECOR}\\s*[:：](?:[ \\t]*(?=\\n)[\\s\\S]*?${SECTION_END}|[^\\n]*)`, "giu");
+const LINE_LEAD = /^[ \t]*(?:[•\-*+]|\d+[.)]|#{1,6})?[ \t]*$/u;
+const TAG = new RegExp(`\\[\\s*(/?)\\s*${WORD}\\s*\\]|<\\s*(/?)\\s*${WORD}\\s*>`, "giu");
+const BRACKET_OPEN = new RegExp(`([(\\[{])\\s*${DECOR}${WORD}${DECOR}\\s*[:：]`, "giu");
+const MARKED = new RegExp(`${NOT_IN_WORD}${DECOR}${WORD}${DECOR}\\s*[:：]${DECOR}`, "giu");
+const SECTION_END = /\n[ \t]*\n|\n[ \t]*(?:end|public|عام|نهاية)\s*[:：]/giu;
+const CLOSE: Record<string, string> = { "(": ")", "[": "]", "{": "}" };
+
+/** Index where a section that starts at `from` ends: the next blank line, a public/end line, or the end of the text. */
+function sectionEnd(text: string, from: number) {
+  SECTION_END.lastIndex = from;
+  const m = SECTION_END.exec(text);
+  return m ? m.index : text.length;
+}
+
+/** Removes the tagged spans, counting nesting; an unclosed span reaches the end of the text. */
+function stripTagged(text: string) {
+  let out = "";
+  let cursor = 0;
+  TAG.lastIndex = 0;
+  for (let m = TAG.exec(text); m; m = TAG.exec(text)) {
+    if (m.index < cursor) continue;
+    if (m[1] === "/" || m[2] === "/") continue; // a stray closing tag is plain text
+    let depth = 1;
+    let end = text.length;
+    for (let n = TAG.exec(text); n; n = TAG.exec(text)) {
+      depth += n[1] === "/" || n[2] === "/" ? -1 : 1;
+      if (depth === 0) {
+        end = n.index + n[0].length;
+        break;
+      }
+    }
+    out += text.slice(cursor, m.index) + REDACTED;
+    cursor = end;
+    TAG.lastIndex = end;
+  }
+  return out + text.slice(cursor);
+}
+
+/** Removes bracketed notes to the matching close of the same bracket kind; unclosed ones to the end of the paragraph. */
+function stripBracketed(text: string) {
+  let out = "";
+  let cursor = 0;
+  BRACKET_OPEN.lastIndex = 0;
+  for (let m = BRACKET_OPEN.exec(text); m; m = BRACKET_OPEN.exec(text)) {
+    if (m.index < cursor) continue;
+    const open = m[1];
+    const close = CLOSE[open];
+    let depth = 1;
+    let end = -1;
+    for (let i = m.index + m[0].length; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === open) depth++;
+      else if (ch === close && --depth === 0) {
+        end = i + 1;
+        break;
+      }
+    }
+    if (end < 0) end = sectionEnd(text, m.index + m[0].length);
+    out += text.slice(cursor, m.index) + REDACTED;
+    cursor = end;
+    BRACKET_OPEN.lastIndex = end;
+  }
+  return out + text.slice(cursor);
+}
+
+/** Removes sections and inline notes introduced by "marker:". */
+function stripMarked(text: string) {
+  let out = "";
+  let cursor = 0;
+  MARKED.lastIndex = 0;
+  for (let m = MARKED.exec(text); m; m = MARKED.exec(text)) {
+    if (m.index < cursor) continue;
+    const after = m.index + m[0].length;
+    const lineStart = text.lastIndexOf("\n", m.index - 1) + 1;
+    const lineEnd = ((i) => (i < 0 ? text.length : i))(text.indexOf("\n", after));
+    const startsLine = LINE_LEAD.test(text.slice(lineStart, m.index));
+    const restEmpty = text.slice(after, lineEnd).replace(DECOR_OR_SPACE, "") === ""; // "private: **" is still an empty marker line
+    const end = startsLine || restEmpty ? sectionEnd(text, after) : lineEnd;
+    out += text.slice(cursor, m.index) + REDACTED;
+    cursor = end;
+    MARKED.lastIndex = end;
+  }
+  return out + text.slice(cursor);
+}
 
 export const REDACTED = "[redacted]";
 
@@ -46,15 +138,12 @@ export const REDACTED = "[redacted]";
 const phoneOrKeep = (m: string) => ((m.match(/\d/g) ?? []).length >= 9 ? REDACTED : m);
 
 export function redactBrief(text: string, max = 3000) {
-  return text
+  const normalised = text
     .replace(/\r\n?/g, "\n") // textareas submit CRLF; every rule below reasons in LF
     .replace(INVISIBLE, "")
     .replace(TASHKEEL, "")
-    .replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) & 0xf))
-    .replace(TAGGED, REDACTED)
-    .replace(BRACKETED, REDACTED)
-    .replace(SECTION, (_m, lead: string) => `${lead}${REDACTED}`)
-    .replace(INLINE, REDACTED)
+    .replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) & 0xf));
+  return stripMarked(stripBracketed(stripTagged(normalised)))
     .replace(SECRET, REDACTED)
     .replace(URL, REDACTED)
     .replace(EMAIL, REDACTED)
