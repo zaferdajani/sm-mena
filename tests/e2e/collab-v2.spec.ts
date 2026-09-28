@@ -196,32 +196,3 @@ test("an invitation link makes two providers partners once, in Arabic on a phone
   await sender.goto("/ar/studio/collab");
   expect(await sender.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 });
-
-test("the switch: coming soon refuses the pages, off hides the tab and 404s", async ({ browser, isMobile }) => {
-  // One global switch: the two viewport projects would race each other, and the switch does not depend on the viewport.
-  test.skip(Boolean(isMobile), "switch state is global; covered once on desktop");
-  const admin = await (await browser.newContext()).newPage();
-  await login(admin, "admin@sawwiq.test", "admin-pass-123");
-  const agency = await (await browser.newContext()).newPage();
-  await login(agency, "nakhla-studio@sawwiq.test", "demo-pass-123");
-  const setState = async (state: "on" | "soon" | "off") => {
-    await admin.goto("/en/admin/features");
-    await admin.getByTestId(`feature-collaboration-${state}`).check({ force: true });
-    await admin.getByTestId("feature-collaboration-save").click();
-    await admin.waitForLoadState("networkidle");
-    await admin.reload();
-    await expect(admin.getByTestId(`feature-collaboration-${state}`)).toBeChecked();
-  };
-  try {
-    await setState("soon");
-    await agency.goto("/en/studio/collab");
-    await expect(agency.getByTestId("coming-soon")).toHaveAttribute("data-feature", "collaboration");
-    await setState("off");
-    const res = await agency.goto("/en/studio/collab/work");
-    expect(res?.status()).toBe(404);
-    await agency.goto("/en/studio");
-    await expect(agency.getByRole("link", { name: "Collaborate" })).toHaveCount(0);
-  } finally {
-    await setState("on");
-  }
-});

@@ -51,8 +51,12 @@ export default defineConfig({
     launchOptions: { executablePath },
   },
   projects: [
-    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions: { executablePath } } },
-    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } } },
+    // Tests that flip a global feature switch run alone, after everything else (see tests/e2e/switches.spec.ts).
+    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions: { executablePath } }, testIgnore: /switches\.spec\.ts/, teardown: "switches" },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testIgnore: /switches\.spec\.ts/, teardown: "switches" },
+    // A teardown project runs in its own phase once the mobile and desktop projects have finished, whatever their result,
+    // so a switch is never on "soon" or "off" while another worker loads a page that depends on it.
+    { name: "switches", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testMatch: /switches\.spec\.ts/, workers: 1, fullyParallel: false },
   ],
   webServer: {
     command: `npm run db:reset && npm run start -- --port ${port}`,

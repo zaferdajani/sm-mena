@@ -1,32 +1,37 @@
 import "server-only";
-import { and, desc, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, collabPlans, type Agency, type CollabPlan, type DeliverableLine, type PlanPackage, type PlanSource } from "@/lib/db/schema";
 import { coverPackages, draftPackages, openRoles, type DraftPackage } from "@/lib/collab/planner";
 import { redactBrief } from "@/lib/collab/redact";
-import { structureBrief, type PlannerCall } from "@/lib/ai/planner";
+import { structureBrief, type PlannerBrief, type PlannerCall, type ReserveCall } from "@/lib/ai/planner";
 import { discoverCollaborators, partnerIdsOf } from "./collab-discovery";
 import { rosterIds } from "./collab-roster";
 
 // Scope-to-team plans (docs/50 §planner). Every input to coverage is an
 // authorized read the agency could make itself; the optional model sees the
 // redacted brief and catalogue keys only. Saving a plan books nobody.
+//
+// Private notes are structurally excluded from the model: the request is built
+// from a `PlannerBrief` that only ever holds title, scope and deliverables, and
+// `plannerRequest` refuses any object carrying other keys. The agency record,
+// roster and partner data are read only after the model step, for coverage.
 
-export type PlanInput = { title: string; scope: string; deliverables: DeliverableLine[]; useAssistant: boolean };
+export type PlanInput = { title: string; scope: string; deliverables: DeliverableLine[]; useAssistant: boolean; privateNotes?: string };
 
 export type PlanView = CollabPlan & { people: Map<string, { id: string; name: string; handle: string; kind: "agency" | "freelancer" }> };
 
-export async function createPlan(me: Agency, input: PlanInput, call?: PlannerCall): Promise<{ id: string; assistant: string; reason: string }> {
+export async function createPlan(me: Agency, input: PlanInput, call?: PlannerCall, reserve?: ReserveCall): Promise<{ id: string; assistant: string; reason: string }> {
   const db = await getDb();
-  const brief = { title: input.title.trim().slice(0, 120), scope: redactBrief(input.scope), deliverables: input.deliverables };
+  // Only these three fields exist on the object the planner request is built from.
+  const brief: PlannerBrief = { title: input.title.trim().slice(0, 120), scope: redactBrief(input.scope), deliverables: input.deliverables };
+  const privateNotes = (input.privateNotes ?? "").trim().slice(0, 3000);
   let packages: DraftPackage[] = draftPackages(brief.deliverables);
   let assistant = "none";
   let reason = "rules";
   if (input.useAssistant) {
-    const dayStart = new Date();
-    dayStart.setUTCHours(0, 0, 0, 0);
-    const [{ n: usedToday }] = await db.select({ n: sql<number>`count(*)::int` }).from(collabPlans).where(and(eq(collabPlans.agencyId, me.id), eq(collabPlans.assistantRequested, true), gte(collabPlans.createdAt, dayStart)));
-    const r = await structureBrief(me.id, brief, [...new Set(packages.flatMap((p) => p.roles))], call, usedToday);
+    // The daily budget is reserved atomically inside structureBrief (collab_ai_usage), not counted here.
+    const r = await structureBrief(me.id, brief, [...new Set(packages.flatMap((p) => p.roles))], call, reserve);
     assistant = r.packages ? r.assistant : "none";
     reason = r.reason;
     if (r.packages) packages = r.packages;
@@ -48,7 +53,7 @@ export async function createPlan(me: Agency, input: PlanInput, call?: PlannerCal
     roster: [...rosterSet].filter((id) => roleOf.has(id) && !partnerSet.has(id)).map((id) => ({ id, roles: roleOf.get(id)! })),
     discovered: discovered.items.map((i) => ({ id: i.candidate.id, roles: i.matchedRoles, reasons: i.reasons })),
   });
-  const [row] = await db.insert(collabPlans).values({ agencyId: me.id, title: brief.title, brief: brief.scope, deliverables: brief.deliverables, packages: covered, sources, assistant, assistantRequested: input.useAssistant }).returning({ id: collabPlans.id });
+  const [row] = await db.insert(collabPlans).values({ agencyId: me.id, title: brief.title, brief: brief.scope, deliverables: brief.deliverables, packages: covered, sources, assistant, assistantRequested: input.useAssistant, privateNotes }).returning({ id: collabPlans.id });
   return { id: row.id, assistant, reason };
 }
 

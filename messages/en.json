@@ -4097,11 +4097,13 @@
       "startFrom": "Start from:",
       "deliverables": "Deliverables",
       "scope": "Brief (redacted)",
-      "scopeHint": "What the client needs, in your own words. Contact details, links and anything after “private:” are removed before an assistant sees it; never paste client secrets or rates.",
+      "scopeHint": "What the client needs, in your own words. Contact details and links are removed before an assistant sees it, and so is anything marked private: a line starting with “private:” removes everything to the next blank line, “(private: …)” removes the note, and “private:” inside a line removes the rest of it. Put rates and names in the private notes below instead.",
       "assistant": "Let the assistant group and name the packages",
       "assistantHint": "Optional. The assistant sees only this redacted brief and the catalogue keys; it cannot pick people, send anything or book capacity. If it fails or takes too long, the rule-based plan is used.",
       "assistantOff": "No assistant is configured on this server; the rule-based planner is used.",
-      "submit": "Draft the plan"
+      "submit": "Draft the plan",
+      "privateNotes": "Private notes (never sent)",
+      "privateNotesHint": "Rates, client names, contacts, anything for your eyes only. Stored with the plan and shown only to you; structurally excluded from the assistant request."
     },
     "errors": {
       "invalid": "Add at least one deliverable and a title.",
@@ -4150,7 +4152,9 @@
       "roster": "Your roster",
       "discover": "Discovery"
     },
-    "sourceIds": "{count, plural, =0 {no ids} one {# id} other {# ids}}"
+    "sourceIds": "{count, plural, =0 {no ids} one {# id} other {# ids}}",
+    "privateNotes": "Private notes",
+    "privateNotesNote": "Only your agency sees this. It was never part of the assistant request."
   },
   "Templates": {
     "title": "Templates",

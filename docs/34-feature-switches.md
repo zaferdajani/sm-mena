@@ -15,6 +15,7 @@ Things that already exist keep working whatever the switch says: a signed contra
 - **Saving.** Changes apply within seconds; each server keeps a 15-second cache. Every change is logged in the audit log (`feature.set`).
 - **Where settings live.** In the `app_settings` table under the key `features`. The defaults, before anyone saves, are in `defaultFeatures()` in `lib/features.ts`.
 - **Test servers.** `FEATURE_DEFAULTS="key=state,…"` sets a different starting point. The e2e server starts with `protected_payments=on` so the contract suites can run.
+- **Tests that flip a switch.** A switch is one row for the whole server, so a test that puts it on "soon" or "off" changes what every parallel worker sees for a few seconds. Those tests live only in `tests/e2e/switches.spec.ts`, which Playwright runs as the `switches` project: a teardown of the mobile and desktop projects, so it starts after everything else has finished and runs alone, in serial, and always puts the switch back. Nothing else may toggle a switch state.
 - **Where it's enforced:**
   - **Pages:** `featureGate()` returns open, soon (show `<ComingSoon>`) or off (404 or redirect).
   - **Server actions:** `canUse()` makes them return `unavailable`.

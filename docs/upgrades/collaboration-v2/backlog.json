@@ -15,7 +15,9 @@
     "planned",
     "in_progress",
     "implemented",
-    "verified",
+    "tested",
+    "deployed",
+    "production_accepted",
     "blocked"
   ],
   "validation_command": "node scripts/validate-collaboration-upgrade-plan.mjs --self-test",
@@ -49,12 +51,40 @@
         "app/[locale]/(main)/studio/partners/page.tsx"
       ],
       "deliverable": "Inspect existing data, guards, regression tests and current UI; record measured baseline and reuse/repair decisions. No production mutation.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json",
         "docs/upgrades/collaboration-v2/R0-baseline.md"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL10",
@@ -73,11 +103,39 @@
         "lib/auth/guards.ts"
       ],
       "deliverable": "Map/reuse existing provider and partner-contract records; add only necessary opt-in preferences, private roster and inquiry structures with authorized projections and safe migration tests.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL11",
@@ -96,11 +154,39 @@
         "lib/matching/"
       ],
       "deliverable": "Explicitly published needs for freelancers, complementary provider search for agencies, hard filters, stable pagination and explainable portfolio-based ranking; leave client matching untouched.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL12",
@@ -117,11 +203,39 @@
         "app/[locale]/(main)/studio/profile"
       ],
       "deliverable": "Implement private/opt-in availability intervals, timezone handling, freshness/expiry and explicit unknown states without implying external-calendar synchronization.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL13",
@@ -139,11 +253,39 @@
         "components/studio/partner-widgets.tsx"
       ],
       "deliverable": "Save providers into tenant-private groups with restricted notes; consented expiring invitations, deduplication, blocking/cooldowns and existing-account linking.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL14",
@@ -163,11 +305,39 @@
         "app/[locale]/(main)/studio/partners/page.tsx"
       ],
       "deliverable": "Project-linked or standalone scope/date/currency/mode inquiry with recipient preview, replies/counteroffers and clear handoff into the existing supplier-authored partner contract.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL15",
@@ -193,11 +363,39 @@
         "tests/e2e/"
       ],
       "deliverable": "Deliver a complete mobile/desktop discover-to-contract handoff and rehire path. No unfinished R2/R3 UI. Record source, checks, migrations, screenshots, rollback and production evidence separately.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "a303d451794d0a2b6041cc6c761b9a64dc7300e2",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "b40ee6a5a26294929c3f7748c3e7ce3df8bf2113",
+          "at": "2026-09-28T00:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R1.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL20",
@@ -215,11 +413,39 @@
         "lib/data/milestone-shares.ts"
       ],
       "deliverable": "Add buyer/supplier work-order projection and accepted-scope versioning; preserve supplier agency_id ownership, signed contract hashes and private optional parent-project association.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL21",
@@ -237,11 +463,39 @@
         "lib/auth/permissions.ts"
       ],
       "deliverable": "Separate agency-private, work-order and client channels with shared server-side policies and matching preview projections; cover caches, SSR/RSC, exports, jobs and file signing.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL22",
@@ -258,11 +512,39 @@
         "components/contracts/"
       ],
       "deliverable": "Integrate private asset versions and review comments using the existing media stack; test file restrictions, scoped access and preserved feedback history.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL23",
@@ -284,11 +566,39 @@
         "lib/payments/readiness.ts"
       ],
       "deliverable": "Private supplier work goes to its buying agency, disclosed shares retain client review. Reuse guarded authoritative transitions; no new rails, rates, waived-project rules or real-money activation.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL24",
@@ -306,11 +616,39 @@
         "lib/data/"
       ],
       "deliverable": "Prevent over-allocation of capacity declared in Sawwiq using transaction-safe acceptance, idempotency, expiry and release. Test concurrency on PGlite and Postgres.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL25",
@@ -335,11 +673,39 @@
         "tests/e2e/"
       ],
       "deliverable": "Run private and disclosed delivery/revision/cancellation/dispute flows with distinct sessions; review permissions and actual media before publishing only the complete slice.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "85b5c11d5905bbc955923fe37f10ae0a64d9deab",
+          "at": "2026-09-28T02:05:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R2.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL30",
@@ -358,11 +724,39 @@
         "lib/services/catalog.ts"
       ],
       "deliverable": "Deterministic taxonomy-first work-package drafts and authorized candidate explanations; optional budgeted AI, prompt-injection tests, minimal model context and safe no-key fallback.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL31",
@@ -380,11 +774,39 @@
         "lib/contracts/"
       ],
       "deliverable": "Finance-scoped quote/margin planning, explicit unknown/currency handling and reusable production/rehire templates; every cycle requires new confirmation, with no auto-charge or renewal.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL32",
@@ -401,11 +823,39 @@
         "lib/data/reviews.ts"
       ],
       "deliverable": "Create a separate transaction-linked collaborator-feedback class with consent, confidentiality, moderation and dispute paths; preserve all existing client/Google/payment provenance.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL33",
@@ -424,11 +874,39 @@
         "app/[locale]/(main)/studio"
       ],
       "deliverable": "Reuse notification adapters/jobs for deduplicated privacy-safe next actions; add opt-outs and instrument pseudonymous funnel and cohort metrics without fabricating demand.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     },
     {
       "id": "COL34",
@@ -456,13 +934,42 @@
         "docs/upgrades/collaboration-v2/"
       ],
       "deliverable": "Validate all delivered software and production evidence, prepare the consent-based pilot, and report real measured outcomes only. Longitudinal business results may remain pending after software release.",
-      "status": "verified",
+      "status": "deployed",
       "implementation_commit": "944fa98e8f859c27107a9218328d81227971dd54",
       "evidence": [
         "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json",
         "docs/upgrades/collaboration-v2/pilot-protocol.md"
-      ]
+      ],
+      "stages": {
+        "implemented": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#implementation_commits",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#reviews"
+          ]
+        },
+        "tested": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#checks (lint, typecheck, unit, build, full Playwright on this commit)",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#migrations (PGlite and disposable Postgres)"
+          ]
+        },
+        "deployed": {
+          "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+          "at": "2026-09-28T03:45:00Z",
+          "evidence": [
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#deployment",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.version_response",
+            "docs/upgrades/collaboration-v2/release-evidence.2026-09-28-R3.json#production.rendered_stamp_match"
+          ]
+        }
+      },
+      "production_acceptance": "not yet: no authorized production account was available to this session for the signed-in surfaces (see the release evidence blockers); public routes and guards on production were checked."
     }
   ],
-  "branch_base_sha": "34554e35db6b26a0ba2d8fd48198a5ba9c84b38e"
+  "branch_base_sha": "34554e35db6b26a0ba2d8fd48198a5ba9c84b38e",
+  "status_note": "Stages are separate statuses: implemented = code on a commit; tested = lint, typecheck, unit, build and full Playwright passed on that commit; deployed = production /api/version and rendered stamps serve a commit containing it; production_accepted = the live slice was exercised with authorized accounts. 'verified' was the pre-2026-09-28 name for tested+deployed and is no longer written; each task's stages object holds the dated, commit-linked record per stage."
 }

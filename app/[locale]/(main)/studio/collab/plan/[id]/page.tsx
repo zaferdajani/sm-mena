@@ -39,6 +39,7 @@ export default async function PlanViewPage({ params, searchParams }: PageProps<"
       </header>
       <p className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="plan-disclaimer">{t("disclaimer")}</p>
       {plan.brief && <section className="grid gap-1 rounded-2xl border p-4 text-sm"><h2 className="font-semibold">{t("brief")}</h2><p className="whitespace-pre-line"><bdi>{plan.brief}</bdi></p><p className="text-xs text-muted-foreground">{t("briefNote")}</p></section>}
+      {plan.privateNotes && <section className="grid gap-1 rounded-2xl border border-dashed p-4 text-sm" data-testid="plan-private-notes"><h2 className="font-semibold">{t("privateNotes")}</h2><p className="whitespace-pre-line"><bdi>{plan.privateNotes}</bdi></p><p className="text-xs text-muted-foreground">{t("privateNotesNote")}</p></section>}
       <section className="grid gap-3" data-testid="plan-packages">
         {plan.packages.map((p) => (
           <article key={p.key} className="grid gap-2 rounded-2xl border p-4" data-testid="plan-package">

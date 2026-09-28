@@ -108,7 +108,7 @@ export type InquiryInput = z.infer<typeof inquirySchema>;
 export type QuoteInput = z.infer<typeof quoteSchema>;
 
 // R3 (docs/50)
-export const planSchema = z.object({ title: shortText(120).min(3), scope: shortText(3000), deliverables: z.array(deliverableLineSchema).min(1).max(20), useAssistant: z.boolean() });
+export const planSchema = z.object({ title: shortText(120).min(3), scope: shortText(3000), deliverables: z.array(deliverableLineSchema).min(1).max(20), useAssistant: z.boolean(), privateNotes: shortText(3000) });
 const score = z.coerce.number().int().min(1).max(5);
 export const feedbackSchema = z.object({ workOrderId: z.string().uuid(), communication: score, reliability: score, quality: score, body: shortText(1500), visibility: z.enum(["parties", "public"]) });
 export const prefsSchema = z.object({ mutedKinds: z.array(z.string().max(40)).max(10), quietStart: z.union([z.literal(""), z.coerce.number().int().min(0).max(23)]), quietEnd: z.union([z.literal(""), z.coerce.number().int().min(0).max(23)]) });

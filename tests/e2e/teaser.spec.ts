@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, joinAgency, login } from "./helpers";
+import { joinAgency, login } from "./helpers";
 
 // The pre-launch teaser (docs/39-teaser.md): live counts per country and city,
 // and every call to action opens /join.
@@ -38,27 +38,6 @@ test("the teaser carries the moving hero, the vault and an account link", async 
 
   await expect(page.getByTestId("teaser-account")).toHaveAttribute("href", "/ar/login");
   await expect(page.getByTestId("teaser-cta").first()).not.toContainText("#");
-});
-
-test("with the pre-launch switch in preview, staff see the teaser as the front page", async ({ page }, info) => {
-  test.skip(info.project.name === "mobile", "shared global switch; the desktop run covers it");
-  await login(page, ADMIN.email, ADMIN.password);
-  await page.goto("/en/admin/features");
-  await expect(page.getByTestId("feature-prelaunch_home")).toBeVisible();
-  // "Coming soon" shows it to staff only, so visitors in other tests keep the landing page.
-  await page.getByTestId("feature-prelaunch_home-soon").check({ force: true });
-  await page.getByTestId("feature-prelaunch_home-save").click();
-  await page.waitForLoadState("networkidle");
-  try {
-    await page.goto("/ar");
-    await expect(page.getByTestId("teaser-page")).toBeVisible();
-    await expect(page.getByTestId("teaser-account")).toHaveAttribute("href", "/ar/admin");
-  } finally {
-    await page.goto("/en/admin/features");
-    await page.getByTestId("feature-prelaunch_home-off").check({ force: true });
-    await page.getByTestId("feature-prelaunch_home-save").click();
-    await page.waitForLoadState("networkidle");
-  }
 });
 
 test("signed-in users can change their sign-in email and password", async ({ page }) => {

@@ -22,7 +22,7 @@ export default async function PlanPage({ params, searchParams }: PageProps<"/[lo
   const templateNames = Object.fromEntries(TEMPLATE_KEYS.map((k) => [k, tt(`${k}.name`)])) as Record<TemplateKey, string>;
   // "Edit as a new plan": the previous brief prefilled; the rules run again on what the agency changes.
   const source = typeof from === "string" ? await getPlan(agency.id, from) : null;
-  const initial = source ? { title: source.title, scope: source.brief, deliverables: source.deliverables } : undefined;
+  const initial = source ? { title: source.title, scope: source.brief, deliverables: source.deliverables, privateNotes: source.privateNotes } : undefined;
   return (
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="collab-plan">
       <CollabTabs active="plan" badges={{ work: badge }} />

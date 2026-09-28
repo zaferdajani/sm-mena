@@ -20,7 +20,7 @@ const ERRORS = ["invalid", "rateLimited", "unavailable", "notFound", "notFinishe
 const err = (t: (k: string) => string, e?: string) => (e ? t(`errors.${ERRORS.includes(e) ? e : "invalid"}`) : undefined);
 
 /** The brief: deliverables from the catalogue, a redacted scope, and whether the assistant may shape the packages. */
-export function PlanForm({ platforms, assistantAvailable, templateNames, initial }: { platforms: Option[]; assistantAvailable: boolean; templateNames: Record<TemplateKey, string>; initial?: { title: string; scope: string; deliverables: DeliverableLine[] } }) {
+export function PlanForm({ platforms, assistantAvailable, templateNames, initial }: { platforms: Option[]; assistantAvailable: boolean; templateNames: Record<TemplateKey, string>; initial?: { title: string; scope: string; deliverables: DeliverableLine[]; privateNotes?: string } }) {
   const t = useTranslations("Planner");
   const [state, action] = useActionState(createPlanAction, undefined);
   const [lines, setLines] = useState<DeliverableLine[]>(initial?.deliverables ?? []);
@@ -37,6 +37,7 @@ export function PlanForm({ platforms, assistantAvailable, templateNames, initial
       </div>
       <Field label={t("form.deliverables")}><DeliverablesPicker value={lines} onChange={setLines} platforms={platforms} /></Field>
       <Field label={t("form.scope")} hint={t("form.scopeHint")} htmlFor="pl-scope"><Textarea id="pl-scope" name="scope" rows={4} maxLength={3000} dir="auto" defaultValue={initial?.scope ?? ""} /></Field>
+      <Field label={t("form.privateNotes")} hint={t("form.privateNotesHint")} htmlFor="pl-private"><Textarea id="pl-private" name="privateNotes" rows={2} maxLength={3000} dir="auto" defaultValue={initial?.privateNotes ?? ""} data-testid="plan-private-notes" /></Field>
       <label className="flex min-h-11 items-start gap-2 text-sm">
         <input type="checkbox" name="useAssistant" value="1" disabled={!assistantAvailable} className="mt-1 size-4 accent-[var(--primary)]" data-testid="plan-assistant" />
         <span><span className="inline-flex items-center gap-1 font-medium"><Sparkles className="size-4 text-brand" aria-hidden /> {t("form.assistant")}</span><br /><span className="text-xs text-muted-foreground">{assistantAvailable ? t("form.assistantHint") : t("form.assistantOff")}</span></span>

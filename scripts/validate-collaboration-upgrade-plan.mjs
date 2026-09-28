@@ -14,7 +14,12 @@ export function validatePlan(plan, acceptanceText) {
   assert.match(plan.inspected_main_sha, /^[a-f0-9]{40}$/);
   assert.deepEqual(plan.release_order, ['R0', 'R1', 'R2', 'R3']);
   assert.deepEqual(plan.application_checks, ['npm run lint', 'npm run typecheck', 'npm test', 'npm run build', 'npm run e2e']);
-  const allowed = new Set(['planned', 'in_progress', 'implemented', 'verified', 'blocked']);
+  // Delivery stages are separate statuses (DEPLOYMENT.md §7): code exists (implemented), the required checks passed on
+  // that commit (tested), production serves that commit (deployed), the live slice was exercised with authorized
+  // accounts (production_accepted). 'verified' is the pre-hardening name for "tested and deployed" and ranks as deployed.
+  const rank = { planned: 0, in_progress: 0, blocked: 0, implemented: 1, tested: 2, verified: 3, deployed: 3, production_accepted: 4 };
+  const allowed = new Set(Object.keys(rank));
+  assert.ok(Array.isArray(plan.status_vocabulary) && plan.status_vocabulary.every((s) => allowed.has(s)), 'Unknown status in vocabulary');
   const headings = [...acceptanceText.matchAll(/^### (AC\d{2})\b/gm)].map((match) => match[1]);
   assert.equal(headings.length, 36, 'Acceptance criteria count changed; review validator and plan together');
   assert.equal(new Set(headings).size, headings.length, 'Duplicate acceptance ID');
@@ -39,9 +44,23 @@ export function validatePlan(plan, acceptanceText) {
       covered.add(id);
     }
     if (task.implementation_commit !== null) assert.match(task.implementation_commit, /^[a-f0-9]{40}$/);
-    if (['implemented', 'verified'].includes(task.status)) {
+    if (rank[task.status] >= 1) {
       assert.ok(task.implementation_commit && task.evidence.length > 0, `No implementation evidence for ${task.id}`);
     }
+    // Each reached stage carries its own dated, commit-linked record; a status may never run ahead of its stages.
+    const stages = task.stages ?? {};
+    for (const [stage, needed] of [['implemented', 1], ['tested', 2], ['deployed', 3], ['production_accepted', 4]]) {
+      if (rank[task.status] < needed) continue;
+      const record = stages[stage];
+      assert.ok(record && typeof record === 'object', `Status ${task.status} without a ${stage} record for ${task.id}`);
+      assert.match(String(record.commit ?? ''), /^[a-f0-9]{40}$/, `Stage ${stage} of ${task.id} has no commit`);
+      assert.match(String(record.at ?? ''), /^\d{4}-\d{2}-\d{2}T/, `Stage ${stage} of ${task.id} has no UTC time`);
+      assert.ok(Array.isArray(record.evidence) && record.evidence.length > 0, `Stage ${stage} of ${task.id} has no evidence`);
+    }
+    if (rank[task.status] >= 4) {
+      assert.ok(stages.production_accepted.evidence.some((e) => /authenticated/i.test(e)), `production_accepted for ${task.id} needs authenticated production evidence`);
+    }
+    for (const stage of Object.keys(stages)) assert.ok(['implemented', 'tested', 'deployed', 'production_accepted'].includes(stage), `Unknown stage ${stage} in ${task.id}`);
   }
   for (const id of acceptance) assert.ok(covered.has(id), `Unassigned acceptance ${id}`);
   for (const release of plan.release_order) assert.ok(plan.tasks.some((task) => task.release === release), `Empty release ${release}`);
@@ -57,7 +76,7 @@ export function validatePlan(plan, acceptanceText) {
       const dependency = tasks.get(dependencyId);
       assert.ok(dependency, `Missing dependency ${dependencyId}`);
       assert.ok(plan.release_order.indexOf(dependency.release) <= plan.release_order.indexOf(task.release), `Future-release dependency ${id}`);
-      if (task.status === 'verified') assert.equal(dependency.status, 'verified', `Unverified dependency for ${id}`);
+      assert.ok(rank[dependency.status] >= rank[task.status], `Dependency ${dependencyId} of ${id} is behind it (${dependency.status} < ${task.status})`);
       visit(dependencyId);
     }
     active.delete(id);
@@ -78,6 +97,15 @@ function selfTest(plan, text) {
     (p) => { p.tasks[0].release = 'R9'; },
     // Verified without evidence must fail even once the task really has a commit and evidence.
     (p) => { p.tasks[0].status = 'verified'; p.tasks[0].implementation_commit = null; p.tasks[0].evidence = []; },
+    // Production acceptance needs an authenticated-production record; a deployed record alone is not enough.
+    (p) => { p.tasks[0].status = 'production_accepted'; },
+    (p) => { p.tasks[0].status = 'production_accepted'; p.tasks[0].stages.production_accepted = { commit: p.tasks[0].implementation_commit, at: '2026-09-28T00:00:00Z', evidence: ['route probe only'] }; },
+    // A stage record must be commit-linked and dated.
+    (p) => { delete p.tasks[0].stages.deployed.commit; },
+    (p) => { p.tasks[0].stages.tested.evidence = []; },
+    // A task may not be ahead of what it depends on.
+    (p) => { p.tasks[1].status = 'production_accepted'; p.tasks[1].stages.production_accepted = { commit: p.tasks[1].implementation_commit, at: '2026-09-28T00:00:00Z', evidence: ['authenticated production journey'] }; },
+    (p) => { p.status_vocabulary.push('done'); },
     (p) => { p.tasks[0].acceptance_ids = ['AC99']; },
     (p) => { p.tasks[0].acceptance_ids = []; },
     (p) => { p.hold_items = []; },

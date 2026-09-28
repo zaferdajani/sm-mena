@@ -120,7 +120,7 @@ test("from an accepted quote to an approved work order that releases the protect
   // A stranger cannot open it; the supplier sees the offer, the scope, no private notes, and accepts.
   const stranger = await (await browser.newContext()).newPage();
   await login(stranger, "nakhla-studio@sawwiq.test", "demo-pass-123");
-  await expect.poll(async () => (await stranger.goto(orderUrl))?.status(), { timeout: 30_000 }).toBe(404);
+  expect((await stranger.goto(orderUrl))?.status()).toBe(404);
   await freelancer.goto("/en/studio/notifications");
   await expect(freelancer.getByTestId("notification").filter({ hasText: "offered you a work order" }).first()).toBeVisible();
   await freelancer.goto(orderUrl);
@@ -213,32 +213,4 @@ test("from an accepted quote to an approved work order that releases the protect
   await agency.goto("/en/studio/collab/work");
   await expect(agency.getByTestId("order-row").filter({ hasText: "Menu shoot" })).toHaveAttribute("data-status", "approved");
   await expect(agency.getByTestId("order-start")).toHaveCount(0);
-});
-
-test("the delivery switch: coming soon keeps inquiries working; off hides work orders", async ({ browser, isMobile }) => {
-  test.skip(Boolean(isMobile), "switch state is global; covered once on desktop");
-  const admin = await (await browser.newContext()).newPage();
-  await login(admin, "admin@sawwiq.test", "admin-pass-123");
-  const agency = await (await browser.newContext()).newPage();
-  await login(agency, "nakhla-studio@sawwiq.test", "demo-pass-123");
-  const setState = async (state: "on" | "soon" | "off") => {
-    await admin.goto("/en/admin/features");
-    await admin.getByTestId(`feature-collaboration_delivery-${state}`).check({ force: true });
-    await admin.getByTestId("feature-collaboration_delivery-save").click();
-    await admin.waitForLoadState("networkidle");
-    await admin.reload();
-    await expect(admin.getByTestId(`feature-collaboration_delivery-${state}`)).toBeChecked();
-  };
-  try {
-    await setState("soon");
-    await agency.goto("/en/studio/collab/orders/new");
-    await expect(agency.getByTestId("coming-soon")).toHaveAttribute("data-feature", "collaboration_delivery");
-    await agency.goto("/en/studio/collab/work");
-    await expect(agency.getByTestId("collab-work")).toBeVisible();
-    await expect(agency.getByTestId("work-orders")).toHaveCount(0);
-    await setState("off");
-    expect((await agency.goto("/en/studio/collab/orders/new"))?.status()).toBe(404);
-  } finally {
-    await setState("on");
-  }
 });

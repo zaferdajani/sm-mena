@@ -1,23 +1,29 @@
 import "server-only";
 import { applyModelPackages, type DraftPackage } from "@/lib/collab/planner";
 import { containsForbidden, redactBrief } from "@/lib/collab/redact";
+import { reserveAssistantCall } from "@/lib/data/collab-ai-usage";
 import type { DeliverableLine } from "@/lib/db/schema";
 import { anthropicConfigured, anthropicModel } from "./providers/anthropic";
 import { openaiConfigured, openaiModel } from "./providers/openai";
 
 // The optional model step of the planner (docs/50, AC23). It receives only the
 // redacted brief and the catalogue keys, has a hard timeout and a per-agency
-// daily budget, may only regroup and retitle packages, and any failure (no
-// key, timeout, bad JSON, invalid keys, injection) returns null so the
-// deterministic draft stands. It has no tools: it cannot read, invite, sign,
-// book or pay.
+// daily budget reserved atomically in the database before the call, may only
+// regroup and retitle packages, and any failure (no key, timeout, bad JSON,
+// invalid keys, injection) returns null so the deterministic draft stands.
+// It has no tools: it cannot read, invite, sign, book or pay.
 
 export type PlannerCall = (system: string, user: string) => Promise<string>;
 export type PlannerOutcome = { packages: DraftPackage[] | null; assistant: "none" | "anthropic" | "openai" | "custom"; reason: string };
+/** Reserves one assistant call for the agency today; false when the daily budget is spent. */
+export type ReserveCall = () => Promise<boolean>;
 
-const TIMEOUT_MS = 20_000;
-const DAILY_BUDGET = 20;
-const budget = new Map<string, { day: string; n: number }>();
+/** The only fields a model request is built from. Anything else on the object is a bug and is refused. */
+export type PlannerBrief = { title: string; scope: string; deliverables: DeliverableLine[] };
+const BRIEF_KEYS = ["title", "scope", "deliverables"];
+
+export const TIMEOUT_MS = 20_000;
+export { ASSISTANT_DAILY_BUDGET as DAILY_BUDGET } from "@/lib/data/collab-ai-usage";
 
 /** Which real provider the planner would call: the matchmaker's order (AI_PROVIDER), never "mock", "basic" or "off". */
 export function plannerProvider(): "anthropic" | "openai" | null {
@@ -29,18 +35,6 @@ export function plannerProvider(): "anthropic" | "openai" | null {
 
 export function plannerAvailable() {
   return plannerProvider() !== null;
-}
-
-export function plannerBudgetLeft(agencyId: string, now = new Date()) {
-  const day = now.toISOString().slice(0, 10);
-  const b = budget.get(agencyId);
-  return b && b.day === day ? Math.max(0, DAILY_BUDGET - b.n) : DAILY_BUDGET;
-}
-
-function spend(agencyId: string, now = new Date()) {
-  const day = now.toISOString().slice(0, 10);
-  const b = budget.get(agencyId);
-  budget.set(agencyId, b && b.day === day ? { day, n: b.n + 1 } : { day, n: 1 });
 }
 
 const SYSTEM = [
@@ -63,26 +57,40 @@ async function defaultCall(system: string, user: string): Promise<string> {
   return res.choices[0]?.message?.content ?? "";
 }
 
-/** Builds the exact request text; exported so tests can assert what leaves the server. */
-export function plannerRequest(brief: { title: string; scope: string; deliverables: DeliverableLine[] }, roles: string[]) {
+/**
+ * Builds the exact request text from the fixed fields; exported so tests can
+ * assert what leaves the server. Throws if the brief carries any other field:
+ * private notes, roster data or agency records must never get this far.
+ */
+export function plannerRequest(brief: PlannerBrief, roles: string[]) {
+  const extra = Object.keys(brief).filter((k) => !BRIEF_KEYS.includes(k));
+  if (extra.length) throw new Error(`planner brief carries non-whitelisted fields: ${extra.join(", ")}`);
   const scope = redactBrief(brief.scope);
   const title = redactBrief(brief.title, 120);
-  return [`Title: ${title}`, `Deliverable keys: ${brief.deliverables.map((d) => `${d.key}×${d.quantity}`).join(", ")}`, `Role keys: ${roles.join(", ")}`, "Brief (untrusted):", "<<<", scope, ">>>"].join("\n");
+  const keys = brief.deliverables.map((d) => `${String(d.key).replace(/[^\w]/g, "")}×${Number(d.quantity) || 1}`).join(", ");
+  return [`Title: ${title}`, `Deliverable keys: ${keys}`, `Role keys: ${roles.map((r) => r.replace(/[^\w]/g, "")).join(", ")}`, "Brief (untrusted):", "<<<", scope, ">>>"].join("\n");
 }
 
 /**
- * `usedToday` is the number of assistant requests already recorded for the
- * agency today (counted from collab_plans by the caller, so it survives
- * serverless instances); the in-process counter is a second, cheaper guard.
+ * One planner call. The budget reservation is made before the call and is
+ * kept whether the call succeeds, fails or times out (a made call costs), and
+ * is never made when there is no provider or the request is refused.
+ * `reserve` and `now` exist for tests; production callers pass neither, so
+ * the day is always the server's current UTC day.
  */
-export async function structureBrief(agencyId: string, brief: { title: string; scope: string; deliverables: DeliverableLine[] }, roles: string[], call?: PlannerCall, usedToday = 0): Promise<PlannerOutcome> {
+export async function structureBrief(agencyId: string, brief: PlannerBrief, roles: string[], call?: PlannerCall, reserve?: ReserveCall, now = new Date()): Promise<PlannerOutcome> {
   const provider = plannerProvider();
   const assistant: PlannerOutcome["assistant"] = call ? "custom" : (provider ?? "none");
   if (!call && !provider) return { packages: null, assistant: "none", reason: "no_provider" };
-  if (plannerBudgetLeft(agencyId) <= 0 || usedToday >= DAILY_BUDGET) return { packages: null, assistant: "none", reason: "budget" };
-  const user = plannerRequest(brief, roles);
+  let user: string;
+  try {
+    user = plannerRequest(brief, roles);
+  } catch {
+    return { packages: null, assistant: "none", reason: "forbidden_content" };
+  }
   if (containsForbidden(user)) return { packages: null, assistant: "none", reason: "forbidden_content" };
-  spend(agencyId);
+  const reserved = await (reserve ?? (() => reserveAssistantCall(agencyId, now)))();
+  if (!reserved) return { packages: null, assistant: "none", reason: "budget" };
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const text = await Promise.race([(call ?? defaultCall)(SYSTEM, user), new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("timeout")), TIMEOUT_MS); })]);

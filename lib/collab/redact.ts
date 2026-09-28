@@ -1,18 +1,44 @@
 // What a model may see (docs/50 §planner, AC23): the agency-approved brief
-// after redaction. Contact data, links, credential-looking strings and
-// anything after a "private:" marker on its line are removed before the text
-// leaves the server. Private roster notes, rates and client identities are
-// never part of the input in the first place. Redaction is a safety net, not
-// the boundary: the boundary is what createPlan chooses to pass.
+// after redaction. Contact data, links, credential-looking strings and every
+// private section are removed before the text leaves the server.
+//
+// Redaction is the second line. The first is structural: the planner request
+// is built from a fixed set of fields (title, deliverable keys, role keys,
+// scope); private notes, roster notes, rates, partner and client names and
+// the agency's own record are never part of that object (lib/ai/planner.ts
+// `plannerRequest` rejects extra keys).
+
 const INVISIBLE = /[​-‏‪-‮⁦-⁩﻿]/g;
+const TASHKEEL = /[ً-ْٰـ]/g;
 const ARABIC_DIGITS = /[٠-٩۰-۹]/g;
-const EMAIL = /[\w.+-]+\s*(?:@|\[\s*at\s*\]|\(\s*at\s*\))\s*[\w-]+(?:\s*(?:\.|\[\s*dot\s*\]|\(\s*dot\s*\))\s*[\w-]+)+/gi;
+// Addresses, including "nour [at] client [dot] jo". Only the spelled-out forms may carry spaces:
+// a literal dot never does, so a handle at the end of a sentence cannot swallow the next paragraph.
+const EMAIL = /[\w.+-]+[ \t]*(?:@|\[[ \t]*at[ \t]*\]|\([ \t]*at[ \t]*\))[ \t]*[\w-]+(?:(?:\.|[ \t]*(?:\[[ \t]*dot[ \t]*\]|\([ \t]*dot[ \t]*\))[ \t]*)[\w-]+)+/gi;
 const PHONE = /\+?\d[\d\s().-]{7,}\d/g;
 const URL = /\b(?:https?:\/\/|www\.)\S+/gi;
 const HANDLE = /(?<![\w])@[\w.]{2,}/g;
 const SECRET = /\b(?:api[_ -]?key|password|passcode|token|secret|iban|otp)\b[^\n]*/gi;
-// From a "private:" marker to the end of that line, wherever it starts.
-const PRIVATE_LINE = /(^|[\s.;,،])(?:private|internal|confidential|سري|خاص)\s*[:：].*$/gim;
+
+// Private markers, Latin and Arabic (matched after tashkeel is stripped):
+// "private:", "**private:**", "(private: …)", "[private] … [/private]",
+// "<private>…</private>", "خاص:", "سري:", "داخلي:", "لا يُرسل:", "ملاحظة خاصة:".
+// The rule errs toward removal:
+//  - a tagged span is removed exactly;
+//  - a bracketed note "(private: …)" is removed to its closing bracket;
+//  - a marker that starts a line opens a section, removed to the next blank
+//    line, to an "end:/public:/عام:/نهاية:" line, or to the end of the text;
+//  - a marker in the middle of a line removes the rest of that line.
+const MARKER = "(?:private(?:\\s+notes?)?|internal|confidential|do\\s+not\\s+send|not\\s+for\\s+the\\s+supplier|(?:و|ف|ال|وال|لل)?(?:خاص|سري|داخلي)|لا\\s*يرسل|ملاحظة\\s+خاصة|للداخل)";
+const DECOR = "[*_~`\"'«»]*";
+const NOT_IN_WORD = "(?<![\\p{L}\\p{N}_])";
+// What may precede a section marker on its line: list bullets, numbering, Markdown headings.
+const LINE_LEAD = "[ \\t]*(?:[•\\-*+]|\\d+[.)]|#{1,6})?[ \\t]*";
+const TAGGED = new RegExp(`\\[\\s*${MARKER}\\s*\\][\\s\\S]*?(?:\\[\\s*/\\s*${MARKER}\\s*\\]|$)|<\\s*${MARKER}\\s*>[\\s\\S]*?(?:<\\s*/\\s*${MARKER}\\s*>|$)`, "giu");
+const BRACKETED = new RegExp(`[(\\[{]\\s*${DECOR}${MARKER}${DECOR}\\s*[:：][^)\\]}]*(?:[)\\]}]|$)`, "giu");
+const SECTION_END = "(?=\\n[ \\t]*\\n|\\n[ \\t]*(?:end|public|عام|نهاية)\\s*[:：]|$)";
+const SECTION = new RegExp(`(^|\\n)${LINE_LEAD}${DECOR}${MARKER}${DECOR}\\s*[:：][\\s\\S]*?${SECTION_END}`, "giu");
+// A marker inside a line: the rest of that line goes; when nothing follows the marker on its line, the section below it goes too.
+const INLINE = new RegExp(`${NOT_IN_WORD}${DECOR}${MARKER}${DECOR}\\s*[:：](?:[ \\t]*(?=\\n)[\\s\\S]*?${SECTION_END}|[^\\n]*)`, "giu");
 
 export const REDACTED = "[redacted]";
 
@@ -21,9 +47,14 @@ const phoneOrKeep = (m: string) => ((m.match(/\d/g) ?? []).length >= 9 ? REDACTE
 
 export function redactBrief(text: string, max = 3000) {
   return text
+    .replace(/\r\n?/g, "\n") // textareas submit CRLF; every rule below reasons in LF
     .replace(INVISIBLE, "")
+    .replace(TASHKEEL, "")
     .replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) & 0xf))
-    .replace(PRIVATE_LINE, (_m, lead: string) => `${lead}${REDACTED}`)
+    .replace(TAGGED, REDACTED)
+    .replace(BRACKETED, REDACTED)
+    .replace(SECTION, (_m, lead: string) => `${lead}${REDACTED}`)
+    .replace(INLINE, REDACTED)
     .replace(SECRET, REDACTED)
     .replace(URL, REDACTED)
     .replace(EMAIL, REDACTED)

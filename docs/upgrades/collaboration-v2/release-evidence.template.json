@@ -1,1 +1,87 @@
-{"template":true,"status":"not_run","release":null,"recorded_at_utc":null,"recorded_at_asia_amman":null,"implementation_commits":[],"main_commit":null,"completed_task_ids":[],"planning_validation":{"result":"not_run","note":"Plan validation is not app CI."},"checks":{"lint":"not_run","typecheck":"not_run","unit_and_integration":"not_run","build":"not_run","full_playwright":"not_run"},"ci_runs":[],"migrations":{"pglite":"not_run","postgres":"not_run","populated_upgrade":"not_run","rollback_compatible":null,"evidence_refs":[]},"reviews":{"implementation":"not_run","security_and_payments":"not_run","visual_qa":"not_run"},"deployment":{"id":null,"environment":null,"source_sha":null,"result":"not_run"},"production":{"canonical_origin":"https://sawwiq.org","version_response":null,"rendered_stamp_match":null,"ancestry_verified":null,"real_intro_playback":"not_run","authenticated_smoke":"not_run","routes":[],"artifact_refs":[]},"rollback":{"previous_deployment":null,"strategy":null,"rehearsal":"not_run"},"remaining_tasks":[],"blockers":[],"business_validation":{"pilot_status":"not_run","participants":null,"baseline_comparison":null,"longitudinal_outcomes":null},"decision":"not_verified"}
+{
+  "template": true,
+  "status": "not_run",
+  "release": null,
+  "recorded_at_utc": null,
+  "recorded_at_asia_amman": null,
+  "implementation_commits": [],
+  "main_commit": null,
+  "completed_task_ids": [],
+  "planning_validation": {
+    "result": "not_run",
+    "note": "Plan validation is not app CI."
+  },
+  "checks": {
+    "lint": "not_run",
+    "typecheck": "not_run",
+    "unit_and_integration": "not_run",
+    "build": "not_run",
+    "full_playwright": "not_run"
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "not_run",
+    "postgres": "not_run",
+    "populated_upgrade": "not_run",
+    "rollback_compatible": null,
+    "evidence_refs": []
+  },
+  "reviews": {
+    "implementation": "not_run",
+    "security_and_payments": "not_run",
+    "visual_qa": "not_run"
+  },
+  "deployment": {
+    "id": null,
+    "environment": null,
+    "source_sha": null,
+    "result": "not_run"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": null,
+    "rendered_stamp_match": null,
+    "ancestry_verified": null,
+    "real_intro_playback": "not_run",
+    "authenticated_smoke": "not_run",
+    "routes": [],
+    "artifact_refs": []
+  },
+  "rollback": {
+    "previous_deployment": null,
+    "strategy": null,
+    "rehearsal": "not_run"
+  },
+  "remaining_tasks": [],
+  "blockers": [],
+  "business_validation": {
+    "pilot_status": "not_run",
+    "participants": null,
+    "baseline_comparison": null,
+    "longitudinal_outcomes": null
+  },
+  "decision": "not_verified",
+  "stage_status": {
+    "note": "Separate stages (DEPLOYMENT.md §7): implemented, tested, deployed, production_accepted. Each is pass | fail | partial | blocked | not_run with its own evidence; a later stage never implies an earlier one.",
+    "implemented": {
+      "result": "not_run",
+      "commits": [],
+      "evidence": []
+    },
+    "tested": {
+      "result": "not_run",
+      "commit": null,
+      "evidence": []
+    },
+    "deployed": {
+      "result": "not_run",
+      "commit": null,
+      "evidence": []
+    },
+    "production_accepted": {
+      "result": "not_run",
+      "evidence": [],
+      "blockers": []
+    }
+  }
+}

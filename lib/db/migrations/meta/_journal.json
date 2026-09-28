@@ -183,6 +183,13 @@
       "when": 1790563158568,
       "tag": "0025_collaboration_r3",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1790583000793,
+      "tag": "0026_collab_r3_hardening",
+      "breakpoints": true
     }
   ]
 }

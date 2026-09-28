@@ -1854,12 +1854,34 @@ export const collabPlans = pgTable(
     sources: jsonb("sources").$type<PlanSource[]>().notNull().default([]),
     // none | basic | <provider>: whether a model shaped the packages; candidates never come from it.
     assistant: text("assistant").notNull().default("none"),
-    // Whether the agency asked for the assistant (counted for the daily budget even when it fell back).
+    // Whether the agency asked for the assistant (informational; the daily budget is reserved in collab_ai_usage).
     assistantRequested: boolean("assistant_requested").notNull().default(false),
+    // The agency's own notes on the plan. Never part of the planner request: the request is built
+    // from a fixed whitelist of fields (lib/ai/planner.ts), so this column cannot reach a model.
+    privateNotes: text("private_notes").notNull().default(""),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("collab_plans_agency_idx").on(t.agencyId, t.createdAt)],
+);
+
+/**
+ * R3 hardening: the planner's daily assistant budget as a durable, atomic
+ * counter per agency and UTC day. Reserved with one upsert before any model
+ * call, so every instance shares the same row and deleting plans never
+ * refunds a call. Rows are tiny and retained; the day column is YYYY-MM-DD.
+ */
+export const collabAiUsage = pgTable(
+  "collab_ai_usage",
+  {
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    day: text("day").notNull(),
+    used: integer("used").notNull().default(0),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.agencyId, t.day] })],
 );
 
 export type PlanCandidate = { agencyId: string; source: "partner" | "roster" | "discovery"; reasons: string[] };
@@ -1971,5 +1993,6 @@ export type WorkOrderComment = typeof workOrderComments.$inferSelect;
 export type WorkOrderSubmission = typeof workOrderSubmissions.$inferSelect;
 export type CapacityReservation = typeof capacityReservations.$inferSelect;
 export type CollabPlan = typeof collabPlans.$inferSelect;
+export type CollabAiUsage = typeof collabAiUsage.$inferSelect;
 export type CollabFeedbackRow = typeof collabFeedback.$inferSelect;
 export type CollabPrefs = typeof collabPrefs.$inferSelect;

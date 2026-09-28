@@ -196,5 +196,49 @@
         "docs/upgrades/collaboration-v2/pilot-protocol.md"
       ]
     }
+  },
+  "stage_status": {
+    "note": "Added 2026-09-28 in the hardening pass so that implemented, tested, deployed and production-accepted are reported separately. The sections above are the original record and are unchanged; 'status' and 'decision' above keep their historical wording ('deployed_and_verified_with_limits' meant tested + deployed with the listed limits, not production acceptance).",
+    "implemented": {
+      "result": "pass",
+      "commits": [
+        "9fb1e11 (implementation)",
+        "944fa98e8f859c27107a9218328d81227971dd54 (visual fixes)"
+      ],
+      "evidence": [
+        "#implementation_commits",
+        "#reviews"
+      ]
+    },
+    "tested": {
+      "result": "pass",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "#checks",
+        "#migrations",
+        "checks.* in this file ran on 9fb1e11 (full Playwright 301 passed, 13 skipped) and 944fa98 (build; collab-r3, work-orders and release-proof specs re-run) and the migration rehearsal on PGlite and disposable Postgres"
+      ]
+    },
+    "deployed": {
+      "result": "pass",
+      "commit": "944fa98e8f859c27107a9218328d81227971dd54",
+      "evidence": [
+        "#deployment",
+        "#production.version_response (commit matched the pushed SHA, environment production)",
+        "#production.rendered_stamp_match",
+        "#production.ancestry_verified"
+      ]
+    },
+    "production_accepted": {
+      "result": "blocked",
+      "evidence": [
+        "#production.routes (public routes 200 with the release stamp; Studio routes 307 to login when signed out)"
+      ],
+      "blockers": [
+        "No authorized production provider or freelancer account was available to this session (production demo accounts are seeded with a random password unless SEED_DEMO_PASSWORD is set; the session never asks for secret values), and creating one would consume a founding seat. The signed-in surfaces were exercised only on the local production build (Playwright + reviewed captures) and by route guards on production.",
+        "Real, uncropped intro playback was not observed from this container in this release's run (media and static chunks intermittently dropped by the egress proxy); see release-evidence.2026-09-28-R3-hardening.json for the later attempt.",
+        "AC36 business validation (pilot) not run."
+      ]
+    }
   }
 }

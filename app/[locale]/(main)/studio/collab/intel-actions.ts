@@ -35,7 +35,7 @@ export async function createPlanAction(_: IntelState, fd: FormData): Promise<Int
   } catch {
     return { error: "invalid" };
   }
-  const d = planSchema.safeParse({ title: one(fd, "title"), scope: one(fd, "scope"), deliverables, useAssistant: fd.get("useAssistant") === "1" });
+  const d = planSchema.safeParse({ title: one(fd, "title"), scope: one(fd, "scope").replace(/\r\n?/g, "\n"), deliverables, useAssistant: fd.get("useAssistant") === "1", privateNotes: one(fd, "privateNotes").replace(/\r\n?/g, "\n") });
   if (!d.success) return { error: "invalid" };
   const r = await createPlan(s.agency, d.data);
   refresh();

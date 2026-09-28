@@ -191,34 +191,3 @@ test("Arabic on a phone: the planner and the worksheet render without overflow",
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   }
 });
-
-test("the intelligence switch: coming soon on the planner, off hides it; work orders keep working", async ({ browser, isMobile }) => {
-  test.skip(Boolean(isMobile), "switch state is global; covered once on desktop");
-  const admin = await (await browser.newContext()).newPage();
-  await login(admin, "admin@sawwiq.test", "admin-pass-123");
-  const agency = await (await browser.newContext()).newPage();
-  await login(agency, "nakhla-studio@sawwiq.test", "demo-pass-123");
-  const setState = async (state: "on" | "soon" | "off") => {
-    await admin.goto("/en/admin/features");
-    await admin.getByTestId(`feature-collaboration_intelligence-${state}`).check({ force: true });
-    await admin.getByTestId("feature-collaboration_intelligence-save").click();
-    await admin.waitForLoadState("networkidle");
-    await admin.reload();
-    await expect(admin.getByTestId(`feature-collaboration_intelligence-${state}`)).toBeChecked();
-  };
-  try {
-    await setState("soon");
-    await agency.goto("/en/studio/collab/plan");
-    await expect(agency.getByTestId("coming-soon")).toHaveAttribute("data-feature", "collaboration_intelligence");
-    await agency.goto("/en/studio/collab");
-    await expect(agency.getByTestId("next-actions")).toHaveCount(0);
-    await expect(agency.getByTestId("collab-tab-plan")).toHaveCount(0);
-    await setState("off");
-    expect((await agency.goto("/en/studio/collab/worksheet"))?.status()).toBe(404);
-    await agency.goto("/en/studio/collab/work");
-    await expect(agency.getByTestId("collab-work")).toBeVisible();
-    await expect(agency.getByTestId("work-templates")).toHaveCount(0);
-  } finally {
-    await setState("on");
-  }
-});
