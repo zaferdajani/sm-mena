@@ -28,7 +28,7 @@ test("plan from a template, work through an order, leave feedback both ways, dis
   test.setTimeout(240_000);
   const agency = await (await browser.newContext()).newPage();
   const freelancer = await (await browser.newContext()).newPage();
-  const { handle: agencyHandle } = await joinAgency(agency, "r3");
+  const { handle: agencyHandle, email: agencyEmail } = await joinAgency(agency, "r3");
   const free = await joinFreelancer(freelancer, "r3f");
 
   // Next actions start empty; preferences save.
@@ -57,8 +57,19 @@ test("plan from a template, work through an order, leave feedback both ways, dis
   const photographerRole = agency.getByTestId("plan-role").filter({ hasText: "Photographer" });
   await expect(photographerRole).toHaveAttribute("data-kind", /candidate|unfilled/);
   await expect(agency.getByTestId("plan-sources")).toContainText("Discovery");
+  const planUrl = agency.url();
   await agency.getByTestId("plan-edit").click();
   await expect(agency.locator("#pl-title")).toHaveValue("Café launch");
+  // The plan with candidates at 320 and 390 CSS px, plain viewport, both locales: no sideways scroll.
+  const tight = await (await browser.newContext({ viewport: { width: 320, height: 700 } })).newPage();
+  await login(tight, agencyEmail, "password-123");
+  for (const [w, path] of [[320, planUrl], [320, planUrl.replace("/en/", "/ar/")], [390, planUrl]] as const) {
+    await tight.setViewportSize({ width: w, height: 700 });
+    await tight.goto(path);
+    await expect(tight.getByTestId("plan-candidate").first()).toBeVisible();
+    expect(await tight.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  }
+  await tight.close();
 
   // A work order through an accepted quote (no contract needed for feedback), then approval.
   await agency.goto(`/en/studio/collab?role=photographer&q=1`);
@@ -86,6 +97,18 @@ test("plan from a template, work through an order, leave feedback both ways, dis
   // Next actions now show the freelancer an offer to answer; the buyer nothing yet.
   await freelancer.goto("/en/studio/collab");
   await expect(freelancer.getByTestId("next-action").filter({ hasText: "Answer a work order offer" })).toHaveCount(1);
+  // On a plain 320/390 viewport (no mobile emulation, which hides overflow) a real title must not widen the page.
+  const narrow = await (await browser.newContext({ viewport: { width: 320, height: 700 } })).newPage();
+  await login(narrow, free.email, free.password);
+  for (const path of ["/en/studio/collab", "/ar/studio/collab"]) {
+    await narrow.goto(path);
+    await expect(narrow.getByTestId("next-action").first()).toBeVisible();
+    expect(await narrow.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  }
+  await narrow.setViewportSize({ width: 390, height: 844 });
+  await narrow.goto("/en/studio/collab");
+  expect(await narrow.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  await narrow.close();
   await freelancer.goto(orderUrl);
   await freelancer.getByTestId("order-accept").click();
   await expect(freelancer.getByTestId("order-status")).toHaveAttribute("data-status", "accepted");

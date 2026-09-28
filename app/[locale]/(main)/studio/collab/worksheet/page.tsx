@@ -21,19 +21,21 @@ export default async function WorksheetPage({ params }: PageProps<"/[locale]/stu
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="collab-worksheet">
       <CollabTabs active="plan" badges={{ work: badge }} />
       <CollabHeader title={t("title")} intro={t("intro")} />
-      <p className="rounded-xl border border-dashed p-3 text-xs text-muted-foreground" data-testid="worksheet-note">{t("note")}</p>
+      <p className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="worksheet-note"><b>{t("noteLead")}</b> {t("note")}</p>
       {groups.length === 0 ? <EmptyState title={t("noneTitle")} body={t("noneBody")} /> : groups.map((g, i) => (
         <section key={g.parent?.id ?? "none"} className="grid gap-2 rounded-2xl border p-4" data-testid="worksheet-group" data-parent={g.parent ? "yes" : "no"}>
           <h2 className="font-semibold">{g.parent ? <bdi>{g.parent.number} · {g.parent.title}</bdi> : t("noParent")}</h2>
           {g.parent && <p className="text-xs text-muted-foreground">{t("clientPrice")}: <bdi>{money(g.parent.totalFils, g.parent.currency)}</bdi> · {t("contractStatus", { status: tc.has(`status.${g.parent.status}`) ? tc(`status.${g.parent.status}`) : g.parent.status })}</p>}
           <ul className="grid gap-1 text-sm">
             {g.lines.map((l) => (
-              <li key={l.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-muted/40 p-2" data-testid="worksheet-line" data-amount={l.amountFils ?? "unknown"}>
-                <Link href={l.href} className="min-w-0 flex-1 truncate font-medium" dir="auto">{l.title}</Link>
-                <span className="text-xs text-muted-foreground"><bdi>{l.supplier}</bdi></span>
-                {l.dueOn && <span className="text-xs text-muted-foreground"><bdi dir="ltr">{formatIsoDate(l.dueOn, locale)}</bdi></span>}
-                <span className={cn("rounded-full px-2 py-0.5 text-[11px]", ORDER_STYLE[l.status] ?? "bg-muted")}>{l.kind === "order" ? to(`status.${l.status}`) : t("acceptedQuote")}</span>
-                <span className="font-semibold tabular-nums">{l.amountFils !== null && l.currency ? <bdi>{money(l.amountFils, l.currency)}</bdi> : <span className="text-muted-foreground">{t("unknown")}</span>}</span>
+              <li key={l.id} className="grid gap-1 rounded-lg bg-muted/40 p-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2" data-testid="worksheet-line" data-amount={l.amountFils ?? "unknown"}>
+                <Link href={l.href} className="min-w-0 truncate font-medium sm:flex-1" dir="auto">{l.title}</Link>
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground"><bdi>{l.supplier}</bdi></span>
+                  {l.dueOn && <span className="text-xs text-muted-foreground"><bdi dir="ltr">{formatIsoDate(l.dueOn, locale)}</bdi></span>}
+                  <span className={cn("rounded-full px-2 py-0.5 text-[11px]", ORDER_STYLE[l.status] ?? "bg-muted")}>{l.kind === "order" ? to(`status.${l.status}`) : t("acceptedQuote")}</span>
+                  <span className="ms-auto font-semibold tabular-nums">{l.amountFils !== null && l.currency ? <bdi>{money(l.amountFils, l.currency)}</bdi> : <span className="text-muted-foreground">{t("unknown")}</span>}</span>
+                </div>
               </li>
             ))}
           </ul>

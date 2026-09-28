@@ -89,7 +89,7 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
                     </span>
                     <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", ORDER_STYLE[order.status] ?? "bg-muted")}>{to(`status.${order.status}`)}</span>
                   </Link>
-                  {intel && role === "buyer" && ["approved", "closed"].includes(order.status) && <Link href={`/studio/collab/work/new?rehire=${order.id}`} className="mt-1 inline-block text-xs font-medium text-brand" data-testid="order-rehire">{to("list.rehire")}</Link>}
+                  {intel && role === "buyer" && ["approved", "closed"].includes(order.status) && <Link href={`/studio/collab/work/new?rehire=${order.id}`} className={buttonVariants({ variant: "outline", size: "sm", className: "mt-2 h-11 sm:h-9" })} data-testid="order-rehire">{to("list.rehire")}</Link>}
                 </li>
               ))}
             </ul>
@@ -102,9 +102,9 @@ export default async function CollabWorkPage({ params }: PageProps<"/[locale]/st
           <h2 className="font-semibold">{tt("title")}</h2>
           <p className="text-muted-foreground">{tt("intro")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {(["shoot", "reels", "arabic_copy", "ad_creative", "monthly_calendar"] as const).map((k) => <Link key={k} href={`/studio/collab/work/new?template=${k}`} className={buttonVariants({ variant: "outline", size: "sm", className: "h-9" })} data-testid={`template-${k}`}>{tt(`${k}.name`)}</Link>)}
+            {(["shoot", "reels", "arabic_copy", "ad_creative", "monthly_calendar"] as const).map((k) => <Link key={k} href={`/studio/collab/work/new?template=${k}`} className={buttonVariants({ variant: "outline", size: "sm", className: "h-11 sm:h-9" })} data-testid={`template-${k}`}>{tt(`${k}.name`)}</Link>)}
           </div>
-          <Link href="/studio/collab/worksheet" className="font-medium text-brand" data-testid="work-worksheet">{tt("worksheet")}</Link>
+          <Link href="/studio/collab/worksheet" className="inline-flex min-h-11 items-center font-medium text-brand" data-testid="work-worksheet">{tt("worksheet")}</Link>
         </section>
       )}
 

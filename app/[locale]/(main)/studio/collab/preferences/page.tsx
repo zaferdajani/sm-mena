@@ -15,7 +15,7 @@ export default async function PreferencesPage({ params }: PageProps<"/[locale]/s
   const [t, prefs, badge] = await Promise.all([getTranslations("NextActions"), getPrefs(agency.id), workBadgeCount(agency.id)]);
   return (
     <div className="mx-auto grid max-w-3xl gap-5" data-testid="collab-preferences">
-      <CollabTabs active="discover" badges={{ work: badge }} />
+      <CollabTabs active="plan" badges={{ work: badge }} />
       <CollabHeader title={t("prefs.title")} intro={t("prefs.intro")} />
       <PrefsForm muted={prefs.mutedKinds} quietStart={prefs.quietStart} quietEnd={prefs.quietEnd} showFeedback={prefs.showFeedback} />
     </div>

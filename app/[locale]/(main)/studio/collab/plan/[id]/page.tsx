@@ -49,20 +49,20 @@ export default async function PlanViewPage({ params, searchParams }: PageProps<"
                 <li key={c.role} className="grid gap-1 rounded-xl bg-muted/40 p-2 text-sm" data-testid="plan-role" data-kind={c.kind}>
                   <p className="flex flex-wrap items-center gap-2"><b>{roleLabel(c.role, locale)}</b><span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", KIND_STYLE[c.kind])}>{t(`kind.${c.kind}`)}</span></p>
                   {c.candidates.length > 0 && (
-                    <ul className="flex flex-wrap gap-1.5">
+                    <ul className="grid gap-1.5">
                       {c.candidates.map((x) => {
                         const who = plan.people.get(x.agencyId);
                         return who ? (
-                          <li key={x.agencyId} className="flex items-center gap-1 rounded-full border py-1 pe-1 ps-3 text-xs" data-testid="plan-candidate" data-source={x.source}>
-                            <Link href={`/a/${who.handle}`} className="font-medium">{who.name}</Link>
-                            <span className="text-muted-foreground">· {tCollab(`kinds.${who.kind}`)} · {t(`source.${x.source}`)}</span>
-                            <Link href={{ pathname: "/studio/collab/work/new", query: { to: who.id } }} className={buttonVariants({ size: "sm", variant: "outline", className: "h-8" })}>{tCollab("inquiry.start")}</Link>
+                          <li key={x.agencyId} className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-xl border bg-background px-3 py-2 text-xs" data-testid="plan-candidate" data-source={x.source}>
+                            <Link href={`/a/${who.handle}`} className="min-w-0 max-w-full truncate font-medium"><bdi>{who.name}</bdi></Link>
+                            <span className="whitespace-nowrap text-muted-foreground">{tCollab(`kinds.${who.kind}`)} · {t(`source.${x.source}`)}</span>
+                            <Link href={{ pathname: "/studio/collab/work/new", query: { to: who.id } }} className={buttonVariants({ size: "sm", variant: "outline", className: "ms-auto h-11 shrink-0 sm:h-9" })}>{tCollab("inquiry.start")}</Link>
                           </li>
                         ) : null;
                       })}
                     </ul>
                   )}
-                  {c.kind === "unfilled" && <Link href={{ pathname: "/studio/collab", query: { role: c.role, q: "1" } }} className="text-xs font-medium text-brand">{t("findRole", { role: roleLabel(c.role, locale) })}</Link>}
+                  {c.kind === "unfilled" && <Link href={{ pathname: "/studio/collab", query: { role: c.role, q: "1" } }} className="inline-flex min-h-11 items-center text-xs font-medium text-brand">{t("findRole", { role: roleLabel(c.role, locale) })}</Link>}
                 </li>
               ))}
             </ul>

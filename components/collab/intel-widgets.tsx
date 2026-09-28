@@ -32,7 +32,7 @@ export function PlanForm({ platforms, assistantAvailable, templateNames, initial
       <div className="flex flex-wrap gap-1.5" data-testid="plan-templates">
         <span className="self-center text-xs text-muted-foreground">{t("form.startFrom")}</span>
         {(Object.keys(TEMPLATES) as TemplateKey[]).map((k) => (
-          <Button key={k} type="button" variant="outline" size="sm" className="h-9" onClick={() => setLines(TEMPLATES[k].deliverables)} data-testid={`plan-template-${k}`}>{templateNames[k]}</Button>
+          <Button key={k} type="button" variant="outline" size="sm" className="h-11 sm:h-9" onClick={() => setLines(TEMPLATES[k].deliverables)} data-testid={`plan-template-${k}`}>{templateNames[k]}</Button>
         ))}
       </div>
       <Field label={t("form.deliverables")}><DeliverablesPicker value={lines} onChange={setLines} platforms={platforms} /></Field>
@@ -53,13 +53,14 @@ export function FeedbackForm({ workOrderId, aboutName }: { workOrderId: string; 
   const scale = (name: string, label: string) => (
     <fieldset className="grid gap-1">
       <legend className="text-sm font-medium">{label}</legend>
-      <div className="flex gap-1" role="radiogroup">
+      <div className="flex gap-1" role="radiogroup" aria-describedby={`${name}-hint`}>
         {[1, 2, 3, 4, 5].map((n) => (
-          <label key={n} className="grid size-11 cursor-pointer place-items-center rounded-lg border text-sm has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
-            <input type="radio" name={name} value={n} required className="sr-only" data-testid={`fb-${name}-${n}`} />{n}
+          <label key={n} className="relative grid size-11 cursor-pointer place-items-center rounded-lg border text-sm has-[:checked]:border-brand has-[:checked]:bg-brand has-[:checked]:text-white">
+            <input type="radio" name={name} value={n} required className="absolute inset-0 cursor-pointer opacity-0" data-testid={`fb-${name}-${n}`} />{n}
           </label>
         ))}
       </div>
+      <span id={`${name}-hint`} className="text-[11px] text-muted-foreground">{t("scaleHint")}</span>
     </fieldset>
   );
   return (
@@ -90,7 +91,7 @@ export function DisputeForm({ id }: { id: string }) {
   const [state, action] = useActionState(disputeFeedbackAction, undefined);
   const [open, setOpen] = useState(false);
   if (state?.ok) return <p className="text-xs text-brand" role="status" data-testid="dispute-done">✓ {t("disputeDone")}</p>;
-  if (!open) return <Button type="button" variant="ghost" size="sm" className="h-9 justify-self-start" onClick={() => setOpen(true)} data-testid="dispute-open">{t("dispute")}</Button>;
+  if (!open) return <Button type="button" variant="ghost" size="sm" className="h-11 justify-self-start sm:h-9" onClick={() => setOpen(true)} data-testid="dispute-open">{t("dispute")}</Button>;
   return (
     <form action={action} className="grid gap-2">
       <input type="hidden" name="id" value={id} />

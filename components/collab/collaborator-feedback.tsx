@@ -15,8 +15,8 @@ export async function CollaboratorFeedback({ data, locale }: { data: PublicFeedb
       <h2 className="flex items-center gap-2 font-semibold"><Handshake className="size-4 text-brand" aria-hidden /> {t("publicTitle")}</h2>
       <p className="text-xs text-muted-foreground">{t("publicIntro", { count: data.count })}</p>
       {data.averages && (
-        <dl className="grid grid-cols-3 gap-2 text-center text-sm">
-          {(["communication", "reliability", "quality"] as const).map((k) => <div key={k} className="rounded-xl bg-muted/50 p-2"><dt className="text-xs text-muted-foreground">{t(k)}</dt><dd className="font-semibold tabular-nums">{data.averages![k]}/5</dd></div>)}
+        <dl className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-2 text-center text-sm">
+          {(["communication", "reliability", "quality"] as const).map((k) => <div key={k} className="rounded-xl bg-muted/50 p-2"><dt className="text-[11px] text-muted-foreground">{t(k)}</dt><dd className="font-semibold tabular-nums">{data.averages![k]}/5</dd></div>)}
         </dl>
       )}
       <ul className="grid gap-2">

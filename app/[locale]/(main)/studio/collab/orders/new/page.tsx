@@ -45,7 +45,7 @@ export default async function NewOrderPage({ params, searchParams }: PageProps<"
         inquiryId={inquiry.id}
         contracts={contracts.map((c) => ({ key: c.id, label: `${c.number} · ${c.title}`, milestones: c.milestones.map((m) => ({ key: m.id, label: `${m.title} · ${tm(`status.${m.status}` as "status.pending")}` })) }))}
         parentContracts={mine.filter((c) => ["sent", "active"].includes(c.status)).map((c) => ({ key: c.id, label: `${c.number} · ${c.title}` }))}
-        defaults={{ title: inquiry.title, scope: [inquiry.scope, quote.scopeNote && !inquiry.scope.includes(quote.scopeNote) ? `${t("new.quoteNote")}: ${quote.scopeNote}` : ""].filter(Boolean).join("\n\n"), deliverables: inquiry.deliverables, dueOn: quote.dueOn ?? inquiry.dueOn ?? null }}
+        defaults={{ title: inquiry.title, scope: [inquiry.scope, quote.scopeNote && !inquiry.scope.includes(quote.scopeNote) ? quote.scopeNote : ""].filter(Boolean).join("\n\n"), deliverables: inquiry.deliverables, dueOn: quote.dueOn ?? inquiry.dueOn ?? null }}
       />
     </div>
   );

@@ -22,7 +22,7 @@ export default async function AdminReviews({ params }: PageProps<"/[locale]/admi
         {collab.map(({ f, author, about, aboutHandle }) => (
           <li key={f.id} className="flex flex-wrap items-start justify-between gap-3 p-3 text-sm" data-testid="admin-collab-feedback-row" data-status={f.status}>
             <div className="min-w-0 flex-1 space-y-1">
-              <p><Link href={`/a/${aboutHandle}?tab=reviews`} className="font-semibold">{about}</Link> · {tf("by", { name: author })} · <span className="text-muted-foreground">{tf(`role.${f.authorRole}`)} · {tf(`visibility.${f.visibility}`)}</span></p>
+              <p><Link href={`/a/${aboutHandle}?tab=reviews`} className="font-semibold"><bdi className="whitespace-nowrap">{about}</bdi></Link> · <bdi className="whitespace-nowrap">{tf("by", { name: author })}</bdi> · <span className="text-muted-foreground">{tf(`role.${f.authorRole}`)} · {tf(`visibility.${f.visibility}`)}</span></p>
               <p className="text-xs text-muted-foreground">{tf("communication")} {f.communication} · {tf("reliability")} {f.reliability} · {tf("quality")} {f.quality} · {timeAgo(f.createdAt.toISOString(), locale)}{f.status !== "published" ? <span className="text-destructive"> · {tf(`status.${f.status}`)}</span> : null}</p>
               {f.body && <p className="line-clamp-3"><bdi>{f.body}</bdi></p>}
               {f.disputeNote && <p className="rounded-lg bg-muted p-2 text-xs"><b>{tf("disputeLabel")}:</b> <bdi>{f.disputeNote}</bdi></p>}
