@@ -1,4 +1,4 @@
-name: Integrate registration phase with current main
+name: Validate registration integration
 on:
   push:
     branches: [feat/registration-phase]
@@ -8,59 +8,34 @@ permissions:
 jobs:
   integrate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
         with:
           ref: feat/registration-phase
-          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-      - name: Merge newer main, resolving disjoint JSON edits only
+      - name: Apply reviewed hardening and preserve the table call
         run: |
-          git fetch origin main
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' merge origin/main --no-commit --no-ff || true
           python3 - <<'PY'
-          import json,pathlib,subprocess
-          missing=object()
-          def merge(b,o,t,path=''):
-              if o==t:return o
-              if o==b:return t
-              if t==b:return o
-              if all(isinstance(v,dict) for v in [b,o,t]):
-                  out={}
-                  for k in list(o)+[k for k in t if k not in o]+[k for k in b if k not in o and k not in t]:
-                      val=merge(b.get(k,missing),o.get(k,missing),t.get(k,missing),path+'.'+k)
-                      if val is not missing:out[k]=val
-                  return out
-              raise RuntimeError('Conflicting values require manual review: '+path)
-          files=subprocess.check_output(['git','diff','--name-only','--diff-filter=U']).decode().splitlines()
-          assert set(files)<= {'messages/ar.json','messages/en.json'},files
-          for name in files:
-              b,o,t=[json.loads(subprocess.check_output(['git','show',f':{i}:{name}'])) for i in [1,2,3]]
-              result=merge(b,o,t)
-              assert 'Registration' in result and 'CreatorSetup' in result
-              pathlib.Path(name).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
-              subprocess.run(['git','add',name],check=True)
+          from pathlib import Path
+          p=Path('scripts/registration-hardening.py')
+          p.write_text(p.read_text().replace('needle[:-2]', 'needle[:-1]'))
           PY
+          python3 scripts/registration-hardening.py
+          git rm scripts/registration-hardening.py
+          git add app components lib messages tests
           git diff --cached --check
           test -z "$(git diff --cached --name-only -- .github/workflows)"
-          if [ -f .git/MERGE_HEAD ]; then
-            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'merge: preserve current onboarding while integrating registration phase'
-            git push origin HEAD:feat/registration-phase
-          fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(launch): enforce collaborator privacy and retain onboarding guide'
+          git push origin HEAD:feat/registration-phase
       - run: npm ci
-      - name: Typecheck
-        id: typecheck
-        continue-on-error: true
-        run: npm run typecheck
-      - name: Lint
-        id: lint
-        continue-on-error: true
-        run: npm run lint
-      - name: Export reviewed source and relevant installed framework docs
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npx vitest run tests/unit/registration-phase.test.ts
+      - name: Export reviewed source and framework docs
         if: always()
         run: |
           python3 - <<'PY'
@@ -71,7 +46,7 @@ jobs:
               for name in sorted(names):
                   p=pathlib.Path(name)
                   if p.is_file() and p.suffix in allowed and not name.startswith('public/') and not p.name.startswith('.env'):z.write(p,name)
-              for p in pathlib.Path('node_modules/next/dist/docs').rglob('*.mdx'):
+              for p in pathlib.Path('node_modules/next').rglob('*.md'):
                   if any(s in str(p) for s in ['authentication','data-security','route-handlers','route-segment-config','cookies']):z.write(p,'framework-docs/'+p.name)
           PY
       - uses: actions/upload-artifact@v4
@@ -80,6 +55,3 @@ jobs:
           name: registration-integrated-source
           path: registration-integrated-source.zip
           retention-days: 3
-      - name: Fail when a code check failed
-        if: steps.typecheck.outcome != 'success' || steps.lint.outcome != 'success'
-        run: exit 1
