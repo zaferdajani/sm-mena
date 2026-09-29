@@ -7,7 +7,7 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { ImageCarousel } from "@/components/post/image-carousel";
 import { ServicePicker } from "@/components/service-picker";
 import { ItemBrowser, ProviderList, ResourceChooser, type ConnectionLite, type ProviderState, type ResourceLite } from "@/components/social/connect";
-import { PortfolioExamples } from "@/components/studio/creator-guide";
+import { RealExamples } from "@/components/setup/real-examples";
 import { Link, useRouter } from "@/i18n/navigation";
 import {
   chooseSourceAction,
@@ -28,6 +28,7 @@ import {
 } from "@/app/[locale]/(main)/portfolio-setup/actions";
 import { previewBehanceAction } from "@/app/[locale]/(main)/studio/import/behance-actions";
 import type { SetupMediaView, SetupView } from "@/lib/data/portfolio-setup";
+import type { PostView } from "@/lib/data/posts";
 import type { BehanceDraft } from "@/lib/behance/types";
 import { AVATAR_UPLOAD, compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
 
@@ -56,6 +57,7 @@ export function SetupWizard(props: {
   socialNotice: string | null;
   invited: boolean;
   stagedItem: Staged;
+  examples: PostView[];
 }) {
   const t = useTranslations("Setup");
   const router = useRouter();
@@ -449,7 +451,8 @@ function ClientStep({ view, clients, stagedItem, heading, pending, run, back }: 
 }
 
 // 4 — One project: label, the creator's own part, services and the images (first = cover).
-function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pending, run, back, setError, beforeLeaveRef }: StepProps & {
+function ProjectStep({ view, setView, serviceOptions, stagedItem, examples, heading, pending, run, back, setError, beforeLeaveRef }: StepProps & {
+  examples: PostView[];
   setView: (v: SetupView) => void;
   serviceOptions: { primary: { key: string; label: string }[]; other: { key: string; label: string }[] };
   stagedItem: Staged;
@@ -584,7 +587,7 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
         </details>
       </fieldset>
 
-      <PortfolioExamples />
+      <RealExamples examples={examples} />
       <Nav
         back={back}
         pending={pending || busy || uploading}
@@ -632,7 +635,9 @@ function PreviewStep({ view, agency, clients, stagedItem, heading, pending, run,
           <AgencyAvatar name={agency.name} src={agency.avatarUrl} size={36} ring />
           <p className="truncate text-sm font-semibold">{agency.name}</p>
         </header>
-        <ImageCarousel images={images} alt={p?.title ?? ""} />
+        <div data-testid="setup-preview-images">
+          <ImageCarousel images={images} alt={p?.title ?? ""} />
+        </div>
         <div className="space-y-1 px-3 py-3 text-sm">
           {client && <p className="font-medium text-brand">{t("preview.forClient", { name: client })}</p>}
           {view.data.client?.mode === "personal" && <p className="text-xs text-muted-foreground">{t("client.personalLabel")}</p>}

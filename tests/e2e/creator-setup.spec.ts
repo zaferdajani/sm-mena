@@ -8,11 +8,14 @@ for (const locale of ["ar", "en"]) {
     await page.goto(`/${locale}/studio/setup`);
     await expect(page.getByTestId("creator-setup-page")).toBeVisible();
     await expect(page.getByTestId("portfolio-concept").locator("li")).toHaveCount(4);
-    await page.getByTestId("portfolio-examples").locator("summary").click();
-    const before = await page.getByTestId("portfolio-example-preview").innerText();
-    await page.getByTestId("portfolio-example-identity").click();
-    await expect(page.getByTestId("portfolio-example-identity")).toHaveAttribute("aria-pressed", "true");
-    expect(await page.getByTestId("portfolio-example-preview").innerText()).not.toBe(before);
+    // Real projects from the demo agencies, with decoded images; switching tabs shows another one.
+    await page.getByTestId("real-examples").locator("summary").click();
+    const card = page.getByTestId("real-example-card");
+    const before = await card.innerText();
+    await expect.poll(() => card.locator("img").evaluateAll((els) => els.length > 0 && els.every((el) => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0))).toBe(true);
+    await page.getByTestId("real-example-1").click();
+    await expect(page.getByTestId("real-example-1")).toHaveAttribute("aria-selected", "true");
+    expect(await card.innerText()).not.toBe(before);
     for (const width of [320, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);

@@ -64,7 +64,7 @@ test("a new provider sets up a first project: profile, upload, client, project, 
 
   await expect(page.getByTestId("setup-preview-card")).toContainText("Menu launch");
   await expect(page.getByTestId("setup-preview-card")).toContainText("For Café Nour");
-  await expectDecodedPreview(page.getByTestId("setup-preview-card"), 2);
+  await expectDecodedPreview(page.getByTestId("setup-preview-images"), 2);
   const pub = await page.context().browser()!.newContext();
   const visitor = await pub.newPage();
   await visitor.goto(`${new URL(page.url()).origin}/en/a/${handle}`);
@@ -72,7 +72,7 @@ test("a new provider sets up a first project: profile, upload, client, project, 
   await page.reload();
   await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "5");
   await expect(page.getByTestId("setup-preview-card")).toContainText("For Café Nour");
-  await expectDecodedPreview(page.getByTestId("setup-preview-card"), 2);
+  await expectDecodedPreview(page.getByTestId("setup-preview-images"), 2);
   await capture(page, info, "en-step-5-preview");
 
   await page.getByTestId("setup-edit-project").click();
@@ -129,7 +129,7 @@ test("a Behance project comes back into the same draft (Arabic)", async ({ page 
   await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
   await page.getByTestId("setup-project-next").click();
   await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "5");
-  await expectDecodedPreview(page.getByTestId("setup-preview-card"), 2);
+  await expectDecodedPreview(page.getByTestId("setup-preview-images"), 2);
   expect(await noOverflow(page)).toBe(true);
   await capture(page, info, "ar-import-preview");
 });

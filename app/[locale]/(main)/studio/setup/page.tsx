@@ -3,7 +3,9 @@ import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { canUse } from "@/lib/feature-gate";
 import { creatorSetupProgress } from "@/lib/creator/setup";
-import { PortfolioConcept, PortfolioExamples } from "@/components/studio/creator-guide";
+import { PortfolioConcept } from "@/components/studio/creator-guide";
+import { RealExamples } from "@/components/setup/real-examples";
+import { setupExamples } from "@/lib/data/setup-examples";
 
 /** A replayable, authenticated tutorial—not a new prerequisite for publishing. */
 export default async function CreatorSetupPage({ params }: PageProps<"/[locale]/studio/setup">) {
@@ -37,7 +39,7 @@ export default async function CreatorSetupPage({ params }: PageProps<"/[locale]/
         <p className="text-sm leading-7 text-muted-foreground">{t("optionalHelp")}</p>
         <Link href="/studio/clients" className={action}>{t("clientLink")} · {t("optional")}</Link>
       </section>
-      <PortfolioExamples />
+      <RealExamples examples={await setupExamples()} />
       <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5">
         <h2 className="font-semibold">{t("existingTitle")}</h2>
         <p className="text-sm leading-7 text-muted-foreground">{t("existingBody")}</p>

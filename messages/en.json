@@ -4568,6 +4568,17 @@
       "client": "Client",
       "project": "Project",
       "preview": "Preview"
+    },
+    "examples": {
+      "title": "See a real example",
+      "note": "Real projects from Sawwiq's demo agencies: fictional businesses set up the way a real page works. Nothing here is added to your portfolio.",
+      "demoLabel": "Demo agency (fictional)",
+      "cover": "Cover",
+      "forWhom": "For whom",
+      "noClient": "No client named",
+      "services": "Services",
+      "caption": "Description",
+      "open": "Open this project"
     }
   },
   "Social": {
