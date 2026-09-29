@@ -1,0 +1,11 @@
+/* A focused onboarding route, not an overflow-hiding reset. The same shell
+   resumes its normal appearance immediately when the visitor leaves setup. */
+.focused { display: block; }
+.focused > aside,
+.focused > :global([data-app-nav]),
+.focused :global([data-testid="site-footer"]) { display: none; }
+.focused > :global([data-app-header]) { display: flex; }
+.focused > main { min-block-size: 0; padding-block-end: 2rem; }
+/* Keep the wizard's action row in normal reading order, not floating over
+   its fields; other routes' sticky navigation remains unchanged. */
+.focused :global([data-testid="setup-wizard"]) :global(.sticky) { position: static; }

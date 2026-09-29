@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ReleaseStamp } from "@/components/release-stamp";
 import { SetupWizard } from "@/components/setup/wizard";
 import { requireAgency } from "@/lib/auth/guards";
 import { getItemForAgency, listConnections, pendingResources, providerStates } from "@/lib/data/social";
@@ -21,7 +22,6 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   const view = (await getSetup(agency.id)) ?? (await openSetup(agency.id, user.id));
   const [clients, connections, imports] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import")]);
-  // Back from a platform's consent screen: the resources it listed, for this agency only.
   const grant = one(q.grant);
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];
   const staged = view.data.socialItemId ? await getItemForAgency(agency.id, view.data.socialItemId) : null;
@@ -52,6 +52,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         invited={one(q.invited) === "1"}
         stagedItem={staged ? { title: staged.item.title, thumbnailUrl: staged.item.thumbnailUrl, provider: staged.item.provider, permalink: staged.item.permalink, ownership: staged.resource.ownership } : null}
       />
+      <div className="mt-8 border-t pt-3"><ReleaseStamp /></div>
     </div>
   );
 }

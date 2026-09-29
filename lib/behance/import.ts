@@ -1,5 +1,5 @@
 import "server-only";
-import { createPostFromProcessed, type PostInput } from "@/lib/data/posts";
+import { createPostFromProcessed, type PostInput, type PostWriteHooks } from "@/lib/data/posts";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar, processImage, type ProcessedImage } from "@/lib/images";
 import { storage } from "@/lib/storage";
 import { updateAgency } from "@/lib/data/agencies";
@@ -39,7 +39,7 @@ export type BehanceImportInput = {
 } & Omit<PostInput, "sourceUrl">;
 
 /** Downloads the kept images, processes them like an upload, and publishes the post with its Behance credit. */
-export async function importBehanceProject(agencyId: string, input: BehanceImportInput, fetcher = defaultFetcher()) {
+export async function importBehanceProject(agencyId: string, input: BehanceImportInput, fetcher = defaultFetcher(), hooks: PostWriteHooks = {}) {
   const urls = [...new Set(input.images)];
   if (!urls.length) throw new BehanceImportError("noImages");
   if (urls.length > MAX_IMAGES_PER_POST) throw new BehanceImportError("tooMany");
@@ -57,7 +57,7 @@ export async function importBehanceProject(agencyId: string, input: BehanceImpor
   void _p;
   void _i;
   const at = publishedAt && publishedAt.getTime() < Date.now() ? publishedAt : undefined;
-  return createPostFromProcessed(agencyId, { ...fields, sourceUrl }, processed, at);
+  return createPostFromProcessed(agencyId, { ...fields, sourceUrl }, processed, at, hooks);
 }
 
 /** The Behance profile picture becomes the page picture (the old one is removed). */

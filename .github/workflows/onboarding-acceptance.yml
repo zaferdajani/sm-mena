@@ -1,0 +1,79 @@
+name: Onboarding acceptance
+on:
+  push:
+    branches: [fix/onboarding-acceptance]
+permissions:
+  contents: read
+concurrency:
+  group: onboarding-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run typecheck
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: qa_rehearsal
+          POSTGRES_PASSWORD: disposable-ci-only
+          POSTGRES_DB: sawwiq_rehearsal
+        ports: [5432:5432]
+        options: --health-cmd "pg_isready -U qa_rehearsal -d sawwiq_rehearsal" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Rehearse additive migrations on disposable local Postgres only
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgresql://qa_rehearsal:disposable-ci-only@127.0.0.1:5432/sawwiq_rehearsal
+      - name: Exercise actual row-lock concurrency and rollback on Postgres
+        run: npx vitest run tests/unit/onboarding-hardening.test.ts
+        env:
+          ONBOARDING_REHEARSAL_URL: postgresql://qa_rehearsal:disposable-ci-only@127.0.0.1:5432/sawwiq_rehearsal
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run e2e
+        env:
+          CI: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: onboarding-playwright
+          path: |
+            playwright-report/
+            test-results/**/*.png
+          retention-days: 14

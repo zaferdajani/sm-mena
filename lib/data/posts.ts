@@ -1,6 +1,6 @@
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
-import { getDb } from "@/lib/db";
+import { getDb, type DB } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency, type PostEmbed } from "@/lib/db/schema";
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
@@ -107,60 +107,79 @@ export async function createPost(agencyId: string, input: PostInput, files: Buff
   return createPostFromProcessed(agencyId, input, processed);
 }
 
+/** Optional ownership/checkpoint work that must commit atomically with a new post.
+ * Hooks are server-only capabilities supplied by internal callers, never form input.
+ */
+export type PostWriteTransaction = Parameters<Parameters<DB["transaction"]>[0]>[0];
+export type PostWriteHooks = {
+  beforeInsert?: (tx: PostWriteTransaction) => Promise<void>;
+  afterInsert?: (tx: PostWriteTransaction, post: typeof posts.$inferSelect) => Promise<void>;
+};
+
 export async function createPostFromProcessed(
   agencyId: string,
   input: PostInput,
   processed: ProcessedImage[],
   createdAt?: Date,
+  hooks: PostWriteHooks = {},
 ) {
   const db = await getDb();
   const [agency] = await db.select({ name: agencies.name, translation: agencies.translation }).from(agencies).where(eq(agencies.id, agencyId));
   const uploaded: { key: string; thumbKey: string; image: ProcessedImage }[] = [];
-  for (const image of processed) {
-    const format = image.fullFormat ?? "webp";
-    const keys = newImageKeys(agencyId, format);
-    await storage().put(keys.key, image.full, STORED_TYPE[format]);
-    await storage().put(keys.thumbKey, image.thumb, "image/webp");
-    uploaded.push({ ...keys, image });
+  try {
+    for (const image of processed) {
+      const format = image.fullFormat ?? "webp";
+      const keys = newImageKeys(agencyId, format);
+      // Record both new keys first: a failed thumbnail upload must not orphan the full image.
+      uploaded.push({ ...keys, image });
+      await storage().put(keys.key, image.full, STORED_TYPE[format]);
+      await storage().put(keys.thumbKey, image.thumb, "image/webp");
+    }
+    return await db.transaction(async (tx) => {
+      await hooks.beforeInsert?.(tx);
+      const [post] = await tx
+        .insert(posts)
+        .values({
+          agencyId,
+          caption: input.caption,
+          services: input.services,
+          platforms: input.platforms,
+          industry: input.industry ?? null,
+          result: input.result ?? null,
+          clientId: input.clientId ?? null,
+          app: input.app ?? null,
+          sourceUrl: input.sourceUrl ?? null,
+          sourceProvider: input.source?.provider ?? null,
+          sourceItemId: input.source?.itemId ?? null,
+          embed: input.source?.embed ?? null,
+          translation: input.translation ?? {},
+          searchText: postSearchText(input, agency),
+          ...(createdAt ? { createdAt } : {}),
+        })
+        .returning();
+      if (uploaded.length) await tx.insert(postImages).values(
+        uploaded.map((u, position) => ({
+          postId: post.id,
+          position,
+          key: u.key,
+          thumbKey: u.thumbKey,
+          width: u.image.width,
+          height: u.image.height,
+          color: u.image.color,
+        })),
+      );
+      await tx
+        .update(agencies)
+        .set({ postCount: sql`${agencies.postCount} + 1` })
+        .where(eq(agencies.id, agencyId));
+      await hooks.afterInsert?.(tx, post);
+      return post;
+    });
+  } catch (error) {
+    // Only these newly generated keys belong to this failed attempt. Never remove existing media.
+    await storage().remove(uploaded.flatMap((u) => [u.key, u.thumbKey])).catch(() => undefined);
+    throw error;
   }
-  return db.transaction(async (tx) => {
-    const [post] = await tx
-      .insert(posts)
-      .values({
-        agencyId,
-        caption: input.caption,
-        services: input.services,
-        platforms: input.platforms,
-        industry: input.industry ?? null,
-        result: input.result ?? null,
-        clientId: input.clientId ?? null,
-        app: input.app ?? null,
-        sourceUrl: input.sourceUrl ?? null,
-        sourceProvider: input.source?.provider ?? null,
-        sourceItemId: input.source?.itemId ?? null,
-        embed: input.source?.embed ?? null,
-        translation: input.translation ?? {},
-        searchText: postSearchText(input, agency),
-        ...(createdAt ? { createdAt } : {}),
-      })
-      .returning();
-    await tx.insert(postImages).values(
-      uploaded.map((u, position) => ({
-        postId: post.id,
-        position,
-        key: u.key,
-        thumbKey: u.thumbKey,
-        width: u.image.width,
-        height: u.image.height,
-        color: u.image.color,
-      })),
-    );
-    await tx
-      .update(agencies)
-      .set({ postCount: sql`${agencies.postCount} + 1` })
-      .where(eq(agencies.id, agencyId));
-    return post;
-  });
 }
 
 export async function updatePost(postId: string, agencyId: string, input: PostInput) {

@@ -19,6 +19,7 @@ import {
   saveClientStepAction,
   saveProfileStepAction,
   saveProjectStepAction,
+  saveProjectDraftAction,
   stageBehanceAction,
   stageSocialItemAction,
   startAnotherAction,
@@ -62,6 +63,7 @@ export function SetupWizard(props: {
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const heading = useRef<HTMLHeadingElement>(null);
+  const beforeLeaveRef = useRef<((destination: "back" | "pause") => Promise<SetupResult>) | null>(null);
 
   // Focus follows the step, so screen readers hear the change.
   useEffect(() => heading.current?.focus(), [view.step, view.status]);
@@ -83,8 +85,8 @@ export function SetupWizard(props: {
       if (apply(r)) after?.(r);
     });
 
-  const back = () => run(() => goToStepAction(view.version, Math.max(1, view.step - 1)));
-  const finishLater = () => run(() => pauseSetupAction(view.version), () => router.push("/studio"));
+  const back = () => run(() => beforeLeaveRef.current ? beforeLeaveRef.current("back") : goToStepAction(view.version, Math.max(1, view.step - 1)));
+  const finishLater = () => run(() => beforeLeaveRef.current ? beforeLeaveRef.current("pause") : pauseSetupAction(view.version), () => router.push("/studio"));
 
   if (view.status === "finished") return <Finished view={view} agency={props.agency} onAnother={() => run(() => startAnotherAction())} pending={pending} />;
 
@@ -108,7 +110,7 @@ export function SetupWizard(props: {
       {view.step === 1 && <ProfileStep {...props} view={view} heading={heading} pending={pending} run={run} />}
       {view.step === 2 && <SourceStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
       {view.step === 3 && <ClientStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
-      {view.step === 4 && <ProjectStep {...props} view={view} setView={setView} heading={heading} pending={pending} run={run} back={back} setError={setError} />}
+      {view.step === 4 && <ProjectStep {...props} view={view} setView={setView} heading={heading} pending={pending} run={run} back={back} setError={setError} beforeLeaveRef={beforeLeaveRef} />}
       {view.step === 5 && <PreviewStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
     </section>
   );
@@ -352,7 +354,7 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
                   fd.set("source", "pdf");
                   const r = await uploadSetupMediaAction(fd);
                   if (r.error) return setError(r.error);
-                  run(() => chooseSourceAction(view.version, "pdf"));
+                  run(() => chooseSourceAction(r.view?.version ?? view.version, "pdf"));
                 })
               }
               data-testid="setup-pdf-use"
@@ -447,11 +449,12 @@ function ClientStep({ view, clients, stagedItem, heading, pending, run, back }: 
 }
 
 // 4 — One project: label, the creator's own part, services and the images (first = cover).
-function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pending, run, back, setError }: StepProps & {
+function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pending, run, back, setError, beforeLeaveRef }: StepProps & {
   setView: (v: SetupView) => void;
   serviceOptions: { primary: { key: string; label: string }[]; other: { key: string; label: string }[] };
   stagedItem: Staged;
   setError: (e: string | null) => void;
+  beforeLeaveRef: React.RefObject<((destination: "back" | "pause") => Promise<SetupResult>) | null>;
 }) {
   const t = useTranslations("Setup");
   const ts = useTranslations("Social");
@@ -465,6 +468,14 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
   const [busy, start] = useTransition();
   const picker = useRef<HTMLInputElement>(null);
   const isBehance = view.data.source === "behance" && Boolean(view.data.behance);
+  useEffect(() => {
+    const save = async (destination: "back" | "pause"): Promise<SetupResult> => {
+      if (uploading || busy) return { error: "generic" };
+      return saveProjectDraftAction(view.version, { title, contribution, services, ...(isBehance ? { behanceImages } : {}) }, destination);
+    };
+    beforeLeaveRef.current = save;
+    return () => { if (beforeLeaveRef.current === save) beforeLeaveRef.current = null; };
+  }, [view.version, title, contribution, services, behanceImages, isBehance, uploading, busy, beforeLeaveRef]);
   // Unsaved files: warn before leaving, never say "saved" until the server stored them.
   useEffect(() => {
     if (!uploading) return;
@@ -477,7 +488,7 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
     setError(null);
     if (r.media) {
       setMedia(r.media);
-      setView({ ...view, media: r.media });
+      setView(r.view ?? { ...view, media: r.media });
     }
   };
   const add = (files: FileList | null) => {
