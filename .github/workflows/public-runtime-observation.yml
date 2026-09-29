@@ -1,0 +1,65 @@
+name: Public runtime observation
+on:
+  push:
+    branches: [ops/vercel-access-recovery]
+    paths: [.github/workflows/public-runtime-observation.yml]
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Read only the known deployment's runtime stream and public pages
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import { mkdir,writeFile } from 'node:fs/promises';
+          const project='prj_r6vpBm9DQ1RCmBYhDTURXga9bPC1';
+          const deployment='dpl_2N5isGqYHr9g1zBGY6656vML1vZb';
+          const out={at:new Date().toISOString(),observationOnly:true,deployment,streamStatus:0,events:0,classes:{},routes:[],limitations:[]};
+          const ctl=new AbortController();
+          const timer=setTimeout(()=>ctl.abort(),35000);
+          const classify=line=>{try{
+            const e=JSON.parse(line.replace(/^data:\s*/,''));out.events++;
+            if(!['error','fatal'].includes(e.level))return;
+            const text=String(e.message??'');
+            const known=[['undefined-column',/42703|column[^\n]+does not exist/i],['undefined-table',/42P01|relation[^\n]+does not exist/i],['query-failure',/Failed query|DrizzleQueryError/i],['type-error',/TypeError/],['translation',/MISSING_MESSAGE/],['timeout',/TimeoutError|ETIMEDOUT/]];
+            const name=known.find(([,re])=>re.test(text))?.[0]??'other-error';out.classes[name]=(out.classes[name]??0)+1;
+          }catch{/* No raw message, row, request id or user data is persisted. */}};
+          const stream=(async()=>{
+            if(!process.env.VERCEL_TOKEN){out.limitations.push('No authorized log credential available');return;}
+            try{
+              const r=await fetch(`https://api.vercel.com/v1/projects/${project}/deployments/${deployment}/runtime-logs`,{method:'GET',redirect:'error',headers:{Authorization:`Bearer ${process.env.VERCEL_TOKEN}`,Accept:'application/json'},signal:ctl.signal});
+              out.streamStatus=r.status;
+              if(!r.ok){await r.body?.cancel();return;}
+              let buffer='',bytes=0;
+              for await(const chunk of r.body){bytes+=chunk.length;if(bytes>1000000){ctl.abort();break;}buffer+=Buffer.from(chunk).toString('utf8');const lines=buffer.split('\n');buffer=lines.pop()??'';for(const line of lines)classify(line);}
+            }catch{out.limitations.push('Runtime stream unavailable or bounded observation ended; no raw error emitted');}
+          })();
+          // Start public requests independently; streaming headers may wait for a first event.
+          await new Promise(r=>setTimeout(r,1500));
+          for(const path of ['/api/version','/ar/explore','/en/explore','/ar/explore?tab=agencies']){
+            try{
+              const r=await fetch('https://sawwiq.org'+path,{method:'GET',redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(15000),headers:{'User-Agent':'SawwiqReadOnlyProof/1.0'}});
+              const row={path,status:r.status};
+              if(path==='/api/version'&&r.ok){const x=await r.json();row.commit=/^[a-f0-9]{40}$/.test(x.commit??'')?x.commit:null;row.revision=/^[a-zA-Z0-9_.-]{1,100}$/.test(x.revision??'')?x.revision:null;}
+              else await r.body?.cancel();
+              out.routes.push(row);
+            }catch{out.routes.push({path,status:0});}
+          }
+          await stream;clearTimeout(timer);
+          out.limitations.push('No database queries, environment listing, sign-in, account creation or writes; a zero-event stream is not evidence of zero runtime errors.');
+          const json=JSON.stringify(out,null,2);if(process.env.VERCEL_TOKEN&&json.includes(process.env.VERCEL_TOKEN))throw new Error('Unsafe output refused');
+          await mkdir('public-runtime',{recursive:true});await writeFile('public-runtime/summary.json',json);console.log(json);
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sawwiq-public-runtime-summary
+          path: public-runtime/summary.json
+          retention-days: 7
