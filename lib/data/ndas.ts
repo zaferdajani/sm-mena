@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import "server-only";
 import { randomBytes } from "node:crypto";
 import { and, desc, eq } from "drizzle-orm";
@@ -32,7 +33,7 @@ export type NdaInput = {
   locale: string;
 };
 
-export type NdaError = "purpose" | "client" | "signer" | "signature";
+export type NdaError = "unavailable" | "purpose" | "client" | "signer" | "signature";
 
 /** Everything both parties agree to, in a stable order. Its hash is what gets signed. */
 export function ndaCanonicalTerms(n: {
@@ -72,6 +73,7 @@ const cut = (v: string | null | undefined, n: number) => (v ? v.trim().slice(0, 
 const b64 = (bytes: Uint8Array | null | undefined) => (bytes?.length ? Buffer.from(bytes).toString("base64") : null);
 
 export async function createNda(agencyId: string, raw: NdaInput): Promise<{ error: NdaError } | { nda: Nda; token: string }> {
+  if (!documentsOpen()) return { error: "unavailable" };
   const purpose = cut(raw.purpose, 1000) ?? "";
   if (purpose.length < 10) return { error: "purpose" };
   const client = { name: cut(raw.client.name, 80) ?? "", phone: cut(raw.client.phone, 20) ?? "", email: cut(raw.client.email, 200), regNumber: cut(raw.client.regNumber, 60) };

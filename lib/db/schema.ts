@@ -2210,3 +2210,11 @@ export type SocialResource = typeof socialResources.$inferSelect;
 export type SocialImportItem = typeof socialImportItems.$inferSelect;
 export type PortfolioSetup = typeof portfolioSetups.$inferSelect;
 export type PortfolioSetupMedia = typeof portfolioSetupMedia.$inferSelect;
+
+/** Draft/publication preference. Missing rows preserve existing public accounts. */
+export const profilePublications = pgTable("profile_publications", {
+  agencyId: uuid("agency_id").primaryKey().references(() => agencies.id, { onDelete: "cascade" }),
+  visibility: text("visibility").$type<"private" | "unlisted" | "public">().notNull().default("private"),
+  consentVersion: text("consent_version").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("profile_publications_visibility_idx").on(t.visibility), check("profile_publications_visibility_check", sql`${t.visibility} in ('private', 'unlisted', 'public')`)]).enableRLS();

@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { DemoNotice } from "@/components/demo/demo-banner";
 import { Briefcase, Check, Grid3x3, Info, Star } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
@@ -17,7 +18,7 @@ import { ReviewList, ReviewSummary } from "@/components/reviews/review-list";
 import { WriteReviewDialog } from "@/components/reviews/write-review-dialog";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Link } from "@/i18n/navigation";
-import { getAgencyByHandle } from "@/lib/data/agencies";
+import { visibleAgencyByHandle, mayIndexAgency } from "@/lib/data/publication";
 import { localizedAgency } from "@/lib/content-lang";
 import { isFollowing, recordView } from "@/lib/data/interactions";
 import { getCurrentAgency } from "@/lib/auth/session";
@@ -41,7 +42,7 @@ import { isFoundingMember } from "@/lib/founding";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handle]">): Promise<Metadata> {
   const { locale, handle } = await params;
-  const found = await getAgencyByHandle(handle);
+  const found = await visibleAgencyByHandle(handle);
   if (!found) return {};
   const agency = localizedAgency(found, locale);
   const t = await getTranslations({ locale, namespace: "Seo" });
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
     type: "profile",
     country: agency.country,
     // Demo agencies are for trying the site, not for search results.
-    noindex: agency.isDemo || agency.status !== "active",
+    noindex: !(await mayIndexAgency(agency)),
   });
 }
 
@@ -67,7 +68,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   setRequestLocale(locale);
   const rawTab = (await searchParams).tab;
   const tab = rawTab === "about" || rawTab === "reviews" || rawTab === "clients" ? rawTab : "work";
-  const found = await getAgencyByHandle(handle);
+  const found = await visibleAgencyByHandle(handle);
   if (!found) notFound();
   // Name, bio, about and strengths in the reader's language when the agency wrote both (lib/content-lang.ts).
   const agency = localizedAgency(found, locale);
@@ -126,7 +127,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         </div>
       )}
       {/* No structured data for sample agencies: search engines only hear about real ones. */}
-      {!agency.isDemo && <JsonLd
+      {(await mayIndexAgency(agency)) && <JsonLd
         data={[
           agencyLd(agency, { locale, cityName: tCity(agency.city), image: avatarUrl, reviews: latestReviews, packages: pkgs ?? [] }),
           breadcrumbLd([
@@ -136,8 +137,8 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           ]),
         ]}
       />}
-      <ProfileHeader
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: agency.foundingSeat, founding: isFoundingMember(agency) }}
+      <ProfileHeader registrationMode={isRegistrationPhase()}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency) }}
         following={following}
         followersHref={(await getCurrentAgency())?.id === agency.id ? "/studio/followers" : undefined}
         servesNote={note}

@@ -1,3 +1,4 @@
+import { mayReadAgency, mayReadAgencyId, discoverableProfiles } from "@/lib/data/publication";
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
@@ -328,7 +329,12 @@ export async function getFeed(
   limit = 12,
 ): Promise<{ items: PostView[]; nextCursor: string | null }> {
   const db = await getDb();
+  const allowed = filters.agencyId
+    ? await mayReadAgencyId(filters.agencyId)
+    : await (await import("@/lib/launch-access")).canBrowseDirectory();
+  if (!allowed) return { items: [], nextCursor: null };
   const conditions = filterConditions(filters);
+  if (!filters.agencyId) conditions.push(discoverableProfiles());
   // On an agency's own grid, pinned posts come first (page one only) and are
   // excluded from the chronological pages so they never repeat.
   const onProfile = Boolean(filters.agencyId && !filters.q && !filters.service && !filters.platforms?.length);
@@ -373,7 +379,8 @@ export async function getPostsByIds(ids: string[]): Promise<PostView[]> {
     .from(posts)
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
     .where(and(inArray(posts.id, ids), eq(posts.status, "published"), eq(agencies.status, "active")));
-  const views = await attachImages(rows);
+  const readable = await Promise.all(rows.map(async (row) => await mayReadAgency(row.agency) ? row : null));
+  const views = await attachImages(readable.filter((row): row is (typeof rows)[number] => row !== null));
   const order = new Map(ids.map((id, i) => [id, i]));
   return views.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }
@@ -388,6 +395,7 @@ export async function getPost(postId: string, ownerAgencyId?: string): Promise<P
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
     .where(eq(posts.id, postId));
   if (!row) return null;
+  if (ownerAgencyId !== row.agency.id && !(await mayReadAgency(row.agency))) return null;
   const isOwner = ownerAgencyId === row.agency.id;
   if (!isOwner && (row.post.status !== "published" || row.agency.status !== "active")) return null;
   const [view] = await attachImages([row]);

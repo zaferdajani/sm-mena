@@ -1,3 +1,5 @@
+import { RegistrationView } from "@/components/registration/registration-view";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Lang } from "@/components/landing/copy";
@@ -13,6 +15,10 @@ import { organizationLd, websiteLd } from "@/lib/structured-data";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
+  if (isRegistrationPhase()) {
+    const r = await getTranslations({ locale, namespace: "Registration" });
+    return pageMeta({ locale, path: "" , title: r("metaTitle"), absoluteTitle: true, description: r("metaDescription") });
+  }
   const t = await getTranslations({ locale, namespace: "Seo" });
   return pageMeta({ locale, path: "", title: t("homeTitle"), absoluteTitle: true, description: t("homeDescription") });
 }
@@ -28,6 +34,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">): Prom
 export default async function LandingPage({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  if (isRegistrationPhase()) return <RegistrationView locale={locale} />;
   const [country, chosen, account, prelaunch] = await Promise.all([currentCountry(), chosenCountry(), accountLink(locale), canUse("prelaunch_home")]);
   // Until launch the front page is the teaser (Admin → Features → Pre-launch home page; docs/39).
   if (prelaunch) {

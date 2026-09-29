@@ -1,5 +1,5 @@
 /** Public, non-secret identifiers. A missing SHA stays unknown, never inferred. */
-export const UI_REVISION = "portfolio-setup-v1.1";
+export const UI_REVISION = "registration-setup-2026-09-29";
 
 export function releaseInfo() {
   const candidate = process.env.VERCEL_GIT_COMMIT_SHA || process.env.GITHUB_SHA || "";

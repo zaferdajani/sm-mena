@@ -1,3 +1,6 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
+import { discoverableProfiles } from "@/lib/data/publication";
+import { agencies } from "@/lib/db/schema";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { packages, type DeliverableLine, type Package, type PackageTranslation } from "@/lib/db/schema";
@@ -58,6 +61,7 @@ export async function cheapestPackages(agencyIds: string[], service?: string) {
 
 /** Package price range for a service across the market (for budget estimates). */
 export async function packagePriceRange(service: string) {
+  if (isRegistrationPhase()) return { n: 0, min: null, median: null, max: null };
   const db = await getDb();
   const [row] = await db
     .select({
@@ -67,6 +71,7 @@ export async function packagePriceRange(service: string) {
       max: sql<number | null>`max(${packages.priceJod})`,
     })
     .from(packages)
-    .where(and(eq(packages.service, service), eq(packages.billing, "monthly")));
+    .innerJoin(agencies, eq(packages.agencyId, agencies.id))
+    .where(and(discoverableProfiles(), eq(packages.service, service), eq(packages.billing, "monthly")));
   return { ...row, median: row.median === null ? null : Math.round(Number(row.median)) };
 }

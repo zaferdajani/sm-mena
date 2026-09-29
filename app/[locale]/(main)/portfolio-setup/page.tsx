@@ -6,6 +6,7 @@ import { getItemForAgency, listConnections, pendingResources, providerStates } f
 import { getSetup, openSetup } from "@/lib/data/portfolio-setup";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { setupExamples } from "@/lib/data/setup-examples";
+import { publicationFor } from "@/lib/data/publication";
 import { postFormOptions } from "@/lib/studio-options";
 import { canUse } from "@/lib/feature-gate";
 import { mediaUrl } from "@/lib/storage";
@@ -22,7 +23,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const q = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   const view = (await getSetup(agency.id)) ?? (await openSetup(agency.id, user.id));
-  const [clients, connections, imports, examples] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), setupExamples()]);
+  const [clients, connections, imports, examples, publication] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), setupExamples(), publicationFor(agency.id)]);
   const grant = one(q.grant);
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];
   const staged = view.data.socialItemId ? await getItemForAgency(agency.id, view.data.socialItemId) : null;
@@ -52,6 +53,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         socialNotice={one(q.social).slice(0, 30) || null}
         invited={one(q.invited) === "1"}
         examples={examples}
+        visibility={publication.visibility}
         stagedItem={staged ? { title: staged.item.title, thumbnailUrl: staged.item.thumbnailUrl, provider: staged.item.provider, permalink: staged.item.permalink, ownership: staged.resource.ownership } : null}
       />
       <div className="mt-8 border-t pt-3"><ReleaseStamp /></div>

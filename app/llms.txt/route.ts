@@ -1,3 +1,6 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
+import { discoverableProfiles } from "@/lib/data/publication";
+import messages from "@/messages/en.json";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { and, asc, eq } from "drizzle-orm";
 import { serviceCounts } from "@/lib/data/hire";
@@ -18,13 +21,14 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   if (!siteIndexable()) return new Response("", { status: 404 });
+  if (isRegistrationPhase()) return new Response(messages.Registration.llms, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
   const db = await getDb();
   const [{ services }, rows] = await Promise.all([
     serviceCounts({ realOnly: true }),
     db
       .select({ handle: agencies.handle, name: agencies.name, city: agencies.city, services: agencies.services })
       .from(agencies)
-      .where(and(eq(agencies.status, "active"), eq(agencies.isDemo, false)))
+      .where(and(eq(agencies.status, "active"), eq(agencies.isDemo, false), discoverableProfiles()))
       .orderBy(asc(agencies.name))
       .limit(500),
   ]);
