@@ -4825,7 +4825,8 @@
       "noClient": "No client named",
       "services": "Services",
       "caption": "Description",
-      "open": "Open this project"
+      "open": "Open this project",
+      "openExamples": "See all example pages"
     }
   },
   "Social": {

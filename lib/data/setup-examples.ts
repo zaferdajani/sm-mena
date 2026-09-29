@@ -1,15 +1,18 @@
 import "server-only";
-import { and, desc, eq, isNotNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, posts } from "@/lib/db/schema";
-import { getPostsByIds, type PostView } from "@/lib/data/posts";
+import { attachImages, type PostView } from "@/lib/data/posts";
 
 /**
  * Real examples for the first-run setup (docs/53): published projects of the
  * demo agencies that are filed under a client, so a new provider sees an
  * actual page (agency, client, images, caption) rather than placeholders.
  * The demo agencies are fictional and labelled as such wherever shown; one
- * project per agency, the most varied services first.
+ * project per agency, the most varied services first. Shown only to a
+ * signed-in provider inside the setup, so the registration phase's rule that
+ * demo pages are not public does not apply here (the same fixtures back the
+ * public /examples page in that phase).
  */
 export async function setupExamples(limit = 4): Promise<PostView[]> {
   const db = await getDb();
@@ -34,5 +37,12 @@ export async function setupExamples(limit = 4): Promise<PostView[]> {
       seenService.add(lead);
     }
   }
-  return getPostsByIds(picked.map((r) => r.id));
+  if (!picked.length) return [];
+  const full = await db
+    .select({ post: posts, agency: agencies })
+    .from(posts)
+    .innerJoin(agencies, eq(posts.agencyId, agencies.id))
+    .where(inArray(posts.id, picked.map((r) => r.id)));
+  const order = new Map(picked.map((r, i) => [r.id, i]));
+  return (await attachImages(full)).sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }

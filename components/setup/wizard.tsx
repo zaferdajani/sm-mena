@@ -58,6 +58,7 @@ export function SetupWizard(props: {
   invited: boolean;
   stagedItem: Staged;
   examples: PostView[];
+  examplesHref: "post" | "examples";
   /** The page's audience (lib/data/publication.ts): private/unlisted pages save, a public page publishes. */
   visibility: "private" | "unlisted" | "public";
 }) {
@@ -453,8 +454,9 @@ function ClientStep({ view, clients, stagedItem, heading, pending, run, back }: 
 }
 
 // 4 — One project: label, the creator's own part, services and the images (first = cover).
-function ProjectStep({ view, setView, serviceOptions, stagedItem, examples, heading, pending, run, back, setError, beforeLeaveRef }: StepProps & {
+function ProjectStep({ view, setView, serviceOptions, stagedItem, examples, examplesHref, heading, pending, run, back, setError, beforeLeaveRef }: StepProps & {
   examples: PostView[];
+  examplesHref: "post" | "examples";
   setView: (v: SetupView) => void;
   serviceOptions: { primary: { key: string; label: string }[]; other: { key: string; label: string }[] };
   stagedItem: Staged;
@@ -589,7 +591,7 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, examples, head
         </details>
       </fieldset>
 
-      <RealExamples examples={examples} />
+      <RealExamples examples={examples} openHref={examplesHref} />
       <Nav
         back={back}
         pending={pending || busy || uploading}

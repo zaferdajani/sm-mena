@@ -6,6 +6,7 @@ import { creatorSetupProgress } from "@/lib/creator/setup";
 import { PortfolioConcept } from "@/components/studio/creator-guide";
 import { RealExamples } from "@/components/setup/real-examples";
 import { setupExamples } from "@/lib/data/setup-examples";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 
 /** A replayable, authenticated tutorial—not a new prerequisite for publishing. */
 export default async function CreatorSetupPage({ params }: PageProps<"/[locale]/studio/setup">) {
@@ -39,7 +40,7 @@ export default async function CreatorSetupPage({ params }: PageProps<"/[locale]/
         <p className="text-sm leading-7 text-muted-foreground">{t("optionalHelp")}</p>
         <Link href="/studio/clients" className={action}>{t("clientLink")} · {t("optional")}</Link>
       </section>
-      <RealExamples examples={await setupExamples()} />
+      <RealExamples examples={await setupExamples()} openHref={isRegistrationPhase() ? "examples" : "post"} />
       <section className="space-y-3 rounded-2xl border bg-card p-4 sm:p-5">
         <h2 className="font-semibold">{t("existingTitle")}</h2>
         <p className="text-sm leading-7 text-muted-foreground">{t("existingBody")}</p>

@@ -271,7 +271,7 @@ function agencyView(a: Agency): PostView["agency"] {
   };
 }
 
-async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Agency }[]): Promise<PostView[]> {
+export async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Agency }[]): Promise<PostView[]> {
   if (!rows.length) return [];
   const db = await getDb();
   const images = await db

@@ -7,6 +7,7 @@ import { getSetup, openSetup } from "@/lib/data/portfolio-setup";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { setupExamples } from "@/lib/data/setup-examples";
 import { publicationFor } from "@/lib/data/publication";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { postFormOptions } from "@/lib/studio-options";
 import { canUse } from "@/lib/feature-gate";
 import { mediaUrl } from "@/lib/storage";
@@ -53,6 +54,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         socialNotice={one(q.social).slice(0, 30) || null}
         invited={one(q.invited) === "1"}
         examples={examples}
+        examplesHref={isRegistrationPhase() ? "examples" : "post"}
         visibility={publication.visibility}
         stagedItem={staged ? { title: staged.item.title, thumbnailUrl: staged.item.thumbnailUrl, provider: staged.item.provider, permalink: staged.item.permalink, ownership: staged.resource.ownership } : null}
       />

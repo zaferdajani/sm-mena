@@ -16,7 +16,8 @@ const control = "inline-flex min-h-11 items-center justify-center rounded-xl bor
  * images, client and caption, labelled as demo pages. Falls back to the written
  * examples when the database holds no demo projects.
  */
-export function RealExamples({ examples }: { examples: PostView[] }) {
+/** openHref: where "Open this project" goes; in the registration phase demo pages are only reachable through /examples. */
+export function RealExamples({ examples, openHref = "post" }: { examples: PostView[]; openHref?: "post" | "examples" }) {
   const t = useTranslations("Setup.examples");
   const locale = useLocale();
   const [index, setIndex] = useState(0);
@@ -69,7 +70,7 @@ export function RealExamples({ examples }: { examples: PostView[] }) {
           </div>
         </dl>
         <div className="border-t px-3 py-2 text-sm">
-          <Link href={`/p/${post.id}`} className="font-semibold text-brand underline underline-offset-4" target="_blank">{t("open")}</Link>
+          <Link href={openHref === "post" ? `/p/${post.id}` : "/examples"} className="font-semibold text-brand underline underline-offset-4" target="_blank">{openHref === "post" ? t("open") : t("openExamples")}</Link>
         </div>
       </article>
     </details>
