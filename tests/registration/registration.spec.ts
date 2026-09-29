@@ -153,3 +153,34 @@ test("320px Arabic pages and example tabs do not overflow", async ({ page }, inf
     await capture(page, info, `320-${route.replaceAll(/[^a-z]/gi, "-")}`);
   }
 });
+
+test("the first-run setup saves the first project to a private page during registration", async ({ page, browser }, info) => {
+  test.setTimeout(150_000);
+  const { handle } = await joinAgency(page, "regwiz", { stay: true });
+  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "1");
+  await page.getByTestId("setup-profile-skip").click();
+  await page.getByTestId("source-upload").click();
+  await page.getByTestId("client-mode-private").check();
+  await page.getByTestId("setup-client-next").click();
+  await page.getByTestId("setup-image-input").setInputFiles({ name: "a.png", mimeType: "image/png", buffer: await pngBuffer("#7a1f4d") });
+  await expect(page.getByTestId("setup-media").locator("li")).toHaveCount(1, { timeout: 30_000 });
+  await page.getByTestId("setup-project-title").fill("Private launch");
+  await page.getByTestId("setup-project-contribution").fill("I shot everything.");
+  await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
+  await page.getByTestId("setup-project-next").click();
+  // A registration account is private: the last step saves, it does not publish.
+  await expect(page.getByTestId("setup-visibility")).toHaveAttribute("data-visibility", "private");
+  await expect(page.getByTestId("setup-publish")).toHaveText("Save my portfolio");
+  await capture(page, info, "registration-setup-preview-private");
+  await page.getByTestId("setup-rights").check();
+  await page.getByTestId("setup-publish").click();
+  await expect(page.getByTestId("setup-finished")).toContainText("Your first project is saved");
+  await expect(page.getByTestId("setup-choose-audience")).toHaveAttribute("href", "/en/studio/publication");
+  await capture(page, info, "registration-setup-saved");
+  // Nobody else can see the page or the project.
+  const anon = await browser.newContext();
+  expect((await anon.request.get(`/en/a/${handle}`)).status()).toBe(404);
+  const projectHref = await page.getByRole("link", { name: "View the project" }).getAttribute("href");
+  expect((await anon.request.get(projectHref!)).status()).toBe(404);
+  await anon.close();
+});
