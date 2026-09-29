@@ -1,0 +1,51 @@
+name: Role picker HTTPS compatibility
+on:
+  pull_request:
+    paths:
+      - 'components/studio/role-picker.tsx'
+      - 'components/studio/team-fields.tsx'
+      - 'lib/services/role-input.ts'
+      - 'tests/e2e/role-picker.spec.ts'
+      - 'playwright.roles-https.config.ts'
+      - 'scripts/test-role-https.mjs'
+      - '.github/workflows/role-compatibility.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: role-https-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  roles:
+    name: Roles over HTTPS (${{ matrix.phase }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [full, registration]
+    env:
+      CI: 'true'
+      LAUNCH_PHASE: ${{ matrix.phase }}
+      ROLE_TEST_PHASE: ${{ matrix.phase }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build
+      - run: npx playwright test --config=playwright.roles-https.config.ts
+      - name: Export screenshots and test metadata only
+        if: always()
+        run: python3 scripts/collect-design-evidence.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: role-https-${{ matrix.phase }}-evidence
+          path: design-evidence/
+          retention-days: 7
