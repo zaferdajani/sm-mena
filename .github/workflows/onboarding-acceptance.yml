@@ -6,52 +6,14 @@ permissions:
   contents: read
 concurrency:
   group: onboarding-acceptance-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    outputs:
-      candidate: ${{ steps.candidate.outputs.sha }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Materialize the reviewed source on the isolated branch only
-        id: candidate
-        env:
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          test "$BRANCH" = "fix/onboarding-acceptance"
-          if [ -d .ops-onboarding ]; then
-            for script in .ops-onboarding/0*.py; do python3 "$script"; done
-            python3 - <<'PY'
-          from pathlib import Path
-          import hashlib,json,subprocess
-          expected=json.loads(Path('.ops-onboarding/expected.json').read_text())
-          for path,digest in expected.items():
-            actual=hashlib.sha256(Path(path).read_bytes()).hexdigest()
-            assert actual==digest,(path,actual,digest)
-          changes=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
-          assert set(changes)<=set(expected),changes
-          subprocess.check_call(['git','add','--',*expected.keys()])
-          print(f'All {len(expected)} source/test files match the reviewed SHA256 manifest.')
-          PY
-            git rm -r .ops-onboarding
-            git config user.name "Sawwiq validation"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "fix(onboarding): materialize reviewed acceptance corrections"
-            git push origin "HEAD:$BRANCH"
-          fi
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   checks:
-    needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.prepare.outputs.candidate }}
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -62,7 +24,6 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
   postgres:
-    needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -73,11 +34,10 @@ jobs:
           POSTGRES_PASSWORD: disposable-ci-only
           POSTGRES_DB: sawwiq_rehearsal
         ports: [5432:5432]
-        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+        options: --health-cmd "pg_isready -U qa_rehearsal -d sawwiq_rehearsal" --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.prepare.outputs.candidate }}
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -93,13 +53,11 @@ jobs:
         env:
           ONBOARDING_REHEARSAL_URL: postgresql://qa_rehearsal:disposable-ci-only@127.0.0.1:5432/sawwiq_rehearsal
   e2e:
-    needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.prepare.outputs.candidate }}
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
@@ -118,4 +76,4 @@ jobs:
           path: |
             playwright-report/
             test-results/**/*.png
-          retention-days: 7
+          retention-days: 14
