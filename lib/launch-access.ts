@@ -1,13 +1,12 @@
 import "server-only";
 import { cache } from "react";
-import { getLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
 import { adminAccess } from "@/lib/auth/policy";
 import { adminMfaRequired } from "@/lib/auth/mfa";
-import { getCurrentAgency, getSessionUser } from "@/lib/auth/session";
 import { isLaunchPilot, isRegistrationPhase } from "@/lib/launch-phase";
 
+/** Only a real request can establish an owner, staff member or pilot. */
 export const launchViewer = cache(async () => {
+  const { getCurrentAgency, getSessionUser } = await import("@/lib/auth/session");
   const user = await getSessionUser();
   const agency = user ? await getCurrentAgency() : null;
   return {
@@ -22,7 +21,15 @@ export async function canBrowseDirectory(): Promise<boolean> {
   const who = await launchViewer();
   return who.staff || who.pilot;
 }
-/** Route convenience only. Data readers and server actions enforce the same boundary independently. */
+/** Route convenience only. Import request navigation only on the redirect path:
+ * data jobs/tests in the full phase must not load next-intl's browser router.
+ * Private profile checks still call launchViewer and never infer an identity.
+ */
 export async function requireDirectory() {
-  if (!(await canBrowseDirectory())) redirect({ href: "/soon", locale: await getLocale() });
+  if (!(await canBrowseDirectory())) {
+    const [{ getLocale }, { redirect }] = await Promise.all([
+      import("next-intl/server"), import("@/i18n/navigation"),
+    ]);
+    redirect({ href: "/soon", locale: await getLocale() });
+  }
 }
