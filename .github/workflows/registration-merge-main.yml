@@ -1,0 +1,65 @@
+name: Integrate latest main into registration
+on:
+  push:
+    branches: [audit/registration-release-check]
+    paths: [.github/workflows/registration-merge-main.yml]
+permissions:
+  contents: write
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: feat/registration-phase
+      - name: Merge current main without overwriting conflicting business logic
+        run: |
+          git fetch origin main
+          BASE=$(git merge-base HEAD origin/main)
+          export BASE
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' merge origin/main --no-commit --no-ff || true
+          python3 - <<'PY'
+          import json,pathlib,subprocess,os
+          absent=object()
+          def read(ref):return json.loads(subprocess.check_output(['git','show',ref]))
+          def merge(b,o,t,path=''):
+              if o==t:return o
+              if o==b:return t
+              if t==b:return o
+              if all(isinstance(v,dict) for v in [b,o,t]):
+                  out={}
+                  for k in list(o)+[k for k in t if k not in o]+[k for k in b if k not in o and k not in t]:
+                      v=merge(b.get(k,absent),o.get(k,absent),t.get(k,absent),path+'.'+k)
+                      if v is not absent:out[k]=v
+                  return out
+              raise RuntimeError('Manual review required: '+path)
+          conflicts=subprocess.check_output(['git','diff','--name-only','--diff-filter=U']).decode().splitlines()
+          allowed={'messages/ar.json','messages/en.json','lib/db/migrations/meta/0028_snapshot.json'}
+          assert set(conflicts)<=allowed, conflicts
+          for name in conflicts:
+              o,t=[read(f':{i}:{name}') for i in [2,3]]
+              if name.endswith('0028_snapshot.json'):
+                  journal=read('origin/main:lib/db/migrations/meta/_journal.json')
+                  assert journal['entries'][-1]['idx']==27,'Main added a new numbered migration; renumber requires review'
+                  b=read(os.environ['BASE']+':lib/db/migrations/meta/0027_snapshot.json')
+                  original_id=o['id'];previous_id=b['id']
+                  for doc in [b,o,t]:doc.pop('id');doc.pop('prevId')
+                  result=merge(b,o,t)
+                  result={'id':original_id,'prevId':previous_id,**result}
+                  assert result['tables']['public.profile_publications']['isRLSEnabled'] is True
+              else:
+                  result=merge(read(f':1:{name}'),o,t)
+                  assert 'Registration' in result and 'CreatorSetup' in result
+              pathlib.Path(name).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+              subprocess.run(['git','add',name],check=True)
+          PY
+          git diff --cached --check
+          test -z "$(git diff --cached --name-only -- .github/workflows)"
+          if [ -f .git/MERGE_HEAD ]; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'merge: retain current site-check and onboarding improvements in registration release'
+            git push origin HEAD:feat/registration-phase
+          fi
+          git log -1 --format='%H %s'
+          git status --short
