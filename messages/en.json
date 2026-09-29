@@ -4550,7 +4550,14 @@
       "editProject": "Edit project",
       "visibility": "Publishing makes this project visible on your public Sawwiq page and in Explore. Until you publish, it stays private.",
       "rights": "I have the right to show this work, and the description is accurate.",
-      "publish": "Publish this project"
+      "publish": "Publish this project",
+      "audience": {
+        "private": "Your page is private during the registration phase: saving adds this project to your page, and only you and authorized Sawwiq staff can open it. Nothing becomes public until you change your visibility.",
+        "unlisted": "Your page is set to \"anyone with the link\": saving adds this project to your page, which people can open only through its link. It is not in any directory or search engine.",
+        "public": "You allowed public publication: this project appears on your page for anyone with the link now, and in the directory when public discovery opens."
+      },
+      "audienceLink": "Change visibility",
+      "save": "Save this project"
     },
     "finished": {
       "title": "Your first project is published",
@@ -4558,7 +4565,14 @@
       "viewProject": "View the project",
       "viewPortfolio": "View my portfolio",
       "another": "Add another project",
-      "anotherClient": "Add another client"
+      "anotherClient": "Add another client",
+      "titleSaved": "Your first project is saved",
+      "audience": {
+        "private": "Your page stays private: only you and authorized Sawwiq staff can open it. Change your visibility whenever you are ready to share a link.",
+        "unlisted": "People can open your page through its link. You can add more projects and clients whenever you like.",
+        "public": "Your page is open to anyone with the link and will join the directory when public discovery opens. You can add more projects and clients whenever you like."
+      },
+      "visibility": "Visibility settings"
     }
   },
   "Social": {

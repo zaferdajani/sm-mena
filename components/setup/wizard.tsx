@@ -36,6 +36,7 @@ import { AVATAR_UPLOAD, compressForRequest, POST_UPLOAD } from "@/lib/media/imag
 // or coming back from a platform's consent screen resumes where it stopped.
 
 type Agency = { name: string; bio: string; handle: string; city: string; avatarUrl: string | null; services: string[]; contentLang: "ar" | "en" };
+type Audience = "open" | "private" | "unlisted" | "public";
 type Staged = { title: string; thumbnailUrl: string | null; provider: string; permalink: string; ownership: "own" | "client" } | null;
 
 const primary = "inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60";
@@ -55,6 +56,8 @@ export function SetupWizard(props: {
   socialNotice: string | null;
   invited: boolean;
   stagedItem: Staged;
+  /** Who can see the project once saved: "open" (public page and directory) or the page's registration-phase publication choice (docs/54). */
+  audience: Audience;
 }) {
   const t = useTranslations("Setup");
   const router = useRouter();
@@ -86,7 +89,7 @@ export function SetupWizard(props: {
   const back = () => run(() => goToStepAction(view.version, Math.max(1, view.step - 1)));
   const finishLater = () => run(() => pauseSetupAction(view.version), () => router.push("/studio"));
 
-  if (view.status === "finished") return <Finished view={view} agency={props.agency} onAnother={() => run(() => startAnotherAction())} pending={pending} />;
+  if (view.status === "finished") return <Finished view={view} agency={props.agency} audience={props.audience} onAnother={() => run(() => startAnotherAction())} pending={pending} />;
 
   const errorText = error ? t(`error.${error}` as never) : null;
   return (
@@ -578,7 +581,7 @@ function ServiceChips({ options, services, setServices }: { options: { key: stri
 }
 
 // 5 — Preview with the portfolio's own components, then an explicit publish.
-function PreviewStep({ view, agency, clients, stagedItem, heading, pending, run, back }: StepProps & { agency: Agency; clients: { id: string; name: string }[]; stagedItem: Staged }) {
+function PreviewStep({ view, agency, clients, stagedItem, audience, heading, pending, run, back }: StepProps & { agency: Agency; clients: { id: string; name: string }[]; stagedItem: Staged; audience: Audience }) {
   const t = useTranslations("Setup");
   const ts = useTranslations("Social");
   const [rights, setRights] = useState(false);
@@ -611,17 +614,25 @@ function PreviewStep({ view, agency, clients, stagedItem, heading, pending, run,
         <button type="button" className={secondary} onClick={() => edit(3)} disabled={pending}>{t("preview.editClient")}</button>
         <button type="button" className={secondary} onClick={() => edit(4)} disabled={pending} data-testid="setup-edit-project">{t("preview.editProject")}</button>
       </div>
-      <p className="rounded-xl border p-3 text-sm leading-7" data-testid="setup-visibility">{t("preview.visibility")}</p>
+      <p className="rounded-xl border p-3 text-sm leading-7" data-testid="setup-visibility" data-audience={audience}>
+        {audience === "open" ? t("preview.visibility") : t(`preview.audience.${audience}`)}
+        {audience !== "open" && (
+          <>
+            {" "}
+            <Link href="/studio/publication" className="font-semibold text-brand underline underline-offset-4">{t("preview.audienceLink")}</Link>
+          </>
+        )}
+      </p>
       <label className="flex min-h-11 items-start gap-3 text-sm">
         <input type="checkbox" checked={rights} onChange={(e) => setRights(e.target.checked)} className="mt-1" data-testid="setup-rights" />
         <span>{t("preview.rights")}</span>
       </label>
-      <Nav back={back} pending={pending} disabled={!rights} next={() => run(() => publishSetupAction(view.version, rights))} nextLabel={t("preview.publish")} testId="setup-publish" />
+      <Nav back={back} pending={pending} disabled={!rights} next={() => run(() => publishSetupAction(view.version, rights))} nextLabel={audience === "open" || audience === "public" ? t("preview.publish") : t("preview.save")} testId="setup-publish" />
     </div>
   );
 }
 
-function Finished({ view, agency, onAnother, pending }: { view: SetupView; agency: Agency; onAnother: () => void; pending: boolean }) {
+function Finished({ view, agency, audience, onAnother, pending }: { view: SetupView; agency: Agency; audience: Audience; onAnother: () => void; pending: boolean }) {
   const t = useTranslations("Setup");
   const title = useRef<HTMLHeadingElement>(null);
   // The success message is announced and in view, not below the fold.
@@ -631,13 +642,14 @@ function Finished({ view, agency, onAnother, pending }: { view: SetupView; agenc
   }, []);
   return (
     <section className="space-y-4 rounded-2xl border border-brand-line bg-brand-soft p-5" data-testid="setup-finished" role="status">
-      <h2 ref={title} tabIndex={-1} className="text-xl font-bold outline-none">{t("finished.title")}</h2>
-      <p className="text-sm leading-7">{t("finished.body")}</p>
+      <h2 ref={title} tabIndex={-1} className="text-xl font-bold outline-none">{audience === "open" || audience === "public" ? t("finished.title") : t("finished.titleSaved")}</h2>
+      <p className="text-sm leading-7">{audience === "open" ? t("finished.body") : t(`finished.audience.${audience}`)}</p>
       <div className="flex flex-wrap gap-2">
         {view.postId && <Link href={`/p/${view.postId}`} className={secondary}>{t("finished.viewProject")}</Link>}
         <Link href={`/a/${agency.handle}`} className={secondary} data-testid="setup-view-portfolio">{t("finished.viewPortfolio")}</Link>
         <button type="button" className={primary} onClick={onAnother} disabled={pending} data-testid="setup-another">{t("finished.another")}</button>
         <Link href="/studio/clients" className={secondary}>{t("finished.anotherClient")}</Link>
+        {audience !== "open" && <Link href="/studio/publication" className={secondary} data-testid="setup-visibility-link">{t("finished.visibility")}</Link>}
       </div>
     </section>
   );

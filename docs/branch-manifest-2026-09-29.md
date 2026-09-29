@@ -51,6 +51,10 @@ Columns: ahead/behind = commits on branch / on main since merge-base; cherry = `
 
 **style/provider-profile-layout** — PR #12's squash tree is byte-identical to this tip. `docs/provider-profile-layout.md`, `components/profile/profile-layout.module.css`, `tests/e2e/provider-profile-layout.spec.ts` on main; only later main edits to `ci.yml` and the CSS module differ.
 
+## Update after PR #23 (main `a078796`, 29 Sep, later the same day)
+
+`feat/creator-guidance-social-connections` was squash-merged again as PR #23, this time carrying the first-run wizard (`/portfolio-setup`, migration `0028_portfolio_setup_social`) and the platform-connection code. Its class moves from ACTIVE to MERGED-BY-PATCH once `git diff a078796 <branch>` is re-checked by the owner; this document did not re-run that comparison. The wizard that `feat/registration-phase-integrated` had written in parallel (`/setup`, `onboarding_drafts`) was removed in that branch's merge of main, and its publication migration was renumbered to `0029_profile_publication`. `feat/registration-phase` (the candidate) remains ACTIVE until the integrated branch reaches main.
+
 ## Deletion candidates (owner decision)
 
 MERGED-ANCESTOR (head already on main):

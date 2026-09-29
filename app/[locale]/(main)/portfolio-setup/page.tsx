@@ -3,6 +3,8 @@ import { SetupWizard } from "@/components/setup/wizard";
 import { requireAgency } from "@/lib/auth/guards";
 import { getItemForAgency, listConnections, pendingResources, providerStates } from "@/lib/data/social";
 import { getSetup, openSetup } from "@/lib/data/portfolio-setup";
+import { publicationFor } from "@/lib/data/publication";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { postFormOptions } from "@/lib/studio-options";
 import { canUse } from "@/lib/feature-gate";
@@ -20,7 +22,10 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const q = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   const view = (await getSetup(agency.id)) ?? (await openSetup(agency.id, user.id));
-  const [clients, connections, imports] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import")]);
+  const [clients, connections, imports, publication] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), publicationFor(agency.id)]);
+  // Who will see the finished project: during the registration phase the page's own publication
+  // choice (docs/54) decides; once discovery is open, providers' pages are public and listed.
+  const audience = isRegistrationPhase() ? publication.visibility : "open";
   // Back from a platform's consent screen: the resources it listed, for this agency only.
   const grant = one(q.grant);
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];
@@ -50,6 +55,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         grant={pending.length ? { id: grant, resources: pending } : null}
         socialNotice={one(q.social).slice(0, 30) || null}
         invited={one(q.invited) === "1"}
+        audience={audience}
         stagedItem={staged ? { title: staged.item.title, thumbnailUrl: staged.item.thumbnailUrl, provider: staged.item.provider, permalink: staged.item.permalink, ownership: staged.resource.ownership } : null}
       />
     </div>

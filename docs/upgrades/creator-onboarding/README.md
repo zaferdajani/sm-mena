@@ -6,12 +6,14 @@ Updated 29 September 2026 following the owner's clarification. Branch: feat/crea
 
 The user needs an automatic, short, step-by-step portfolio setup immediately after provider registration—not merely a help page. FIRST_RUN_WIZARD.md is the current UX/acceptance contract. Five stages: own logo/profile -> bring in work -> optional client/brand -> grouped project/media -> preview and explicit finish. Back, save/resume and import returns must work. Advanced pricing/contracts/payments are not part of onboarding. Respect registration-beta visibility and other launch gates. The existing guide is supporting material only and must not be presented as the finished wizard.
 
-## Honest state
+## Honest state (updated 29 September 2026, after PR #23 and the registration-phase reconciliation)
 
-- IMPLEMENTED IN THIS BRANCH (initial slice): replayable /studio/setup help page, first-work prompt on overview/profile, client/account explanation, four labelled examples, form-field highlights, blank description outline that does not replace existing writing, import shortcuts, Arabic/English catalogs and regression tests.
-- SPECIFIED, NOT YET IMPLEMENTED: the new five-step first-run wizard, private resumable portfolio drafts and integrated source-to-preview journey in FIRST_RUN_WIZARD.md. The clarification commit changes documentation only; no application deployment or tests are claimed by that commit.
-- SPECIFIED, NOT YET IMPLEMENTED: native Google/YouTube/Instagram/Facebook/TikTok OAuth and reviewed imports in SOCIAL_CONNECTIONS.md. No fake Connect/Connected state, no pasted URL treated as authorization, no publishing prerequisite tied to social connection.
-- No merge to main or production deployment by this planning update. Re-check exact current branch and all CI before implementation; prior partial CI is not current production evidence.
+- IMPLEMENTED ON MAIN (PR #23, `a078796`): the five-step first-run wizard at `/portfolio-setup` with private resumable drafts (`portfolio_setups`, `portfolio_setup_media`, migration 0028), upload / PDF / Behance / platform-item sources, explicit publish-once, Studio → Connected platforms, and the software side of SOCIAL_CONNECTIONS.md (five adapters, consent flow, sealed tokens, disconnect and Meta callbacks). Details: docs/53-first-run-setup-and-connections.md. Unit and browser tests: tests/unit/portfolio-setup.test.ts, tests/unit/social-connections.test.ts, tests/e2e/portfolio-setup.spec.ts.
+- IMPLEMENTED, SUPPORTING ONLY: the replayable `/studio/setup` guide, first-work prompts, examples and field highlights from PR #21. They are help, not the first-run experience.
+- NOT LIVE FOR ANY PLATFORM: no developer app is registered and no credentials are deployed, so every platform shows "Not available yet" with its reason and the upload alternative. A platform becomes available only after the owner registers the app, the platform approves the permissions, the secrets are set in Vercel (never in chat) and a controlled live test with an authorized account passes (docs/53 → readiness gates).
+- REGISTRATION PHASE (docs/54): the wizard's publish note, button and finished screen follow the page's own publication choice (private / anyone with the link / public), and the wizard never changes that choice.
+- A second wizard written in parallel on `feat/registration-phase-integrated` (`/setup`, `onboarding_drafts`) was removed when that branch was reconciled with main; nothing of it reached production.
+- Production acceptance of the wizard is a separate stage: it needs an authorized real provider account and a recorded journey; a passing suite is not that evidence.
 
 ## Reuse and boundaries
 

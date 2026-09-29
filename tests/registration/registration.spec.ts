@@ -153,3 +153,55 @@ test("320px Arabic pages and example tabs do not overflow", async ({ page }, inf
     await capture(page, info, `320-${route.replaceAll(/[^a-z]/gi, "-")}`);
   }
 });
+
+test("registration phase: the first-run setup saves a private project and says so, without publishing anything", async ({ page, browser }, info) => {
+  test.setTimeout(150_000);
+  const { handle } = await joinAgency(page, "regwiz", { stay: true });
+  await expect(page).toHaveURL(/\/en\/portfolio-setup$/);
+  const wizard = page.getByTestId("setup-wizard");
+  await expect(wizard).toHaveAttribute("data-step", "1");
+  await page.getByTestId("setup-bio").fill("Registration-phase setup specimen.");
+  await page.getByTestId("service-search").fill("photo");
+  await page.getByTestId("service-suggestion").first().click();
+  await page.getByTestId("setup-profile-save").click();
+  await expect(wizard).toHaveAttribute("data-step", "2");
+  // No platform is configured: every provider says so and none offers a Connect button.
+  await page.getByTestId("source-social").click();
+  for (const p of ["google", "youtube", "instagram", "facebook", "tiktok"]) {
+    await expect(page.getByTestId(`provider-${p}`)).toHaveAttribute("data-ready", "false");
+    await expect(page.getByTestId(`connect-${p}`)).toHaveCount(0);
+  }
+  await page.getByTestId("source-upload").click();
+  await expect(wizard).toHaveAttribute("data-step", "3");
+  await page.getByTestId("client-mode-private").check();
+  await page.getByTestId("setup-client-next").click();
+  await expect(wizard).toHaveAttribute("data-step", "4");
+  await page.getByTestId("setup-project-title").fill("Private specimen project");
+  await page.getByTestId("setup-project-contribution").fill("Photography and post design.");
+  await page.getByTestId("setup-image-input").setInputFiles({ name: "a.png", mimeType: "image/png", buffer: await pngBuffer("#106b4c", 800, 800) });
+  await expect(page.getByTestId("setup-media").locator("li")).toHaveCount(1, { timeout: 30_000 });
+  await page.getByTestId("setup-project-next").click();
+  await expect(wizard).toHaveAttribute("data-step", "5");
+  // The note follows the page's real publication choice (private during registration): no "public page and Explore" promise.
+  const note = page.getByTestId("setup-visibility");
+  await expect(note).toHaveAttribute("data-audience", "private");
+  await expect(note).toContainText("only you and authorized Sawwiq staff");
+  await expect(note).not.toContainText("Explore");
+  await expect(page.getByTestId("setup-publish")).toHaveText("Save this project");
+  await capture(page, info, "registration-setup-preview");
+  await page.getByTestId("setup-rights").check();
+  await page.getByTestId("setup-publish").click();
+  await expect(page.getByTestId("setup-finished")).toContainText("Your first project is saved");
+  await expect(page.getByTestId("setup-finished")).not.toContainText("published");
+  await expect(page.getByTestId("setup-visibility-link")).toHaveAttribute("href", "/en/studio/publication");
+  await capture(page, info, "registration-setup-finished");
+  // The project exists for its owner only; the page stays private.
+  const projectHref = (await page.getByRole("link", { name: "View the project" }).getAttribute("href"))!;
+  const anon = await browser.newContext({ baseURL: "http://localhost:3101" });
+  try {
+    expect((await anon.request.get(projectHref)).status()).toBe(404);
+    expect((await anon.request.get(`/en/a/${handle}`)).status()).toBe(404);
+  } finally { await anon.close(); }
+  await page.goto(projectHref);
+  await expect(page.getByTestId("post-card")).toContainText("Private specimen project");
+});
