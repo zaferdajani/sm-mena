@@ -1,0 +1,47 @@
+name: Team role Safari-engine check
+on:
+  push:
+    branches: [audit/registration-release-check]
+    paths: [.github/workflows/team-role-webkit-check.yml]
+permissions:
+  contents: read
+jobs:
+  webkit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: e47ec2bdd580724279755594f3b2dabb86a57dda
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Run role cases with WebKit against disposable localhost data only
+        run: |
+          cat > playwright.role-compat.config.ts <<'EOF'
+          import { defineConfig, devices } from "@playwright/test";
+          import base from "./playwright.config";
+          export default defineConfig({
+            ...base,
+            testMatch: /role-picker\.spec\.ts/,
+            projects: [{ name: "webkit-phone", use: { ...devices["iPhone 13"] } }],
+            reporter: [["github"], ["html", { open: "never" }]],
+          });
+          EOF
+          npm run build
+          npx playwright test --config=playwright.role-compat.config.ts
+      - name: Export screenshots and metadata, no fonts or traces
+        if: always()
+        run: python3 scripts/collect-design-evidence.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: team-role-webkit-evidence
+          path: design-evidence/
+          retention-days: 7
