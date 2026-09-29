@@ -8,7 +8,7 @@ import { audit, updateAgency } from "@/lib/data/agencies";
 import { listClients, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
 import { createPost } from "@/lib/data/posts";
 import { canUse } from "@/lib/feature-gate";
-import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar } from "@/lib/images";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar, processImage } from "@/lib/images";
 import { resolveServices } from "@/lib/services/tags";
 import { storage } from "@/lib/storage";
 import { INDUSTRIES, PLATFORMS } from "@/lib/labels";
@@ -64,7 +64,7 @@ export async function analyzePortfolioAction(pages: unknown): Promise<AnalyzeSta
   }
 }
 
-export type ImportPostState = { ok?: boolean; postId?: string; error?: string };
+export type ImportPostState = { ok?: boolean; postId?: string; staged?: boolean; error?: string };
 
 /** Finds the agency's client by name, or adds it (so imported posts are tagged with their client). */
 async function clientIdFor(agencyId: string, name: string, industry: string | null) {
@@ -88,6 +88,18 @@ export async function importPostAction(formData: FormData): Promise<ImportPostSt
   const industryRaw = String(formData.get("industry") ?? "");
   const industry = (INDUSTRIES as readonly string[]).includes(industryRaw) ? industryRaw : null;
   const clientName = String(formData.get("client") ?? "").trim().slice(0, 80);
+  if (formData.get("setup") === "1") {
+    // From the first-run setup (docs/53): staged privately in the wizard, reviewed and saved there; nothing is published here.
+    try {
+      const processed = await Promise.all(files.map(async (f) => processImage(Buffer.from(await f.arrayBuffer()))));
+      const { addDraftMedia } = await import("@/lib/data/onboarding");
+      const staged = await addDraftMedia(agency.id, processed, { source: "pdf", suggestedClient: clientName.length >= 2 ? clientName : null, title: String(formData.get("caption") ?? "").trim().split("\n")[0].slice(0, 120), services, platforms: [...new Set(formData.getAll("platforms").map(String))].filter((p) => (PLATFORMS as readonly string[]).includes(p)), step: 3 });
+      if ("error" in staged) return { error: staged.error === "too_many" ? "tooMany" : "generic" };
+      return { ok: true, staged: true };
+    } catch (error) {
+      return { error: error instanceof ImageError ? error.code : "generic" };
+    }
+  }
   const fields = {
     caption: String(formData.get("caption") ?? "").trim().slice(0, 2200),
     services,

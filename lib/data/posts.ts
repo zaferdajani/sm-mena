@@ -3,7 +3,7 @@ import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } fro
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency } from "@/lib/db/schema";
-import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage } from "@/lib/images";
+import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage, type StoredFormat } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 import type { PostApp } from "@/lib/app-demo";
@@ -110,16 +110,29 @@ export async function createPostFromProcessed(
   processed: ProcessedImage[],
   createdAt?: Date,
 ) {
-  const db = await getDb();
-  const [agency] = await db.select({ name: agencies.name, translation: agencies.translation }).from(agencies).where(eq(agencies.id, agencyId));
-  const uploaded: { key: string; thumbKey: string; image: ProcessedImage }[] = [];
+  const uploaded = await storeProcessedImages(agencyId, processed);
+  return createPostFromStoredImages(agencyId, input, uploaded, createdAt);
+}
+
+export type StoredImage = { key: string; thumbKey: string; width: number; height: number; color: string };
+
+/** Puts processed images in the agency's post storage and returns what the post rows need. */
+export async function storeProcessedImages(agencyId: string, processed: ProcessedImage[], keysFor: (format: StoredFormat) => { key: string; thumbKey: string } = (f) => newImageKeys(agencyId, f)): Promise<StoredImage[]> {
+  const uploaded: StoredImage[] = [];
   for (const image of processed) {
     const format = image.fullFormat ?? "webp";
-    const keys = newImageKeys(agencyId, format);
+    const keys = keysFor(format);
     await storage().put(keys.key, image.full, STORED_TYPE[format]);
     await storage().put(keys.thumbKey, image.thumb, "image/webp");
-    uploaded.push({ ...keys, image });
+    uploaded.push({ ...keys, width: image.width, height: image.height, color: image.color });
   }
+  return uploaded;
+}
+
+/** The post rows for images already in storage (a fresh upload, or a setup draft's private media). */
+export async function createPostFromStoredImages(agencyId: string, input: PostInput, uploaded: StoredImage[], createdAt?: Date) {
+  const db = await getDb();
+  const [agency] = await db.select({ name: agencies.name, translation: agencies.translation }).from(agencies).where(eq(agencies.id, agencyId));
   return db.transaction(async (tx) => {
     const [post] = await tx
       .insert(posts)
@@ -144,9 +157,9 @@ export async function createPostFromProcessed(
         position,
         key: u.key,
         thumbKey: u.thumbKey,
-        width: u.image.width,
-        height: u.image.height,
-        color: u.image.color,
+        width: u.width,
+        height: u.height,
+        color: u.color,
       })),
     );
     await tx

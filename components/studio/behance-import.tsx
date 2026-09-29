@@ -7,7 +7,7 @@ import { applyBehanceProfileAction, importBehanceProjectAction, previewBehanceAc
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { HANDOFF_MESSAGE, HANDOFF_READY, type BehanceDraft, type BehancePortfolio } from "@/lib/behance/types";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,8 @@ type Option = { key: string; label: string };
 type Draft = BehanceDraft & { id: number; include: boolean; kept: boolean[]; moreServices?: boolean; status: "pending" | "publishing" | "ok" | "error"; postId?: string; error?: string };
 type Phase = "input" | "loading" | "review" | "publishing" | "done";
 
-export function BehanceImport({ handle, services, platforms, industries, clients, agencyServices, bookmarkletHref, handoff = false }: { handle: string; services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; /** The browser path (lib/behance/handoff.ts). */ bookmarkletHref: string; /** Opened by the bookmarklet (?handoff=1): listen for the Behance tab's page. */ handoff?: boolean }) {
+export function BehanceImport({ handle, services, platforms, industries, clients, agencyServices, bookmarkletHref, handoff = false, setup = false }: { handle: string; services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; /** The browser path (lib/behance/handoff.ts). */ bookmarkletHref: string; /** Opened by the bookmarklet (?handoff=1): listen for the Behance tab's page. */ handoff?: boolean; /** Opened from the first-run setup (?from=setup): the first selected project is staged in the wizard, not published. */ setup?: boolean }) {
+  const router = useRouter();
   const t = useTranslations("BehanceImport");
   const locale = useLocale();
   const [input, setInput] = useState("");
@@ -74,6 +75,20 @@ export function BehanceImport({ handle, services, platforms, industries, clients
 
   async function publish() {
     setPhase("publishing");
+    if (setup) {
+      // One project for the wizard (docs/53): staged privately, then back to step 3.
+      const d = selected[0];
+      if (!d) return setPhase("review");
+      setProgress({ done: 0, total: 1 });
+      patch(d.id, { status: "publishing" });
+      const res = await importBehanceProjectAction({ setup: true, projectUrl: d.project.url, images: d.project.images.filter((_, i) => d.kept[i]).map((i) => i.url), publishedAt: null, caption: d.caption, services: d.services, platforms: d.platforms, industry: d.industry, client: d.client });
+      if (res.ok) router.push("/setup?step=3");
+      else {
+        patch(d.id, { status: "error", error: res.error ?? "generic" });
+        setPhase("review");
+      }
+      return;
+    }
     setProgress({ done: 0, total: selected.length });
     let done = 0;
     for (const d of selected) {
@@ -298,7 +313,7 @@ export function BehanceImport({ handle, services, platforms, industries, clients
       <div className="sticky bottom-20 flex items-center gap-3 rounded-xl border bg-background/95 p-3 backdrop-blur md:bottom-4">
         <Button type="button" disabled={busy || !selected.length || selected.some((d) => !d.kept.some(Boolean) || !d.services.length)} onClick={() => void publish()} data-testid="behance-publish">
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
-          {busy ? t("publishing", progress) : t("publish", { count: selected.length })}
+          {busy ? t("publishing", progress) : setup ? t("stageForSetup") : t("publish", { count: selected.length })}
         </Button>
       </div>
     </div>

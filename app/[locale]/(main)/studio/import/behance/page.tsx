@@ -11,7 +11,9 @@ import { SITE_URL } from "@/lib/site";
 /** Studio → Import from Behance (docs/47-behance-import.md). */
 export default async function ImportBehancePage({ params, searchParams }: PageProps<"/[locale]/studio/import/behance">) {
   const { locale } = await params;
-  const handoff = "handoff" in (await searchParams);
+  const sp = await searchParams;
+  const handoff = "handoff" in sp;
+  const setup = sp.from === "setup";
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const gate = await featureGate("portfolio_import");
@@ -34,6 +36,7 @@ export default async function ImportBehancePage({ params, searchParams }: PagePr
         agencyServices={agency.services}
         bookmarkletHref={bookmarklet(SITE_URL, locale)}
         handoff={handoff}
+        setup={setup}
       />
     </div>
   );

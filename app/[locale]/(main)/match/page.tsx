@@ -1,4 +1,4 @@
-import { requireDirectory } from "@/lib/launch-access";
+import { requireDirectory } from "@/lib/launch-route";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";

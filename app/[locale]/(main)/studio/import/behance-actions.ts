@@ -14,7 +14,7 @@ import { isServiceKey } from "@/lib/taxonomy";
 import { normalizeForSearch } from "@/lib/text";
 import { isCountryCode } from "@/lib/countries";
 import { BehanceError, loadBehancePortfolio } from "@/lib/behance";
-import { BehanceImportError, importBehanceAvatar, importBehanceProject } from "@/lib/behance/import";
+import { BehanceImportError, fetchBehanceImages, importBehanceAvatar, importBehanceProject } from "@/lib/behance/import";
 import { HANDOFF_MAX_BYTES, portfolioFromHandoff } from "@/lib/behance/handoff";
 import { assertBehanceUrl } from "@/lib/behance/fetch";
 import { BEHANCE_LIMITS, type BehancePortfolio } from "@/lib/behance/types";
@@ -85,6 +85,8 @@ const projectSchema = z.object({
   projectUrl: z.string().url().max(500),
   images: z.array(z.string().url().max(1000)).min(1).max(BEHANCE_LIMITS.imagesPerProject),
   publishedAt: z.string().datetime().nullable().optional(),
+  /** From the first-run setup: stage the project privately in the wizard instead of publishing. */
+  setup: z.boolean().optional(),
   caption: z.string().max(BEHANCE_LIMITS.caption),
   services: z.array(z.string().max(60)).max(6),
   platforms: z.array(z.string().max(30)).max(12),
@@ -92,7 +94,7 @@ const projectSchema = z.object({
   client: z.string().max(80).nullable(),
 });
 
-export type BehanceImportState = { ok?: boolean; postId?: string; error?: string };
+export type BehanceImportState = { ok?: boolean; postId?: string; staged?: boolean; error?: string };
 
 async function clientIdFor(agencyId: string, name: string, industry: string | null) {
   const wanted = normalizeForSearch(name);
@@ -114,6 +116,19 @@ export async function importBehanceProjectAction(input: unknown): Promise<Behanc
   if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
   const industry = d.industry && (INDUSTRIES as readonly string[]).includes(d.industry) ? d.industry : null;
   const clientName = (d.client ?? "").trim().slice(0, 80);
+  if (d.setup) {
+    // The wizard reviews and saves it (docs/53): nothing is published here, and the client name is only a suggestion.
+    try {
+      const { processed, sourceUrl } = await fetchBehanceImages({ projectUrl: d.projectUrl, images: d.images });
+      const { addDraftMedia } = await import("@/lib/data/onboarding");
+      const staged = await addDraftMedia(agency.id, processed, { source: "behance", sourceUrl, suggestedClient: clientName.length >= 2 ? clientName : null, title: d.caption.trim().split("\n")[0].slice(0, 120), services, platforms: [...new Set(d.platforms)].filter((p) => (PLATFORMS as readonly string[]).includes(p)), step: 3 });
+      if ("error" in staged) return { error: staged.error === "too_many" ? "tooMany" : "generic" };
+      await audit(null, "behance_import.stage", "agency", agency.id, { source: d.projectUrl, images: d.images.length });
+      return { ok: true, staged: true };
+    } catch (e) {
+      return { error: e instanceof BehanceImportError ? e.code : "generic" };
+    }
+  }
   try {
     const post = await importBehanceProject(agency.id, {
       projectUrl: d.projectUrl,

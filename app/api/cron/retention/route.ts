@@ -6,6 +6,7 @@ import { expireInquiries } from "@/lib/data/collab-inquiries";
 import { expireHolds } from "@/lib/data/capacity";
 import { sendCollabReminders } from "@/lib/data/collab-next";
 import { purgeAssistantUsage } from "@/lib/data/collab-ai-usage";
+import { purgeExpiredDrafts } from "@/lib/data/onboarding";
 import { featureOnGlobally } from "@/lib/features";
 
 // The daily job (vercel.json; one cron keeps us within the Hobby plan's limit):
@@ -29,5 +30,7 @@ export async function GET(request: Request) {
   const reminders = (await featureOnGlobally("collaboration_intelligence")) ? await sendCollabReminders() : 0;
   // Assistant-budget rows older than the retention window (docs/50): today's row is all the budget reads.
   const assistantUsage = await purgeAssistantUsage();
-  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders, assistantUsage });
+  // Unfinished first-run setup drafts and their private media after 30 days (docs/53).
+  const setupDrafts = await purgeExpiredDrafts();
+  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders, assistantUsage, setupDrafts });
 }

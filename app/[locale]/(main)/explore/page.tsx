@@ -1,4 +1,4 @@
-import { requireDirectory } from "@/lib/launch-access";
+import { requireDirectory } from "@/lib/launch-route";
 import { EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
 import { demoMode } from "@/lib/demo-mode";

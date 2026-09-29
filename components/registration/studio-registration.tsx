@@ -17,7 +17,7 @@ export async function StudioRegistration({ agency }: { agency: Agency }) {
   const eligible = eligibility.eligible;
   const steps = [
     { key: "profile", href: "/studio/profile", done: Boolean(agency.bio.trim() && agency.services.length) },
-    { key: "work", href: "/studio/new", done: agency.postCount > 0 || packages.length > 0 },
+    { key: "work", href: agency.postCount > 0 ? "/studio/new" : "/setup", done: agency.postCount > 0 || packages.length > 0 },
     { key: "visibility", href: "/studio/publication", done: !publication.legacy },
   ];
   return <div className="space-y-6" data-testid="registration-studio"><section className="registration-card"><p className="registration-eyebrow">{t("studio.eyebrow")}</p><h1 className="text-2xl font-extrabold">{t("studio.title")}</h1><p>{t("studio.intro")}</p></section>

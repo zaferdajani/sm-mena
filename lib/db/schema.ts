@@ -1901,6 +1901,54 @@ export const collabAiUsage = pgTable(
   (t) => [primaryKey({ columns: [t.agencyId, t.day] })],
 );
 
+/**
+ * First-run portfolio setup (docs/53): one private, resumable draft per agency
+ * for the five-step wizard. Media keys point at private storage
+ * (portfolio/<agency>/drafts/…). Finishing creates a real post through the
+ * same operations as Studio → New; the draft then records that post's id so a
+ * retried finish never creates a second one. Nothing here is public.
+ */
+export type DraftMedia = { key: string; thumbKey: string; width: number; height: number; color: string; format: "webp" | "jpeg" | "png" };
+export const onboardingDrafts = pgTable(
+  "onboarding_drafts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .unique()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    ownerUserId: uuid("owner_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // in_progress | paused | finished
+    status: text("status").notNull().default("in_progress"),
+    step: integer("step").notNull().default(1),
+    // Every accepted write bumps it; a form built from an older version is refused (stale tab).
+    version: integer("version").notNull().default(1),
+    // upload | pdf | behance | null
+    source: text("source"),
+    sourceUrl: text("source_url"),
+    // client | personal | private | null
+    clientMode: text("client_mode"),
+    clientId: uuid("client_id").references(() => portfolioClients.id, { onDelete: "set null" }),
+    // A client name an import suggested; never written as a client record without confirmation.
+    suggestedClient: text("suggested_client"),
+    title: text("title").notNull().default(""),
+    contribution: text("contribution").notNull().default(""),
+    services: jsonb("services").$type<string[]>().notNull().default([]),
+    platforms: jsonb("platforms").$type<string[]>().notNull().default([]),
+    media: jsonb("media").$type<DraftMedia[]>().notNull().default([]),
+    cover: integer("cover").notNull().default(0),
+    postId: uuid("post_id").references(() => posts.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    finishedAt: timestamp("finished_at", { withTimezone: true }),
+    // Unfinished drafts and their private media are removed after this (the daily cron).
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("onboarding_drafts_expires_idx").on(t.status, t.expiresAt)],
+);
+
 export type PlanCandidate = { agencyId: string; source: "partner" | "roster" | "discovery"; reasons: string[] };
 export type PlanPackage = {
   key: string;
@@ -2011,6 +2059,7 @@ export type WorkOrderSubmission = typeof workOrderSubmissions.$inferSelect;
 export type CapacityReservation = typeof capacityReservations.$inferSelect;
 export type CollabPlan = typeof collabPlans.$inferSelect;
 export type CollabAiUsage = typeof collabAiUsage.$inferSelect;
+export type OnboardingDraft = typeof onboardingDrafts.$inferSelect;
 export type CollabFeedbackRow = typeof collabFeedback.$inferSelect;
 export type CollabPrefs = typeof collabPrefs.$inferSelect;
 

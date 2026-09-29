@@ -159,9 +159,10 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     const { getAgencyByOwner } = await import("@/lib/data/agencies");
     const me = await getAgencyByOwner(user.id);
     const r = me ? await acceptInvite(me, invite).catch(() => null) : null;
-    if (r && "ok" in r) return redirect({ href: "/studio/profile?welcome=1&invited=1", locale });
+    if (r && "ok" in r) return redirect({ href: "/setup?welcome=1&invited=1", locale });
   }
-  return redirect({ href: "/studio/profile?welcome=1", locale });
+  // First-run portfolio setup (docs/53): five short steps, resumable, nothing published by itself.
+  return redirect({ href: "/setup?welcome=1", locale });
 }
 
 export async function logout() {

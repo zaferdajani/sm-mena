@@ -3016,7 +3016,8 @@
       "postsHint": "Type the account under each post to group its work on your page. Posts without an account stay as standalone work.",
       "postsGo": "Review the posts",
       "postsPick": "Make posts from the pictures"
-    }
+    },
+    "stageForSetup": "Use the first project in setup (nothing is published)"
   },
   "Intro": {
     "label": "Sawwiq intro",
@@ -3434,7 +3435,8 @@
       "cta": "Import from Behance",
       "pdf": "Or import a PDF portfolio.",
       "join": "Already have a Behance portfolio? After you create your page, import it in one step."
-    }
+    },
+    "stageForSetup": "Use the first project in setup (nothing is published)"
   },
   "Start": {
     "metaTitle": "Join Sawwiq",
@@ -4421,7 +4423,8 @@
     "connectionsTitle": "Social account connection: what it means",
     "connectionsBody": "A public link is not an authorized connection. Google, YouTube, Instagram, Facebook and TikTok need their own consent-based integrations. Do not share passwords or paste access tokens. Automatic social imports are not enabled by this guide.",
     "linkOwn": "Edit my public profile links",
-    "linkClient": "Edit a client’s social links"
+    "linkClient": "Edit a client’s social links",
+    "startSetup": "Set up my portfolio"
   },
   "Registration": {
     "metaTitle": "Sawwiq | Early registration for marketing agencies and freelancers",
@@ -4661,5 +4664,132 @@
     },
     "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
     "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
+  },
+  "Setup": {
+    "controls": "Setup controls",
+    "exit": "Exit setup",
+    "welcome": "Welcome. Let's set up your portfolio in five short steps. You can stop at any point and come back.",
+    "welcomeInvited": "Welcome. The invitation was accepted; now let's set up your portfolio in five short steps.",
+    "stepOf": "Step {step} of {total}",
+    "back": "Back",
+    "finishLater": "Finish later",
+    "continue": "Continue",
+    "saveContinue": "Save and continue",
+    "doLater": "Do this later",
+    "saving": "Saving…",
+    "uploading": "Uploading…",
+    "notSavedYet": "Your images are uploading; they are not saved until this finishes.",
+    "optional": "Optional",
+    "stale": "This page was out of date, so nothing was changed. It has been refreshed; please try again.",
+    "s1": {
+      "title": "Let's set up your portfolio.",
+      "body": "Add your logo or photo and tell us what you do.",
+      "pickImage": "Choose a logo or photo",
+      "imageHint": "Optional. Square works best; it is cropped from the centre.",
+      "bio": "Short introduction",
+      "bioHint": "One or two sentences in your own words.",
+      "services": "What you do",
+      "servicesHint": "Your services as chosen at registration; change them if needed.",
+      "otherService": "Another service (optional)"
+    },
+    "s2": {
+      "title": "Where is your work?",
+      "upload": "Upload my files",
+      "uploadHint": "Images from your phone or computer.",
+      "import": "Import an existing portfolio",
+      "importHint": "A PDF portfolio or a Behance project.",
+      "social": "Connect a social account",
+      "socialHint": "Google, YouTube, Instagram, Facebook, TikTok.",
+      "pick": "Choose images",
+      "picked": "{count, plural, one {# image chosen} other {# images chosen}}",
+      "formats": "JPG, PNG or WebP · up to {room} images for this project",
+      "importBody": "You will review what was found and come back here with the selection.",
+      "importOff": "Imports are not available on this server right now. Upload your files instead.",
+      "pdf": "PDF portfolio",
+      "behance": "Behance project",
+      "socialBody": "Connecting an account will let you pick published work with the platform's own permission screen. It is not available yet:",
+      "notAvailable": "Not available yet: Sawwiq's app for this platform is not approved.",
+      "socialAlt": "Upload your files instead; you can connect accounts later without redoing this.",
+      "providers": {
+        "google": "Google",
+        "youtube": "YouTube",
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "tiktok": "TikTok"
+      },
+      "already": "{count, plural, one {# image is} other {# images are}} already in this project."
+    },
+    "s3": {
+      "title": "Who did you make this for?",
+      "example": "Example: a café → a menu-launch campaign → photos and designs. (Illustration only.)",
+      "client": "A client or brand",
+      "clientHint": "Shown with the project on your page.",
+      "personal": "Personal or practice work",
+      "personalHint": "Your own project, a concept or a study.",
+      "private": "Keep the client private",
+      "privateHint": "The work is shown; the client is not named.",
+      "existing": "Your clients",
+      "newOne": "Add a new client or brand",
+      "name": "Client or brand name",
+      "nameHint": "Only the name for now; logo and links can be added later.",
+      "suggested": "Suggested from your import: {name}. Confirm or change it.",
+      "confidential": "Write only what you are allowed to make public. A pasted link is a public link, not proof of access or an endorsement."
+    },
+    "s4": {
+      "title": "Show one piece of work.",
+      "media": "{count, plural, =0 {No images yet} one {# image} other {# images}}",
+      "cover": "Cover",
+      "makeCover": "Make cover",
+      "remove": "Remove image",
+      "addMore": "Add more images",
+      "label": "Project or work label",
+      "contribution": "Your contribution, in one sentence",
+      "contributionHint": "What you personally did.",
+      "services": "Services in this work",
+      "platforms": "Platforms",
+      "noResults": "Results or numbers are optional and only when you can support them; leave them out otherwise.",
+      "preview": "Preview"
+    },
+    "s5": {
+      "title": "This is how your portfolio will look.",
+      "save": "Save my portfolio",
+      "editProject": "Edit the project",
+      "editProfile": "Edit the profile",
+      "visibility": {
+        "private": "Your page is private: only you can see it. Sharing is a separate choice in Publication settings.",
+        "unlisted": "Your page is unlisted: anyone with the link can see it; it is not listed.",
+        "public": "Your page is set to public.",
+        "legacyPublic": "Your page keeps its existing public link.",
+        "live": "The project will appear on your page."
+      }
+    },
+    "done": {
+      "saved": "Your first project is saved.",
+      "savedPrivate": "Your first project is saved, privately.",
+      "anotherProject": "Add another project",
+      "anotherClient": "Add another client",
+      "view": "View my portfolio",
+      "studio": "Go to the Studio"
+    },
+    "finished": {
+      "title": "Your setup is finished.",
+      "body": "Add another project or client, or go to your portfolio."
+    },
+    "errors": {
+      "bio": "The introduction is too long.",
+      "avatar": "That image could not be used. Try a JPG or PNG.",
+      "noImages": "Add at least one image.",
+      "tooMany": "Maximum 10 images per project.",
+      "too_large": "The images are too large to upload. Remove some or save them as JPG first.",
+      "unsupported": "Unsupported image format.",
+      "too_small": "One image is too small (under 200 px).",
+      "limit": "You reached your plan's post limit.",
+      "generic": "Could not save. Please try again.",
+      "mode": "Choose who the work was for.",
+      "client": "Enter a client or brand name (2 characters or more).",
+      "clientLimit": "You reached the maximum number of clients.",
+      "title": "Give the project a short label (2 characters or more).",
+      "noServices": "Choose at least one service."
+    }
   }
 }

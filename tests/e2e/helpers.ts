@@ -34,7 +34,7 @@ export async function joinAgency(page: Page, prefix = "e2e") {
   await page.fill("#password", password);
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await page.waitForURL(/\/en\/studio\/profile/);
+  await page.waitForURL(/\/en\/(setup|studio\/profile)/);
   return { handle, email, password };
 }
 

@@ -8,7 +8,7 @@ import { FormError } from "@/components/form-error";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
 import { readPdf, type ReadPage, type ReadProgress } from "@/lib/portfolio-import/read-pdf";
 import { IMPORT_LIMITS, type DraftPost, type ImageRef, type ImportPlan } from "@/lib/portfolio-import/types";
@@ -37,7 +37,8 @@ const sameRef = (a: ImageRef, b: ImageRef) => a.page === b.page && a.crop === b.
  * way: read on the device (text, layout, OCR), proposed by Sawwiq (AI when
  * configured), reviewed by the agency, published only on its say-so.
  */
-export function PortfolioImport({ services, platforms, industries, clients, agencyServices, aiAvailable }: { services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; aiAvailable: boolean }) {
+export function PortfolioImport({ services, platforms, industries, clients, agencyServices, aiAvailable, setup = false }: { services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; aiAvailable: boolean; /** Opened from the first-run setup (?from=setup): the first kept project is staged in the wizard, not published. */ setup?: boolean }) {
+  const router = useRouter();
   const t = useTranslations("PortfolioImport");
   const ts = useTranslations("Studio.form");
   const input = useRef<HTMLInputElement>(null);
@@ -147,6 +148,32 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     const chosen = drafts.filter((d) => d.include && !d.postId && d.images.length);
     for (const d of chosen) if (!d.services.length) return setError("noServices");
     setError(null);
+    if (setup) {
+      // One project for the wizard: its pictures and details go to the private draft, then back to step 3.
+      const d = chosen[0];
+      if (!d) return setError("noImages");
+      setPhase("publishing");
+      setProgress({ done: 0, total: 1 });
+      try {
+        const files = d.images.map((r, k) => new File([blobOf(r)!], `image-${k + 1}.jpg`, { type: "image/jpeg" }));
+        const small = await compressForRequest(files, POST_UPLOAD);
+        if (small.reduce((s, f) => s + f.size, 0) > REQUEST_LIMIT) throw new Error("too_large");
+        const form = new FormData();
+        for (const f of small) form.append("images", f);
+        form.set("setup", "1");
+        form.set("caption", d.title || d.caption);
+        for (const s of d.services) form.append("services", s);
+        for (const p of d.platforms) form.append("platforms", p);
+        if (d.client) form.set("client", d.client);
+        const res = await importPostAction(form);
+        if (!res.ok) throw new Error(res.error ?? "generic");
+        router.push("/setup?step=3");
+      } catch (e) {
+        setPhase("review");
+        setError(e instanceof Error && e.message ? e.message : "generic");
+      }
+      return;
+    }
     setPhase("publishing");
     setProgress({ done: 0, total: chosen.length });
     let posts = 0;
@@ -482,7 +509,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       <div className="sticky bottom-20 flex flex-wrap items-center gap-2 rounded-xl border bg-background/95 p-3 backdrop-blur md:bottom-4">
         <Button type="button" onClick={() => void publish()} disabled={publishing || (!toPublish && !profileChanges)} data-testid="import-publish" className="gap-2">
           {publishing ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-          {publishing ? t("publishing", { done: progress.done, total: progress.total }) : t("publish", { count: toPublish })}
+          {publishing ? t("publishing", { done: progress.done, total: progress.total }) : setup ? t("stageForSetup") : t("publish", { count: toPublish })}
         </Button>
         <Button type="button" variant="ghost" disabled={publishing} onClick={() => { setPhase("pick"); setDrafts([]); setPages([]); setSummary(null); }} className="gap-1">
           <Trash2 className="size-4" /> {t("startOver")}

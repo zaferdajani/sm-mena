@@ -29,7 +29,7 @@ test("an agency signs up with what it offers", async ({ page }) => {
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await page.waitForURL(/\/en\/studio\/profile/);
+  await page.waitForURL(/\/en\/(setup|studio\/profile)/);
   await page.goto(`/en/a/${handle}?tab=about`);
   await expect(page.locator("dl").last()).toContainText("SEO");
 });

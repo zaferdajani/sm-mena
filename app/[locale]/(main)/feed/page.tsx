@@ -1,4 +1,4 @@
-import { requireDirectory } from "@/lib/launch-access";
+import { requireDirectory } from "@/lib/launch-route";
 import { EmptySupply } from "@/components/demo/empty-supply";
 import { Compass, Sparkles, Star } from "lucide-react";
 import { demoMode } from "@/lib/demo-mode";

@@ -19,7 +19,8 @@ test("sign-up starts the WhatsApp code from the visitor's country, and any count
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await page.waitForURL(/\/en\/studio\/profile/);
+  await page.waitForURL(/\/en\/(setup|studio\/profile)/);
+  await page.goto("/en/studio/profile?welcome=1");
   // Saved as +20…, and the studio shows it back under Egypt.
   const saved = page.getByTestId("phone-whatsapp");
   await expect(saved.getByTestId("phone-dial")).toHaveText("+20");
