@@ -1,7 +1,7 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 import { countryOfCity } from "@/lib/countries";
 import { agencyConditions, inCountry, realUnless } from "@/lib/data/agency-filters";
-import { getDb } from "@/lib/db";
+import { getDb, type DB } from "@/lib/db";
 import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
@@ -56,8 +56,8 @@ export async function createAgency(ownerUserId: string, input: AgencyInput, extr
   return row;
 }
 
-export async function updateAgency(agencyId: string, input: Partial<AgencyInput> & { avatarKey?: string | null }) {
-  const db = await getDb();
+export async function updateAgency(agencyId: string, input: Partial<AgencyInput> & { avatarKey?: string | null }, connection?: Pick<DB, "select" | "update">) {
+  const db = connection ?? await getDb();
   const [current] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
   if (!current) return null;
   const merged = { ...current, ...input };

@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { and, asc, count, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 import { isCountryCode } from "@/lib/countries";
-import { getDb } from "@/lib/db";
+import { getDb, type DB } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency, type ClientTranslation, type PortfolioClient } from "@/lib/db/schema";
 import { INDUSTRIES } from "@/lib/labels";
 import { cleanLinks, type CleanLink } from "@/lib/social-links";
@@ -57,10 +57,10 @@ export async function listClients(agencyId: string): Promise<(PortfolioClient & 
   return rows.map((r) => ({ ...r, postCount: byId.get(r.id) ?? 0 }));
 }
 
-export async function saveClient(agencyId: string, clientId: string | null, raw: ClientInput): Promise<ClientError | { ok: true; id: string }> {
+export async function saveClient(agencyId: string, clientId: string | null, raw: ClientInput, connection?: Pick<DB, "select" | "insert" | "update">): Promise<ClientError | { ok: true; id: string }> {
   const cleaned = clean(raw);
   if ("error" in cleaned) return cleaned;
-  const db = await getDb();
+  const db = connection ?? await getDb();
   if (clientId) {
     const [row] = await db
       .update(portfolioClients)

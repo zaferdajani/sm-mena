@@ -328,7 +328,7 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
                   fd.set("source", "pdf");
                   const r = await uploadSetupMediaAction(fd);
                   if (r.error) return setError(r.error);
-                  run(() => chooseSourceAction(view.version, "pdf"));
+                  run(() => chooseSourceAction(r.view?.version ?? view.version, "pdf"));
                 })
               }
               data-testid="setup-pdf-use"
@@ -453,7 +453,7 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
     setError(null);
     if (r.media) {
       setMedia(r.media);
-      setView({ ...view, media: r.media });
+      setView(r.view ?? { ...view, media: r.media });
     }
   };
   const add = (files: FileList | null) => {
