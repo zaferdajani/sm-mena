@@ -1,0 +1,43 @@
+name: Public live browser acceptance
+on:
+  push:
+    branches: [ops/vercel-access-recovery]
+    paths:
+      - scripts/live-browser-proof.mjs
+      - .github/workflows/live-browser-proof.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sawwiq-live-browser-proof
+  cancel-in-progress: false
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked test dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Install genuine Chromium and WebKit browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Check observer syntax
+        run: node --check scripts/live-browser-proof.mjs
+      - name: Observe public production, native video frames and completion
+        run: node scripts/live-browser-proof.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sawwiq-live-browser-evidence
+          path: |
+            live-browser-proof/report.json
+            live-browser-proof/*.png
+            live-browser-proof/videos/*.webm
+          retention-days: 30
+          if-no-files-found: error
