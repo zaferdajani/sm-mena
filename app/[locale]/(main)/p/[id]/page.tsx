@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AppPanel } from "@/components/post/app-panel";
+import { EmbedPlayer } from "@/components/post/embed-player";
 import { PostCard } from "@/components/post/post-card";
 import { PostGrid } from "@/components/post/post-grid";
 import { ReportDialog } from "@/components/post/report-dialog";
@@ -71,10 +72,15 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
           <AppPanel app={post.app} />
         </div>
       )}
+      {post.embed && (
+        <div className="px-3 pt-2">
+          <EmbedPlayer embed={post.embed} title={t("embedTitle", { provider: t(`provider.${post.embed.provider}`) })} />
+        </div>
+      )}
       {post.sourceUrl && (
         <p className="px-3 pt-2 text-xs text-muted-foreground">
           <a href={post.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="hover:underline" data-testid="post-source">
-            {t("sourceBehance")} ↗
+            {post.embed ? t("sourceOn", { provider: t(`provider.${post.embed.provider}`) }) : t("sourceBehance")} ↗
           </a>
         </p>
       )}

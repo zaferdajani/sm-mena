@@ -22,7 +22,7 @@ export async function pngBuffer(color: string, width = 800, height = 800) {
 }
 
 /** Creates a fresh agency account and leaves the page signed in on its studio. */
-export async function joinAgency(page: Page, prefix = "e2e") {
+export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = {}) {
   const handle = uniqueHandle(prefix);
   const email = `${handle}@test.jo`;
   const password = "password-123";
@@ -34,7 +34,10 @@ export async function joinAgency(page: Page, prefix = "e2e") {
   await page.fill("#password", password);
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await page.waitForURL(/\/en\/studio\/profile/);
+  // A new provider starts in the first-run portfolio setup (docs/53); tests of the
+  // full editor continue there, the setup's own tests stay (stay: true).
+  await page.waitForURL(/\/en\/portfolio-setup/);
+  if (!stay) await page.goto("/en/studio/profile?welcome=1");
   return { handle, email, password };
 }
 

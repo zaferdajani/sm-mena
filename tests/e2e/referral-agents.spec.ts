@@ -31,7 +31,7 @@ test("an agent's link credits the sign-up, and the agent sees it on their page",
   await provider.fill("#password", "password-123");
   await provider.check('input[name="consent"]');
   await provider.getByRole("button", { name: /Create page|إنشاء/ }).click();
-  await provider.waitForURL(/\/studio\/profile/);
+  await provider.waitForURL(/\/portfolio-setup/);
 
   // The agent signs in and sees the sign-up, not yet active.
   const agent = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();

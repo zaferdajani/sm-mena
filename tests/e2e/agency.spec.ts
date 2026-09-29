@@ -13,7 +13,9 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await expect(page).toHaveURL(/\/en\/studio\/profile\?welcome=1/);
+  // Sign-up opens the short portfolio setup; the full editor keeps its welcome path.
+  await expect(page).toHaveURL(/\/en\/portfolio-setup$/);
+  await page.goto("/en/studio/profile?welcome=1");
   // The Behance import is offered as the quick start, next to the welcome.
   await expect(page.getByTestId("welcome-behance")).toContainText("Already on Behance?");
   await expect(page.getByTestId("welcome-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
