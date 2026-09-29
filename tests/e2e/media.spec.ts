@@ -33,7 +33,7 @@ test("a large camera photo is compressed in the browser and stored small", async
   expect(sent).toBeLessThan(3.8 * 1024 * 1024);
 
   const src = await page.getByTestId("post-card").locator('img[src*="/api/portfolio-media/"], img[src*="/media/posts/"]').first().getAttribute("src");
-  expect(src).toMatch(/\/media\/posts\/.+\.(webp|jpg|png)$/);
+  expect(src).toMatch(/\/(media\/posts|api\/portfolio-media\/portfolio\/[a-f0-9-]+\/posts)\/.+\.(webp|jpg|png)$/);
   const stored = await page.request.get(src!);
   expect(stored.ok()).toBe(true);
   const bytes = (await stored.body()).byteLength;

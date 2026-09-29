@@ -1,7 +1,7 @@
 "use client";
 
 import { ImagePlus, X } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { anotherProjectAction, finishSetupAction, goToStepAction, pauseSetupAction, removeMediaAction, saveClientStepAction, saveProfileStepAction, saveProjectStepAction, setCoverAction, uploadMediaAction } from "@/app/[locale]/(main)/setup/actions";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -69,7 +69,7 @@ export function ProfileStep({ draft, agency, services }: { draft: WizardDraft; a
         <AgencyAvatar name={agency.name} src={preview ?? agency.avatarUrl} size={80} />
         <div className="min-w-0">
           <p className="truncate font-semibold" dir="auto" data-testid="setup-name">{agency.name}</p>
-          <button type="button" onClick={() => input.current?.click()} className="mt-1 text-sm text-brand">{t("s1.pickImage")}</button>
+          <button type="button" onClick={() => input.current?.click()} className="mt-1 min-h-11 text-sm text-brand">{t("s1.pickImage")}</button>
           <input ref={input} type="file" name="avatar" accept="image/*" className="sr-only" data-testid="setup-avatar" onChange={(e) => { const f = e.target.files?.[0]; setPreview(f ? URL.createObjectURL(f) : null); }} />
           <p className="text-xs text-muted-foreground">{t("s1.imageHint")}</p>
         </div>
@@ -234,7 +234,6 @@ export function ClientStep({ draft, clients }: { draft: WizardDraft; clients: Op
 /** Step 4: one project. The first image is the cover; nothing is published here. */
 export function ProjectStep({ draft, services, platforms }: { draft: WizardDraft; services: { primary: Option[]; other: Option[] }; platforms: Option[] }) {
   const t = useTranslations("Setup");
-  const locale = useLocale();
   const [state, action] = useActionState(saveProjectStepAction, undefined);
   return (
     <div className="grid gap-5" data-testid="setup-project">
@@ -250,9 +249,9 @@ export function ProjectStep({ draft, services, platforms }: { draft: WizardDraft
                 {i === 0 && <span className="absolute start-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground" data-testid="setup-cover">{t("s4.cover")}</span>}
                 <div className="flex justify-between gap-1 p-1">
                   {i !== 0 ? (
-                    <form action={setCoverAction}><input type="hidden" name="version" value={draft.version} /><input type="hidden" name="index" value={i} /><button type="submit" className="text-[11px] text-brand" data-testid={`setup-make-cover-${i}`}>{t("s4.makeCover")}</button></form>
+                    <form action={setCoverAction}><input type="hidden" name="version" value={draft.version} /><input type="hidden" name="index" value={i} /><button type="submit" className="min-h-11 px-1 text-xs text-brand" data-testid={`setup-make-cover-${i}`}>{t("s4.makeCover")}</button></form>
                   ) : <span />}
-                  <form action={removeMediaAction}><input type="hidden" name="key" value={m.key} /><button type="submit" aria-label={t("s4.remove")} className="rounded p-1 text-muted-foreground hover:bg-muted" data-testid={`setup-remove-${i}`}><X className="size-3.5" aria-hidden /></button></form>
+                  <form action={removeMediaAction}><input type="hidden" name="key" value={m.key} /><button type="submit" aria-label={t("s4.remove")} className="grid min-h-11 min-w-11 place-items-center rounded text-muted-foreground hover:bg-muted" data-testid={`setup-remove-${i}`}><X className="size-4" aria-hidden /></button></form>
                 </div>
               </li>
             ))}
@@ -265,10 +264,10 @@ export function ProjectStep({ draft, services, platforms }: { draft: WizardDraft
         <FormError message={err(t, state?.error)} />
         <Field label={t("s4.label")} htmlFor="setup-title"><Input id="setup-title" name="title" required minLength={2} maxLength={120} dir="auto" defaultValue={draft.title} data-testid="setup-title" /></Field>
         <Field label={t("s4.contribution")} hint={t("s4.contributionHint")} htmlFor="setup-contribution"><Input id="setup-contribution" name="contribution" maxLength={300} dir="auto" defaultValue={draft.contribution} data-testid="setup-contribution" /></Field>
-        <Field label={t("s4.services")}><ChipGroup name="services" options={[...services.primary, ...services.other.slice(0, 10)]} defaultValues={draft.services.length ? draft.services : services.primary.slice(0, 1).map((s) => s.key)} /></Field>
+        <Field label={t("s4.services")}><ChipGroup name="services" options={[...services.primary, ...services.other.slice(0, 10)]} defaultValues={draft.services.length ? draft.services : [...services.primary, ...services.other].slice(0, 1).map((s) => s.key)} /></Field>
         <Field label={t("s4.platforms")} hint={t("optional")}><ChipGroup name="platforms" options={platforms} defaultValues={draft.platforms} /></Field>
         <PortfolioExamples />
-        <p className="text-xs text-muted-foreground">{locale === "ar" ? t("s4.noResults") : t("s4.noResults")}</p>
+        <p className="text-xs text-muted-foreground">{t("s4.noResults")}</p>
         <div className="flex flex-wrap gap-2"><button type="submit" className={primary} data-testid="setup-s4-preview">{t("s4.preview")}</button></div>
       </form>
     </div>

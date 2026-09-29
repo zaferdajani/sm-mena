@@ -33,7 +33,7 @@ Columns: ahead/behind = commits on branch / on main since merge-base; cherry = `
 
 **feat/creator-guidance-social-connections** — Squash-merged as #21 (37b4150) but the branch carries a `messages/creator/{en,ar}.json` split plus `i18n/request.ts` and `.github/workflows/creator-guidance-ci.yml` that main does not have (main keeps guide strings in root catalogs, f096d58). Active; keep.
 
-**feat/registration-phase** — 13 commits, 24 new files, none on main: `lib/launch-phase.ts`, `lib/launch-access.ts`, `lib/data/publication.ts`, migration `0028_profile_publication.sql`, `components/registration/*`, `docs/51-registration-phase.md`. Active; keep.
+**feat/registration-phase** — 13 commits, 24 new files, none on main: `lib/launch-phase.ts`, `lib/launch-access.ts`, `lib/data/publication.ts`, migration `0028_profile_publication.sql`, `components/registration/*`, `docs/54-registration-phase.md`. Active; keep.
 
 **fix/layout-rhythm-intro-release** — PR #13's squash tree is byte-identical to this branch tip (`git diff a9d92c7 <branch>` is empty). `lib/release.ts`, `components/release-stamp.tsx`, `app/api/version/route.ts`, `docs/46-*` are all on main; later main edits explain remaining file differences.
 

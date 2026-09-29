@@ -62,11 +62,12 @@ export async function patchDraft(agencyId: string, version: number, patch: Draft
   return { error: !current ? "not_found" : current.status === "finished" ? "finished" : "stale" };
 }
 
-/** Stores processed images in the draft's private space and appends them (up to the post limit). */
+/** Stores processed images in the draft's private space and appends them; the ten-image cap is enforced in the same statement. */
 export async function addDraftMedia(agencyId: string, processed: ProcessedImage[], patch: DraftPatch = {}): Promise<OnboardingDraft | DraftError> {
   const draft = await getDraft(agencyId);
   if (!draft) return { error: "not_found" };
   if (draft.status === "finished") return { error: "finished" };
+  if (!processed.length) return draft;
   if (draft.media.length + processed.length > MAX_IMAGES_PER_POST) return { error: "too_many" };
   const stored = await storeProcessedImages(agencyId, processed, keysFor(agencyId));
   const media: DraftMedia[] = stored.map((s, i) => ({ ...s, format: processed[i].fullFormat ?? "webp" }));
@@ -74,29 +75,36 @@ export async function addDraftMedia(agencyId: string, processed: ProcessedImage[
   const [row] = await db
     .update(onboardingDrafts)
     .set({ ...patch, media: sql`${onboardingDrafts.media} || ${JSON.stringify(media)}::jsonb`, version: sql`${onboardingDrafts.version} + 1`, updatedAt: new Date(), expiresAt: expiry() })
-    .where(and(eq(onboardingDrafts.agencyId, agencyId), ne(onboardingDrafts.status, "finished")))
+    .where(and(eq(onboardingDrafts.agencyId, agencyId), ne(onboardingDrafts.status, "finished"), sql`jsonb_array_length(${onboardingDrafts.media}) + ${media.length} <= ${MAX_IMAGES_PER_POST}`))
     .returning();
   if (!row) {
     await storage().remove(media.flatMap((m) => [m.key, m.thumbKey])).catch(() => {});
-    return { error: "not_found" };
+    const now = await getDraft(agencyId);
+    return { error: !now ? "not_found" : now.status === "finished" ? "finished" : "too_many" };
   }
   return row;
 }
 
-/** Removes one image from the draft (and from storage); the cover index is kept in range. */
+/** Removes one image from the draft in a single statement (two removes in flight cannot resurrect each other's file), then from storage. */
 export async function removeDraftMedia(agencyId: string, key: string): Promise<OnboardingDraft | DraftError> {
   const draft = await getDraft(agencyId);
   if (!draft) return { error: "not_found" };
   if (draft.status === "finished") return { error: "finished" };
   const gone = draft.media.find((m) => m.key === key);
   if (!gone) return draft;
-  const media = draft.media.filter((m) => m.key !== key);
   const db = await getDb();
   const [row] = await db
     .update(onboardingDrafts)
-    .set({ media, cover: Math.min(draft.cover, Math.max(0, media.length - 1)), version: sql`${onboardingDrafts.version} + 1`, updatedAt: new Date() })
-    .where(eq(onboardingDrafts.agencyId, agencyId))
+    .set({
+      media: sql`coalesce((select jsonb_agg(m) from jsonb_array_elements(${onboardingDrafts.media}) m where m->>'key' <> ${key}), '[]'::jsonb)`,
+      cover: sql`least(${onboardingDrafts.cover}, greatest(0, jsonb_array_length(${onboardingDrafts.media}) - 2))`,
+      version: sql`${onboardingDrafts.version} + 1`,
+      updatedAt: new Date(),
+      expiresAt: expiry(),
+    })
+    .where(and(eq(onboardingDrafts.agencyId, agencyId), ne(onboardingDrafts.status, "finished")))
     .returning();
+  if (!row) return { error: "finished" };
   await storage().remove([gone.key, gone.thumbKey]).catch(() => {});
   return row;
 }
@@ -150,10 +158,11 @@ export async function finishDraft(agencyId: string, version: number): Promise<{ 
   }
 }
 
-/** After a finished project: a fresh draft for the next one, keeping the client when asked. */
+/** After a finished project only: a fresh draft for the next one, keeping the client when asked. An unfinished draft is returned as it is. */
 export async function startAnotherProject(agency: Pick<Agency, "id" | "ownerUserId">, keepClient: boolean): Promise<OnboardingDraft> {
   const db = await getDb();
   const current = await ensureDraft(agency);
+  if (current.status !== "finished") return current;
   const [row] = await db
     .update(onboardingDrafts)
     .set({
@@ -161,9 +170,9 @@ export async function startAnotherProject(agency: Pick<Agency, "id" | "ownerUser
       source: null, sourceUrl: null, suggestedClient: null, title: "", contribution: "", services: current.services, platforms: [], media: [], cover: 0, postId: null, finishedAt: null,
       clientMode: keepClient ? current.clientMode : null, clientId: keepClient ? current.clientId : null, updatedAt: new Date(), expiresAt: expiry(),
     })
-    .where(eq(onboardingDrafts.agencyId, agency.id))
+    .where(and(eq(onboardingDrafts.agencyId, agency.id), eq(onboardingDrafts.status, "finished")))
     .returning();
-  return row;
+  return row ?? current;
 }
 
 export async function pauseDraft(agencyId: string) {
@@ -179,12 +188,3 @@ export async function purgeExpiredDrafts(now = new Date()) {
   if (keys.length) await storage().remove(keys).catch(() => {});
   return rows.length;
 }
-
-/** Whether the wizard should open for this provider by itself: a new page with nothing on it yet and no finished setup. */
-export async function shouldOfferSetup(agency: Pick<Agency, "id" | "postCount">) {
-  if (agency.postCount > 0) return false;
-  const draft = await getDraft(agency.id);
-  return !draft || draft.status !== "finished";
-}
-
-export const draftMediaUrl = (m: Pick<DraftMedia, "thumbKey">) => `/api/portfolio-media/${m.thumbKey}`;

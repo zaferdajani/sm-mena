@@ -7,7 +7,8 @@ import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { audit, updateAgency } from "@/lib/data/agencies";
 import { addDraftMedia, ensureDraft, finishDraft, pauseDraft, patchDraft, removeDraftMedia, setDraftCover, startAnotherProject, type DraftError } from "@/lib/data/onboarding";
-import { saveClient } from "@/lib/data/portfolio-clients";
+import { listClients, saveClient } from "@/lib/data/portfolio-clients";
+import { normalizeForSearch } from "@/lib/text";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, processAvatar, processImage } from "@/lib/images";
 import { PLATFORMS } from "@/lib/labels";
 import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
@@ -34,6 +35,8 @@ async function go(step: number, extra: Record<string, string> = {}) {
 export async function saveProfileStepAction(_: SetupState, fd: FormData): Promise<SetupState> {
   const { user, agency } = await requireAgency();
   const draft = await ensureDraft(agency);
+  // A stale tab is refused before anything is written.
+  if (draft.status === "finished" || version(fd) !== draft.version) return go(1, { stale: "1" });
   const d = z.object({ bio: z.string().trim().max(500) }).safeParse({ bio: fd.get("bio") ?? "" });
   if (!d.success) return { error: "bio" };
   const picked = await resolveServices(agency.id, list(fd, "services"), list(fd, "newServices"));
@@ -55,7 +58,7 @@ export async function saveProfileStepAction(_: SetupState, fd: FormData): Promis
   });
   if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   await audit(user.id, "agency.update", "agency", agency.id, { via: "setup" });
-  const r = await patchDraft(agency.id, version(fd) || draft.version, { step: 2 });
+  const r = await patchDraft(agency.id, draft.version, { step: 2 });
   if (failed(r)) return go(1, { stale: "1" });
   revalidatePath("/[locale]", "layout");
   return go(2);
@@ -105,6 +108,8 @@ export async function setCoverAction(fd: FormData) {
 /** Step 3: who the work was for. A new client is created only from a name the person typed and confirmed here. */
 export async function saveClientStepAction(_: SetupState, fd: FormData): Promise<SetupState> {
   const { agency } = await requireAgency();
+  const draft = await ensureDraft(agency);
+  if (draft.status === "finished" || version(fd) !== draft.version) return go(3, { stale: "1" });
   const mode = String(fd.get("mode") ?? "");
   if (!["client", "personal", "private"].includes(mode)) return { error: "mode" };
   let clientId: string | null = null;
@@ -113,9 +118,14 @@ export async function saveClientStepAction(_: SetupState, fd: FormData): Promise
     const name = String(fd.get("newClient") ?? "").trim().slice(0, 80);
     if (existing) clientId = existing;
     else if (name.length >= 2) {
-      const saved = await saveClient(agency.id, null, { name, industry: null, country: null, description: "", links: [] });
-      if (!("ok" in saved)) return { error: saved.error === "limit" ? "clientLimit" : "client" };
-      clientId = saved.id;
+      // The same name typed twice (a retry, a second project) is the same client, never a duplicate record.
+      const known = (await listClients(agency.id)).find((c) => normalizeForSearch(c.name) === normalizeForSearch(name));
+      if (known) clientId = known.id;
+      else {
+        const saved = await saveClient(agency.id, null, { name, industry: null, country: null, description: "", links: [] });
+        if (!("ok" in saved)) return { error: saved.error === "limit" ? "clientLimit" : "client" };
+        clientId = saved.id;
+      }
     } else return { error: "client" };
   }
   const r = await patchDraft(agency.id, version(fd), { clientMode: mode, clientId, suggestedClient: null, step: 4 });

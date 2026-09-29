@@ -23,6 +23,7 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.check('input[name="consent"]');
   await agencyPage.getByRole("button", { name: "Create page" }).click();
   await agencyPage.waitForURL(/\/en\/(setup|studio\/profile)/);
+  await agencyPage.goto("/en/studio/profile?welcome=1");
   // Waiting for review in the studio, not on the public page yet.
   await expect(agencyPage.getByTestId("service-picker")).toContainText(service);
   await agencyPage.goto(`/en/a/${handle}?tab=about`);

@@ -21,6 +21,7 @@ async function joinFreelancer(page: Page, prefix: string) {
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
   await page.waitForURL(/\/en\/(setup|studio\/profile)/);
+  await page.goto("/en/studio/profile?welcome=1");
   return { handle, email: `${handle}@test.jo`, password: "password-123" };
 }
 

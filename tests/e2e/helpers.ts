@@ -34,7 +34,9 @@ export async function joinAgency(page: Page, prefix = "e2e") {
   await page.fill("#password", password);
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
+  // Registration opens the first-run setup (docs/53); these suites test other features, so continue in the full profile editor.
   await page.waitForURL(/\/en\/(setup|studio\/profile)/);
+  await page.goto("/en/studio/profile?welcome=1");
   return { handle, email, password };
 }
 

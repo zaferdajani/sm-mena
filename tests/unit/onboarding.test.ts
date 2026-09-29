@@ -2,7 +2,7 @@ import "./setup-db";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createAgency } from "@/lib/data/agencies";
-import { addDraftMedia, DRAFT_TTL_DAYS, ensureDraft, finishDraft, getDraft, patchDraft, purgeExpiredDrafts, removeDraftMedia, setDraftCover, shouldOfferSetup, startAnotherProject } from "@/lib/data/onboarding";
+import { addDraftMedia, DRAFT_TTL_DAYS, ensureDraft, finishDraft, getDraft, patchDraft, purgeExpiredDrafts, removeDraftMedia, setDraftCover, startAnotherProject } from "@/lib/data/onboarding";
 import { saveClient } from "@/lib/data/portfolio-clients";
 import { getAgencyPostsForOwner } from "@/lib/data/posts";
 import { createUser } from "@/lib/data/users";
@@ -29,7 +29,6 @@ afterAll(() => closeDb());
 
 describe("the setup draft", () => {
   it("is created once per agency and offered only while the page is empty", async () => {
-    expect(await shouldOfferSetup(a)).toBe(true);
     const d1 = await ensureDraft(a);
     const d2 = await ensureDraft(a);
     expect(d2.id).toBe(d1.id);
@@ -65,6 +64,25 @@ describe("the setup draft", () => {
     expect(await storage().get(first)).toBeNull();
     expect(await addDraftMedia(a.id, Array.from({ length: 10 }, () => image))).toEqual({ error: "too_many" });
     expect(await removeDraftMedia(a.id, `portfolio/${b.id}/drafts/x.webp`)).toMatchObject({ media: d.media }); // foreign key ignored
+    // Parallel adds cannot exceed the cap: the statement itself refuses, and the refused files are removed again.
+    const results = await Promise.all([addDraftMedia(a.id, Array.from({ length: 5 }, () => image)), addDraftMedia(a.id, Array.from({ length: 5 }, () => image)), addDraftMedia(a.id, Array.from({ length: 5 }, () => image))]);
+    const after = (await getDraft(a.id))!;
+    expect(after.media.length).toBeLessThanOrEqual(10);
+    expect(results.filter((r) => "error" in r).length).toBeGreaterThanOrEqual(1);
+    // Two removes in flight: each removes exactly its own key; neither brings the other's file back.
+    const [k1, k2] = [after.media[1].key, after.media[2].key];
+    await Promise.all([removeDraftMedia(a.id, k1), removeDraftMedia(a.id, k2)]);
+    const afterRemove = (await getDraft(a.id))!;
+    expect(afterRemove.media.some((m) => m.key === k1 || m.key === k2)).toBe(false);
+    expect(afterRemove.media).toHaveLength(after.media.length - 2);
+    for (const m of afterRemove.media) expect(await storage().get(m.key)).not.toBeNull();
+    // An unfinished draft cannot be reset by "another project"; nothing is dropped.
+    const same = await startAnotherProject(a, false);
+    expect(same.media).toHaveLength(afterRemove.media.length);
+    // Back to one image for the finish test below.
+    for (const m of afterRemove.media.slice(1)) await removeDraftMedia(a.id, m.key);
+    d = (await getDraft(a.id))!;
+    expect(d.media).toHaveLength(1);
   });
 
   it("finishes into exactly one real post, and a retried finish returns the same post", async () => {
@@ -91,7 +109,6 @@ describe("the setup draft", () => {
     expect(imgs[0].key).toBe(set.media[0].key); // the same private key, no copy
     expect((await db.select().from(agencies).where(eq(agencies.id, a.id)))[0].postCount).toBe(1);
     expect((await getDraft(a.id))!.status).toBe("finished");
-    expect(await shouldOfferSetup({ id: a.id, postCount: 1 })).toBe(false);
     expect(await patchDraft(a.id, set.version + 1, { title: "x" })).toEqual({ error: "finished" });
   });
 

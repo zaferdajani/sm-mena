@@ -73,6 +73,7 @@ for (const locale of ["en", "ar"]) {
     await expect(page.getByTestId("setup-cover")).toBeVisible();
     await page.getByTestId("setup-title").fill(locale === "ar" ? "حملة إطلاق القائمة" : "Menu launch campaign");
     await page.getByTestId("setup-contribution").fill(locale === "ar" ? "التصوير وتصميم المنشورات" : "Photography and post design");
+    await page.getByTestId("setup-project").locator('input[name="services"]').first().check({ force: true });
     await noOverflow();
     await shot("step4");
     await page.getByTestId("setup-s4-preview").click();
@@ -109,15 +110,23 @@ test("returning providers are not forced through setup, and a stale tab cannot o
   await login(page, "nakhla-studio@sawwiq.test", "demo-pass-123");
   await page.goto("/en/studio");
   await expect(page.getByTestId("setup-wizard")).toHaveCount(0); // an established page opens its studio
-  await page.goto("/en/setup?step=4");
+  // Two tabs on step 1: the second submit carries the older draft version and is refused; the first save stands.
+  await page.goto("/en/setup?step=1");
   const stale = await page.context().newPage();
-  await stale.goto("/en/setup?step=4");
-  await page.getByTestId("setup-title").fill("Newer draft");
-  await page.getByTestId("setup-s4-preview").click();
-  await page.waitForURL(/step=(5|4)/);
-  await stale.getByTestId("setup-title").fill("Older tab");
-  await stale.getByTestId("setup-s4-preview").click();
+  await stale.goto("/en/setup?step=1");
+  const bio = await page.getByTestId("setup-bio").inputValue();
+  await page.getByTestId("setup-bio").fill(`${bio} (newer)`.trim());
+  await page.getByTestId("setup-s1-continue").click();
+  await page.waitForURL(/step=2/);
+  await stale.getByTestId("setup-bio").fill("older tab");
+  await stale.getByTestId("setup-s1-continue").click();
   await stale.waitForURL(/stale=1/);
   await expect(stale.getByTestId("setup-stale")).toBeVisible();
+  await expect(stale.getByTestId("setup-bio")).not.toHaveValue("older tab");
   await stale.close();
+  // Put the demo page's introduction back as it was.
+  await page.goto("/en/setup?step=1");
+  await page.getByTestId("setup-bio").fill(bio);
+  await page.getByTestId("setup-s1-continue").click();
+  await page.waitForURL(/step=2/);
 });

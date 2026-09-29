@@ -14,7 +14,7 @@ export const documentsOpen = () => launchPhase() === "full";
 
 // Independent of feature flags: a saved 'on' cannot accidentally open stage 3.
 const TRANSACTION_FEATURES = new Set(["contracts", "ndas", "protected_payments", "paid_plans"]);
-const DISCOVERY_FEATURES = new Set(["quote_requests", "ai_matchmaker", "messaging", "reviews", "partners", "collaboration", "demo_view"]);
+const DISCOVERY_FEATURES = new Set(["quote_requests", "ai_matchmaker", "messaging", "reviews", "partners", "collaboration", "collaboration_delivery", "collaboration_intelligence", "demo_view"]);
 export function launchAllowsFeature(key: string, who: { staff?: boolean; agencyHandle?: string | null } = {}): boolean {
   const phase = launchPhase();
   if (TRANSACTION_FEATURES.has(key)) return phase === "full";
