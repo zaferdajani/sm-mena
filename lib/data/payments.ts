@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import "server-only";
 import { and, desc, eq, gte, lt, ne, sql } from "drizzle-orm";
 import { audit } from "@/lib/data/agencies";
@@ -15,6 +16,7 @@ export const PLAN_MONTHS = [1, 3, 12] as const;
 export const planPriceFils = (plan: PlanId, months: number) => jodToFils(PLANS[plan].priceJodMonthly * (months === 12 ? 10 : months));
 
 export async function startPlanCheckout(agencyId: string, plan: Exclude<PlanId, "free">, months: number, userId: string) {
+  if (!documentsOpen()) throw new Error("unavailable");
   const db = await getDb();
   const [agency] = await db.select({ id: agencies.id, name: agencies.name }).from(agencies).where(eq(agencies.id, agencyId));
   if (!agency) throw new Error("agency not found");

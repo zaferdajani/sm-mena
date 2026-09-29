@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import { EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
 import { demoMode } from "@/lib/demo-mode";
@@ -22,6 +23,7 @@ import { hasRequirements } from "@/lib/matching/closeness";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[locale]/explore">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const p = parseExploreParams(await searchParams);
   const t = await getTranslations({ locale, namespace: "Explore" });
   const tCity = await getTranslations({ locale, namespace: "Cities" });
@@ -31,6 +33,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[lo
 
 export default async function ExplorePage({ params, searchParams }: PageProps<"/[locale]/explore">) {
   const { locale } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const sp = await searchParams;
   const p = parseExploreParams(sp);

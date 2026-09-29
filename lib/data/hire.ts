@@ -1,3 +1,5 @@
+import { discoverableProfiles } from "@/lib/data/publication";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, packages, postImages, posts } from "@/lib/db/schema";
@@ -12,7 +14,7 @@ export type HireCard = AgencySummary & { thumbs: { postId: string; url: string; 
 export type Place = { city?: string; country?: string };
 
 function where(service: string, place: Place = {}) {
-  const c = [eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`];
+  const c = [discoverableProfiles(), ...(isRegistrationPhase() ? [sql`false`] : []), eq(agencies.status, "active"), sql`${service} = any(${agencies.services})`];
   if (place.city) c.push(eq(agencies.city, place.city));
   if (place.country) c.push(inCountry(place.country));
   return and(...c);
@@ -116,11 +118,12 @@ export async function citiesForService(service: string, country?: string) {
  * pages that real agencies fill (lib/seo.ts INDEX_MIN_*).
  */
 export async function serviceCounts({ realOnly = false } = {}) {
+  if (isRegistrationPhase()) return { services: new Map<string, number>(), pairs: new Map<string, number>(), countries: new Map<string, number>() };
   const db = await getDb();
   const rows = await db
     .select({ service: sql<string>`unnest(${agencies.services})`, city: agencies.city, country: agencies.country })
     .from(agencies)
-    .where(realOnly ? and(eq(agencies.status, "active"), eq(agencies.isDemo, false)) : eq(agencies.status, "active"));
+    .where(and(discoverableProfiles(), realOnly ? and(eq(agencies.status, "active"), eq(agencies.isDemo, false)) : eq(agencies.status, "active")));
   const services = new Map<string, number>();
   const pairs = new Map<string, number>();
   const countries = new Map<string, number>();

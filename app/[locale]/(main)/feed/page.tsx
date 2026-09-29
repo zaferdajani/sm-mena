@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import { EmptySupply } from "@/components/demo/empty-supply";
 import { Compass, Sparkles, Star } from "lucide-react";
 import { demoMode } from "@/lib/demo-mode";
@@ -28,12 +29,14 @@ import { deviceOf } from "@/lib/data/stats";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/feed">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const t = await getTranslations({ locale, namespace: "Seo" });
   return pageMeta({ locale, path: "/feed", title: t("feedTitle"), description: t("feedDescription") });
 }
 
 export default async function FeedPage({ params, searchParams }: PageProps<"/[locale]/feed">) {
   const { locale } = await params;
+  await requireDirectory();
   // ?type= narrows the feed to one business type (the chips and each post's tag).
   const rawType = (await searchParams).type;
   const type = isBusinessType(rawType) ? rawType : null;

@@ -167,3 +167,24 @@ No contact data is added. Notifications carry names and titles only. Audit: `col
 | Reminder preferences (`collab_prefs`: muted kinds, quiet hours, public-feedback opt-out) | the agency only | until changed |
 | Reminders (`reminder_*` notifications: kind, title, link) | the agency | 90 days like other notifications |
 | Funnel metrics | staff, as counts only; demo and staff-owned agencies excluded | computed on request from existing rows; nothing stored |
+
+
+## Registration-phase publication choices (2026-09-29)
+
+`profile_publications` stores the provider's chosen audience (private, unlisted,
+public), consent version and update time. The authenticated owner explicitly
+acknowledges a change; staff do not silently change that choice. A new real
+registration-phase account starts private in the same transaction as account
+creation. Existing public links are preserved, but not placed in the public
+directory during registration. The phase never changes publication preferences.
+
+New portfolio media is in private storage and served through an access-checked,
+no-store route. Old previously-public media may already exist in outside caches
+or downloaded copies; changing visibility cannot recall them. Unlisted means
+anyone with the URL, not confidential. No index marker substitutes for auth.
+
+The preference follows account retention; its FK cascades when the agency is
+actually erased by the account-erasure process. The existing audit trail records
+only the audience and consent version, never contact details. Operational legal
+retention continues independently. No new marketing subscription is introduced;
+registration alone is not consent to unsolicited promotional messages.

@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import { featureOpen } from "@/lib/features";
 import { CheckCircle2, FlaskConical, XCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -40,13 +41,13 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
         {!monetizationEnabled() && <p className="mt-2 text-sm text-brand">{t("freeDuringLaunch")}</p>}
       </section>
 
-      {isTestPayments() && (
+      {documentsOpen() && isTestPayments() && (
         <p className="flex items-center gap-2 rounded-lg bg-amber-500/10 p-3 text-xs" role="note">
           <FlaskConical className="size-4 shrink-0 text-amber-600" /> {t("testBanner")}
         </p>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      {documentsOpen() && <div className="grid gap-3 sm:grid-cols-2">
         {(["pro", "business"] as const).map((plan) => (
           <section key={plan} className={cn("space-y-3 rounded-xl border p-4", agency.plan === plan && active && "border-brand")}>
             <div>
@@ -80,7 +81,7 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
             )}
           </section>
         ))}
-      </div>
+      </div>}
       <p className="text-xs text-muted-foreground">{t("limitsNote", { free: PLANS.free.proposalsPerMonth ?? 0 })}</p>
 
       <section className="space-y-2">

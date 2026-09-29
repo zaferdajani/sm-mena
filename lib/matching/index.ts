@@ -1,3 +1,5 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
+import { discoverableProfiles } from "@/lib/data/publication";
 import "server-only";
 import { countryOfCity } from "@/lib/countries";
 import { scopedCountry, scopedIncludeDemo } from "./scope";
@@ -24,6 +26,7 @@ export type Match = AgencySummary & {
 
 /** Loads candidates, scores them, and returns the best matches with display data. */
 export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
+  if (!(await (await import("@/lib/launch-access")).canBrowseDirectory())) return [];
   const db = await getDb();
   const valid = need.services.filter(isServiceKey);
   const services = valid.length ? valid : null;
@@ -35,7 +38,7 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, realUnless(scopedIncludeDemo())));
+    .where(and(eq(agencies.status, "active"), discoverableProfiles(), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, realUnless(scopedIncludeDemo())));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 
@@ -105,13 +108,14 @@ export async function marketPrices(service: string, city?: string | null) {
   const db = await getDb();
   // Prices are per currency, so always within one country: the visitor's, else the city's.
   const country = scopedCountry() ?? countryOfCity(city) ?? "jo";
+  if (isRegistrationPhase()) return { agencies: 0, country, note: "Registration phase; market data is not published.", startingPrices: null, packagePrices: null, suggested: null };
   if (city && countryOfCity(city) !== country) city = null;
   const starting = await db
     .select({ p: agencies.startingPriceJod })
     .from(agencies)
     .where(
       and(
-        eq(agencies.status, "active"),
+        eq(agencies.status, "active"), discoverableProfiles(),
         sql`${service} = any(${agencies.services})`,
         city ? eq(agencies.city, city) : undefined,
         eq(agencies.country, country),
@@ -122,7 +126,7 @@ export async function marketPrices(service: string, city?: string | null) {
     .select({ p: packages.priceJod })
     .from(packages)
     .innerJoin(agencies, eq(packages.agencyId, agencies.id))
-    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), eq(agencies.country, country), eq(agencies.isDemo, false)));
+    .where(and(eq(packages.service, service), eq(packages.billing, "monthly"), eq(agencies.status, "active"), discoverableProfiles(), eq(agencies.country, country), eq(agencies.isDemo, false)));
   const startingPrices = starting.map((r) => r.p).filter((p): p is number => p !== null);
   const packagePrices = pkgs.map((r) => r.p);
   // Real agencies only, and no range from fewer than MIN_PRICE_SAMPLE prices.

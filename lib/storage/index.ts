@@ -21,7 +21,7 @@ export function isSafeKey(key: string): boolean {
 }
 
 /** Keys under these prefixes are never public: no public URL, a private bucket, served only by an authenticated route. */
-const PRIVATE_PREFIXES = ["collab/"];
+const PRIVATE_PREFIXES = ["collab/", "portfolio/"];
 export const isPrivateKey = (key: string) => PRIVATE_PREFIXES.some((p) => key.startsWith(p));
 
 function localStorage(): Storage {
@@ -47,6 +47,7 @@ function localStorage(): Storage {
       await Promise.all(keys.map((key) => rm(resolve(key), { force: true })));
     },
     url: (key) => {
+      if (key.startsWith("portfolio/") && isSafeKey(key)) return `/api/portfolio-media/${key}`;
       if (isPrivateKey(key)) throw new Error(`Private storage key has no public URL: ${key}`);
       return `/media/${key}`;
     },
@@ -104,6 +105,7 @@ function supabaseStorage(): Storage {
       if (priv.length) await client.storage.from(privateBucket).remove(priv);
     },
     url: (key) => {
+      if (key.startsWith("portfolio/") && isSafeKey(key)) return `/api/portfolio-media/${key}`;
       if (isPrivateKey(key)) throw new Error(`Private storage key has no public URL: ${key}`);
       return `${url}/storage/v1/object/public/${bucket}/${key}`;
     },

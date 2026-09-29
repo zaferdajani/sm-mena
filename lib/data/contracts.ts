@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
@@ -122,7 +123,7 @@ export type ContractInput = {
   packageId?: string | null;
 };
 
-export type ContractError =
+export type ContractError = "unavailable"
   | "noMilestones"
   | "tooManyMilestones"
   | "dates"
@@ -256,6 +257,7 @@ function clean(input: ContractInput): ContractInput {
 }
 
 export async function createContract(agencyId: string, raw: ContractInput): Promise<{ error: ContractError } | { contract: Contract; token: string }> {
+  if (!documentsOpen()) return { error: "unavailable" };
   const input = clean(raw);
   const error = validateContract(input);
   if (error) return { error };

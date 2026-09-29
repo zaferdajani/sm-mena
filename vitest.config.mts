@@ -9,6 +9,7 @@ export default defineConfig({
     },
   },
   test: {
+    env: { LAUNCH_PHASE: "full" },
     include: ["tests/unit/**/*.test.ts"],
     environment: "node",
   },

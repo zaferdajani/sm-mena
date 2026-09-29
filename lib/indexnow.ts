@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { routing } from "@/i18n/routing";
 import { siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
@@ -9,6 +10,9 @@ import { SITE_URL } from "@/lib/site";
  * indexable; never blocks or fails the action that triggered it.
  */
 export function pingIndexNow(paths: string[]) {
+  if (isRegistrationPhase()) return;
+  // Discovery of profile changes is handled by the permission-filtered sitemap.
+  paths = paths.filter((p) => !/\/(?:a|p)\//.test(p));
   const key = process.env.INDEXNOW_KEY;
   if (!key || !siteIndexable() || !paths.length || process.env.NODE_ENV !== "production") return;
   const urlList = paths.flatMap((p) => routing.locales.map((l) => `${SITE_URL}/${l}${p}`));

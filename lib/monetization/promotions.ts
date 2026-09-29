@@ -1,3 +1,4 @@
+import { discoverableProfiles } from "@/lib/data/publication";
 import "server-only";
 import { and, eq, gt, inArray, lte, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
@@ -22,7 +23,7 @@ export async function activePromotions(placement: Placement, filters: FeedFilter
         eq(promotions.status, "active"),
         lte(promotions.startsAt, now),
         gt(promotions.endsAt, now),
-        eq(agencies.status, "active"),
+        eq(agencies.status, "active"), discoverableProfiles(),
         filters.includeDemo ? undefined : eq(agencies.isDemo, false),
         // Sponsored slots stay in the visitor's country.
         filters.country ? inCountry(filters.country) : undefined,
