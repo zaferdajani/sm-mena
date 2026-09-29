@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { StudioNav } from "@/components/studio/studio-nav";
+import { CreatorSetupNudge } from "@/components/studio/creator-guide";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { unreadForAgency } from "@/lib/data/conversations";
@@ -30,16 +31,9 @@ export default async function StudioLayout({ children }: { children: React.React
   const tn = await getTranslations("Notifications");
   const tpart = await getTranslations("Partners");
   const tcol = await getTranslations("Collab");
+  const tg = await getTranslations("CreatorSetup");
   const [partnersGate, collabGate, openInquiries, pendingOrders, unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
-    featureGate("partners"),
-    featureGate("collaboration"),
-    openInquiryCount(agency.id),
-    pendingOrderCount(agency.id),
-    unreadCount(agency.id),
-    unreadForAgency(agency.id),
-    newOpportunityCount(agency),
-    unreadNotificationCount({ agencyId: agency.id }),
-    pendingPartnerCount(agency.id),
+    featureGate("partners"), featureGate("collaboration"), openInquiryCount(agency.id), pendingOrderCount(agency.id), unreadCount(agency.id), unreadForAgency(agency.id), newOpportunityCount(agency), unreadNotificationCount({ agencyId: agency.id }), pendingPartnerCount(agency.id),
   ]);
   return (
     <div data-design-surface="workspace" className="sw-workspace mx-auto w-full max-w-4xl">
@@ -47,44 +41,36 @@ export default async function StudioLayout({ children }: { children: React.React
         <AgencyAvatar name={agency.name} src={mediaUrl(agency.avatarKey)} size={44} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold" dir="auto">{agency.name}</p>
-          <Link href={`/a/${agency.handle}`} className="flex items-center gap-1 text-xs text-brand">
-            {t("viewPage")} <ExternalLink className="size-3" />
-          </Link>
+          <Link href={`/a/${agency.handle}`} className="flex items-center gap-1 text-xs text-brand">{t("viewPage")} <ExternalLink className="size-3" /></Link>
         </div>
         <form action={logout}>
-          <button type="submit" className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted">
-            <LogOut className="size-4 rtl:-scale-x-100" />
-            {ta("logout")}
-          </button>
+          <button type="submit" className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted"><LogOut className="size-4 rtl:-scale-x-100" />{ta("logout")}</button>
         </form>
       </div>
       <div className="mt-3">
-        <StudioNav
-          items={[
-            { href: "/studio", label: t("overview") },
-            // Setting up comes first: the page, then the packages (easy to miss further along on a phone).
-            { href: "/studio/profile", label: t("profile") },
-            { href: "/studio/packages", label: tp("studio.tab") },
-            { href: "/studio/new", label: t("newPost") },
-            { href: "/studio/posts", label: t("posts") },
-            { href: "/studio/followers", label: t("followers") },
-            { href: "/studio/clients", label: t("clients") },
-            // Collaboration V2 (docs/48) sits beside the legacy partners page; old links keep working.
-            ...(collabGate !== "off" ? [{ href: "/studio/collab", label: tcol("tab"), badge: openInquiries + pendingOrders }] : []),
-            ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
-            { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
-            { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
-            { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
-            { href: "/studio/inbox", label: t("inbox"), badge: unread },
-            { href: "/studio/reviews", label: tr("studio.tab") },
-            { href: "/studio/contracts", label: t("contracts") },
-            { href: "/studio/ndas", label: tl("ndaStudio.tab") },
-            { href: "/studio/billing", label: t("billing") },
-            { href: "/studio/security", label: t("security") },
-          ]}
-        />
+        <StudioNav items={[
+          { href: "/studio", label: t("overview") },
+          { href: "/studio/setup", label: tg("nav") },
+          { href: "/studio/profile", label: t("profile") },
+          { href: "/studio/packages", label: tp("studio.tab") },
+          { href: "/studio/new", label: t("newPost") },
+          { href: "/studio/posts", label: t("posts") },
+          { href: "/studio/followers", label: t("followers") },
+          { href: "/studio/clients", label: t("clients") },
+          ...(collabGate !== "off" ? [{ href: "/studio/collab", label: tcol("tab"), badge: openInquiries + pendingOrders }] : []),
+          ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
+          { href: "/studio/opportunities", label: to("tab") },
+          { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
+          { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
+          { href: "/studio/inbox", label: t("inbox"), badge: unread },
+          { href: "/studio/reviews", label: tr("studio.tab") },
+          { href: "/studio/contracts", label: t("contracts") },
+          { href: "/studio/ndas", label: tl("ndaStudio.tab") },
+          { href: "/studio/billing", label: t("billing") },
+          { href: "/studio/security", label: t("security") },
+        ]} />
       </div>
-      <div className="sw-workspace-body px-4 py-5">{children}</div>
+      <div className="sw-workspace-body px-4 py-5"><CreatorSetupNudge hasWork={agency.postCount > 0} />{children}</div>
     </div>
   );
 }

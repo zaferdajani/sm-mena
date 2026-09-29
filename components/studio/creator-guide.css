@@ -1,0 +1,12 @@
+/* Explicit guide highlight only; no changes to global typography or layout. */
+.creator-field-highlight {
+  outline: 3px solid var(--primary);
+  outline-offset: 5px;
+  border-radius: 0.75rem;
+  scroll-margin-block: 7rem 3rem;
+}
+.creator-field-highlight:focus { outline: 3px solid var(--primary); }
+[data-testid="portfolio-examples"] > summary,
+[data-testid="creator-setup-page"] details > summary {
+  min-block-size: 2.75rem;
+}

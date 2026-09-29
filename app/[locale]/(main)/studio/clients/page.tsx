@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClientForm, ClientItem } from "@/components/studio/client-form";
+import { PortfolioClientGuide } from "@/components/studio/creator-guide";
 import { requireAgency } from "@/lib/auth/guards";
 import { COUNTRIES } from "@/lib/countries";
 import { listClients, MAX_CLIENTS } from "@/lib/data/portfolio-clients";
@@ -20,30 +21,19 @@ export default async function StudioClientsPage({ params }: PageProps<"/[locale]
   const lang = contentLang(agency.contentLang);
   return (
     <div className="mx-auto max-w-2xl space-y-4">
-      <div>
-        <h1 className="text-lg font-bold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("intro")}</p>
-      </div>
+      <div><h1 className="text-lg font-bold">{t("title")}</h1><p className="text-sm text-muted-foreground">{t("intro")}</p></div>
+      <PortfolioClientGuide />
       {clients.length === 0 && <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{t("empty")}</p>}
       {clients.map((c) => (
-        <ClientItem
-          key={c.id}
-          client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation, logoUrl: mediaUrl(c.logoKey), confirmedAt: c.confirmedAt }}
-          industries={industries}
-          countries={countries}
-          industryLabel={c.industry ? tInd(c.industry) : null}
-          postCount={c.postCount}
-          contentLang={lang}
-        />
+        <ClientItem key={c.id} client={{ id: c.id, name: c.name, industry: c.industry, country: c.country, description: c.description, links: c.links, translation: c.translation, logoUrl: mediaUrl(c.logoKey), confirmedAt: c.confirmedAt }}
+          industries={industries} countries={countries} industryLabel={c.industry ? tInd(c.industry) : null} postCount={c.postCount} contentLang={lang} />
       ))}
       {clients.length < MAX_CLIENTS ? (
         <section className="space-y-2">
           <h2 className="font-semibold">{t("add")}</h2>
           <ClientForm key={`new-${clients.length}`} industries={industries} countries={countries} defaultCountry={agency.country} contentLang={lang} />
         </section>
-      ) : (
-        <p className="text-sm text-muted-foreground">{t("errors.limit")}</p>
-      )}
+      ) : <p className="text-sm text-muted-foreground">{t("errors.limit")}</p>}
     </div>
   );
 }
