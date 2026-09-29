@@ -1,4 +1,4 @@
-name: Apply registration phase integration
+name: Integrate registration phase with current main
 on:
   push:
     branches: [feat/registration-phase]
@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 jobs:
-  apply:
+  integrate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -18,60 +18,68 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Apply reviewed integration edits
-        run: |
-          python3 scripts/apply-registration-core.py
-          python3 scripts/apply-registration-ui.py
-          python3 scripts/apply-registration-final.py
-          # Workflow updates are performed separately via an authorized connector.
-          # The runner must not attempt a workflow write it has no permission for.
-      - run: npm ci
-      - name: Keep Drizzle snapshot consistent with additive migration
-        run: |
-          cp lib/db/migrations/0028_profile_publication.sql /tmp/profile-publication.sql
-          python3 - <<'PY'
-          import json,pathlib
-          p=pathlib.Path('lib/db/migrations/meta/_journal.json')
-          j=json.loads(p.read_text());assert j['entries'][-1]['idx']==28
-          j['entries'].pop();p.write_text(json.dumps(j,indent=2)+'\n')
-          pathlib.Path('lib/db/migrations/0028_profile_publication.sql').unlink()
-          PY
-          npm run db:generate -- --name=profile_publication
-          test -f lib/db/migrations/meta/0028_snapshot.json
-          cp /tmp/profile-publication.sql lib/db/migrations/0028_profile_publication.sql
-      - name: Commit application source on the isolated branch
-        run: |
-          git diff --check
-          git rm scripts/apply-registration-core.py scripts/apply-registration-ui.py scripts/apply-registration-final.py scripts/registration-ci.py scripts/registration-copy.json
-          git add app components lib messages tests playwright.config.ts playwright.registration.config.ts vitest.config.mts docs
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'feat(launch): integrate registration phase and owner-controlled publication'
-          git push origin HEAD:feat/registration-phase
-      - name: Check integration with newest main without overwriting conflicts
+      - name: Merge newer main, resolving disjoint JSON edits only
         run: |
           git fetch origin main
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' merge origin/main --no-edit
-          git push origin HEAD:feat/registration-phase
-      - name: Typecheck integrated source
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' merge origin/main --no-commit --no-ff || true
+          python3 - <<'PY'
+          import json,pathlib,subprocess
+          missing=object()
+          def merge(b,o,t,path=''):
+              if o==t:return o
+              if o==b:return t
+              if t==b:return o
+              if all(isinstance(v,dict) for v in [b,o,t]):
+                  out={}
+                  for k in list(o)+[k for k in t if k not in o]+[k for k in b if k not in o and k not in t]:
+                      val=merge(b.get(k,missing),o.get(k,missing),t.get(k,missing),path+'.'+k)
+                      if val is not missing:out[k]=val
+                  return out
+              raise RuntimeError('Conflicting values require manual review: '+path)
+          files=subprocess.check_output(['git','diff','--name-only','--diff-filter=U']).decode().splitlines()
+          assert set(files)<= {'messages/ar.json','messages/en.json'},files
+          for name in files:
+              b,o,t=[json.loads(subprocess.check_output(['git','show',f':{i}:{name}'])) for i in [1,2,3]]
+              result=merge(b,o,t)
+              assert 'Registration' in result and 'CreatorSetup' in result
+              pathlib.Path(name).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+              subprocess.run(['git','add',name],check=True)
+          PY
+          git diff --cached --check
+          test -z "$(git diff --cached --name-only -- .github/workflows)"
+          if [ -f .git/MERGE_HEAD ]; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'merge: preserve current onboarding while integrating registration phase'
+            git push origin HEAD:feat/registration-phase
+          fi
+      - run: npm ci
+      - name: Typecheck
+        id: typecheck
+        continue-on-error: true
         run: npm run typecheck
-      - name: Lint integrated source
+      - name: Lint
+        id: lint
+        continue-on-error: true
         run: npm run lint
-      - name: Export source for review (no secrets or fonts)
+      - name: Export reviewed source and relevant installed framework docs
         if: always()
         run: |
           python3 - <<'PY'
           import pathlib,subprocess,zipfile
-          names=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          names=set(subprocess.check_output(['git','ls-files','-z']).decode().split('\0'))
           allowed={'.ts','.tsx','.css','.json','.md','.mjs','.cjs','.js','.yml','.yaml','.sql','.txt','.mts'}
           with zipfile.ZipFile('registration-integrated-source.zip','w',zipfile.ZIP_DEFLATED) as z:
-              for name in names:
+              for name in sorted(names):
                   p=pathlib.Path(name)
-                  if p.is_file() and p.suffix in allowed and not name.startswith('public/') and not p.name.startswith('.env'):
-                      z.write(p,name)
+                  if p.is_file() and p.suffix in allowed and not name.startswith('public/') and not p.name.startswith('.env'):z.write(p,name)
+              for p in pathlib.Path('node_modules/next/dist/docs').rglob('*.mdx'):
+                  if any(s in str(p) for s in ['authentication','data-security','route-handlers','route-segment-config','cookies']):z.write(p,'framework-docs/'+p.name)
           PY
-          git status --short
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: registration-integrated-source
           path: registration-integrated-source.zip
           retention-days: 3
+      - name: Fail when a code check failed
+        if: steps.typecheck.outcome != 'success' || steps.lint.outcome != 'success'
+        run: exit 1
