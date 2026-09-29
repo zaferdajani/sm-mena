@@ -22,7 +22,7 @@ afterAll(() => closeDb());
 describe("closing errors that no longer happen", () => {
   it("closes only errors not seen within the window, with the note", async () => {
     expect(await staleErrorCount(24)).toBe(1);
-    expect(await resolveStaleErrors(adminId, { hours: 24, notes: "Fixed by the driver change.", commit: "c3e441e" })).toBe(1);
+    expect(await resolveStaleErrors(adminId, { hours: 24, notes: "Fixed by the driver change.", commit: "c3e441e", status: "fixed" })).toBe(1);
     const db = await getDb();
     const rows = await db.select().from(errorEvents);
     const old = rows.find((r) => r.message === "Failed query: old stall")!;

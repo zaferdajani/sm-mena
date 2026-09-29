@@ -80,6 +80,7 @@ function SiteChecks({ checks, t, ago }: { checks: Awaited<ReturnType<typeof list
               <span className={c.ok ? "text-brand" : "text-destructive"}>{c.ok ? "✓" : "✕"}</span>
               <span className="text-muted-foreground">{ago(c.ranAt)}</span>
               <span>{c.ok ? t("checks.runOk") : t("checks.runFailed", { count: c.failures })}</span>
+              {c.results[0]?.release && <span className="text-muted-foreground" dir="ltr">· {c.results[0].release.revision} {c.results[0].release.commit?.slice(0, 7)}</span>}
               {c.closed > 0 && <span className="text-muted-foreground">· {t("checks.closed", { count: c.closed })}</span>}
               {!c.ok && (
                 <span className="basis-full text-muted-foreground" dir="ltr">
@@ -114,6 +115,10 @@ async function ErrorList({ filter: raw, hours: rawHours, t, ago }: { filter: unk
           <p className="font-medium">{t("stale.title", { count: stale, hours })}</p>
           <p className="text-xs text-muted-foreground">{t("stale.body")}</p>
           <input type="hidden" name="hours" value={hours} />
+          <div className="grid gap-1" role="radiogroup" aria-label={t("stale.asLabel")}>
+            <label className="flex items-center gap-2"><input type="radio" name="status" value="cannot_reproduce" defaultChecked className="size-4 accent-[var(--primary)]" data-testid="stale-status-cannot_reproduce" /> {t("stale.asNotSeen")}</label>
+            <label className="flex items-center gap-2"><input type="radio" name="status" value="fixed" className="size-4 accent-[var(--primary)]" data-testid="stale-status-fixed" /> {t("stale.asFixed")}</label>
+          </div>
           <textarea name="notes" required minLength={3} defaultValue={t("stale.notesDefault")} rows={2} className="rounded-md border bg-background p-2" dir="auto" />
           <input name="commit" placeholder={t("commit")} className="h-9 rounded-md border bg-background px-2" dir="ltr" />
           <button type="submit" className="w-fit rounded-md bg-primary px-3 py-2 font-medium text-primary-foreground" data-testid="resolve-stale-button">

@@ -20,10 +20,10 @@ export async function updateErrorAction(formData: FormData) {
 export async function resolveStaleErrorsAction(formData: FormData) {
   const admin = await requireStaff("bugs.manage");
   const data = z
-    .object({ hours: z.coerce.number().int().min(1).max(24 * 90), notes: z.string().trim().min(3).max(2000), commit: z.string().trim().max(80).optional() })
+    .object({ hours: z.coerce.number().int().min(1).max(24 * 90), notes: z.string().trim().min(3).max(2000), commit: z.string().trim().max(80).optional(), status: z.enum(["fixed", "cannot_reproduce"]).default("cannot_reproduce") })
     .parse(Object.fromEntries(formData));
   const closed = await resolveStaleErrors(admin.id, data);
-  await audit(admin.id, "bug.resolve_stale", "error_event", undefined, { hours: data.hours, closed, commit: data.commit || null });
+  await audit(admin.id, "bug.resolve_stale", "error_event", undefined, { hours: data.hours, closed, status: data.status, commit: data.commit || null });
   revalidatePath("/[locale]/admin", "layout");
 }
 
