@@ -54,9 +54,14 @@ try {
     await wizard.waitFor();
   }
   await shot(page, "1-setup-open");
-  const stepAttr = await wizard.getAttribute("data-step");
+  let stepAttr = await wizard.getAttribute("data-step");
   step("setup opens", Boolean(stepAttr), `step ${stepAttr}`);
   if (stepAttr === "1") await page.getByTestId("setup-profile-skip").click();
+  // A draft an earlier run left behind resumes where it stopped: walk back to the source step.
+  for (let n = Number(stepAttr); n > 2; n--) {
+    await page.getByTestId("setup-back").click();
+    await page.locator(`[data-testid="setup-wizard"][data-step="${n - 1}"]`).waitFor({ timeout: 30_000 });
+  }
   await page.getByTestId("setup-source").waitFor();
   await page.getByTestId("source-social").click();
   const blockers = await page.locator('[data-testid^="provider-blocker-"]').count();
@@ -68,6 +73,11 @@ try {
   await page.getByTestId("client-mode-private").check();
   await page.getByTestId("setup-client-next").click();
   await page.getByTestId("setup-project").waitFor();
+  // Images left by an earlier run are removed so the check below counts this run's only image.
+  for (let left = await page.getByTestId("setup-media").locator("li").count(); left > 0; left--) {
+    await page.getByTestId("setup-media").locator("li").first().getByRole("button", { name: "احذف" }).click();
+    await page.getByTestId("setup-media").locator("li").nth(left - 1).waitFor({ state: "detached", timeout: 30_000 });
+  }
   await page.getByTestId("setup-image-input").setInputFiles([{ name: "a.png", mimeType: "image/png", buffer: await png("#b3541e") }]);
   await page.getByTestId("setup-media").locator("li").first().waitFor({ timeout: 60_000 });
   const mediaSrc = await page.getByTestId("setup-media").locator("img").first().getAttribute("src");
