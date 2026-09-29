@@ -87,7 +87,7 @@ AR: عندك وكالة أو شغل حر في {المدينة}؟ 🎨
 اعمل صفحة مجانية على سوّق، اعرض شغلك مجمّع حسب العميل، واستقبل طلبات عملاء حقيقيين.
 مجاناً خلال الإطلاق. أول ٤٠ وكالة تحصل على شارة «وكالة مؤسِّسة».
 🔗 sawwiq.org/join
-EN: Run an agency or freelance in {city}? Create a free Sawwiq page, show work grouped by client and receive real client requests. Free during launch; the first 40 agencies get a Founding badge.
+EN: Run an agency or freelance in {city}? Create a free Sawwiq page, show work grouped by client and receive real client requests. Free during launch; the founding cohort (100, per docs/44) get a Founding badge.
 ```
 **C. Education carousel**
 ```
