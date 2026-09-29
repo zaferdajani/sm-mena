@@ -1,3 +1,5 @@
+import { RegistrationFooter } from "@/components/registration/registration-view";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { getLocale, getTranslations } from "next-intl/server";
 import { OtherLanguageLink } from "@/components/other-language-link";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -9,6 +11,7 @@ export const FOOTER_SERVICES = ["smm_management", "ads_meta", "smm_content", "se
 
 /** Retain crawlable service/trust links, with an explicit quiet footer boundary. */
 export async function SiteFooter() {
+  if (isRegistrationPhase()) return <RegistrationFooter />;
   const locale = await getLocale();
   const t = await getTranslations("Footer");
   const th = await getTranslations("Hire");

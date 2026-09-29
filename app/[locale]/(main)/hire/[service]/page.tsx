@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
@@ -9,6 +10,7 @@ import { isServiceKey } from "@/lib/taxonomy";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[service]">): Promise<Metadata> {
   const { locale, service } = await params;
+  await requireDirectory();
   if (!isServiceKey(service)) return {};
   const [{ t, place, search }, price, real] = await Promise.all([hireCopy(locale, service), priceGuide(service), realAgencyCount(service)]);
   // Region-wide page: several currencies, so no "from" price in the description.
@@ -24,6 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[se
 
 export default async function HireServicePage({ params }: PageProps<"/[locale]/hire/[service]">) {
   const { locale, service } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   if (!isServiceKey(service)) notFound();
   return <HirePage locale={locale} service={service} />;

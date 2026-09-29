@@ -30,7 +30,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/[l
   const { locale, id } = await params;
   const offerError = (await searchParams).offer;
   setRequestLocale(locale);
-  const { agency, soonFeature } = await deliveryPage();
+  const { agency, soonFeature } = await deliveryPage(true);
   if (soonFeature) return <ComingSoon feature={soonFeature} />;
   const w = await workspaceFor(agency.id, id);
   if (!w) notFound();

@@ -1,3 +1,5 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
+import { discoverableProfiles } from "@/lib/data/publication";
 import type { MetadataRoute } from "next";
 import { and, desc, eq, max } from "drizzle-orm";
 import { serviceCounts } from "@/lib/data/hire";
@@ -29,8 +31,9 @@ function entries(path: string, lastModified?: Date | null, priority = 0.6): Meta
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!siteIndexable()) return [];
+  if (isRegistrationPhase()) return ["", "/soon", "/contact", "/join", "/start", "/legal"].flatMap((p) => entries(p));
   const db = await getDb();
-  const real = and(eq(agencies.status, "active"), eq(agencies.isDemo, false));
+  const real = and(eq(agencies.status, "active"), eq(agencies.isDemo, false), discoverableProfiles());
   const [agencyRows, postRows, [{ latest }], { services, pairs, countries }] = await Promise.all([
     db.select({ handle: agencies.handle, updatedAt: agencies.updatedAt }).from(agencies).where(real),
     db

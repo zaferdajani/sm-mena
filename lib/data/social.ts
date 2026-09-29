@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { and, eq, inArray, isNull, lt, sql } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull, lt, notInArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { portfolioClients, posts, socialDeletionRequests, socialGrants, socialImportItems, socialOauthAttempts, socialQuotaUsage, socialResources } from "@/lib/db/schema";
 import { openToken, pkceChallenge, randomToken, sealToken, sha256 } from "@/lib/social/crypto";
@@ -81,7 +81,7 @@ export async function consumeAttempt(provider: SocialProviderId, state: string, 
   const [row] = await db
     .update(socialOauthAttempts)
     .set({ consumedAt: new Date() })
-    .where(and(eq(socialOauthAttempts.stateHash, sha256(state)), isNull(socialOauthAttempts.consumedAt)))
+    .where(and(eq(socialOauthAttempts.stateHash, sha256(state)), eq(socialOauthAttempts.provider, provider), eq(socialOauthAttempts.sessionHash, sessionId), eq(socialOauthAttempts.userId, userId), isNull(socialOauthAttempts.consumedAt)))
     .returning();
   if (!row) return { error: "mismatch" };
   if (row.expiresAt.getTime() <= Date.now()) return { error: "expired" };
@@ -261,44 +261,43 @@ async function loadResource(agencyId: string, resourceId: string) {
   return row ?? null;
 }
 
-async function markGrant(grantId: string, status: "expired" | "limited" | "revoked" | "failed", reason: string) {
+async function markGrant(grantId: string, status: "expired" | "limited" | "revoked" | "failed", reason: string, version: number) {
   const db = await getDb();
-  await db.update(socialGrants).set({ status, statusReason: reason, updatedAt: new Date() }).where(eq(socialGrants.id, grantId));
+  await db.update(socialGrants).set({ status, statusReason: reason, updatedAt: new Date() })
+    .where(and(eq(socialGrants.id, grantId), eq(socialGrants.version, version), notInArray(socialGrants.status, ["revoked", "revoke_pending"])));
 }
 
-/** A usable access token for the grant, refreshed once if it expired; concurrent refreshes cannot overwrite a newer token. */
-async function grantToken(grant: typeof socialGrants.$inferSelect): Promise<string> {
-  const ctx = grantCtx(grant.id, grant.provider, grant.agencyId);
-  const access = openToken(grant.sealedAccess, { ...ctx, purpose: "access" });
-  if (!access) throw new ProviderError("expired");
-  const soon = grant.accessExpiresAt && grant.accessExpiresAt.getTime() < Date.now() + 5 * 60_000;
-  const adapter = ADAPTERS[grant.provider];
-  if (!soon || !adapter.refresh) return access;
-  const refreshToken = openToken(grant.sealedRefresh, { ...ctx, purpose: "refresh" });
-  const config = adapterConfig(grant.provider);
-  if (!config) throw new ProviderError("unavailable");
-  // Instagram refreshes with the long-lived token itself; others with the refresh token.
-  if (!refreshToken && grant.provider !== "instagram") throw new ProviderError("expired");
-  const next = await adapter.refresh(config, refreshToken ?? access, access);
+/** Serialize refresh itself, not merely the final token write. The provider's
+ * rotating refresh token must never be sent by two concurrent workers.
+ * All DB work in this transaction uses tx; provider calls have bounded timeouts.
+ */
+async function grantToken(snapshot: typeof socialGrants.$inferSelect): Promise<{ token: string; version: number }> {
   const db = await getDb();
-  const [won] = await db
-    .update(socialGrants)
-    .set({
+  return db.transaction(async (tx) => {
+    const [grant] = await tx.select().from(socialGrants)
+      .where(and(eq(socialGrants.id, snapshot.id), eq(socialGrants.agencyId, snapshot.agencyId))).for("update");
+    if (!grant || ["revoked", "revoke_pending"].includes(grant.status)) throw new ProviderError("permission");
+    const ctx = grantCtx(grant.id, grant.provider, grant.agencyId);
+    const access = openToken(grant.sealedAccess, { ...ctx, purpose: "access" });
+    if (!access) throw new ProviderError("expired");
+    const soon = grant.accessExpiresAt && grant.accessExpiresAt.getTime() < Date.now() + 5 * 60_000;
+    const adapter = ADAPTERS[grant.provider];
+    if (!soon || !adapter.refresh) return { token: access, version: grant.version };
+    if (grant.refreshExpiresAt && grant.refreshExpiresAt.getTime() <= Date.now()) throw new ProviderError("expired");
+    const refreshToken = openToken(grant.sealedRefresh, { ...ctx, purpose: "refresh" });
+    const config = adapterConfig(grant.provider);
+    if (!config) throw new ProviderError("unavailable");
+    if (!refreshToken && grant.provider !== "instagram") throw new ProviderError("expired");
+    const next = await adapter.refresh(config, refreshToken ?? access, access);
+    await tx.update(socialGrants).set({
       sealedAccess: sealToken(next.accessToken, { ...ctx, purpose: "access" }),
       ...(next.refreshToken ? { sealedRefresh: sealToken(next.refreshToken, { ...ctx, purpose: "refresh" }) } : {}),
       accessExpiresAt: next.expiresIn ? new Date(Date.now() + next.expiresIn * 1000) : null,
-      version: sql`${socialGrants.version} + 1`,
-      lastVerifiedAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .where(and(eq(socialGrants.id, grant.id), eq(socialGrants.version, grant.version)))
-    .returning({ id: socialGrants.id });
-  if (won) return next.accessToken;
-  // Another request refreshed first: use what it stored.
-  const [fresh] = await db.select().from(socialGrants).where(eq(socialGrants.id, grant.id));
-  const stored = fresh && openToken(fresh.sealedAccess, { ...ctx, purpose: "access" });
-  if (!stored) throw new ProviderError("expired");
-  return stored;
+      ...(next.refreshExpiresIn ? { refreshExpiresAt: new Date(Date.now() + next.refreshExpiresIn * 1000) } : {}),
+      version: grant.version + 1, lastVerifiedAt: new Date(), updatedAt: new Date(),
+    }).where(and(eq(socialGrants.id, grant.id), eq(socialGrants.agencyId, grant.agencyId), eq(socialGrants.version, grant.version)));
+    return { token: next.accessToken, version: grant.version + 1 };
+  });
 }
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -326,44 +325,66 @@ export async function browseItems(agencyId: string, resourceId: string, cursor: 
   const config = adapterConfig(resource.provider);
   if (!config || !adapter.listItems) return { error: "unavailable" };
   if (!(await reserveUnits(resource.provider, 3))) return { error: "quota" };
+  let requestVersion = grant.version;
   try {
+    const current = await grantToken(grant);
+    requestVersion = current.version;
     const token = resource.sealedToken
       ? openToken(resource.sealedToken, { owner: `${grant.id}:${resource.providerResourceId}`, provider: resource.provider, agencyId, purpose: "page" })
-      : await grantToken(grant);
+      : current.token;
     if (!token) throw new ProviderError("expired");
     const page = await adapter.listItems(config, token, { kind: resource.kind, id: resource.providerResourceId }, cursor && cursor.length <= 300 ? cursor : null);
     const db = await getDb();
-    const out: OfferedItem[] = [];
-    for (const item of page.items.slice(0, 30)) {
-      const [saved] = await db
-        .insert(socialImportItems)
-        .values({ agencyId, resourceId, provider: resource.provider, providerItemId: item.id, mediaKind: item.mediaKind, title: item.title, caption: item.caption, permalink: item.permalink, thumbnailUrl: item.thumbnailUrl, publishedAt: item.publishedAt ? new Date(item.publishedAt) : null })
-        .onConflictDoUpdate({
-          target: [socialImportItems.agencyId, socialImportItems.provider, socialImportItems.providerItemId],
-          set: { resourceId, title: item.title, caption: item.caption, permalink: item.permalink, thumbnailUrl: item.thumbnailUrl, fetchedAt: new Date() },
-        })
-        .returning();
-      out.push({ ...item, rowId: saved.id, state: saved.state, postId: saved.postId });
-    }
-    await db.update(socialGrants).set({ lastVerifiedAt: new Date(), status: grant.status === "expired" ? "active" : grant.status }).where(eq(socialGrants.id, grant.id));
+    const out = await db.transaction(async (tx) => {
+      const [stillAuthorized] = await tx.select().from(socialGrants)
+        .where(and(eq(socialGrants.id, grant.id), eq(socialGrants.agencyId, agencyId))).for("update");
+      if (!stillAuthorized || stillAuthorized.version !== requestVersion || ["revoked", "revoke_pending"].includes(stillAuthorized.status)) throw new ProviderError("permission");
+      const [stillSelected] = await tx.select({ id: socialResources.id }).from(socialResources)
+        .where(and(eq(socialResources.id, resourceId), eq(socialResources.agencyId, agencyId), eq(socialResources.grantId, grant.id), eq(socialResources.status, "selected")));
+      if (!stillSelected) throw new ProviderError("permission");
+      const offered: OfferedItem[] = [];
+      for (const item of page.items.slice(0, 30)) {
+        if (!item.displayable) {
+          // A disabled button is not authorization. Keep unembeddable/private
+          // items out of the selectable table, and invalidate an earlier offer.
+          await tx.delete(socialImportItems).where(and(eq(socialImportItems.agencyId, agencyId), eq(socialImportItems.provider, resource.provider), eq(socialImportItems.providerItemId, item.id)));
+          await tx.update(posts).set({ embed: null }).where(and(eq(posts.agencyId, agencyId), eq(posts.sourceProvider, resource.provider), eq(posts.sourceItemId, item.id)));
+          offered.push({ ...item, rowId: `unavailable:${item.id}`, state: "dismissed", postId: null });
+          continue;
+        }
+        const [saved] = await tx.insert(socialImportItems)
+          .values({ agencyId, resourceId, provider: resource.provider, providerItemId: item.id, mediaKind: item.mediaKind, title: item.title, caption: item.caption, permalink: item.permalink, thumbnailUrl: item.thumbnailUrl, publishedAt: item.publishedAt ? new Date(item.publishedAt) : null })
+          .onConflictDoUpdate({
+            target: [socialImportItems.agencyId, socialImportItems.provider, socialImportItems.providerItemId],
+            set: { resourceId, title: item.title, caption: item.caption, permalink: item.permalink, thumbnailUrl: item.thumbnailUrl, fetchedAt: new Date() },
+          }).returning();
+        offered.push({ ...item, rowId: saved.id, state: saved.state, postId: saved.postId });
+      }
+      await tx.update(socialGrants).set({ lastVerifiedAt: new Date(), status: stillAuthorized.status === "expired" ? "active" : stillAuthorized.status })
+        .where(and(eq(socialGrants.id, grant.id), eq(socialGrants.version, requestVersion)));
+      return offered;
+    });
     return { items: out, next: page.next };
   } catch (e) {
     const code = e instanceof ProviderError ? e.code : "unavailable";
-    // A network failure says nothing about the connection; only the platform's answers change its status.
-    if (code === "expired") await markGrant(grant.id, "expired", "expired");
-    if (code === "permission") await markGrant(grant.id, "limited", "permission");
+    // Neither stale successful responses nor errors can reopen a disconnected
+    // grant or overwrite the health of a newer authorization.
+    if (code === "expired") await markGrant(grant.id, "expired", "expired", requestVersion);
+    if (code === "permission") await markGrant(grant.id, "limited", "permission", requestVersion);
     return { error: code === "quota" ? "quota" : code === "expired" ? "expired" : code === "permission" ? "permission" : "failed" };
   }
 }
 
 /** The offered item this agency picked, if it is still displayable on the platform's terms. */
 export async function getItemForAgency(agencyId: string, itemRowId: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(itemRowId)) return null;
   const db = await getDb();
   const [row] = await db
     .select({ item: socialImportItems, resource: socialResources })
     .from(socialImportItems)
     .innerJoin(socialResources, eq(socialResources.id, socialImportItems.resourceId))
-    .where(and(eq(socialImportItems.id, itemRowId), eq(socialImportItems.agencyId, agencyId), eq(socialResources.agencyId, agencyId), eq(socialResources.status, "selected")));
+    .innerJoin(socialGrants, eq(socialGrants.id, socialResources.grantId))
+    .where(and(eq(socialImportItems.id, itemRowId), eq(socialImportItems.agencyId, agencyId), eq(socialResources.agencyId, agencyId), eq(socialGrants.agencyId, agencyId), eq(socialResources.status, "selected"), inArray(socialGrants.status, ["active", "limited"]), gt(socialImportItems.fetchedAt, new Date(Date.now() - 30 * 86_400_000))));
   return row ?? null;
 }
 
@@ -392,20 +413,26 @@ export async function disconnectGrant(agencyId: string, grantId: string): Promis
   if (!grant) return { error: "not_found" };
   const ctx = grantCtx(grant.id, grant.provider, grant.agencyId);
   const access = openToken(grant.sealedAccess, { ...ctx, purpose: "access" });
-  await removeGrantData(grant.id, agencyId, grant.provider, "revoke_pending", "disconnecting");
+  const removedVersion = await removeGrantData(grant.id, agencyId, grant.provider, "revoke_pending", "disconnecting");
   const adapter = ADAPTERS[grant.provider];
   const config = adapterConfig(grant.provider, { requireReady: false });
   let remote: "revoked" | "pending" = "pending";
   if (access && adapter.revoke && config) {
     remote = (await adapter.revoke(config, access).catch(() => false)) ? "revoked" : "pending";
   }
-  await db.update(socialGrants).set({ status: remote === "revoked" ? "revoked" : "revoke_pending", statusReason: remote === "revoked" ? "disconnected" : adapter.revoke ? "remote_failed" : "manual", updatedAt: new Date() }).where(eq(socialGrants.id, grant.id));
+  await db.update(socialGrants).set({ status: remote === "revoked" ? "revoked" : "revoke_pending", statusReason: remote === "revoked" ? "disconnected" : adapter.revoke ? "remote_failed" : "manual", updatedAt: new Date() }).where(and(eq(socialGrants.id, grant.id), eq(socialGrants.agencyId, agencyId), eq(socialGrants.version, removedVersion), eq(socialGrants.status, "revoke_pending")));
   return { ok: true, remote };
 }
 
 async function removeGrantData(grantId: string, agencyId: string, provider: SocialProviderId, status: "revoked" | "revoke_pending", reason: string) {
   const db = await getDb();
-  await db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
+    // Acquire the same first lock used by refresh, source persistence and
+    // setup publication, then invalidate every outstanding version.
+    const [removed] = await tx.update(socialGrants)
+      .set({ sealedAccess: null, sealedRefresh: null, scopes: [], status, statusReason: reason, version: sql`${socialGrants.version} + 1`, updatedAt: new Date() })
+      .where(and(eq(socialGrants.id, grantId), eq(socialGrants.agencyId, agencyId))).returning({ version: socialGrants.version });
+    if (!removed) return -1;
     const resourceIds = (await tx.select({ id: socialResources.id }).from(socialResources).where(and(eq(socialResources.grantId, grantId), eq(socialResources.agencyId, agencyId)))).map((r) => r.id);
     const itemIds = resourceIds.length
       ? (await tx.select({ id: socialImportItems.providerItemId }).from(socialImportItems).where(inArray(socialImportItems.resourceId, resourceIds))).map((r) => r.id)
@@ -414,7 +441,7 @@ async function removeGrantData(grantId: string, agencyId: string, provider: Soci
       await tx.update(posts).set({ embed: null }).where(and(eq(posts.agencyId, agencyId), eq(posts.sourceProvider, provider), inArray(posts.sourceItemId, itemIds)));
     }
     if (resourceIds.length) await tx.delete(socialResources).where(inArray(socialResources.id, resourceIds));
-    await tx.update(socialGrants).set({ sealedAccess: null, sealedRefresh: null, scopes: [], status, statusReason: reason, updatedAt: new Date() }).where(eq(socialGrants.id, grantId));
+    return removed.version;
   });
 }
 

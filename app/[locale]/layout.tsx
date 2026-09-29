@@ -17,6 +17,7 @@ import { directionOf, routing } from "@/i18n/routing";
 import { brandOf, defaultOgImage, siteIndexable } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
 import "../globals.css";
+import "../styles/registration.css";
 import "../styles/brochure.css";
 import "../styles/brochure-responsive.css";
 

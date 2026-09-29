@@ -9,6 +9,7 @@ const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined;
 
 // The e2e server gets its own seeded database and upload folder.
 const e2eEnv = {
+  LAUNCH_PHASE: "full",
   PGLITE_DIR: ".data/e2e/pglite",
   UPLOADS_DIR: ".data/e2e/uploads",
   NEXT_PUBLIC_SITE_URL: baseURL,

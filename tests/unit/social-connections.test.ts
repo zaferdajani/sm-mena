@@ -139,7 +139,8 @@ describe("authorization attempts", () => {
   it("takes a state once, only in the same session, for the same user and provider", async () => {
     const state = stateOf(((await start("youtube")) as { url: string }).url);
     expect(await consumeAttempt("youtube", state, "session-b", agencyA.ownerId)).toEqual({ error: "mismatch" });
-    // The failed try above consumed it: a replay with the right session fails too.
+    // An unrelated session must not burn the genuine visitor's consent attempt.
+    expect(await consumeAttempt("youtube", state, "session-a", agencyA.ownerId)).not.toHaveProperty("error");
     expect(await consumeAttempt("youtube", state, "session-a", agencyA.ownerId)).toEqual({ error: "mismatch" });
 
     const swapped = stateOf(((await start("youtube")) as { url: string }).url);
@@ -268,7 +269,8 @@ describe("reading work and quotas", () => {
     // Browsing twice updates, never duplicates.
     await browseItems(agencyA.id, resource.id, null);
     const db = await getDb();
-    expect((await db.select().from(socialImportItems).where(eq(socialImportItems.agencyId, agencyA.id))).length).toBe(2);
+    // Private/unembeddable metadata stays out of the selectable records.
+    expect((await db.select().from(socialImportItems).where(eq(socialImportItems.agencyId, agencyA.id))).length).toBe(1);
   });
 
   it("an outage or a 429 does not mark the connection disconnected", async () => {
@@ -295,6 +297,7 @@ describe("reading work and quotas", () => {
     expect(stored).toMatch(/^fresh-\d$/);
     // The loser of the race kept the winner's token instead of overwriting it.
     expect(grant.version).toBeGreaterThan(0);
+    expect(refreshes).toBe(1);
   });
 });
 

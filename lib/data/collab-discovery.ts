@@ -1,4 +1,6 @@
 import "server-only";
+import { discoverableProfiles } from "@/lib/data/publication";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { and, asc, eq, inArray, ne, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, collabProfiles, partnerRequests, posts, type Agency } from "@/lib/db/schema";
@@ -44,9 +46,10 @@ export async function partnerIdsOf(agencyId: string): Promise<Set<string>> {
 }
 
 export async function discoverCollaborators(me: Agency, q: DiscoverQuery, { includeDemo = false } = {}) {
+  if (isRegistrationPhase() && !(await (await import("@/lib/launch-access")).canBrowseDirectory())) return { items: [] as DiscoverCard[], next: null as number | null, total: 0, truncated: false };
   const roles = q.roles.filter((r) => ROLE_KEYS.includes(r));
   const db = await getDb();
-  const conditions = [eq(agencies.status, "active"), ne(agencies.id, me.id), inCountry(me.country)];
+  const conditions = [discoverableProfiles(), eq(agencies.status, "active"), ne(agencies.id, me.id), inCountry(me.country)];
   if (q.kind) conditions.push(eq(agencies.kind, q.kind));
   if (!includeDemo) conditions.push(eq(agencies.isDemo, false));
   const rows = await db

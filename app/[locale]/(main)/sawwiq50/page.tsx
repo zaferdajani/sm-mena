@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyAvatar } from "@/components/agency-avatar";
@@ -14,6 +15,7 @@ const countryName = (code: string, locale: string) => {
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/sawwiq50">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const t = await getTranslations({ locale, namespace: "Top" });
   const country = countryName(await currentCountry(), locale);
   return pageMeta({ locale, path: "/sawwiq50", title: t("title", { country }), description: t("intro", { country }) });
@@ -22,6 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/sawwiq50
 /** The Sawwiq 50 (marketing/05): the people behind the most pages in the visitor's country, computed live. */
 export default async function TopPage({ params }: PageProps<"/[locale]/sawwiq50">) {
   const { locale } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const t = await getTranslations("Top");
   const code = await currentCountry();

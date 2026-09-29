@@ -23,7 +23,7 @@ import { STATUS_STYLE } from "@/components/collab/status";
 export default async function InquiryPage({ params, searchParams }: PageProps<"/[locale]/studio/collab/work/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const { agency, soon } = await collabPage();
+  const { agency, soon } = await collabPage(true);
   if (soon) return <ComingSoon feature="collaboration" />;
   const sent = (await searchParams).sent === "1";
   const t = await getTranslations("Collab");

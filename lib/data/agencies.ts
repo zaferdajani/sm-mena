@@ -1,8 +1,10 @@
+import { isRegistrationPhase, PUBLICATION_CONSENT_VERSION } from "@/lib/launch-phase";
+import { discoverableProfiles } from "@/lib/data/publication";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { countryOfCity } from "@/lib/countries";
 import { agencyConditions, inCountry, realUnless } from "@/lib/data/agency-filters";
-import { getDb } from "@/lib/db";
-import { agencies, auditLogs, type Agency } from "@/lib/db/schema";
+import { getDb, type DB } from "@/lib/db";
+import { agencies, auditLogs, profilePublications, type Agency } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
@@ -42,22 +44,21 @@ export function agencySearchText(a: { name: string; handle: string; bio?: string
 
 export async function createAgency(ownerUserId: string, input: AgencyInput, extra: Partial<Agency> = {}) {
   const db = await getDb();
-  const [row] = await db
-    .insert(agencies)
-    .values({
-      ...input,
-      country: countryOfCity(input.city) ?? "jo",
-      ...extra,
-      handle: input.handle.toLowerCase(),
-      ownerUserId,
-      searchText: agencySearchText(input),
-    })
-    .returning();
-  return row;
+  return db.transaction(async (tx) => {
+    const [row] = await tx.insert(agencies).values({
+      ...input, country: countryOfCity(input.city) ?? "jo", ...extra,
+      handle: input.handle.toLowerCase(), ownerUserId, searchText: agencySearchText(input),
+    }).returning();
+    // The draft exists atomically with the account: never briefly public.
+    if (!row.isDemo && isRegistrationPhase()) {
+      await tx.insert(profilePublications).values({ agencyId: row.id, visibility: "private", consentVersion: PUBLICATION_CONSENT_VERSION });
+    }
+    return row;
+  });
 }
 
-export async function updateAgency(agencyId: string, input: Partial<AgencyInput> & { avatarKey?: string | null }) {
-  const db = await getDb();
+export async function updateAgency(agencyId: string, input: Partial<AgencyInput> & { avatarKey?: string | null }, connection?: Pick<DB, "select" | "update">) {
+  const db = connection ?? await getDb();
   const [current] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
   if (!current) return null;
   const merged = { ...current, ...input };
@@ -158,11 +159,12 @@ export function toSummary(a: Agency): AgencySummary {
 
 /** Agencies for the stories-style strip: those that posted most recently. */
 export async function listStripAgencies(limit = 20, country?: string, includeDemo = false): Promise<AgencySummary[]> {
+  if (!(await (await import("@/lib/launch-access")).canBrowseDirectory())) return [];
   const db = await getDb();
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), realUnless(includeDemo), sql`${agencies.postCount} > 0`, country ? inCountry(country) : undefined))
+    .where(and(eq(agencies.status, "active"), discoverableProfiles(), realUnless(includeDemo), sql`${agencies.postCount} > 0`, country ? inCountry(country) : undefined))
     .orderBy(
       desc(sql`(select max(p.created_at) from posts p where p.agency_id = ${agencies.id} and p.status = 'published')`),
     )
@@ -183,8 +185,9 @@ export async function listAgencies(filters: {
   limit?: number;
   includeDemo?: boolean;
 }): Promise<AgencySummary[]> {
+  if (!(await (await import("@/lib/launch-access")).canBrowseDirectory())) return [];
   const db = await getDb();
-  const conditions = [eq(agencies.status, "active")];
+  const conditions = [eq(agencies.status, "active"), discoverableProfiles()];
   if (!filters.includeDemo) conditions.push(eq(agencies.isDemo, false));
   if (filters.service) conditions.push(sql`${filters.service} = any(${agencies.services})`);
   if (filters.country) conditions.push(inCountry(filters.country));

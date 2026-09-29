@@ -8,7 +8,7 @@ import { AccountLinks } from "@/components/profile/client-showcase";
 import { Link } from "@/i18n/navigation";
 import { localized, localizedAgency } from "@/lib/content-lang";
 import { COUNTRIES } from "@/lib/countries";
-import { getAgencyByHandle } from "@/lib/data/agencies";
+import { visibleAgencyByHandle, mayIndexAgency } from "@/lib/data/publication";
 import { getClient } from "@/lib/data/portfolio-clients";
 import { feedPage } from "@/lib/feed";
 import { pageMeta } from "@/lib/seo";
@@ -18,7 +18,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 async function load(handle: string, clientId: string, locale: string) {
   if (!UUID.test(clientId)) return null;
-  const found = await getAgencyByHandle(handle);
+  const found = await visibleAgencyByHandle(handle);
   if (!found) return null;
   const client = await getClient(found.id, clientId);
   if (!client) return null;
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/a/[handl
     title: `${data.name} · ${data.agency.name}`,
     description: data.description || `${t("accountsTitle")}: ${data.name} · ${data.agency.name}`,
     images: data.client.logoUrl ? [{ url: data.client.logoUrl, alt: data.name }] : undefined,
-    noindex: data.agency.isDemo || data.agency.status !== "active",
+    noindex: !(await mayIndexAgency(data.agency)),
     country: data.agency.country,
   });
 }
