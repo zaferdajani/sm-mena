@@ -11,7 +11,9 @@
 # Every Sunday at 02:17 UTC it also runs rebuild-demo-media, so the shared demo at
 # /demo starts the week clean (docs/37-demo-link.md). Only demo agencies are touched.
 # Uses the repository secrets DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-# (and SEED_ADMIN_* if present). docs/27-vercel.md
+# (and SEED_ADMIN_* if present). With SEED_DEMO_PASSWORD set, seed-demo and the
+# rebuild give the demo agency accounts that password, which Actions → Live journey
+# uses to sign in as the demo provider (docs/53). docs/27-vercel.md
 name: Maintenance
 
 on:
@@ -43,6 +45,7 @@ jobs:
       STORAGE_PROVIDER: supabase
       SEED_ADMIN_EMAIL: ${{ secrets.SEED_ADMIN_EMAIL }}
       SEED_ADMIN_PASSWORD: ${{ secrets.SEED_ADMIN_PASSWORD }}
+      SEED_DEMO_PASSWORD: ${{ secrets.SEED_DEMO_PASSWORD }}
       OWNER_RECOVERY_EMAIL: ${{ (inputs.task || 'rebuild-demo-media') == 'recover-owner' && secrets.OWNER_RECOVERY_EMAIL || '' }}
       OWNER_RECOVERY_PASSWORD: ${{ (inputs.task || 'rebuild-demo-media') == 'recover-owner' && secrets.OWNER_RECOVERY_PASSWORD || '' }}
     steps:

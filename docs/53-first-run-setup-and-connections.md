@@ -50,6 +50,10 @@ A platform shows a working Connect button only when **all** of these hold (`lib/
 
 Status on 29 Sep 2026: code and fixture tests done for all five; **no developer app is registered for any of them** (no credentials in the deployment), so all five show "Not available yet" with the reason and the upload alternative. No platform has been verified live.
 
+## Live check after a deploy (Actions → Live journey)
+`tests/live/setup-journey.mjs` signs in on the live site as the seeded demo provider (`nakhla-studio@sawwiq.test`, a fictional demo page, never a customer), runs the setup (platform states honest, staged image private, reload/resume, save, project page) and deletes its test project; screenshots and `journey.json` are uploaded as the `live-journey` artifact.
+It needs the `SEED_DEMO_PASSWORD` repository secret. In production the demo accounts get a random password at seeding and again at every weekly rebuild, so once the secret exists, `Maintenance → seed-demo` (and every rebuild) sets the demo accounts' password to it; the secret is never printed. Steps: add the secret → run Maintenance → seed-demo → run Live journey.
+
 ## Tests
 - `tests/unit/social-connections.test.ts`: scopes/PKCE per platform, readiness gates, foreign client, state replay/session/user/provider swap/expiry, sealed tokens bound to agency, pending selection with foreign and made-up ids, partial grants, personal Instagram, Google ID token signature/nonce, item browsing (private/unembeddable, unsafe thumbnails, duplicates), 429/outage, refresh race, disconnect (player removed, text kept), remote revocation failure, Meta signed requests and cross-agency deauthorization, retention.
 - `tests/unit/portfolio-setup.test.ts`: stale versions, pause/resume, other agencies, profile patch keeps omitted fields, client added once, foreign client refused, private media and foreign ids, publish requirements, concurrent publish → one project, restart, platform item → one project with its player, same item refused twice, 60-day purge.
