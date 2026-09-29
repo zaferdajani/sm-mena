@@ -16,6 +16,16 @@ import { ADAPTERS } from "@/lib/social/providers";
 import { providerJson, ProviderError, setSocialTransport } from "@/lib/social/http";
 import { storage } from "@/lib/storage";
 
+// Optional concurrency rehearsal uses a disposable local Postgres service only.
+// It cannot select a production database, even when the surrounding shell has secrets.
+if (process.env.ONBOARDING_REHEARSAL_URL) {
+  const target = new URL(process.env.ONBOARDING_REHEARSAL_URL);
+  if (!["127.0.0.1", "localhost"].includes(target.hostname) || target.pathname !== "/sawwiq_rehearsal" || target.username !== "qa_rehearsal") {
+    throw new Error("Rehearsal database must be the isolated local QA service");
+  }
+  process.env.DATABASE_URL = target.toString();
+}
+
 let png: Buffer;
 beforeAll(async () => {
   png = await sharp({ create: { width: 160, height: 120, channels: 3, background: "#227755" } }).png().toBuffer();
