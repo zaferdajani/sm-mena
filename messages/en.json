@@ -756,7 +756,7 @@
     "testLedgerTitle": "Test transactions",
     "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
     "testLedgerExport": "Download test transactions (CSV)",
-    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted."
+    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic."
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -1173,19 +1173,22 @@
     "noReports": "No reports here.",
     "stale": {
       "title": "{count, plural, one {# error has} other {# errors have}} not happened in {hours} hours",
-      "body": "They are marked fixed with the note below, and it is recorded in the audit log. Errors that still happen are left alone, and any that comes back reopens by itself.",
-      "notesDefault": "Cause fixed; not seen since.",
-      "button": "Mark {count, plural, one {it} other {them}} fixed"
+      "body": "Not happening is not the same as fixed. Choose what you know: \"could not reproduce\" records only that it stopped; \"fixed\" says a fix was deployed (name the commit). Errors that still happen are left alone, and any that comes back reopens by itself with its resolution cleared.",
+      "notesDefault": "Not seen since.",
+      "button": "Close {count, plural, one {it} other {them}}",
+      "asLabel": "Close as",
+      "asNotSeen": "Could not reproduce: it stopped, cause unknown",
+      "asFixed": "Fixed: a fix was deployed"
     },
     "checks": {
       "title": "Automatic checks",
       "none": "No check has run yet.",
       "allOk": "Last check {ago}: all {count} pages work.",
       "failing": "Last check {ago}: {count, plural, one {# page is failing} other {# pages are failing}}.",
-      "body": "Every 30 minutes the key pages of the live site and the health check are opened. A page that fails or is very slow is recorded here as an open error; errors not seen for 3 days are closed automatically with a note (and reopen if they come back); all of it goes to the audit log. A failing check also sends you an email from GitHub.",
+      "body": "Every 30 minutes the key pages of the live site and the health check are opened from a GitHub runner. Each page must answer 200 at its expected address with its expected content; a failure is recorded here as an open error (and reopens a closed one). The check closes only its own errors, and only once that page answers correctly again and has not failed for 3 days; browser, server and user-reported errors are never closed automatically. The release the site reported is kept with each run. This is an availability check, not a browser test or release acceptance.",
       "runOk": "All pages work",
       "runFailed": "{count, plural, one {# page failed} other {# pages failed}}",
-      "closed": "closed {count, plural, one {# old error} other {# old errors}}"
+      "closed": "closed {count, plural, one {# recovered check} other {# recovered checks}}"
     }
   },
   "AdminStats": {
@@ -1261,7 +1264,7 @@
       "directNote": "Recorded confirmations, not protection; delay not measured",
       "note": "Counted from the records themselves, so retries cannot inflate a step. Excluded: {demo} demo and {staff} staff-owned agencies. Window: the last {days} days by creation date. Payout initiated is not receipt."
     },
-    "realOnly": "Real numbers only: demo pages, team test pages and visits to the admin console are not counted."
+    "realOnly": "Real numbers only: demo pages, team test pages and visits to the admin console are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic."
   },
   "Billing": {
     "current": "Your plan",

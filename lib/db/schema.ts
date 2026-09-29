@@ -1210,7 +1210,7 @@ export const siteChecks = pgTable(
     ok: boolean("ok").notNull(),
     failures: integer("failures").notNull().default(0),
     closed: integer("closed").notNull().default(0),
-    results: jsonb("results").$type<{ path: string; status: number; ms: number; ok: boolean; problem?: string }[]>().notNull().default([]),
+    results: jsonb("results").$type<{ path: string; status: number; ms: number; ok: boolean; problem?: string; finalPath?: string; release?: { revision: string; commit: string | null; environment: string } | null }[]>().notNull().default([]),
   },
   (t) => [index("site_checks_ran_idx").on(t.ranAt)],
 );
