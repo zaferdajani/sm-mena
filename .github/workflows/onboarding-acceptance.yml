@@ -6,7 +6,7 @@ permissions:
   contents: read
 concurrency:
   group: onboarding-acceptance-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   checks:
     runs-on: ubuntu-latest
