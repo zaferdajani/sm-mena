@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -12,12 +13,14 @@ import { redirect } from "@/i18n/navigation";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/match">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const t = await getTranslations({ locale, namespace: "Match" });
   return pageMeta({ locale, path: "/match", title: t("title"), description: t("subtitle") });
 }
 
 export default async function MatchPage({ params }: PageProps<"/[locale]/match">) {
   const { locale } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const gate = await featureGate("ai_matchmaker");
   // Landing and welcome links point here; with the matcher off, visitors browse instead.

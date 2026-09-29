@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -14,16 +15,19 @@ import { JoinForm } from "./join-form";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/join">): Promise<Metadata> {
   const { locale } = await params;
+  if (isRegistrationPhase()) {
+    const r = await getTranslations({ locale, namespace: "Registration" });
+    return pageMeta({ locale, path: "/join", title: r("joinTitle"), description: r("joinNotice") });
+  }
   const t = await getTranslations({ locale, namespace: "Auth" });
   return pageMeta({ locale, path: "/join", title: t("joinTitle"), description: t("joinSubtitle") });
 }
 
 export default async function JoinPage({ params, searchParams }: PageProps<"/[locale]/join">) {
   const { locale } = await params;
-  // An agent's code from their link (cookie) or ?ref= (docs/42).
   const sp = await searchParams;
   const fromUrl = sp.ref;
-  // A collaborator's invitation link (docs/48) hands its token to the form; the token itself is never shown.
+  // The collaborator's invitation token carries through the same real account flow.
   const invite = typeof sp.invite === "string" && /^[A-Za-z0-9_-]{20,64}$/.test(sp.invite) ? sp.invite : "";
   const fromCookie = (await cookies()).get(REFERRAL_COOKIE)?.value;
   const refCode = [fromUrl, fromCookie].map(normalizeCode).find((c) => isReferralCode(c)) ?? "";
@@ -31,11 +35,14 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   const t = await getTranslations("Auth");
   const [countries, country, phoneFrom, behance] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry(), canUse("portfolio_import")]);
   const tb = await getTranslations("BehanceImport.shortcut");
+  const r = await getTranslations("Registration");
+  const registration = isRegistrationPhase();
   return (
     <>
-      <h1 className="text-xl font-bold">{t("joinTitle")}</h1>
-      <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>
-      {/* Providers who already keep a portfolio on Behance learn up front that it carries over (docs/47). */}
+      <h1 className="text-xl font-bold">{registration ? r("joinTitle") : t("joinTitle")}</h1>
+      {registration
+        ? <aside className="registration-notice" data-testid="registration-join-notice"><strong>{r("phaseLabel")}</strong><p>{r("joinNotice")}</p><Link href="/examples">{r("exampleCta")}</Link></aside>
+        : <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>}
       {behance && (
         <p className="mb-5 flex items-start gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="join-behance">
           <Palette className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
@@ -45,9 +52,7 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
       <JoinForm countries={countries} defaultCountry={country} phoneCountry={phoneFrom} refCode={refCode} invite={invite} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("haveAccount")}{" "}
-        <Link href="/login" className="font-medium text-brand">
-          {t("loginLink")}
-        </Link>
+        <Link href="/login" className="font-medium text-brand">{t("loginLink")}</Link>
       </p>
     </>
   );

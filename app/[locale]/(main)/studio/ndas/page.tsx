@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import { FileLock2, Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,9 +28,9 @@ export default async function StudioNdas({ params }: PageProps<"/[locale]/studio
           <h2 className="text-lg font-semibold">{t("title")}</h2>
           <p className="text-sm text-muted-foreground">{t("intro")}</p>
         </div>
-        <Link href="/studio/ndas/new" className={buttonVariants({ className: "shrink-0 gap-1.5" })} data-testid="new-nda">
+        {documentsOpen() && <Link href="/studio/ndas/new" className={buttonVariants({ className: "shrink-0 gap-1.5" })} data-testid="new-nda">
           <Plus className="size-4" /> {t("new")}
-        </Link>
+        </Link>}
       </div>
       {!rows.length && (
         <div className="space-y-2 rounded-2xl border border-dashed p-8 text-center">

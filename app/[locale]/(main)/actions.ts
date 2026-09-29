@@ -1,5 +1,7 @@
 "use server";
 
+import { mayReadAgencyId } from "@/lib/data/publication";
+import { getPost } from "@/lib/data/posts";
 import { canUse } from "@/lib/feature-gate";
 import { demoMode } from "@/lib/demo-mode";
 import { z } from "zod";
@@ -63,16 +65,19 @@ async function accountOrSignIn(action: string) {
 }
 
 export async function likePost(postId: string) {
+  if (!(await getPost(uuid.parse(postId)))) throw new Error("not_found");
   const key = await accountOrSignIn("like");
   return key ? toggleLike(uuid.parse(postId), key) : { signIn: true as const };
 }
 
 export async function savePost(postId: string) {
+  if (!(await getPost(uuid.parse(postId)))) throw new Error("not_found");
   const key = await accountOrSignIn("save");
   return key ? toggleSave(uuid.parse(postId), key) : { signIn: true as const };
 }
 
 export async function followAgency(agencyId: string) {
+  if (!(await mayReadAgencyId(uuid.parse(agencyId)))) throw new Error("not_found");
   const key = await accountOrSignIn("follow");
   return key ? toggleFollow(uuid.parse(agencyId), key) : { signIn: true as const };
 }
@@ -80,6 +85,7 @@ export async function followAgency(agencyId: string) {
 const channel = z.enum(["whatsapp", "phone", "email", "website", "instagram"]);
 
 export async function trackContact(agencyId: string, contactChannel: string, postId?: string | null, promotionId?: string | null) {
+  if (!(await mayReadAgencyId(uuid.parse(agencyId)))) return;
   const visitorId = await getVisitorId({ create: true });
   if (visitorId && !rateLimit(`contact:${visitorId}`, 60, 60 * 1000)) return;
   await recordContact(uuid.parse(agencyId), channel.parse(contactChannel), postId ? uuid.parse(postId) : null, visitorId);
@@ -124,7 +130,7 @@ export async function sendInquiry(_: InquiryState, formData: FormData): Promise<
   }
   const db = await getDb();
   const [agency] = await db.select().from(agenciesTable).where(eq(agenciesTable.id, parsed.data.agencyId));
-  if (!agency || agency.status !== "active") return { error: "generic" };
+  if (!agency || agency.status !== "active" || !(await mayReadAgencyId(agency.id))) return { error: "generic" };
   const inquiry = await createInquiry({
     agencyId: agency.id,
     postId: parsed.data.postId || null,
@@ -151,6 +157,7 @@ export async function reportPost(_: ReportState, formData: FormData): Promise<Re
     .safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "generic" };
   const visitorId = await getVisitorId({ create: true });
+  if (!(await getPost(parsed.data.postId))) return { error: "generic" };
   if (!rateLimit(`report:${visitorId}`, 10, 24 * 3600 * 1000)) return { error: "generic" };
   await createReport({ postId: parsed.data.postId, reason: parsed.data.reason, details: parsed.data.details ?? "", visitorId });
   return { ok: true };

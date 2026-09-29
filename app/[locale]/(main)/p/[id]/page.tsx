@@ -1,3 +1,5 @@
+import { publicationFor } from "@/lib/data/publication";
+import { profileIndexable } from "@/lib/launch-phase";
 import { DemoNotice } from "@/components/demo/demo-banner";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">
     description,
     images: image ? [{ url: image.url, width: image.width, height: image.height, alt: t("postTitle", { agency: post.agency.name, service }) }] : undefined,
     type: "article",
-    noindex: post.agency.isDemo || !postIndexable(post.caption),
+    noindex: !profileIndexable((await publicationFor(post.agency.id)).visibility, post.agency.isDemo) || !postIndexable(post.caption),
   });
 }
 

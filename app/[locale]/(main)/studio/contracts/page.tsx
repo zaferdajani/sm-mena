@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import { FileSignature, HandCoins, Handshake, Plus, ShieldCheck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { answerContractRequestAction } from "@/app/[locale]/(main)/contract-actions";
@@ -51,9 +52,9 @@ export default async function StudioContracts({ params }: PageProps<"/[locale]/s
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t("listTitle")}</h2>
-          <Link href="/studio/contracts/new" className={buttonVariants({ className: "gap-1.5" })} data-testid="new-contract">
+          {documentsOpen() && <Link href="/studio/contracts/new" className={buttonVariants({ className: "gap-1.5" })} data-testid="new-contract">
             <Plus className="size-4" /> {t("new")}
-          </Link>
+          </Link>}
         </div>
 
         {incoming.length > 0 && (
@@ -67,9 +68,9 @@ export default async function StudioContracts({ params }: PageProps<"/[locale]/s
                 {r.brief && <p className="whitespace-pre-line text-muted-foreground" dir="auto">{r.brief}</p>}
                 {r.budgetFils ? <p className="text-xs">{t("requests.budget", { amount: formatFils(r.budgetFils, locale, currencyOf(agency.country)) })}</p> : null}
                 <div className="flex flex-wrap gap-2">
-                  <Link href={`/studio/contracts/new?partner=${r.fromAgencyId}&request=${r.id}`} className={buttonVariants({ size: "sm" })} data-testid="create-from-request">
+                  {documentsOpen() && <Link href={`/studio/contracts/new?partner=${r.fromAgencyId}&request=${r.id}`} className={buttonVariants({ size: "sm" })} data-testid="create-from-request">
                     {t("requests.create")}
-                  </Link>
+                  </Link>}
                   <form action={answerContractRequestAction}>
                     <input type="hidden" name="requestId" value={r.id} />
                     <input type="hidden" name="answer" value="declined" />

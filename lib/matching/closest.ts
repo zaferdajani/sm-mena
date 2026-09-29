@@ -1,3 +1,4 @@
+import { discoverableProfiles } from "@/lib/data/publication";
 import "server-only";
 import { and, arrayOverlaps, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
@@ -28,12 +29,13 @@ function widen(services: string[]) {
  * similar service. Real agencies only unless the demo view is on.
  */
 export async function closestAgencies(req: Requirements, { includeDemo = false, limit = 6 } = {}): Promise<CloseMatch[]> {
+  if (!(await (await import("@/lib/launch-access")).canBrowseDirectory())) return [];
   const db = await getDb();
   const services = req.services?.length ? widen(req.services) : null;
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), realUnless(includeDemo), services ? or(inCountry(req.country), arrayOverlaps(agencies.services, services)) : inCountry(req.country)))
+    .where(and(eq(agencies.status, "active"), discoverableProfiles(), realUnless(includeDemo), services ? or(inCountry(req.country), arrayOverlaps(agencies.services, services)) : inCountry(req.country)))
     .orderBy(desc(agencies.isVerified), desc(agencies.postCount))
     .limit(400);
   if (!rows.length) return [];

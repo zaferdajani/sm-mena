@@ -1,3 +1,4 @@
+import { launchAllowsFeature } from "@/lib/launch-phase";
 // No "server-only": the seed script loads it too (through lib/data/agencies → plans).
 import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
@@ -90,10 +91,12 @@ export async function getFeatures(): Promise<FeatureMap> {
 
 /** Last loaded state, for synchronous code (the layout loads switches on every request). */
 export function cachedFeatureState(key: FeatureKey): FeatureState {
+  if (!launchAllowsFeature(key)) return "off";
   return (cache?.value ?? defaultFeatures())[key].state;
 }
 
 export async function featureState(key: FeatureKey): Promise<FeatureState> {
+  if (!launchAllowsFeature(key)) return "off";
   return (await getFeatures())[key].state;
 }
 
@@ -102,6 +105,7 @@ export async function featureState(key: FeatureKey): Promise<FeatureState> {
  * agencies (by handle) and staff previewing it; "off" for no one.
  */
 export async function featureOpen(key: FeatureKey, who: { agencyHandle?: string | null; staff?: boolean } = {}): Promise<boolean> {
+  if (!launchAllowsFeature(key, who)) return false;
   const f = (await getFeatures())[key];
   if (f.state === "on") return true;
   if (f.state === "off") return false;
@@ -129,5 +133,6 @@ export function resetFeatureCache() {
 
 /** The switch's global state, for places without a viewer (public pages, cron): pilots do not apply. */
 export async function featureOnGlobally(key: FeatureKey) {
+  if (!launchAllowsFeature(key)) return false;
   return (await getFeatures())[key].state === "on";
 }

@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { requireAgency } from "@/lib/auth/guards";
-import { audit } from "@/lib/data/agencies";
 import {
   addClientOnce,
   addSetupMedia,
@@ -66,6 +65,8 @@ export async function saveProfileStepAction(formData: FormData): Promise<SetupRe
   const { user, agency } = await requireAgency();
   const parsed = profileSchema.safeParse({ version: formData.get("version"), name: formData.get("name"), bio: formData.get("bio") ?? "" });
   if (!parsed.success) return { error: "invalid" };
+  const currentDraft = await getSetup(agency.id);
+  if (!currentDraft || currentDraft.version !== parsed.data.version || currentDraft.status === "finished") return { error: "stale" };
   const services = formData.getAll("services").map(String).filter(Boolean).slice(0, 30);
   const typed = formData.getAll("newServices").map(String).filter(Boolean).slice(0, 5);
   const picked = await resolveServices(agency.id, services, typed);
@@ -79,11 +80,10 @@ export async function saveProfileStepAction(formData: FormData): Promise<SetupRe
     // Typed services join the ones already waiting for review (docs/30), as in the full editor.
     pendingServices: picked.pending.length ? [...new Set([...agency.pendingServices, ...picked.pending])] : undefined,
     avatar: avatar instanceof File && avatar.size > 0 ? Buffer.from(await avatar.arrayBuffer()) : null,
-  });
-  if ("error" in result) return { error: "avatar" };
-  if (result.changed.length) await audit(user.id, "agency.update", "agency", agency.id, { via: "setup", fields: result.changed });
+  }, { version: parsed.data.version, userId: user.id });
+  if ("error" in result) return { error: result.error };
   revalidatePath("/[locale]", "layout");
-  return done(await writeSetup(agency.id, parsed.data.version, { step: 2 }));
+  return { view: (await getSetup(agency.id)) ?? undefined };
 }
 
 /** Step 2: which source the work comes from. Upload (and PDF pictures already staged) go on to the client step. */
@@ -167,9 +167,10 @@ export async function saveClientStepAction(input: unknown): Promise<SetupResult>
     client = { mode: "existing", clientId: owned };
   } else if (c.mode === "new") {
     if (!rateLimit(`setup-client:${agency.id}`, 20, 60 * 60 * 1000)) return { error: "invalid" };
-    const added = await addClientOnce(agency.id, c.name ?? "");
+    const added = await addClientOnce(agency.id, c.name ?? "", { version: c.version });
     if ("error" in added) return { error: added.error };
-    client = { mode: "existing", clientId: added.id };
+    revalidatePath("/[locale]/portfolio-setup", "page");
+    return { view: (await getSetup(agency.id)) ?? undefined };
   } else client = { mode: c.mode };
   return done(await writeSetup(agency.id, c.version, { data: { client }, step: 4 }));
 }
@@ -196,19 +197,41 @@ export async function saveProjectStepAction(input: unknown): Promise<SetupResult
   return done(await writeSetup(agency.id, p.version, { data: { project: { title: p.title, contribution: p.contribution, services }, ...(behance ? { behance } : {}) }, step: 5 }));
 }
 
+/** Preserve incomplete project text on Back/Finish later without publishing it.
+ * Final Preview/Publish still enforce the complete project requirements.
+ */
+export async function saveProjectDraftAction(v: number, input: unknown, destination: "back" | "pause"): Promise<SetupResult> {
+  const { agency } = await requireAgency();
+  const parsed = projectSchema.extend({ title: z.string().max(120), contribution: z.string().max(600), services: z.array(z.string().max(60)).max(6) })
+    .safeParse({ ...(input && typeof input === "object" ? input : {}), version: v });
+  if (!parsed.success || !["back", "pause"].includes(destination)) return { error: "invalid" };
+  const current = await getSetup(agency.id);
+  if (!current || current.step !== 4 || current.version !== parsed.data.version) return { error: "stale" };
+  const value = parsed.data;
+  const behance = current.data.behance && value.behanceImages
+    ? { ...current.data.behance, images: current.data.behance.images.filter((url) => value.behanceImages!.includes(url)) }
+    : current.data.behance;
+  return done(await writeSetup(agency.id, value.version, {
+    step: destination === "back" ? 3 : 4, status: destination === "pause" ? "paused" : "in_progress",
+    data: { project: { title: value.title, contribution: value.contribution, services: [...new Set(value.services)].filter(isServiceKey) }, ...(behance ? { behance } : {}) },
+  }));
+}
+
 export async function uploadSetupMediaAction(formData: FormData): Promise<SetupResult> {
   const { agency } = await requireAgency();
   if (!rateLimit(`setup-media:${agency.id}`, 60, 60 * 60 * 1000)) return { error: "tooMany" };
   const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0).slice(0, MAX_IMAGES_PER_POST);
   if (!files.length) return { error: "noMedia" };
   const source = formData.get("source") === "pdf" ? "pdf" : "upload";
+  if (source === "pdf" && !(await canUse("portfolio_import"))) return { error: "unavailable" };
   const result = await addSetupMedia(agency.id, await Promise.all(files.map(async (f) => Buffer.from(await f.arrayBuffer()))), source);
-  return "error" in result ? { error: result.error } : { media: result };
+  return "error" in result ? { error: result.error } : { media: result, view: (await getSetup(agency.id)) ?? undefined };
 }
 
 export async function removeSetupMediaAction(id: string): Promise<SetupResult> {
   const { agency } = await requireAgency();
-  return { media: await removeSetupMedia(agency.id, uuid.parse(id)) };
+  const media = await removeSetupMedia(agency.id, uuid.parse(id));
+  return { media, view: (await getSetup(agency.id)) ?? undefined };
 }
 
 export async function orderSetupMediaAction(ids: string[]): Promise<SetupResult> {
@@ -216,13 +239,14 @@ export async function orderSetupMediaAction(ids: string[]): Promise<SetupResult>
   const parsed = z.array(uuid).max(MAX_IMAGES_PER_POST).safeParse(ids);
   if (!parsed.success) return { error: "invalid" };
   const result = await orderSetupMedia(agency.id, parsed.data);
-  return "error" in result ? { error: result.error } : { media: result };
+  return "error" in result ? { error: result.error } : { media: result, view: (await getSetup(agency.id)) ?? undefined };
 }
 
 /** Step 5: the owner's explicit publish, with the rights confirmation; happens once. */
 export async function publishSetupAction(v: number, rights: boolean): Promise<SetupResult> {
   const { user, agency } = await requireAgency();
-  if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
+  const existing = await getSetup(agency.id);
+  if (!existing?.postId && !canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
   const label = (await getTranslations({ locale: contentLang(agency.contentLang), namespace: "Setup" }))("client.personalLabel");
   const result = await publishSetup({ agencyId: agency.id, userId: user.id, version: version.parse(v), rights: rights === true, personalLabel: label });
   if ("error" in result) return { error: result.error };

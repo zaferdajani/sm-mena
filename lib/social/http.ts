@@ -58,9 +58,31 @@ export async function providerJson<T = Record<string, unknown>>(url: string, ini
     throw new ProviderError("unavailable");
   }
   const length = Number(res.headers.get("content-length") ?? 0);
-  if (length > MAX_BYTES) throw new ProviderError("invalid", res.status);
-  const text = await res.text();
-  if (text.length > MAX_BYTES) throw new ProviderError("invalid", res.status);
+  if (length > MAX_BYTES) {
+    await res.body?.cancel().catch(() => undefined);
+    throw new ProviderError("invalid", res.status);
+  }
+  // Enforce bytes while streaming, even for chunked responses without a length.
+  // Checking string.length after res.text() neither limits memory nor UTF-8 bytes.
+  const reader = res.body?.getReader();
+  const chunks: Uint8Array[] = [];
+  let bytes = 0;
+  if (reader) {
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        bytes += value.byteLength;
+        if (bytes > MAX_BYTES) throw new ProviderError("invalid", res.status);
+        chunks.push(value);
+      }
+    } catch (error) {
+      await reader.cancel().catch(() => undefined);
+      if (error instanceof ProviderError) throw error;
+      throw new ProviderError("unavailable", res.status);
+    } finally { reader.releaseLock(); }
+  }
+  const text = Buffer.concat(chunks).toString("utf8");
   if (res.status === 429) throw new ProviderError("quota", 429);
   if (res.status === 401) throw new ProviderError("expired", 401);
   if (res.status === 403) throw new ProviderError(/quota/i.test(text) ? "quota" : "permission", 403);

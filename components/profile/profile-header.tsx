@@ -47,8 +47,10 @@ export type ProfileData = {
   googleMapsUrl: string | null;
 };
 
-export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref }: { agency: ProfileData; following: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set only for the profile owner by the server. */ followersHref?: string }) {
+export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref, previewOnly = false, registrationMode = false }: { agency: ProfileData; following: boolean; previewOnly?: boolean; registrationMode?: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set only for the profile owner by the server. */ followersHref?: string }) {
   const t = useTranslations("Profile");
+  const tRegistration = useTranslations("Registration");
+  const readOnly = previewOnly || registrationMode;
   const tc = useTranslations("Common");
   const tp = useTranslations("Post");
   const tCity = useTranslations("Cities");
@@ -92,11 +94,11 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
         {agency.services.length > 0 && (
           <div className={styles.services} data-testid="profile-services">
             {agency.services.map((s) => (
-              <Link key={s} href={`/hire/${s}`} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></Link>
+              readOnly ? <span key={s} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></span> : <Link key={s} href={`/hire/${s}`} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></Link>
             ))}
           </div>
         )}
-        <dl className={styles.stats}>
+        {!readOnly && <dl className={styles.stats}>
           <div>
             <dt>{t("posts")}</dt>
             <dd data-testid="post-count"><bdi>{compactNumber(agency.postCount, locale)}</bdi></dd>
@@ -111,11 +113,12 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               ) : <bdi>{compactNumber(followers, locale)}</bdi>}
             </dd>
           </div>
-        </dl>
+        </dl>}
       </div>
 
       <div className={styles.contactPanel} data-testid="profile-contact-panel">
-        {agency.startingPriceJod ? (
+        {previewOnly && <p className="registration-note">{tRegistration("examples.contactNotice")}</p>}
+        {!previewOnly && agency.startingPriceJod ? (
           <dl className={styles.price}>
             <dt>{t("startingPrice")}</dt>
             <dd>{tc("from", { price: formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) })}</dd>
@@ -146,10 +149,10 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
             {tp("whatsapp")}
           </ContactLink>
         )}
-        <div className={styles.secondaryActions}>
+        {!readOnly && <div className={styles.secondaryActions}>
           {inquirySlot}
           <FollowButton agencyId={agency.id} following={following} count={followers} onCount={setFollowers} />
-        </div>
+        </div>}
         {hasContactLinks && (
           <div className={styles.contactLinks}>
             {agency.phone && <ContactLink agencyId={agency.id} channel="phone" href={`tel:${agency.phone}`} className={styles.contactLink} label={t("call")}><Phone className="size-4" aria-hidden /><span>{t("call")}</span></ContactLink>}
@@ -158,7 +161,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
             {agency.instagram && <ContactLink agencyId={agency.id} channel="instagram" href={`https://instagram.com/${agency.instagram}`} className={styles.contactLink} label={t("instagram")}><Camera className="size-4" aria-hidden /><span>{t("instagram")}</span></ContactLink>}
           </div>
         )}
-        {agency.memberNo ? <p className={styles.member} data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</p> : null}
+        {!readOnly && agency.memberNo ? <p className={styles.member} data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</p> : null}
       </div>
     </header>
   );

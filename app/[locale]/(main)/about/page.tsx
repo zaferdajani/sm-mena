@@ -1,3 +1,5 @@
+import { RegistrationView } from "@/components/registration/registration-view";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -17,6 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/about">)
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  if (isRegistrationPhase()) return <RegistrationView locale={locale} />;
   const t = await getTranslations("About");
   // Payment promises follow the one readiness switch (lib/payments/readiness.ts).
   const live = protectedPaymentsLive();

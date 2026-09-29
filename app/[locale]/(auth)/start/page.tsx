@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { Briefcase, Megaphone } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -17,8 +18,10 @@ export default async function StartPage({ params }: PageProps<"/[locale]/start">
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Start");
+  const r = await getTranslations("Registration");
   return (
     <>
+      {isRegistrationPhase() && <aside className="registration-notice">{r("phaseLabel")}<p>{r("joinNotice")}</p></aside>}
       <h1 className="text-xl font-bold">{t("title")}</h1>
       <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("subtitle")}</p>
       <div className="grid gap-3">
@@ -46,8 +49,8 @@ export default async function StartPage({ params }: PageProps<"/[locale]/start">
           <span className="mt-1 block text-sm text-muted-foreground">{t("clientBody")}</span>
           <span className="mt-3 inline-flex rounded-lg border px-3 py-2 text-sm font-medium">{t("clientCta")}</span>
         </Link>
-        <Link href="/explore" className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline" data-testid="start-browse">
-          {t("clientBrowse")}
+        <Link href={isRegistrationPhase() ? "/examples" : "/explore"} className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline" data-testid="start-browse">
+          {isRegistrationPhase() ? r("exampleCta") : t("clientBrowse")}
         </Link>
       </div>
       <p className="mt-5 text-center text-sm text-muted-foreground">

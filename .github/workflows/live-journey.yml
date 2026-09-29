@@ -1,0 +1,40 @@
+# Controlled signed-in check on the live site (docs/53): the seeded demo
+# provider runs the first-run setup end to end (upload, reload/resume, save,
+# open, delete). Run it after a deploy: Actions → Live journey → Run workflow.
+# Uses the existing repository secret for the demo account; creates no account
+# and leaves nothing behind. Screenshots and journey.json are uploaded.
+name: Live journey
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: Site to check
+        default: https://sawwiq.org
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: ${{ inputs.site || 'https://sawwiq.org' }}
+      DEMO_EMAIL: nakhla-studio@sawwiq.test
+      DEMO_PASSWORD: ${{ secrets.SEED_DEMO_PASSWORD }}
+    steps:
+      - name: Check the demo password secret is there
+        run: '[ -n "$DEMO_PASSWORD" ] || { echo "::error::Add the SEED_DEMO_PASSWORD repository secret (the seeded demo provider''s password)."; exit 1; }'
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run the setup journey
+        run: node tests/live/setup-journey.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-journey
+          path: live-evidence/
+          retention-days: 14

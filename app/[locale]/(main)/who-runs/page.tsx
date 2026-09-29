@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { BadgeCheck, Search } from "lucide-react";
@@ -13,6 +14,7 @@ import { pageMeta } from "@/lib/seo";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/who-runs">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const t = await getTranslations({ locale, namespace: "WhoRuns" });
   return pageMeta({ locale, path: "/who-runs", title: t("title"), description: t("intro") });
 }
@@ -20,6 +22,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/who-runs
 /** "Who runs this page?" (docs/28, marketing/05): the agency behind a page its client confirmed. */
 export default async function WhoRunsPage({ params, searchParams }: PageProps<"/[locale]/who-runs">) {
   const { locale } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const t = await getTranslations("WhoRuns");
   const raw = String((await searchParams).q ?? "").slice(0, 300);

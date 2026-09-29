@@ -253,14 +253,14 @@ export async function processAvatar(input: Buffer): Promise<Buffer> {
 
 export function newImageKeys(agencyId: string, fullFormat: StoredFormat = "webp") {
   const id = randomUUID();
-  return { key: `posts/${agencyId}/${id}.${STORED_EXT[fullFormat]}`, thumbKey: `posts/${agencyId}/${id}-t.webp` };
+  return { key: `portfolio/${agencyId}/posts/${id}.${STORED_EXT[fullFormat]}`, thumbKey: `portfolio/${agencyId}/posts/${id}-t.webp` };
 }
 
 export function newAvatarKey(agencyId: string) {
-  return `avatars/${agencyId}/${randomUUID()}.webp`;
+  return `portfolio/${agencyId}/avatars/${randomUUID()}.webp`;
 }
 
 /** A portfolio client's (account's) logo, processed like an avatar. */
 export function newClientLogoKey(agencyId: string) {
-  return `clients/${agencyId}/${randomUUID()}.webp`;
+  return `portfolio/${agencyId}/clients/${randomUUID()}.webp`;
 }

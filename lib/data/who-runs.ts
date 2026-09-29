@@ -1,3 +1,4 @@
+import { discoverableProfiles } from "@/lib/data/publication";
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, portfolioClients } from "@/lib/db/schema";
@@ -25,6 +26,7 @@ export function parseAccountQuery(raw: string): AccountQuery | null {
 
 /** Agencies whose client confirmed they run that account. Demo agencies only in the demo view. */
 export async function findWhoRuns(raw: string, { includeDemo = false } = {}): Promise<WhoRunsHit[]> {
+  if (!(await (await import("@/lib/launch-access")).canBrowseDirectory())) return [];
   const q = parseAccountQuery(raw);
   if (!q) return [];
   const db = await getDb();
@@ -35,7 +37,7 @@ export async function findWhoRuns(raw: string, { includeDemo = false } = {}): Pr
     .select({ client: portfolioClients, agency: agencies })
     .from(portfolioClients)
     .innerJoin(agencies, eq(agencies.id, portfolioClients.agencyId))
-    .where(and(isNotNull(portfolioClients.confirmedAt), eq(agencies.status, "active"), ...(includeDemo ? [] : [eq(agencies.isDemo, false)]), hasHandle))
+    .where(and(isNotNull(portfolioClients.confirmedAt), eq(agencies.status, "active"), discoverableProfiles(), ...(includeDemo ? [] : [eq(agencies.isDemo, false)]), hasHandle))
     .limit(50);
   const hits: WhoRunsHit[] = [];
   for (const { client, agency } of rows) {

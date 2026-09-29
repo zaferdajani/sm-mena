@@ -1,3 +1,4 @@
+import { discoverableProfiles } from "@/lib/data/publication";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
@@ -32,7 +33,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
   const posts = await getPostsByIds(postIds);
   const db = await getDb();
   const followed = agencyIds.length
-    ? (await db.select().from(agencies).where(and(inArray(agencies.id, agencyIds), eq(agencies.status, "active")))).map(toSummary)
+    ? (await db.select().from(agencies).where(and(inArray(agencies.id, agencyIds), eq(agencies.status, "active"), discoverableProfiles()))).map(toSummary)
     : [];
 
   return (
