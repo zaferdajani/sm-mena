@@ -42,15 +42,13 @@ jobs:
               o,t=[read(f':{i}:{name}') for i in [2,3]]
               if name.endswith('0028_snapshot.json'):
                   journal=read('origin/main:lib/db/migrations/meta/_journal.json')
-                  assert journal['entries'][-1]['idx']==27,'Main added a new numbered migration; renumber requires review'
+                  assert journal['entries'][-1]['idx']==27,'Main added a numbered migration; review required'
                   b=read(os.environ['BASE']+':lib/db/migrations/meta/0027_snapshot.json')
                   original_id=o['id'];previous_id=b['id']
-                  # Main contains an unjournalled draft of this same table.
-                  # Reviewed difference: our SQL/schema explicitly enable RLS.
                   ours=o['tables']['public.profile_publications']
                   theirs=t['tables'].get('public.profile_publications')
                   assert ours['isRLSEnabled'] is True
-                  assert theirs in [ours,{**ours,'isRLSEnabled':False}], 'Draft table changed beyond reviewed RLS difference'
+                  assert theirs in [ours,{**ours,'isRLSEnabled':False}], 'Draft table differs beyond reviewed RLS change'
                   t['tables']['public.profile_publications']=ours
                   for doc in [b,o,t]:doc.pop('id');doc.pop('prevId')
                   result=merge(b,o,t)
@@ -62,7 +60,9 @@ jobs:
               pathlib.Path(name).write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
               subprocess.run(['git','add',name],check=True)
           PY
-          git diff --cached --check
+          # A literal .diff document contains single-space blank context lines.
+          # Preserve it byte-for-byte; validate whitespace in actual source files.
+          git diff --cached --check -- . ':!*.diff'
           test -z "$(git diff --cached --name-only -- .github/workflows)"
           if [ -f .git/MERGE_HEAD ]; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'merge: retain current site-check and onboarding improvements in registration release'
