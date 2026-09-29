@@ -22,23 +22,54 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps webkit
-      - name: Run role cases with WebKit against disposable localhost data only
+      - name: Add role-only checkpoints to the failing test; no app edits
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('tests/e2e/role-picker.spec.ts');s=p.read_text()
+          before='  await box.getByTestId("role-create").click();\n  await box.getByRole("combobox").fill("SEO");'
+          after='''  await box.getByTestId("role-create").click();
+            console.log("ROLE DIAGNOSTIC after custom", await box.evaluate((el) => ({ ready: el.getAttribute("data-ready"), roles: [...el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].filter(x=>x.checked).map(x=>x.value), input: el.querySelector<HTMLInputElement>('input[role="combobox"]')?.value })));
+            await expect(box.locator('input[value="custom:Healthcare set stylist"]')).toBeChecked();
+            await box.getByRole("combobox").fill("SEO");'''
+          assert before in s;s=s.replace(before,after,1)
+          before='  await page.check(\'input[name="consent"]\');'
+          after='''  await expect(box.locator('input[value="custom:Healthcare set stylist"]')).toBeChecked();
+            await expect(box.locator('input[value="seo_specialist"]')).toBeChecked();
+            console.log("ROLE DIAGNOSTIC before submit", await box.evaluate((el) => ({ roles: new FormData(el.closest('form')!).getAll('teamRoles'), checkboxes: [...el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].filter(x=>x.checked).map(x=>({ value:x.value, disabled:x.disabled })) })));
+            await info.attach("before-submit-role-values", { body: await box.screenshot(), contentType: "image/png" });
+            await page.check('input[name="consent"]');'''
+          assert before in s;s=s.replace(before,after,1)
+          before='  await page.goto("/en/studio/profile");\n  await expect(page.locator'
+          after='''  await page.goto("/en/studio/profile");
+            console.log("ROLE DIAGNOSTIC after signup", await page.getByTestId("role-picker-teamRoles").evaluate((el) => ({ roles: [...el.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')].filter(x=>x.checked).map(x=>x.value), ready: el.getAttribute('data-ready') })));
+            await info.attach("after-signup-role-values", { body: await page.getByTestId("team-fields").screenshot(), contentType: "image/png" });
+            await expect(page.locator'''
+          assert before in s;s=s.replace(before,after,1)
+          p.write_text(s)
+          PY
+      - name: Run the strengthened persistence case against disposable localhost
         run: |
           cat > playwright.role-compat.config.ts <<'EOF'
           import { defineConfig, devices } from "@playwright/test";
           import base from "./playwright.config";
-          export default defineConfig({
-            ...base,
-            testMatch: /role-picker\.spec\.ts/,
+          export default defineConfig({ ...base, testMatch: /role-picker\.spec\.ts/, retries: 0,
             projects: [{ name: "webkit-phone", use: { ...devices["iPhone 13"] } }],
-            reporter: [["github"], ["html", { open: "never" }]],
-          });
+            reporter: [["github"], ["html", { open: "never" }]], });
           EOF
           npm run build
-          npx playwright test --config=playwright.role-compat.config.ts
-      - name: Export screenshots and metadata, no fonts or traces
+          npx playwright test --config=playwright.role-compat.config.ts --grep='added roles survive'
+      - name: Export screenshots and role-only metadata; no fonts or traces
         if: always()
-        run: python3 scripts/collect-design-evidence.py
+        run: |
+          python3 scripts/collect-design-evidence.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          for p in Path('test-results').rglob('error-context.md'):
+              dest=Path('design-evidence/contexts')/p.parent.name/'error-context.md'
+              dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,dest)
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
