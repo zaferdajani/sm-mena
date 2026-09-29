@@ -50,10 +50,6 @@ test("a new provider sets up a first project: profile, upload, client, project, 
   await page.getByTestId("setup-client-next").click();
   await expect(wizard).toHaveAttribute("data-step", "4");
 
-  // Reload mid-way: the draft resumes on the same step.
-  await page.reload();
-  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "4");
-
   // 4 — the project: images are stored privately before publishing.
   await page.getByTestId("setup-project-title").fill("Menu launch");
   await page.getByTestId("setup-project-contribution").fill("I shot the photos and designed the menu posts.");
@@ -83,6 +79,10 @@ test("a new provider sets up a first project: profile, upload, client, project, 
   await visitor.goto(`${new URL(page.url()).origin}/en/a/${handle}`);
   await expect(visitor.getByText("Menu launch")).toHaveCount(0);
 
+  // A newly created client is visible without a reload; saved preview survives one.
+  await page.reload();
+  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "5");
+  await expect(page.getByTestId("setup-preview-card")).toContainText("For Café Nour");
   await capture(page, info, "en-step-5-preview");
 
   // Edit goes back without losing work.

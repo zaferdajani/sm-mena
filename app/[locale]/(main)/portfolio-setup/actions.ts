@@ -169,6 +169,7 @@ export async function saveClientStepAction(input: unknown): Promise<SetupResult>
     if (!rateLimit(`setup-client:${agency.id}`, 20, 60 * 60 * 1000)) return { error: "invalid" };
     const added = await addClientOnce(agency.id, c.name ?? "", { version: c.version });
     if ("error" in added) return { error: added.error };
+    revalidatePath("/[locale]/portfolio-setup", "page");
     return { view: (await getSetup(agency.id)) ?? undefined };
   } else client = { mode: c.mode };
   return done(await writeSetup(agency.id, c.version, { data: { client }, step: 4 }));
