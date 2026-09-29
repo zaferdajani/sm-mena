@@ -114,7 +114,7 @@ export function PortfolioComposerGuide({ descriptionOutline }: { descriptionOutl
     };
   }, [step, hintId]);
 
-  function useStructure() {
+  function applyOutline() {
     const input = document.querySelector<HTMLTextAreaElement>('[data-testid="post-form"] #caption');
     if (!input) { setMessage("formMissing"); return; }
     const next = captionStructure(input.value, descriptionOutline);
@@ -148,7 +148,7 @@ export function PortfolioComposerGuide({ descriptionOutline }: { descriptionOutl
         <p id={hintId} role="status" className="text-sm leading-7">{step ? t(`focus.${step}`) : ""}</p>
         {step && <button type="button" className={control} onClick={() => { setStep(null); activeButton.current?.focus(); }}>{t("stopHighlight")}</button>}
       </div>
-      <button type="button" className={`${control} bg-background`} onClick={useStructure} data-testid="creator-use-structure">{t("useStructure")}</button>
+      <button type="button" className={`${control} bg-background`} onClick={applyOutline} data-testid="creator-use-structure">{t("useStructure")}</button>
       {message && <p role="status" className="text-sm leading-7" data-testid="creator-template-status">{t(message)}</p>}
       <Link href="/studio/setup" className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-brand underline underline-offset-4">{t("nav")}</Link>
     </aside>

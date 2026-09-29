@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
-import ar from "@/messages/creator/ar.json";
-import en from "@/messages/creator/en.json";
+import arRoot from "@/messages/ar.json";
+import enRoot from "@/messages/en.json";
 import { captionStructure, creatorSetupProgress, PORTFOLIO_EXAMPLES } from "@/lib/creator/setup";
+
+const ar = arRoot.CreatorSetup;
+const en = enRoot.CreatorSetup;
 
 function paths(value: unknown, prefix = ""): string[] {
   if (typeof value === "string") return [prefix];

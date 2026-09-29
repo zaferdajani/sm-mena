@@ -4306,5 +4306,118 @@
       "unavailable": "Not available right now.",
       "notFound": "Not found."
     }
+  },
+  "CreatorSetup": {
+    "nav": "Setup guide",
+    "title": "Build a portfolio, not just a feed",
+    "intro": "Start with one real piece of work. Your Sawwiq page brings your projects together so clients can see what you do. A project can contain one image or a group of related images.",
+    "nudgeTitle": "Not sure what to add first?",
+    "nudgeBody": "Your profile is you. A client or brand is who the work was for. A portfolio post shows one project or piece of work. We will walk you through an example.",
+    "openGuide": "Show me how",
+    "addWork": "Add my first work sample",
+    "editProfile": "Complete my profile",
+    "clientLink": "Organize clients and brands",
+    "viewProfile": "Preview my public page",
+    "progress": "{done} of {total} essentials complete",
+    "complete": "Complete",
+    "todo": "Next step",
+    "optional": "Optional",
+    "essentials": "Two essentials to get started",
+    "profileStep": "Say who you are and choose the services you actually offer.",
+    "workStep": "Publish one genuine work sample. One image is enough to start.",
+    "optionalHelp": "A client record, a service package, and connected social accounts are not required to publish your first work sample.",
+    "mapTitle": "How your page is organized",
+    "map": {
+      "profile": {
+        "title": "Your profile",
+        "body": "You, your agency or your studio: name, introduction and services."
+      },
+      "client": {
+        "title": "Client or brand (optional)",
+        "body": "The business this work was made for. One client can have several projects and social links."
+      },
+      "project": {
+        "title": "One portfolio post",
+        "body": "One project or related piece of work, with your role and a short explanation."
+      },
+      "images": {
+        "title": "The images inside it",
+        "body": "One to ten related images or screenshots. The first image is the cover."
+      }
+    },
+    "postTitle": "What should go in this post?",
+    "postBody": "Group work from one project here. Keep a different client or unrelated project in a separate post. This image form accepts 1–10 images or screenshots; it does not accept video files.",
+    "clientTitle": "A client here is not a login or a connected social account",
+    "clientBody": "Create one record for the brand or business you worked for, then select it on each related portfolio post. Social links describe that brand; a pasted link does not verify access or authorship. For personal or confidential work, leave the client unselected and describe it without identifying details.",
+    "examplesTitle": "See an example before you start",
+    "examplesNote": "Illustrative examples only—not real clients, published work or performance claims. Nothing here is added to your portfolio automatically.",
+    "examples": {
+      "social": {
+        "label": "Social campaign",
+        "client": "Example café",
+        "project": "A menu-launch campaign",
+        "role": "My role: photography and post design",
+        "media": "Menu photos + post designs + permitted campaign screenshots belong in this one project.",
+        "caption": "Explain the brief, what you personally delivered and what each image shows. Add results only when you can substantiate them."
+      },
+      "identity": {
+        "label": "Brand identity",
+        "client": "Example retail brand",
+        "project": "A new visual identity",
+        "role": "My role: logo and identity design",
+        "media": "Logo variations + colors + packaging mockups belong together, rather than as unrelated posts.",
+        "caption": "Describe your part in the identity. Credit collaborators. Clearly label concept or practice work."
+      },
+      "photo": {
+        "label": "Photography",
+        "client": "Example restaurant",
+        "project": "A product photo session",
+        "role": "My role: photographer",
+        "media": "Select related images from the same shoot. Do not mix different clients to fill the image limit.",
+        "caption": "Explain the assignment and your role. Do not show people, private briefs or client data without permission."
+      },
+      "website": {
+        "label": "Website / app",
+        "client": "Personal project or a permitted client",
+        "project": "A website redesign",
+        "role": "My role: interface design",
+        "media": "Desktop + phone screenshots + selected details from this project.",
+        "caption": "Explain whether you designed, built or contributed to the product. This example does not claim live app embedding is enabled."
+      }
+    },
+    "clientLabel": "For whom?",
+    "projectLabel": "What did you make?",
+    "roleLabel": "What was your part?",
+    "mediaLabel": "What belongs together?",
+    "tourTitle": "Highlight a field in the form",
+    "steps": {
+      "images": "1. Choose images",
+      "caption": "2. Explain your work",
+      "client": "3. Select a client (optional)",
+      "services": "4. Choose relevant services"
+    },
+    "focus": {
+      "images": "Choose 1–10 images for this project. The first is the cover. You do not need ten images.",
+      "caption": "Explain what was needed, your role and what these images show.",
+      "client": "Choose the client or brand only when appropriate. Leaving this blank is allowed.",
+      "services": "Select the services demonstrated by this work—not every service you offer."
+    },
+    "stopHighlight": "Stop highlighting",
+    "useStructure": "Use a blank description outline",
+    "structure": "Project or piece of work: [describe it]\nMy role: [what I personally did]\nWhat is shown: [explain these images]\nResult, only if evidenced: [optional; remove when unknown]",
+    "structureAdded": "An outline was added. Replace the brackets with your own details before publishing.",
+    "structurePreserved": "Your description was kept unchanged. Clear it yourself to use the blank outline.",
+    "formMissing": "Open the Add work page to use the field guide.",
+    "beforePublish": "Before you publish",
+    "publishReminder": "Check that the images belong together, explain your own role, and share only material you have permission to show. Do not invent results, clients or endorsements.",
+    "existingTitle": "Already have work elsewhere?",
+    "existingBody": "Use your original images, or the existing PDF and Behance import tools when available. Review the grouping, client and description before publishing. Importing and account connection are different actions.",
+    "pdf": "Import a PDF portfolio",
+    "behance": "Import from Behance",
+    "manual": "Add images manually",
+    "connectionsTitle": "Social account connection: what it means",
+    "connectionsBody": "A public link is not an authorized connection. Google, YouTube, Instagram, Facebook and TikTok need their own consent-based integrations. Do not share passwords or paste access tokens. Automatic social imports are not enabled by this guide.",
+    "linkOwn": "Edit my public profile links",
+    "linkClient": "Edit a client’s social links"
   }
 }
