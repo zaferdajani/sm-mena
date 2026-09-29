@@ -329,6 +329,12 @@ export const posts = pgTable(
     app: jsonb("app").$type<PostApp | null>(),
     // Where the work was imported from (a Behance project link, docs/47); shown as credit on the post.
     sourceUrl: text("source_url"),
+    // A work sample imported through a creator's own platform connection (docs/53): the
+    // provider and its stable item id (one post per item and agency), and the official
+    // player shown on the post. Provider-derived; removed when the connection is.
+    sourceProvider: text("source_provider"),
+    sourceItemId: text("source_item_id"),
+    embed: jsonb("embed").$type<PostEmbed | null>(),
     status: postStatus("status").notNull().default("published"),
     likeCount: integer("like_count").notNull().default(0),
     saveCount: integer("save_count").notNull().default(0),
@@ -342,8 +348,12 @@ export const posts = pgTable(
     index("posts_agency_idx").on(t.agencyId, t.createdAt),
     index("posts_services_idx").using("gin", t.services),
     index("posts_platforms_idx").using("gin", t.platforms),
+    uniqueIndex("posts_source_item_idx").on(t.agencyId, t.sourceProvider, t.sourceItemId).where(sql`source_item_id is not null`),
   ],
 );
+
+/** The official player for an imported work sample (lib/social/embed.ts builds and checks it). */
+export type PostEmbed = { provider: "youtube" | "tiktok" | "instagram" | "facebook"; itemId: string; url: string };
 
 // A client business in an agency's portfolio, with the accounts the agency
 // runs for it (Instagram, TikTok, website, …). Posts can be tagged with it.
@@ -1202,6 +1212,188 @@ export const errorEvents = pgTable(
  * Automatic site checks (docs/52): every run of the scheduled check, what it
  * found and what it closed. Kept 90 days; shown in Admin → Bugs.
  */
+// ---------------------------------------------------------------------------
+// Creator platform connections (docs/53): consent-based OAuth to a creator's own
+// or managed accounts, and reviewed import of published work. Private; never
+// sent to the browser, AI or logs. Verified access is not proof of authorship.
+// ---------------------------------------------------------------------------
+export const socialProvider = pgEnum("social_provider", ["google", "youtube", "instagram", "facebook", "tiktok"]);
+export const socialGrantStatus = pgEnum("social_grant_status", ["active", "limited", "expired", "revoked", "revoke_pending", "failed"]);
+export const socialResourceStatus = pgEnum("social_resource_status", ["pending", "selected", "removed"]);
+export const socialOwnership = pgEnum("social_ownership", ["own", "client"]);
+export const socialItemState = pgEnum("social_item_state", ["offered", "draft", "published", "dismissed"]);
+
+/** One authorization attempt: only the state's hash is stored; consumed once, expires in minutes. */
+export const socialOauthAttempts = pgTable(
+  "social_oauth_attempts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    stateHash: text("state_hash").notNull(),
+    provider: socialProvider("provider").notNull(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id").notNull().references(() => agencies.id, { onDelete: "cascade" }),
+    // Hash of the browser session that started it: the callback must come back on the same one.
+    sessionHash: text("session_hash").notNull(),
+    ownership: socialOwnership("ownership").notNull(),
+    clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
+    locale: text("locale").notNull(),
+    // Where to come back to: the first-run setup or Studio → Connected platforms (a fixed list, never a URL).
+    returnTo: text("return_to").notNull().default("connections"),
+    // PKCE verifier and OpenID nonce, sealed (lib/social/crypto.ts).
+    sealedVerifier: text("sealed_verifier"),
+    sealedNonce: text("sealed_nonce"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("social_attempts_state_idx").on(t.stateHash), index("social_attempts_expires_idx").on(t.expiresAt)],
+);
+
+/** A provider's consent for one agency: sealed tokens, granted scopes and health. */
+export const socialGrants = pgTable(
+  "social_grants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id").notNull().references(() => agencies.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    provider: socialProvider("provider").notNull(),
+    // The provider's stable account id for this person (a string; never a JS number).
+    providerSubject: text("provider_subject").notNull(),
+    scopes: text("scopes").array().notNull().default(sql`'{}'::text[]`),
+    sealedAccess: text("sealed_access"),
+    sealedRefresh: text("sealed_refresh"),
+    keyVersion: integer("key_version").notNull().default(1),
+    accessExpiresAt: timestamp("access_expires_at", { withTimezone: true }),
+    refreshExpiresAt: timestamp("refresh_expires_at", { withTimezone: true }),
+    status: socialGrantStatus("status").notNull().default("active"),
+    // Short, safe reason code for the current status (never a provider response).
+    statusReason: text("status_reason"),
+    consentVersion: text("consent_version").notNull(),
+    // Compare-and-swap counter: a token refresh only lands on the version it read.
+    version: integer("version").notNull().default(0),
+    lastVerifiedAt: timestamp("last_verified_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("social_grants_subject_idx").on(t.agencyId, t.provider, t.providerSubject)],
+);
+
+/** A channel, Page or account reachable through a grant, which the creator confirmed (or may confirm). */
+export const socialResources = pgTable(
+  "social_resources",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    grantId: uuid("grant_id").notNull().references(() => socialGrants.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id").notNull().references(() => agencies.id, { onDelete: "cascade" }),
+    provider: socialProvider("provider").notNull(),
+    kind: text("kind").notNull(), // identity | channel | page | account
+    providerResourceId: text("provider_resource_id").notNull(),
+    displayName: text("display_name").notNull(),
+    handle: text("handle"),
+    ownership: socialOwnership("ownership").notNull(),
+    clientId: uuid("client_id").references((): AnyPgColumn => portfolioClients.id, { onDelete: "set null" }),
+    status: socialResourceStatus("status").notNull().default("pending"),
+    // A Facebook Page's own token, sealed; other providers read with the grant's token.
+    sealedToken: text("sealed_token"),
+    pendingExpiresAt: timestamp("pending_expires_at", { withTimezone: true }),
+    selectedAt: timestamp("selected_at", { withTimezone: true }),
+    metadataFetchedAt: timestamp("metadata_fetched_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("social_resources_provider_idx").on(t.agencyId, t.provider, t.providerResourceId), index("social_resources_grant_idx").on(t.grantId)],
+);
+
+/**
+ * A published item the creator picked from a connected resource, waiting for
+ * review. Bounded metadata only; refreshed or deleted on the provider's schedule
+ * (YouTube: 30 days). A draft never shows publicly.
+ */
+export const socialImportItems = pgTable(
+  "social_import_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id").notNull().references(() => agencies.id, { onDelete: "cascade" }),
+    resourceId: uuid("resource_id").notNull().references(() => socialResources.id, { onDelete: "cascade" }),
+    provider: socialProvider("provider").notNull(),
+    providerItemId: text("provider_item_id").notNull(),
+    mediaKind: text("media_kind").notNull(), // video | image | carousel | post
+    title: text("title").notNull().default(""),
+    caption: text("caption").notNull().default(""),
+    permalink: text("permalink").notNull(),
+    thumbnailUrl: text("thumbnail_url"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    // offered: seen while browsing (purged after a day); draft: picked for review.
+    state: socialItemState("state").notNull().default("offered"),
+    postId: uuid("post_id").references((): AnyPgColumn => posts.id, { onDelete: "set null" }),
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("social_items_provider_idx").on(t.agencyId, t.provider, t.providerItemId), index("social_items_fetched_idx").on(t.fetchedAt)],
+);
+
+/** Provider API units used per day, kept apart from deletable rows so a quota survives deletions. */
+export const socialQuotaUsage = pgTable(
+  "social_quota_usage",
+  {
+    provider: socialProvider("provider").notNull(),
+    day: text("day").notNull(), // YYYY-MM-DD (UTC)
+    units: integer("units").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.provider, t.day] })],
+);
+
+/** A Meta data-deletion request (signed callback): what was removed, looked up by its code. */
+export const socialDeletionRequests = pgTable("social_deletion_requests", {
+  code: text("code").primaryKey(),
+  provider: socialProvider("provider").notNull(),
+  grants: integer("grants").notNull().default(0),
+  createdAt: createdAt(),
+});
+
+// ---------------------------------------------------------------------------
+// First-run portfolio setup (docs/53): one private, resumable draft per agency.
+// Progress is not publication: nothing here is public until the owner publishes.
+// ---------------------------------------------------------------------------
+export const setupStatus = pgEnum("setup_status", ["in_progress", "paused", "finished"]);
+export type SetupDraftData = {
+  source?: "upload" | "pdf" | "behance" | "social";
+  client?: { mode: "existing" | "personal" | "private"; clientId?: string };
+  project?: { title: string; contribution: string; services: string[] };
+  /** A Behance project staged by the importer (public source images, read on publish). */
+  behance?: { projectUrl: string; images: string[]; publishedAt: string | null; clientSuggestion: string | null };
+  /** A connected-platform item staged for this project (social_import_items). */
+  socialItemId?: string;
+};
+export const portfolioSetups = pgTable("portfolio_setups", {
+  agencyId: uuid("agency_id").primaryKey().references(() => agencies.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  status: setupStatus("status").notNull().default("in_progress"),
+  step: integer("step").notNull().default(1),
+  // Optimistic lock: every accepted write names the version it read (stale tabs and retries are refused).
+  version: integer("version").notNull().default(0),
+  data: jsonb("data").$type<SetupDraftData>().notNull().default({}),
+  // The project this setup published or saved; set once, so a repeated Finish cannot create a second one.
+  postId: uuid("post_id").references((): AnyPgColumn => posts.id, { onDelete: "set null" }),
+  createdAt: createdAt(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Images staged for the setup project, in private storage (drafts/…); removed on publish or after 60 days. */
+export const portfolioSetupMedia = pgTable(
+  "portfolio_setup_media",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    agencyId: uuid("agency_id").notNull().references(() => agencies.id, { onDelete: "cascade" }),
+    key: text("key").notNull(),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    position: integer("position").notNull().default(0),
+    source: text("source").notNull(), // upload | pdf
+    createdAt: createdAt(),
+  },
+  (t) => [index("setup_media_agency_idx").on(t.agencyId, t.position)],
+);
+
 export const siteChecks = pgTable(
   "site_checks",
   {
@@ -2013,3 +2205,8 @@ export type CollabPlan = typeof collabPlans.$inferSelect;
 export type CollabAiUsage = typeof collabAiUsage.$inferSelect;
 export type CollabFeedbackRow = typeof collabFeedback.$inferSelect;
 export type CollabPrefs = typeof collabPrefs.$inferSelect;
+export type SocialGrant = typeof socialGrants.$inferSelect;
+export type SocialResource = typeof socialResources.$inferSelect;
+export type SocialImportItem = typeof socialImportItems.$inferSelect;
+export type PortfolioSetup = typeof portfolioSetups.$inferSelect;
+export type PortfolioSetupMedia = typeof portfolioSetupMedia.$inferSelect;

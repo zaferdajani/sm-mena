@@ -65,6 +65,7 @@ export default async function StudioLayout({ children }: { children: React.React
           items={[
             { href: "/studio", label: t("overview") },
             { href: "/studio/setup", label: tg("nav") },
+            { href: "/studio/connections", label: tg("connectionsNav") },
             // Setting up comes first: the page, then the packages (easy to miss further along on a phone).
             { href: "/studio/profile", label: t("profile") },
             { href: "/studio/packages", label: tp("studio.tab") },

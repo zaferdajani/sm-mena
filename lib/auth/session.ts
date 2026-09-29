@@ -36,6 +36,12 @@ export async function createSession(userId: string, { mfaPending = false } = {})
   });
 }
 
+/** The current browser session's id (a hash of its cookie), to bind short flows such as platform consent to it. */
+export async function currentSessionId(): Promise<string | null> {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  return token ? hashToken(token) : null;
+}
+
 export const getSessionUser = cache(async () => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
