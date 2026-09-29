@@ -8,11 +8,12 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
           ref: feat/registration-phase
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -22,9 +23,10 @@ jobs:
           python3 scripts/apply-registration-core.py
           python3 scripts/apply-registration-ui.py
           python3 scripts/apply-registration-final.py
-          python3 scripts/registration-ci.py
+          # Workflow updates are performed separately via an authorized connector.
+          # The runner must not attempt a workflow write it has no permission for.
       - run: npm ci
-      - name: Keep Drizzle's snapshot consistent with the additive migration
+      - name: Keep Drizzle snapshot consistent with additive migration
         run: |
           cp lib/db/migrations/0028_profile_publication.sql /tmp/profile-publication.sql
           python3 - <<'PY'
@@ -37,18 +39,23 @@ jobs:
           npm run db:generate -- --name=profile_publication
           test -f lib/db/migrations/meta/0028_snapshot.json
           cp /tmp/profile-publication.sql lib/db/migrations/0028_profile_publication.sql
-      - name: Commit integrated source, leaving no one-off application workflows
+      - name: Commit application source on the isolated branch
         run: |
           git diff --check
-          git rm scripts/apply-registration-core.py scripts/apply-registration-ui.py scripts/apply-registration-final.py scripts/registration-ci.py scripts/registration-copy.json .github/workflows/registration-context.yml .github/workflows/apply-registration.yml
-          git add app components lib messages tests playwright.config.ts vitest.config.mts .github/workflows/ci.yml docs
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Integrate reversible registration phase, owner-controlled publication and protected portfolio media'
+          git rm scripts/apply-registration-core.py scripts/apply-registration-ui.py scripts/apply-registration-final.py scripts/registration-ci.py scripts/registration-copy.json
+          git add app components lib messages tests playwright.config.ts playwright.registration.config.ts vitest.config.mts docs
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'feat(launch): integrate registration phase and owner-controlled publication'
+          git push origin HEAD:feat/registration-phase
+      - name: Check integration with newest main without overwriting conflicts
+        run: |
+          git fetch origin main
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' merge origin/main --no-edit
           git push origin HEAD:feat/registration-phase
       - name: Typecheck integrated source
         run: npm run typecheck
       - name: Lint integrated source
         run: npm run lint
-      - name: Export tracked text source for review (no environment files or fonts)
+      - name: Export source for review (no secrets or fonts)
         if: always()
         run: |
           python3 - <<'PY'
@@ -61,6 +68,7 @@ jobs:
                   if p.is_file() and p.suffix in allowed and not name.startswith('public/') and not p.name.startswith('.env'):
                       z.write(p,name)
           PY
+          git status --short
       - uses: actions/upload-artifact@v4
         if: always()
         with:
