@@ -4790,6 +4790,7 @@
       "clientLimit": "You reached the maximum number of clients.",
       "title": "Give the project a short label (2 characters or more).",
       "noServices": "Choose at least one service."
-    }
+    },
+    "help": "Help"
   }
 }

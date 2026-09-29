@@ -44,7 +44,7 @@ export default async function SetupPage({ params, searchParams }: PageProps<"/[l
         <Link href="/" aria-label={tn("home")}><BrandLockup label="Sawwiq" compact /></Link>
         <nav className="flex items-center gap-3 text-sm" aria-label={t("controls")}>
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
-          <Link href="/support" className="text-brand">{tn("support")}</Link>
+          <Link href="/support" className="text-brand">{t("help")}</Link>
           <Link href="/studio" className="text-brand" data-testid="setup-exit">{t("exit")}</Link>
         </nav>
       </header>
