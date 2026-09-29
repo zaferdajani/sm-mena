@@ -76,15 +76,17 @@ try {
   const anonStatus = (await anon.request.get(`${site}${mediaSrc}`)).status();
   await anon.close();
   step("staged image hidden from others", anonStatus === 404, `HTTP ${anonStatus}`);
-  await page.getByTestId("setup-project-title").fill("فحص الإعداد المباشر");
-  await page.getByTestId("setup-project-contribution").fill("مشروع فحص مؤقت، يُحذف بعد الفحص.");
-  await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
-  // Resume: reload keeps the step and the staged image.
+  // Resume: a reload keeps the step and the staged image (text is saved on
+  // Continue, so it is typed after the reload).
   await page.reload();
   await page.getByTestId("setup-wizard").waitFor();
   const after = await page.getByTestId("setup-wizard").getAttribute("data-step");
+  await page.getByTestId("setup-media").locator("li").first().waitFor({ timeout: 30_000 }).catch(() => undefined);
   const kept = await page.getByTestId("setup-media").locator("li").count();
   step("resume after reload", after === "4" && kept === 1, `step ${after}, ${kept} image`);
+  await page.getByTestId("setup-project-title").fill("فحص الإعداد المباشر");
+  await page.getByTestId("setup-project-contribution").fill("مشروع فحص مؤقت، يُحذف بعد الفحص.");
+  await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
   await shot(page, "3-project");
   await page.getByTestId("setup-project-next").click();
   await page.getByTestId("setup-preview").waitFor();
