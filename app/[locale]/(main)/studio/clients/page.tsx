@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClientForm, ClientItem } from "@/components/studio/client-form";
+import { PortfolioClientGuide } from "@/components/studio/creator-guide";
 import { requireAgency } from "@/lib/auth/guards";
 import { COUNTRIES } from "@/lib/countries";
 import { listClients, MAX_CLIENTS } from "@/lib/data/portfolio-clients";
@@ -24,6 +25,7 @@ export default async function StudioClientsPage({ params }: PageProps<"/[locale]
         <h1 className="text-lg font-bold">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("intro")}</p>
       </div>
+      <PortfolioClientGuide />
       {clients.length === 0 && <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{t("empty")}</p>}
       {clients.map((c) => (
         <ClientItem

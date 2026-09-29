@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { canUse } from "@/lib/feature-gate";
 import { PostForm } from "@/components/studio/post-form";
+import { PortfolioComposerGuide } from "@/components/studio/creator-guide";
 import { requireAgency } from "@/lib/auth/guards";
 import { contentLang } from "@/lib/content-lang";
 import { postFormOptions } from "@/lib/studio-options";
@@ -14,9 +15,13 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
   const t = await getTranslations("Studio");
   const ti = await getTranslations("PortfolioImport");
   const tb = await getTranslations("BehanceImport");
+  const tg = await getTranslations("CreatorSetup");
+  // The outline goes into the caption, so it follows the page's content language, not the interface.
+  const outline = await getTranslations({ locale: contentLang(agency.contentLang), namespace: "CreatorSetup" });
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="mb-4 text-lg font-bold">{t("newPost")}</h1>
+      <PortfolioComposerGuide descriptionOutline={outline("structure")} />
       {(await canUse("portfolio_import")) && (
         <div className="mb-5 grid gap-2">
           {/* Behance first: most new providers already keep their portfolio there (docs/47). */}
@@ -37,6 +42,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
         </div>
       )}
       <PostForm mode="create" contentLang={contentLang(agency.contentLang)} {...await postFormOptions(agency.services, agency.id)} />
+      <p className="mt-4 text-sm leading-7 text-muted-foreground">{tg("publishReminder")}</p>
     </div>
   );
 }

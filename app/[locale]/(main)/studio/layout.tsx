@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { StudioNav } from "@/components/studio/studio-nav";
+import { CreatorSetupNudge } from "@/components/studio/creator-guide";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { unreadForAgency } from "@/lib/data/conversations";
@@ -33,6 +34,7 @@ export default async function StudioLayout({ children }: { children: React.React
   const tn = await getTranslations("Notifications");
   const tpart = await getTranslations("Partners");
   const tcol = await getTranslations("Collab");
+  const tg = await getTranslations("CreatorSetup");
   const [partnersGate, collabGate, openInquiries, pendingOrders, unread, unreadChats, newOpportunities, unreadNotes, partnerRequests] = await Promise.all([
     featureGate("partners"),
     featureGate("collaboration"),
@@ -65,6 +67,7 @@ export default async function StudioLayout({ children }: { children: React.React
         <StudioNav
           items={[
             { href: "/studio", label: t("overview") },
+            { href: "/studio/setup", label: tg("nav") },
             // Setting up comes first: the page, then the packages (easy to miss further along on a phone).
             { href: "/studio/profile", label: t("profile") },
             { href: "/studio/packages", label: tp("studio.tab") },
@@ -87,7 +90,10 @@ export default async function StudioLayout({ children }: { children: React.React
           ]}
         />
       </div>
-      <div className="sw-workspace-body px-4 py-5">{children}</div>
+      <div className="sw-workspace-body px-4 py-5">
+        <CreatorSetupNudge hasWork={agency.postCount > 0} />
+        {children}
+      </div>
     </div>
   );
 }
