@@ -45,6 +45,13 @@ jobs:
                   assert journal['entries'][-1]['idx']==27,'Main added a new numbered migration; renumber requires review'
                   b=read(os.environ['BASE']+':lib/db/migrations/meta/0027_snapshot.json')
                   original_id=o['id'];previous_id=b['id']
+                  # Main contains an unjournalled draft of this same table.
+                  # Reviewed difference: our SQL/schema explicitly enable RLS.
+                  ours=o['tables']['public.profile_publications']
+                  theirs=t['tables'].get('public.profile_publications')
+                  assert ours['isRLSEnabled'] is True
+                  assert theirs in [ours,{**ours,'isRLSEnabled':False}], 'Draft table changed beyond reviewed RLS difference'
+                  t['tables']['public.profile_publications']=ours
                   for doc in [b,o,t]:doc.pop('id');doc.pop('prevId')
                   result=merge(b,o,t)
                   result={'id':original_id,'prevId':previous_id,**result}
