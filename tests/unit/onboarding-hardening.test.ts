@@ -28,7 +28,7 @@ if (process.env.ONBOARDING_REHEARSAL_URL) {
 
 let png: Buffer;
 beforeAll(async () => {
-  png = await sharp({ create: { width: 160, height: 120, channels: 3, background: "#227755" } }).png().toBuffer();
+  png = await sharp({ create: { width: 320, height: 240, channels: 3, background: "#227755" } }).png().toBuffer();
   process.env.GOOGLE_OAUTH_CLIENT_ID = "hardening-fixture.apps.test";
   process.env.GOOGLE_OAUTH_CLIENT_SECRET = "fixture-only";
   process.env.SOCIAL_PROVIDERS_APPROVED = "youtube";
@@ -50,7 +50,8 @@ function latch() {
 }
 async function ready() {
   const me = await actor();
-  await addSetupMedia(me.agency.id, [png], "upload");
+  const uploaded = await addSetupMedia(me.agency.id, [png], "upload");
+  if ("error" in uploaded) throw new Error(`Invalid test setup: ${uploaded.error}`);
   const current = (await getSetup(me.agency.id))!;
   const view = await writeSetup(me.agency.id, current.version, { step: 5, data: { source: "upload", client: { mode: "private" }, project: { title: "A real draft", contribution: "Synthetic permissioned test image", services: ["photography"] } } });
   if ("error" in view) throw new Error(view.error);
