@@ -35,12 +35,12 @@ jobs:
           changes=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
           assert set(changes)<=set(expected),changes
           subprocess.check_call(['git','add','--',*expected.keys()])
-          print('All 11 changed source/test files match the reviewed local SHA256 manifest.')
+          print(f'All {len(expected)} source/test files match the reviewed SHA256 manifest.')
           PY
             git rm -r .ops-onboarding
             git config user.name "Sawwiq validation"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "fix(onboarding): atomic publishing and profile saves; revocation-safe connections; regression tests"
+            git commit -m "fix(onboarding): materialize reviewed acceptance corrections"
             git push origin "HEAD:$BRANCH"
           fi
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -58,29 +58,40 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Export tracked text and installed Next documentation for review
-        run: |
-          python3 - <<'PY'
-          import pathlib, subprocess, zipfile
-          extensions = {'.ts','.tsx','.mts','.js','.jsx','.mjs','.cjs','.json','.css','.md','.yml','.yaml','.sql','.py','.txt'}
-          with zipfile.ZipFile('/tmp/onboarding-source.zip','w',zipfile.ZIP_DEFLATED) as z:
-            for raw in subprocess.check_output(['git','ls-files','-z']).split(b'\0'):
-              if not raw: continue
-              p = pathlib.Path(raw.decode())
-              if p.is_file() and p.suffix in extensions and not p.name.startswith('.env'):
-                z.write(p, str(p))
-            for p in pathlib.Path('node_modules/next/dist/docs').rglob('*.md'):
-              z.write(p, str(p))
-            z.writestr('SOURCE_SHA.txt', subprocess.check_output(['git','rev-parse','HEAD']).decode())
-          PY
-      - uses: actions/upload-artifact@v4
-        with:
-          name: onboarding-source-review
-          path: /tmp/onboarding-source.zip
-          retention-days: 7
+      - run: npm test
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm test
+  postgres:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: qa_rehearsal
+          POSTGRES_PASSWORD: disposable-ci-only
+          POSTGRES_DB: sawwiq_rehearsal
+        ports: [5432:5432]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prepare.outputs.candidate }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Rehearse additive migrations on disposable local Postgres only
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgresql://qa_rehearsal:disposable-ci-only@127.0.0.1:5432/sawwiq_rehearsal
+      - name: Exercise actual row-lock concurrency and rollback on Postgres
+        run: npx vitest run tests/unit/onboarding-hardening.test.ts
+        env:
+          ONBOARDING_REHEARSAL_URL: postgresql://qa_rehearsal:disposable-ci-only@127.0.0.1:5432/sawwiq_rehearsal
   e2e:
     needs: prepare
     runs-on: ubuntu-latest
