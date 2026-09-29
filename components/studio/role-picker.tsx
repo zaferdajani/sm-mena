@@ -69,14 +69,19 @@ export function RolePicker({ name, options, values, onChange }: {
           </label>;
         })}
       </div>
-      <div className="grid gap-2 rounded-xl border border-border bg-card p-3 sm:p-4">
+      {/* Keep the list in place while focus moves to an internal action. Closing
+          on input blur would move the button between pointer-down and click. */}
+      <div className="grid gap-2 rounded-xl border border-border bg-card p-3 sm:p-4"
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) { setExpanded(false); setActive(-1); }
+        }}>
         <label htmlFor={`${id}-input`} className="flex items-center gap-2 text-sm font-semibold"><Plus className="size-4" aria-hidden />{t("label")}</label>
         <div className="relative">
           <Search className="pointer-events-none absolute inset-s-3 top-3.5 size-4 text-muted-foreground" aria-hidden />
           <input ref={input} id={`${id}-input`} type="text" role="combobox" aria-autocomplete="list" aria-expanded={showSuggestions} aria-controls={`${id}-results`} aria-activedescendant={showSuggestions && active >= 0 ? `${id}-option-${active}` : undefined}
             aria-describedby={`${id}-hint`} autoComplete="off" maxLength={MAX_ROLE_TITLE} value={query} placeholder={t("placeholder")}
             className="min-h-11 w-full min-w-0 rounded-lg border border-input bg-background pe-3 ps-9 py-2 text-base"
-            onFocus={() => setExpanded(true)} onBlur={() => { setExpanded(false); setActive(-1); }}
+            onFocus={() => setExpanded(true)}
             onChange={(event) => { setQuery(event.target.value); setExpanded(true); setActive(-1); setConfirmed(false); setAnnouncement(""); }} onKeyDown={keyDown} />
         </div>
         <p id={`${id}-hint`} className="text-sm leading-7 text-muted-foreground">{t("hint")}</p>
