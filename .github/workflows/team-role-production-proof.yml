@@ -1,0 +1,31 @@
+name: Verify production team roles and SEO
+on:
+  push:
+    branches: [audit/registration-release-check]
+    paths: [.github/workflows/team-role-production-proof.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPECTED_COMMIT: d2c66593ba1127821534ca0e761067418f7b528d
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Verify public production forms without submission
+        run: node scripts/verify-team-roles-production.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: team-role-production-evidence
+          path: team-role-production-evidence/
+          retention-days: 7
