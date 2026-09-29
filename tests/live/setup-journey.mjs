@@ -47,11 +47,11 @@ try {
 
   await page.goto(`${site}/ar/portfolio-setup`);
   const wizard = page.getByTestId("setup-wizard");
-  await wizard.waitFor({ timeout: 30_000 });
-  const finished = await page.getByTestId("setup-finished").count();
-  if (finished) {
+  // After a finished run the page shows the "done" card instead of the wizard: start another project.
+  await page.locator('[data-testid="setup-wizard"], [data-testid="setup-finished"]').first().waitFor({ timeout: 30_000 });
+  if (await page.getByTestId("setup-finished").count()) {
     await page.getByTestId("setup-another").click();
-    await wizard.waitFor();
+    await wizard.waitFor({ timeout: 30_000 });
   }
   await shot(page, "1-setup-open");
   let stepAttr = await wizard.getAttribute("data-step");
