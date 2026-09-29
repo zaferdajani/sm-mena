@@ -1,8 +1,9 @@
 # Controlled signed-in check on the live site (docs/53): the seeded demo
 # provider runs the first-run setup end to end (upload, reload/resume, save,
 # open, delete). Run it after a deploy: Actions → Live journey → Run workflow.
-# Uses the existing repository secret for the demo account; creates no account
-# and leaves nothing behind. Screenshots and journey.json are uploaded.
+# Needs the SEED_DEMO_PASSWORD repository secret: add it once, run Maintenance →
+# seed-demo (it gives the demo accounts that password), then run this. Creates no
+# account and leaves nothing behind. Screenshots and journey.json are uploaded.
 name: Live journey
 
 on:
@@ -22,7 +23,7 @@ jobs:
       DEMO_PASSWORD: ${{ secrets.SEED_DEMO_PASSWORD }}
     steps:
       - name: Check the demo password secret is there
-        run: '[ -n "$DEMO_PASSWORD" ] || { echo "::error::Add the SEED_DEMO_PASSWORD repository secret (the seeded demo provider''s password)."; exit 1; }'
+        run: '[ -n "$DEMO_PASSWORD" ] || { echo "::error::Add the SEED_DEMO_PASSWORD repository secret, then run Maintenance → seed-demo once so the demo accounts take it (docs/53)."; exit 1; }'
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:

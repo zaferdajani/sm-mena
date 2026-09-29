@@ -18,6 +18,7 @@ import { normalizeForSearch } from "../text";
 import { createProjectRequest } from "../data/requests";
 import { ensureOwner, recoverOwner } from "../data/staff";
 import { createUser, getUserByEmail } from "../data/users";
+import { hashPassword } from "../auth/password";
 import { processAvatar, processImage, newAvatarKey } from "../images";
 import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
@@ -26,7 +27,7 @@ import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-p
 import { DEMO_PROFILES, DEMO_ROLES } from "./demo-profiles";
 import { DEMO_TRANSLATIONS } from "./demo-translations";
 import { ROLE_KEYS } from "../services/catalog";
-import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, type DeliverableLine } from "./schema";
+import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, users, type DeliverableLine } from "./schema";
 
 export const DEMO_PASSWORD = "demo-pass-123";
 
@@ -352,6 +353,20 @@ async function reset() {
   await db.execute(sql`truncate table staff_invites, app_settings, contract_events, escrow_ledger, milestone_checks, milestones, contracts, payment_events, payments, error_events, support_requests, page_views, audit_logs, events, reports, promotions, proposals, request_matches, project_requests, reviews, review_requests, packages, inquiries, follows, saves, likes, post_images, posts, agencies, sessions, users restart identity cascade`);
 }
 
+// Demo agency accounts (is_demo) take the password in SEED_DEMO_PASSWORD when it
+// is set, so the live journey (Actions → Live journey) can sign in as the demo
+// provider after the weekly rebuild gave them a new random one. Real accounts
+// are never touched; nothing about the password is logged.
+async function syncDemoPassword(log: (...a: unknown[]) => void) {
+  const password = process.env.SEED_DEMO_PASSWORD;
+  if (!password) return;
+  const db = await getDb();
+  const owners = (await db.select({ owner: agencies.ownerUserId }).from(agencies).where(eq(agencies.isDemo, true))).map((a) => a.owner);
+  if (!owners.length) return;
+  await db.update(users).set({ passwordHash: await hashPassword(password) }).where(inArray(users.id, owners));
+  log(`Demo password applied to ${owners.length} demo accounts.`);
+}
+
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false, restoreDemo = false } = {}) {
   const log = quiet ? () => {} : console.log;
   // Reset first: on PGlite it reopens the store, so the handle is taken after it.
@@ -399,6 +414,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   }
   const existing = new Set((await db.select({ handle: agencies.handle }).from(agencies)).map((a) => a.handle));
   const toCreate = [...DEMO_AGENCIES.entries()].filter(([, d]) => !existing.has(d.handle));
+  await syncDemoPassword(log);
   if (!toCreate.length) {
     await addDemoPortfolio(log);
     await addDemoProfiles(log);
