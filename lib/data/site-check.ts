@@ -1,7 +1,7 @@
 import { and, eq, inArray, lt, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { auditLogs, errorEvents, siteChecks } from "@/lib/db/schema";
-import { errorFingerprint } from "./bugs";
+import { errorFingerprint } from "./error-fingerprint";
 
 // The automatic site check's records (docs/52). No "server-only" import: the
 // GitHub Actions script (lib/db/site-check.ts) runs this with tsx.

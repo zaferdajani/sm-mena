@@ -30,8 +30,9 @@ const PAGES: Record<string, Expectation> = {
   "/ar": { finalPath: /^\/ar(\/soon)?$/, contains: [STAMP, 'lang="ar"'] },
   "/en": { finalPath: /^\/en(\/soon)?$/, contains: [STAMP, 'lang="en"'] },
   "/ar/explore": { finalPath: /^\/ar\/(explore|soon|login)/, contains: [STAMP] },
-  "/ar/start": { finalPath: /^\/ar\/start$/, contains: [STAMP] },
-  "/ar/login": { finalPath: /^\/ar\/login$/, contains: [STAMP, 'id="email"'] },
+  // Sign-in pages carry no release stamp; the language attribute and the form prove the right page rendered.
+  "/ar/start": { finalPath: /^\/ar\/start$/, contains: ['lang="ar"', 'href="/ar/join"'] },
+  "/ar/login": { finalPath: /^\/ar\/login$/, contains: ['lang="ar"', 'id="email"'] },
   "/ar/soon": { finalPath: /^\/ar\/soon$/, contains: [STAMP] },
   "/sitemap.xml": { finalPath: /^\/sitemap\.xml$/, contains: ["<urlset"] },
 };
