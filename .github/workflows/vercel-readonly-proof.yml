@@ -1,0 +1,40 @@
+name: Vercel read-only access proof
+on:
+  push:
+    branches: [ops/vercel-access-recovery]
+    paths:
+      - scripts/vercel-readonly-proof.mjs
+      - .github/workflows/vercel-readonly-proof.yml
+      - docs/vercel-connector-access.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vercel-readonly-proof
+  cancel-in-progress: false
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Validate read-only probe
+        run: |
+          node --check scripts/vercel-readonly-proof.mjs
+          node scripts/vercel-readonly-proof.mjs --self-test
+      - name: Observe Vercel and canonical production without changing either
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: node scripts/vercel-readonly-proof.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vercel-readonly-proof
+          path: ops-proof/vercel-readonly-proof.json
+          retention-days: 30
+          if-no-files-found: error
