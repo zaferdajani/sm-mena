@@ -134,7 +134,7 @@ describe("transaction release boundary", () => {
     vi.stubEnv("LAUNCH_PHASE", "full");
     const { agency } = await account("archive");
     const draft: ContractInput = {
-      specialRequests: "", title: "Existing client project", summary: "Agreed work before phase transition", items: [], startDate: "2026-10-01", endDate: "2026-11-30", paymentMode: "direct", nda: false,
+      specialRequests: [], title: "Existing client project", summary: "Agreed work before phase transition", items: [], startDate: "2026-10-01", endDate: "2026-11-30", paymentMode: "direct", nda: false,
       client: { name: "Test Client", phone: "+962790000001" }, milestones: [{ title: "First delivery", dueDate: "2026-10-31", amountFils: 100000, checks: ["Deliver agreed files"] }], signerName: "Test Provider", signature: SIGNATURE_PNG, locale: "en",
     };
     const created = await createContract(agency.id, draft);
