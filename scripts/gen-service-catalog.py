@@ -33,7 +33,7 @@ ROLES = [
     ("model_talent", "موديل / ممثل", "Model and on-camera talent"),
     ("content_creator", "صانع محتوى (UGC)", "Content creator (UGC)"),
     ("media_buyer", "مختص إعلانات ممولة (ميديا باير)", "Media buyer"),
-    ("seo_specialist", "مختص سيو", "SEO specialist"),
+    ("seo_specialist", "مختص SEO", "SEO specialist"),
     ("web_developer", "مطور مواقع وتطبيقات", "Web and app developer"),
     ("ui_ux_designer", "مصمم واجهات وتجربة مستخدم", "UI/UX designer"),
     ("data_analyst", "محلل بيانات تسويقية", "Marketing data analyst"),
@@ -374,21 +374,21 @@ s("trademark_registration", G, "brand_identity", "تسجيل العلامة ال
 
 # ───────────── digital ─────────────
 G = "digital"
-s("seo", G, "", "تحسين محركات البحث (السيو)", "SEO",
+s("seo", G, "", "SEO", "SEO",
   ["سيو", "SEO", "تصدر جوجل", "تصدر قوقل", "محركات البحث", "أرشفة"], ["seo_specialist"])
-s("arabic_seo", G, "seo", "السيو العربي", "Arabic SEO",
+s("arabic_seo", G, "seo", "SEO العربي", "Arabic SEO",
   ["سيو عربي", "كلمات مفتاحية عربية", "Arabic SEO", "أرشفة عربية"], ["seo_specialist", "content_writer_ar"])
-s("technical_seo", G, "seo", "السيو التقني وسرعة الموقع", "Technical SEO and site speed",
+s("technical_seo", G, "seo", "SEO التقني وسرعة الموقع", "Technical SEO and site speed",
   ["سيو تقني", "technical SEO", "سرعة الموقع", "Core Web Vitals", "schema"], ["seo_specialist", "web_developer"])
-s("local_seo", G, "seo", "السيو المحلي", "Local SEO",
+s("local_seo", G, "seo", "SEO المحلي", "Local SEO",
   ["سيو محلي", "Local SEO", "ظهور بالمنطقة", "near me", "Apple Maps"], ["seo_specialist"])
 s("google_business_profile", G, "seo", "تحسين ملف النشاط التجاري على جوجل", "Google Business Profile optimization",
   ["قوقل ماب", "جوجل ماب", "خرائط جوجل", "GMB", "Google Maps", "تقييمات جوجل"], ["seo_specialist"])
-s("seo_content_writing", G, "seo", "كتابة مقالات السيو والمدونات", "SEO articles and blog writing",
+s("seo_content_writing", G, "seo", "كتابة مقالات SEO والمدونات", "SEO articles and blog writing",
   ["مقالات سيو", "مقالات", "مدونة", "blog", "SEO content"], ["content_writer_ar", "seo_specialist"])
 s("link_building", G, "seo", "بناء الروابط الخلفية", "Link building and backlinks",
   ["باك لينك", "روابط خلفية", "backlinks", "link building", "مقالات ضيف"], ["seo_specialist"])
-s("seo_audit", G, "seo", "تدقيق السيو وتحليل الكلمات المفتاحية", "SEO audit and keyword research",
+s("seo_audit", G, "seo", "تدقيق SEO وتحليل الكلمات المفتاحية", "SEO audit and keyword research",
   ["تدقيق سيو", "كلمات مفتاحية", "keyword research", "SEO audit"], ["seo_specialist"])
 s("app_store_optimization", G, "seo", "تحسين الظهور في متاجر التطبيقات", "App store optimization (ASO)",
   ["ASO", "آب ستور", "جوجل بلاي", "App Store", "متجر التطبيقات"], ["seo_specialist"])

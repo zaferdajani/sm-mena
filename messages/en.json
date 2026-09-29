@@ -4913,5 +4913,19 @@
       "title": "Data deletion request",
       "body": "Your {provider} data connected to Sawwiq has been deleted. Confirmation code: {code}."
     }
+  },
+  "RolePicker": {
+    "label": "Add another role",
+    "placeholder": "Type a role… e.g. SEO or 3D artist",
+    "hint": "Check existing roles first. Add a new title when your specialty is different.",
+    "matches": "Does one of these roles match?",
+    "already": "Already added",
+    "add": "Add",
+    "distinct": "My specialty is different from these suggestions",
+    "customHint": "This title is saved on your profile, not automatically added to the shared role catalog.",
+    "invalid": "Use a clear title of 2–64 characters, without links or special symbols.",
+    "limit": "You can select up to 40 roles.",
+    "selected": "Role added.",
+    "removed": "Selection removed."
   }
 }

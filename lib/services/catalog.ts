@@ -3,6 +3,7 @@
 // data/service-catalog.json; tags an admin approved later are added at run time
 // with registerTags() (the locale layout does it on both sides).
 import catalog from "@/data/service-catalog.json";
+import { roleInputLabel } from "./role-input";
 import { isServiceKey } from "@/lib/taxonomy";
 import { normalizeForSearch } from "@/lib/text";
 
@@ -71,8 +72,7 @@ export function tagLabel(key: string, locale: string): string | null {
 }
 
 export function roleLabel(key: string, locale: string): string {
-  const r = ROLES.find((x) => x.key === key);
-  return r ? (locale === "ar" ? r.name_ar : r.name_en) : key;
+  return roleInputLabel(key, locale);
 }
 
 /** Selected services plus their core parents, so hire pages and matching find the agency. */

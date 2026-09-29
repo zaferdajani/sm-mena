@@ -54,7 +54,8 @@ test("an agency without a videographer finds a freelancer, who accepts the partn
   await agency.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
   await agency.locator('label:has(input[name="seeksRoles"][value="videographer"])').click();
   await agency.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
-  await expect(agency.getByRole("status")).toBeVisible();
+  // Wait for the actual save redirect, not the always-visible demo/live-region status.
+  await expect(agency).toHaveURL(/\/en\/studio\/packages\?welcome=1$/);
 
   await agency.goto("/en/studio/partners");
   await expect(agency.getByTestId("partners-page")).toContainText("Looking for");

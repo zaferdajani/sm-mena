@@ -34,7 +34,8 @@ test("agency adds an introduction, countries served and a client with accounts",
   await page.fill("#strengths", "Fast reels\n- Honest reports\n\n");
   await page.getByRole("button", { name: "All Gulf" }).click();
   await page.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("status")).toBeVisible();
+  // Wait for the actual save redirect, not the always-visible demo/live-region status.
+  await expect(page).toHaveURL(/\/en\/studio\/packages\?welcome=1$/);
 
   // Clients: one client with Instagram, a website and an extra TikTok row.
   await page.goto("/en/studio/clients");

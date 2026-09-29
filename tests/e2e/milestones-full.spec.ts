@@ -159,7 +159,8 @@ test("partner contract: an agency asks a partner for a contract, the partner cre
   const { handle } = await joinAgency(buyer, "buyer");
   await buyer.locator('label:has(input[name="seeksRoles"][value="videographer"])').click();
   await buyer.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
-  await expect(buyer.getByRole("status")).toBeVisible();
+  // Wait for the actual save redirect, not the always-visible demo/live-region status.
+  await expect(buyer).toHaveURL(/\/en\/studio\/packages\?welcome=1$/);
   await buyer.goto("/en/studio/partners");
   const freelancer = buyer.getByTestId("partner-suggestion").filter({ hasText: "Salt Stories" });
   await freelancer.getByTestId("partner-open").click();
