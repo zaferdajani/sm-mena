@@ -97,6 +97,7 @@ export function SetupWizard(props: {
           {t("finishLater")}
         </button>
       </div>
+      <Stepper step={view.step} />
       {props.invited && view.step === 1 && <p className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm">{t("invited")}</p>}
       <div aria-live="polite" className="sr-only">{t("stepOf", { n: view.step, total: 5 })}</div>
       {errorText && (
@@ -110,6 +111,29 @@ export function SetupWizard(props: {
       {view.step === 4 && <ProjectStep {...props} view={view} setView={setView} heading={heading} pending={pending} run={run} back={back} setError={setError} />}
       {view.step === 5 && <PreviewStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
     </section>
+  );
+}
+
+const STEP_KEYS = ["profile", "source", "client", "project", "preview"] as const;
+
+/** The five steps by name, so it is clear where you are and what comes next (position only, not a score). */
+function Stepper({ step }: { step: number }) {
+  const t = useTranslations("Setup");
+  return (
+    <ol className="grid grid-cols-5 gap-1" aria-label={t("stepsLabel")} data-testid="setup-stepper">
+      {STEP_KEYS.map((key, i) => {
+        const n = i + 1;
+        const state = n < step ? "done" : n === step ? "current" : "todo";
+        return (
+          <li key={key} aria-current={state === "current" ? "step" : undefined} className="min-w-0 space-y-1 text-center">
+            <span className={`block h-1.5 rounded-full ${state === "todo" ? "bg-muted" : "bg-primary"}`} />
+            <span className={`block truncate text-[11px] leading-5 sm:text-xs ${state === "current" ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+              {state === "done" ? "✓ " : ""}{t(`steps.${key}`)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -133,7 +157,7 @@ function Heading({ heading, title, body }: { heading: StepProps["heading"]; titl
 function Nav({ back, pending, disabled = false, next, nextLabel, testId }: { back?: () => void; pending: boolean; disabled?: boolean; next?: () => void; nextLabel: string; testId: string }) {
   const t = useTranslations("Setup");
   return (
-    <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] z-10 flex flex-wrap items-center justify-between gap-2 border-t bg-background/95 py-3 md:bottom-0">
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t pt-4">
       {back ? <button type="button" className={secondary} onClick={back} disabled={pending} data-testid="setup-back">{t("back")}</button> : <span />}
       {next ? (
         <button type="button" className={primary} onClick={next} disabled={pending || disabled} data-testid={testId}>{pending ? t("saving") : nextLabel}</button>
@@ -482,25 +506,7 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
   };
   return (
     <div className="space-y-5" data-testid="setup-project">
-      <Heading heading={heading} title={t("project.title")} />
-      <label className="block space-y-1">
-        <span className="text-sm font-medium">{t("project.label")}</span>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className={input} dir="auto" placeholder={t("project.labelPlaceholder")} data-testid="setup-project-title" />
-      </label>
-      <label className="block space-y-1">
-        <span className="text-sm font-medium">{t("project.contribution")}</span>
-        <textarea value={contribution} onChange={(e) => setContribution(e.target.value)} maxLength={600} rows={3} className={input} dir="auto" placeholder={t("project.contributionPlaceholder")} data-testid="setup-project-contribution" />
-      </label>
-      <fieldset className="space-y-2">
-        <legend className="text-sm font-medium">{t("project.services")}</legend>
-        {/* The provider's own services first; every other service one tap away. */}
-        <ServiceChips options={serviceOptions.primary} services={services} setServices={setServices} />
-        <details open={!serviceOptions.primary.length} className="rounded-xl border p-2">
-          <summary className="min-h-11 cursor-pointer py-2 text-sm">{t("project.otherServices")}</summary>
-          <ServiceChips options={serviceOptions.other} services={services} setServices={setServices} />
-        </details>
-      </fieldset>
-
+      <Heading heading={heading} title={t("project.title")} body={t("project.body")} />
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium">{t("project.media")}</legend>
         {stagedItem && <p className="text-xs text-muted-foreground">{t("project.socialCover", { provider: ts(`provider.${stagedItem.provider}` as never) })}</p>}
@@ -549,6 +555,24 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
           </>
         )}
       </fieldset>
+      <label className="block space-y-1">
+        <span className="text-sm font-medium">{t("project.label")}</span>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} className={input} dir="auto" placeholder={t("project.labelPlaceholder")} data-testid="setup-project-title" />
+      </label>
+      <label className="block space-y-1">
+        <span className="text-sm font-medium">{t("project.contribution")}</span>
+        <textarea value={contribution} onChange={(e) => setContribution(e.target.value)} maxLength={600} rows={3} className={input} dir="auto" placeholder={t("project.contributionPlaceholder")} data-testid="setup-project-contribution" />
+      </label>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">{t("project.services")}</legend>
+        {/* The provider's own services first; every other service one tap away. */}
+        <ServiceChips options={serviceOptions.primary} services={services} setServices={setServices} />
+        <details open={!serviceOptions.primary.length} className="rounded-xl border p-2">
+          <summary className="min-h-11 cursor-pointer py-2 text-sm">{t("project.otherServices")}</summary>
+          <ServiceChips options={serviceOptions.other} services={services} setServices={setServices} />
+        </details>
+      </fieldset>
+
       <PortfolioExamples />
       <Nav
         back={back}

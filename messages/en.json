@@ -4478,7 +4478,7 @@
     "source": {
       "title": "Where is your work?",
       "upload": "Upload my files",
-      "uploadBody": "Images or screenshots from your device.",
+      "uploadBody": "Images or screenshots from your device. You'll add them in step 4, after choosing who the work was for.",
       "import": "Import an existing portfolio",
       "importBody": "A PDF portfolio or a Behance project. You review everything before it's saved.",
       "importOff": "Not available right now. Upload your images instead.",
@@ -4539,7 +4539,8 @@
       "uploading": "Uploading… not saved yet.",
       "mediaHint": "1–10 related images or screenshots. One is enough. Images are saved privately until you publish.",
       "preview": "Preview",
-      "otherServices": "Other services"
+      "otherServices": "Other services",
+      "body": "Add the images first, then a name and your part."
     },
     "preview": {
       "title": "This is how your portfolio will look.",
@@ -4559,6 +4560,14 @@
       "viewPortfolio": "View my portfolio",
       "another": "Add another project",
       "anotherClient": "Add another client"
+    },
+    "stepsLabel": "Setup steps",
+    "steps": {
+      "profile": "Profile",
+      "source": "Source",
+      "client": "Client",
+      "project": "Project",
+      "preview": "Preview"
     }
   },
   "Social": {
