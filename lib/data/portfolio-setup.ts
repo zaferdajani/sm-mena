@@ -185,7 +185,7 @@ export async function addSetupMedia(agencyId: string, files: Buffer[], source: "
     // Validate the whole batch before writing anything; a bad second image
     // cannot leave an invisible, partly accepted first image in the draft.
     const processed = await Promise.all(files.map((file) => processImage(file)));
-    const staged = [];
+    const staged: { id: string; agencyId: string; key: string; width: number; height: number; source: "upload" | "pdf" }[] = [];
     for (const image of processed) {
       const id = randomUUID();
       const key = `drafts/${agencyId}/${id}.webp`;
@@ -348,7 +348,12 @@ export async function publishSetup(input: PublishInput): Promise<{ postId: strin
       const processed: ProcessedImage[] = [];
       for (const m of staged) {
         const buf = await storage().get(m.key);
-        if (!buf) return { error: "media" };
+        if (!buf) {
+          // A simultaneous successful publication removes its staged bytes.
+          // Return that committed result rather than reporting a false upload error.
+          const latest = await row(input.agencyId);
+          return latest?.postId ? { postId: latest.postId } : { error: "media" };
+        }
         processed.push(await processImage(buf));
       }
       const post = await createPostFromProcessed(input.agencyId, {

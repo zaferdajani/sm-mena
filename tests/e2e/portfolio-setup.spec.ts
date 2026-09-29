@@ -135,3 +135,27 @@ test("a Behance project comes back into the same draft (Arabic)", async ({ page 
   await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "5");
   expect(await noOverflow(page)).toBe(true);
 });
+
+
+test("Back and Finish later keep incomplete project text without publishing", async ({ page }) => {
+  await joinAgency(page, "wizsave", { stay: true });
+  await page.getByTestId("setup-profile-skip").click();
+  await page.getByTestId("source-upload").click();
+  await page.getByTestId("client-mode-private").check();
+  await page.getByTestId("setup-client-next").click();
+  await page.getByTestId("setup-project-title").fill("Unfinished title");
+  // A one-character contribution is intentionally below publication validation.
+  await page.getByTestId("setup-project-contribution").fill("A");
+  await page.getByTestId("setup-back").click();
+  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "3");
+  await page.getByTestId("setup-client-next").click();
+  await expect(page.getByTestId("setup-project-title")).toHaveValue("Unfinished title");
+  await page.getByTestId("setup-project-contribution").fill("Still drafting");
+  await page.getByTestId("setup-later").click();
+  await expect(page).toHaveURL(/\/en\/studio$/);
+  await page.getByTestId("creator-setup-start").click();
+  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "4");
+  await expect(page.getByTestId("setup-project-title")).toHaveValue("Unfinished title");
+  await expect(page.getByTestId("setup-project-contribution")).toHaveValue("Still drafting");
+  await expect(page.getByTestId("setup-media").locator("li")).toHaveCount(0);
+});

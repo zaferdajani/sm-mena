@@ -19,6 +19,7 @@ import {
   saveClientStepAction,
   saveProfileStepAction,
   saveProjectStepAction,
+  saveProjectDraftAction,
   stageBehanceAction,
   stageSocialItemAction,
   startAnotherAction,
@@ -62,6 +63,7 @@ export function SetupWizard(props: {
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const heading = useRef<HTMLHeadingElement>(null);
+  const beforeLeave = useRef<((destination: "back" | "pause") => Promise<SetupResult>) | null>(null);
 
   // Focus follows the step, so screen readers hear the change.
   useEffect(() => heading.current?.focus(), [view.step, view.status]);
@@ -83,8 +85,8 @@ export function SetupWizard(props: {
       if (apply(r)) after?.(r);
     });
 
-  const back = () => run(() => goToStepAction(view.version, Math.max(1, view.step - 1)));
-  const finishLater = () => run(() => pauseSetupAction(view.version), () => router.push("/studio"));
+  const back = () => run(() => beforeLeave.current ? beforeLeave.current("back") : goToStepAction(view.version, Math.max(1, view.step - 1)));
+  const finishLater = () => run(() => beforeLeave.current ? beforeLeave.current("pause") : pauseSetupAction(view.version), () => router.push("/studio"));
 
   if (view.status === "finished") return <Finished view={view} agency={props.agency} onAnother={() => run(() => startAnotherAction())} pending={pending} />;
 
@@ -107,7 +109,7 @@ export function SetupWizard(props: {
       {view.step === 1 && <ProfileStep {...props} view={view} heading={heading} pending={pending} run={run} />}
       {view.step === 2 && <SourceStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
       {view.step === 3 && <ClientStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
-      {view.step === 4 && <ProjectStep {...props} view={view} setView={setView} heading={heading} pending={pending} run={run} back={back} setError={setError} />}
+      {view.step === 4 && <ProjectStep {...props} view={view} setView={setView} heading={heading} pending={pending} run={run} back={back} setError={setError} beforeLeave={beforeLeave} />}
       {view.step === 5 && <PreviewStep {...props} view={view} heading={heading} pending={pending} run={run} back={back} />}
     </section>
   );
@@ -423,11 +425,12 @@ function ClientStep({ view, clients, stagedItem, heading, pending, run, back }: 
 }
 
 // 4 — One project: label, the creator's own part, services and the images (first = cover).
-function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pending, run, back, setError }: StepProps & {
+function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pending, run, back, setError, beforeLeave }: StepProps & {
   setView: (v: SetupView) => void;
   serviceOptions: { primary: { key: string; label: string }[]; other: { key: string; label: string }[] };
   stagedItem: Staged;
   setError: (e: string | null) => void;
+  beforeLeave: React.RefObject<((destination: "back" | "pause") => Promise<SetupResult>) | null>;
 }) {
   const t = useTranslations("Setup");
   const ts = useTranslations("Social");
@@ -441,6 +444,14 @@ function ProjectStep({ view, setView, serviceOptions, stagedItem, heading, pendi
   const [busy, start] = useTransition();
   const picker = useRef<HTMLInputElement>(null);
   const isBehance = view.data.source === "behance" && Boolean(view.data.behance);
+  useEffect(() => {
+    const save = async (destination: "back" | "pause"): Promise<SetupResult> => {
+      if (uploading || busy) return { error: "generic" };
+      return saveProjectDraftAction(view.version, { title, contribution, services, ...(isBehance ? { behanceImages } : {}) }, destination);
+    };
+    beforeLeave.current = save;
+    return () => { if (beforeLeave.current === save) beforeLeave.current = null; };
+  }, [view.version, title, contribution, services, behanceImages, isBehance, uploading, busy, beforeLeave]);
   // Unsaved files: warn before leaving, never say "saved" until the server stored them.
   useEffect(() => {
     if (!uploading) return;

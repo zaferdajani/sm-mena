@@ -196,6 +196,26 @@ export async function saveProjectStepAction(input: unknown): Promise<SetupResult
   return done(await writeSetup(agency.id, p.version, { data: { project: { title: p.title, contribution: p.contribution, services }, ...(behance ? { behance } : {}) }, step: 5 }));
 }
 
+/** Preserve incomplete project text on Back/Finish later without publishing it.
+ * Final Preview/Publish still enforce the complete project requirements.
+ */
+export async function saveProjectDraftAction(v: number, input: unknown, destination: "back" | "pause"): Promise<SetupResult> {
+  const { agency } = await requireAgency();
+  const parsed = projectSchema.extend({ title: z.string().max(120), contribution: z.string().max(600), services: z.array(z.string().max(60)).max(6) })
+    .safeParse({ ...(input && typeof input === "object" ? input : {}), version: v });
+  if (!parsed.success || !["back", "pause"].includes(destination)) return { error: "invalid" };
+  const current = await getSetup(agency.id);
+  if (!current || current.step !== 4 || current.version !== parsed.data.version) return { error: "stale" };
+  const value = parsed.data;
+  const behance = current.data.behance && value.behanceImages
+    ? { ...current.data.behance, images: current.data.behance.images.filter((url) => value.behanceImages!.includes(url)) }
+    : current.data.behance;
+  return done(await writeSetup(agency.id, value.version, {
+    step: destination === "back" ? 3 : 4, status: destination === "pause" ? "paused" : "in_progress",
+    data: { project: { title: value.title, contribution: value.contribution, services: [...new Set(value.services)].filter(isServiceKey) }, ...(behance ? { behance } : {}) },
+  }));
+}
+
 export async function uploadSetupMediaAction(formData: FormData): Promise<SetupResult> {
   const { agency } = await requireAgency();
   if (!rateLimit(`setup-media:${agency.id}`, 60, 60 * 60 * 1000)) return { error: "tooMany" };
