@@ -116,6 +116,26 @@ describe("private profiles, not just hidden navigation", () => {
     await setPublication(target.user.id, target.agency.id, "private");
     expect((await discoverCollaborators(buyer.agency, { roles: [] })).items.map((v) => v.card.id)).not.toContain(target.agency.id);
   });
+  it("shows demo pages during registration to staff and to the demo account itself, never to visitors or other members", async () => {
+    vi.stubEnv("LAUNCH_PHASE", "full");
+    const { agency, user } = await account("demo.fixture");
+    const db = await getDb();
+    await db.update(agencies).set({ isDemo: true }).where(eq(agencies.id, agency.id));
+    const demo = (await db.select().from(agencies).where(eq(agencies.id, agency.id)))[0];
+    const png = await sharp({ create: { width: 400, height: 400, channels: 3, background: "#b3541e" } }).png().toBuffer();
+    const post = await createPost(agency.id, { caption: "Demo project for the live journey", services: ["photography"], platforms: [] }, [png]);
+    vi.stubEnv("LAUNCH_PHASE", "registration");
+    expect(await mayReadAgency(demo)).toBe(false);
+    expect(await getPost(post.id)).toBeNull();
+    const member = await account("member");
+    actor.userId = member.user.id; actor.agencyId = member.agency.id;
+    expect(await mayReadAgency(demo)).toBe(false);
+    actor.userId = user.id; actor.agencyId = agency.id;
+    expect(await mayReadAgency(demo)).toBe(true);
+    expect((await getPost(post.id))?.id).toBe(post.id);
+    actor.userId = null; actor.agencyId = null; actor.staff = true;
+    expect(await mayReadAgency(demo)).toBe(true);
+  });
   it("keeps already published legacy links, without including them in the registration directory", async () => {
     vi.stubEnv("LAUNCH_PHASE", "full");
     const { agency } = await account("legacy");

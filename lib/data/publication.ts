@@ -18,7 +18,8 @@ export async function mayReadAgency(agency: Agency): Promise<boolean> {
   if (visibility !== "private" && !(agency.isDemo && isRegistrationPhase())) return true;
   const { launchViewer } = await import("@/lib/launch-access");
   const who = await launchViewer();
-  if (agency.isDemo && isRegistrationPhase()) return who.staff;
+  // Demo pages are examples only during registration: staff and the demo account itself (a fixture) still see them.
+  if (agency.isDemo && isRegistrationPhase()) return who.staff || (who.userId !== null && who.userId === agency.ownerUserId);
   return canReadProfile(visibility, who.userId === agency.ownerUserId, who.staff);
 }
 export async function mayReadAgencyId(id: string): Promise<boolean> {
