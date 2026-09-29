@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Apply reviewed hardening and preserve the table call
+      - name: Apply reviewed privacy hardening
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -25,7 +25,7 @@ jobs:
           p.write_text(p.read_text().replace('needle[:-2]', 'needle[:-1]'))
           PY
           python3 scripts/registration-hardening.py
-          git rm scripts/registration-hardening.py
+          git rm -f scripts/registration-hardening.py
           git add app components lib messages tests
           git diff --cached --check
           test -z "$(git diff --cached --name-only -- .github/workflows)"
@@ -41,7 +41,7 @@ jobs:
           python3 - <<'PY'
           import pathlib,subprocess,zipfile
           names=set(subprocess.check_output(['git','ls-files','-z']).decode().split('\0'))
-          allowed={'.ts','.tsx','.css','.json','.md','.mjs','.cjs','.js','.yml','.yaml','.sql','.txt','.mts'}
+          allowed={'.ts','.tsx','.css','.json','.md','.mjs','.cjs','.js','.yml','.yaml','.sql','.txt','.mts','.py'}
           with zipfile.ZipFile('registration-integrated-source.zip','w',zipfile.ZIP_DEFLATED) as z:
               for name in sorted(names):
                   p=pathlib.Path(name)
