@@ -1,0 +1,157 @@
+{
+  "ar": {
+    "metaTitle": "سوّق | التسجيل المبكر للوكالات والمستقلين",
+    "metaDescription": "خلّي شغلك يبين وكون معنا من البداية. التسجيل وإنشاء صفحتك مجاناً. جهّز أعمالك وخدماتك واطّلع على نموذج للصفحة قبل فتح التصفّح العام.",
+    "phaseLabel": "مرحلة التسجيل المبكر",
+    "eyebrow": "التسجيل للدفعة الأولى مفتوح",
+    "cta": "أنشئ صفحتك مجاناً",
+    "exampleCta": "شوف نموذج للصفحة",
+    "freeNote": "التسجيل وإنشاء الصفحة مجاناً · بدون بطاقة دفع",
+    "navHome": "البداية",
+    "navExamples": "نموذج الصفحة",
+    "photoTitle": "أهل التسويق، مكانكم معنا.",
+    "photoBody": "وكالات · مستقلون · صنّاع محتوى",
+    "visionEyebrow": "نبدأ بأهل الشغل",
+    "visionTitle": "مكان يجمع شغلك والناس اللي تحتاجه.",
+    "visionBody": "نبني سوّق ليجمع أهل التسويق في المنطقة: تعرض فيه أعمالك، يلقى صاحب المشروع التخصص اللي يحتاجه، وتلقى أنت ناس تكمل معهم المشروع. نبدأ الآن بتجهيز الصفحات؛ الاكتشاف والتعاون يفتحان في المرحلة التالية.",
+    "availableNow": "متاح الآن",
+    "nextStage": "في المرحلة التالية",
+    "values": {
+      "portfolio": { "title": "خلّ أعمالك في رابط واحد.", "body": "أضف صورك، فيديوهاتك وتصاميمك، وعرّف بخدماتك وباقاتك. عندك ملف أعمال جاهز؟ استورده وراجع النتيجة قبل حفظها." },
+      "opportunities": { "title": "خلك جاهز للشغل المناسب.", "body": "نجهّز طريقة تساعد أصحاب المشاريع يوضحون احتياجهم ويشوفون أعمال المزوّدين المناسبين. جهّز صفحتك الآن عشان ما تبدأ من الصفر وقت فتح التصفّح." },
+      "partners": { "title": "ناقصك أحد للمشروع؟", "body": "وكالة تحتاج مصوّر، أو مستقل يحتاج مصمم يكمل معه. هذا جزء من الشبكة اللي نبنيها: شغل من العملاء، وتعاون بين أهل التسويق." }
+    },
+    "pioneersEyebrow": "روّاد سوّق",
+    "pioneersBody": "الدفعة الأولى تساعدنا نبدأ بأعمال وخبرات حقيقية. وللمقبولين في برنامج الروّاد مزايا خاصة نكشفها بالتدريج، مو مجرد شارة جنب الاسم.",
+    "pioneerOpportunity": "أفضلية في متابعة الفرص المناسبة عند إتاحتها",
+    "pioneerTools": "تجربة أدوات العمل الجديدة قبل تعميمها",
+    "pioneerVoice": "ملاحظاتك تدخل في تطوير التجربة",
+    "pioneersNote": "هذه لمحة من المزايا. الاستفادة مرتبطة بالتأهل والقبول في برنامج الروّاد، وبإتاحة كل ميزة. التسجيل وحده لا يفعّل المزايا ولا يضمن عملاء أو عقوداً.",
+    "stagesTitle": "نفتح سوّق على مراحل.",
+    "currentStage": "نحن هنا الآن",
+    "laterStage": "لاحقاً",
+    "stages": {
+      "registration": { "title": "جهّز صفحتك.", "body": "سجّل، أضف أعمالك وخدماتك، وعاين صفحتك. التصفّح العام للحسابات لم يُفتح بعد." },
+      "discovery": { "title": "تعرّف على الناس المناسبة.", "body": "نفتح اكتشاف المزوّدين وطلبات الشغل والتعاون على مراحل، حسب جاهزية كل تجربة." },
+      "full": { "title": "نوسّع إدارة الشغل.", "body": "العقود والمدفوعات خدمات لاحقة، بعد اكتمال الاختبارات والمتطلبات اللازمة. لا يستقبل سوّق أموال المشاريع في مرحلة التسجيل." }
+    },
+    "whoTitle": "تشتغل لحالك أو عندك فريق؟ مكانك معنا.",
+    "whoBody": "وكالات تسويق، مستقلون، صنّاع محتوى، تصوير ومونتاج، تصميم وموشن، إعلانات، كتابة، مواقع، تنظيم فعاليات وتسويق ميداني. كل تخصص له دوره في المشروع.",
+    "faqTitle": "قبل ما تبدأ",
+    "faq": {
+      "privacy": { "question": "هل الناس تشوف صفحتي من أول ما أسجّل؟", "answer": "الحسابات الجديدة تبدأ بمعاينة خاصة لصاحبها وفريق سوّق المخوّل. من إعدادات الظهور تختار: تبقى خاصة، أو تسمح بمشاركتها بالرابط، أو توافق على إظهارها في الدليل عند فتحه. الصفحات القديمة تحتفظ بروابطها الحالية ما لم يغيّر صاحبها هذا الاختيار." },
+      "free": { "question": "هل التسجيل مجاني؟", "answer": "نعم. التسجيل وإنشاء صفحتك مجاناً، وما تحتاج بطاقة دفع. ما في اشتراك مدفوع يتم تفعيله تلقائياً عند التسجيل." },
+      "beta": { "question": "وش أقدر أسوي الآن؟", "answer": "تنشئ حسابك، تعرّف بخدماتك، تضيف أو تستورد أعمالك، ترتّب باقاتك وتعاين صفحتك. أمثلة الصفحات توضح شكل التجربة، وليست حسابات حقيقية أو أعمالاً حصلت عبر سوّق. التصفّح العام والعقود الجديدة والدفع داخل المنصة ليست متاحة في هذه المرحلة." },
+      "pioneer": { "question": "كيف أصير من روّاد سوّق؟", "answer": "جهّز حساباً حقيقياً: نبذة واضحة، خدمات محددة، وعمل من أعمالك أو باقة تقدمها. القبول يتبع شروط الدفعة المؤهلة، وحسابك يوضح حالة التأهل. ما نطلب منك مدح المنصة أو نشر مراجعة مقابل القبول." }
+    },
+    "finalBody": "التجربة تبدأ بصفحتك وأعمالك، مو بانتظار رسالة فقط. ادخل، جرّب، وقل لنا وش يحتاج تعديل.",
+    "buyerIntro": "عندك مشروع وتحتاج مساعدة؟",
+    "buyerCta": "تواصل مع فريقنا خلال المرحلة المبكرة",
+    "footerLabel": "روابط التسجيل المبكر",
+    "contact": "تواصل معنا",
+    "legal": "الخصوصية والشروط",
+    "joinTitle": "جهّز صفحتك من البداية.",
+    "joinNotice": "أنت تسجّل في المرحلة المبكرة. صفحتك الجديدة خاصة افتراضياً، وتتحكم بظهورها من حسابك. التصفّح العام والعقود والمدفوعات تفتح في مراحل لاحقة.",
+    "markets": {
+      "jo": { "title": "خلّي شغلك يبين.", "titleEnd": "وكون معنا من البداية.", "intro": "عندك وكالة أو بتشتغل مستقل؟ نجهّز سوّق ليجمع أهل التسويق بمكان واحد. التسجيل مفتوح الآن: حط أعمالك وخدماتك، وجهّز صفحتك قبل فتح التصفّح العام.", "pioneerTitle": "ليش تسجّل من هسا؟ لأن البداية إلها مزاياها.", "finalTitle": "جهّز شغلك. وكون من البداية." },
+      "sa": { "title": "خلّ شغلك يبان.", "titleEnd": "وخلك معنا من البداية.", "intro": "عندك وكالة أو تشتغل مستقل؟ نجهّز سوّق عشان يجتمع فيه أهل التسويق. التسجيل مفتوح الحين: أضف أعمالك وخدماتك، وجهّز صفحتك قبل فتح التصفّح العام.", "pioneerTitle": "ليش تنضم الحين؟ لأن البداية لها مزاياها.", "finalTitle": "جهّز شغلك. وخلك من البداية." },
+      "eg": { "title": "خلّي شغلك يتشاف.", "titleEnd": "وخليك معانا من البداية.", "intro": "عندك وكالة أو بتشتغل فريلانسر؟ بنجهّز سوّق عشان يجمع أهل التسويق في مكان واحد. التسجيل مفتوح دلوقتي: ضيف أعمالك وخدماتك، وجهّز صفحتك قبل ما نفتح التصفّح للكل.", "pioneerTitle": "ليه تنضم دلوقتي؟ عشان البداية ليها مزاياها.", "finalTitle": "جهّز شغلك. وخليك معانا من البداية." },
+      "gulf": { "title": "خلّ شغلك يبان.", "titleEnd": "وكن معنا من البداية.", "intro": "عندك وكالة أو تعمل بشكل مستقل؟ نجهّز سوّق ليجمع أهل التسويق في مكان واحد. التسجيل مفتوح الآن: أضف أعمالك وخدماتك، وجهّز صفحتك قبل فتح التصفّح العام.", "pioneerTitle": "ليش تنضم الآن؟ لأن البداية لها مزاياها.", "finalTitle": "جهّز شغلك. وكن معنا من البداية." }
+    },
+    "examples": {
+      "title": "شوف كيف ممكن تظهر صفحتك.", "notice": "نموذج توضيحي فقط، وليس حساباً مسجّلاً. الأسماء والمحتوى هنا لشرح شكل الصفحة، ولا تمثل مزوّداً حقيقياً أو عقوداً أُنجزت عبر سوّق.",
+      "tabsLabel": "أقسام الصفحة التوضيحية", "tabs": { "work": "الأعمال", "services": "الخدمات", "about": "عن المزوّد" },
+      "mediaNotice": "الصور التالية من مواد سوّق التوضيحية؛ ليست أعمالاً أو نتائج ندّعي أنها أُنجزت لعملاء.",
+      "imageAlt": "صورة توضيحية لطريقة عرض العمل",
+      "contactNotice": "هذه مساحة التواصل في صفحتك. في النموذج، التواصل والمتابعة غير مفعّلين ولا توجد تقييمات أو أرقام نشاط مصطنعة.",
+      "agency": { "label": "نموذج وكالة", "name": "وكالة تسويق — نموذج توضيحي", "bio": "مساحة تعرّف فيها بخبرة فريقك والخدمات اللي تقدمونها. النص هنا مثال على الوصف، وليس إعلاناً لوكالة حقيقية.", "about": "هنا تشرح مجالات خبرة وكالتك، طريقة عمل الفريق والقطاعات اللي تخدمونها. أضف معلومات دقيقة وأعمالاً تملك حق عرضها؛ شغلك الحقيقي هو اللي يوضح الفرق." },
+      "freelancer": { "label": "نموذج مستقل", "name": "مصوّر مستقل — نموذج توضيحي", "bio": "مساحة توضح فيها تخصصك وطريقة شغلك والمدن اللي تخدمها. هذا نص توضيحي، وليس حساب شخص حقيقي.", "about": "هنا تعرّف بتخصصك والخدمات اللي تقدمها، وهل تعمل عن بُعد أو في موقع المشروع. وضّح ما يستطيع العميل طلبه منك، وادعم وصفك بأمثلة من أعمالك." },
+      "projects": [ { "title": "عنوان العمل هنا", "body": "صورة أو فيديو، مع وصف لدورك في المشروع والخدمة اللي قدمتها." }, { "title": "فكرة الحملة وتفاصيلها", "body": "اشرح الهدف وما نفّذته فعلاً. اذكر النتائج فقط عندما تكون موثّقة ومسموحاً بنشرها." }, { "title": "اعرض خبرتك بالتخصص", "body": "اجمع الأعمال المتشابهة، عشان يشوف الزائر بسرعة نوع المشاريع اللي تتقنها." } ],
+      "services": { "brief": { "title": "خدمات واضحة", "body": "اكتب ما تقدمه، ولمن، وما يحتاج العميل يجهّزه قبل بدء المشروع." }, "deliver": { "title": "نطاق التسليم", "body": "وضّح مخرجات الخدمة والمدة المتوقعة. الأسعار في صفحتك اختيارية بحسب الخدمات والباقات اللي تضيفها." }, "collaborate": { "title": "تخصصك داخل الفريق", "body": "بيّن دورك في المشاريع المشتركة، حتى يسهل على وكالة أو مستقل معرفة كيف تتعاونون." } },
+      "aboutTitle": "النبذة وطريقة العمل", "yourTurn": "الحين خلّها صفحتك أنت.", "yourTurnBody": "ابدأ مجاناً، وأضف بياناتك وأعمالك الحقيقية. حسابك الجديد يبقى خاصاً إلى أن تختار غير ذلك."
+    },
+    "studio": {
+      "notice": "نحن في مرحلة تجهيز الصفحات. حسابك وأعمالك تبقى معك عند فتح المرحلة التالية؛ ما تحتاج تسجّل من جديد. تحكّم بظهور صفحتك قبل مشاركة رابطها.",
+      "eyebrow": "حسابك في المرحلة المبكرة", "title": "خلّ صفحتك جاهزة.", "intro": "أضف ما يوضح شغلك وخدماتك، وعاين الصفحة مثل ما يشوفها الزائر بعد السماح بمشاركتها.",
+      "stepsTitle": "ابدأ بهذه الخطوات", "visibilityTitle": "مين يقدر يشوف صفحتك؟", "visibilityLink": "إعدادات الظهور", "preview": "عاين صفحتك",
+      "steps": { "profile": { "title": "عرّف بنفسك وخدماتك", "body": "نبذة واضحة، تخصصاتك والمدن أو الأسواق اللي تخدمها." }, "work": { "title": "أضف عملاً أو باقة", "body": "استخدم أعمالاً حقيقية تملك حق عرضها. تقدر تبدأ بعمل واحد وتكمل لاحقاً." }, "visibility": { "title": "اختر ظهور صفحتك", "body": "المعاينة الخاصة اختيار كامل ومسموح. لا تحتاج تنشر بياناتك حتى تكمّل حسابك." } },
+      "pioneerTitle": "حالة مزايا الروّاد", "pioneerEligible": "حسابك مستوفٍ لمتطلبات التأهل الحالية للبرنامج. المزايا تُتاح بحسب شروط كل ميزة وموعد تشغيلها، وليست خدمات مفعّلة كلها الآن.",
+      "pioneerPending": "حسابك ضمن الدفعة، لكن متطلبات التأهل لم تكتمل بعد. أضف نبذة وخدمات وعملاً من أعمالك أو باقة، ثم راجع الحالة هنا.",
+      "pioneerUnavailable": "التسجيل المجاني متاح لحسابك. مزايا الروّاد مخصصة للحسابات المقبولة ضمن الدفعة المؤهلة، ولا تُمنح تلقائياً لكل تسجيل.",
+      "addWork": "أضف شغلك", "addPackage": "خدماتك وباقاتك", "help": "تحتاج مساعدة؟",
+      "archiveTitle": "سجل النشاط السابق", "archiveBody": "اتفاقاتك ورسائلك السابقة لا تُحذف بسبب تغيير مرحلة المنصة. إنشاء العقود الجديدة والدفع غير متاحين في مرحلة التسجيل.",
+      "archiveMessages": "الرسائل السابقة", "archiveContracts": "العقود السابقة", "archiveNdas": "اتفاقات السرية السابقة", "archiveNotifications": "الإشعارات",
+      "savedWork": "حُفظ العمل في صفحتك. ظهوره يتبع إعدادات الخصوصية التي اخترتها."
+    },
+    "publication": {
+      "title": "ظهور صفحتك وأعمالك", "intro": "هذا الاختيار مستقل عن مرحلة المنصة. فتح التصفّح لاحقاً لا يغيّر خصوصية حسابك تلقائياً.",
+      "legacy": "حسابك سبق مرحلة التسجيل الحالية، لذلك حافظنا على إتاحة رابطه السابق. لا يظهر في الدليل العام أثناء مرحلة التسجيل. تقدر تغيّر الاختيار هنا.",
+      "choose": "اختر من يستطيع الوصول", "saved": "تم حفظ اختيارك.", "consentError": "اختر حالة الظهور وأكّد موافقتك على أثرها قبل الحفظ.",
+      "states": {
+        "private": { "title": "معاينة خاصة", "summary": "صفحتك خاصة: يشاهدها صاحب الحساب وفريق سوّق المخوّل فقط.", "body": "لا تُفتح للزائر حتى لو عرف رابطها. أعمالك الجديدة تُعرض عبر وصول محمي. يمكنك إكمال حسابك والإبقاء عليه خاصاً." },
+        "unlisted": { "title": "متاحة لمن معه الرابط", "summary": "صفحتك متاحة عبر الرابط، ولا تُدرج في الدليل أو محركات البحث.", "body": "أي شخص يصله الرابط يقدر يشوف الصفحة وأعمالها. هذا ليس خياراً للملفات السرية. لا تظهر ضمن التصفّح العام حتى بعد إطلاقه." },
+        "public": { "title": "موافقة على النشر العام", "summary": "سمحت بمشاركة صفحتك عبر رابطها وإدراجها في الدليل عند فتحه.", "body": "يُفتح الرابط للزوار من الآن. وعند فتح مرحلة الاكتشاف، يمكن إدراج الصفحة في النتائج ومحركات البحث، مع مراعاة قواعد المنصة." }
+      },
+      "acknowledge": "فهمت أثر هذا الاختيار وأوافق عليه، وأملك حق مشاركة المحتوى الموجود في صفحتي مع الجمهور الذي اخترته.",
+      "mediaNote": "التحويل إلى خاص يوقف الوصول الجديد عبر سوّق؛ لا يمحو نسخاً سبق تنزيلها أو تخزينها خارج المنصة. المواد القديمة التي نُشرت سابقاً عبر روابط عامة قد تبقى متاحة من المصدر أو الذاكرة المؤقتة.",
+      "save": "احفظ اختيار الظهور", "preview": "عاين صفحتك"
+    },
+    "adminPhase": "مرحلة الإطلاق الحالية: التسجيل المبكر. إعداد المرحلة مستقل عن مفاتيح الميزات؛ تفعيل ميزة هنا لا يفتح التصفّح العام أو المدفوعات في هذه المرحلة.",
+    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
+  },
+  "en": {
+    "metaTitle": "Sawwiq | Early registration for marketing agencies and freelancers",
+    "metaDescription": "Join free and prepare your work, services and profile before public discovery opens. Explore an example profile and learn about the Pioneer program.",
+    "phaseLabel": "Early registration phase", "eyebrow": "Early provider registration is open", "cta": "Create your free profile", "exampleCta": "See an example profile", "freeNote": "Free registration and profile creation · No payment card",
+    "navHome": "Start here", "navExamples": "Examples", "photoTitle": "A place for the people behind the work.", "photoBody": "Agencies · Freelancers · Content creators",
+    "visionEyebrow": "Providers first", "visionTitle": "Bring your work. Build your next working relationships.",
+    "visionBody": "We are building Sawwiq to connect marketing professionals across the region: a place to show your work, help businesses find relevant expertise, and find specialists to collaborate with. Profile preparation is open now; discovery and collaboration follow in the next stage.",
+    "availableNow": "Available now", "nextStage": "Next stage",
+    "values": {
+      "portfolio": { "title": "Your work in one place.", "body": "Add images, videos and designs, and explain your services and packages. Already have a portfolio? Import it, review the result and save the work you want to include." },
+      "opportunities": { "title": "Be ready for relevant work.", "body": "We are preparing a way for businesses to explain what they need and see suitable providers. Build your profile now so you are ready when public discovery opens." },
+      "partners": { "title": "Need someone for a project?", "body": "An agency needs a photographer. A freelancer needs a designer. Sawwiq is being built for both client opportunities and collaboration between professionals." }
+    },
+    "pioneersEyebrow": "Sawwiq Pioneers", "pioneersBody": "The first cohort helps the network start with genuine work and expertise. Providers accepted into the Pioneer program receive specific advantages, revealed progressively—not simply a badge next to a name.",
+    "pioneerOpportunity": "An early window on relevant opportunities when available", "pioneerTools": "Try new work tools before wider release", "pioneerVoice": "Practical feedback that helps shape the experience",
+    "pioneersNote": "This is a preview of the benefits. Eligibility, acceptance and each feature's availability apply. Registration alone does not activate benefits or guarantee clients or contracts.",
+    "stagesTitle": "One platform, opening in stages.", "currentStage": "Open now", "laterStage": "Later",
+    "stages": { "registration": { "title": "Prepare your profile.", "body": "Register, add your services and work, and preview your page. Public account browsing has not opened yet." }, "discovery": { "title": "Meet relevant people.", "body": "Provider discovery, work inquiries and collaboration open in stages as each experience is ready." }, "full": { "title": "Manage more of the project.", "body": "Contracts and payment services follow only after testing and required arrangements are complete. Sawwiq does not receive project funds during registration." } },
+    "whoTitle": "Independent or part of a team? There is a place for you.", "whoBody": "Marketing agencies, freelancers, content creators, photographers, editors, designers, advertising specialists, writers, web developers, event teams and offline marketing providers.",
+    "faqTitle": "Before you join",
+    "faq": {
+      "privacy": { "question": "Does my profile become public when I register?", "answer": "New accounts start with a private preview for the owner and authorized Sawwiq staff. You choose whether to keep it private, share it through an unlisted link, or allow inclusion when public discovery opens. Existing published profiles retain their links unless their owner changes that choice." },
+      "free": { "question": "Is registration free?", "answer": "Yes. Registration and profile creation are free and do not require a payment card. No paid subscription is activated automatically by registering." },
+      "beta": { "question": "What can I actually do now?", "answer": "Create your account, describe your services, add or import work, organize packages and preview your profile. Example profiles demonstrate the interface; they are not real members or work won on Sawwiq. Public browsing, new contracts and platform payments are not available in this phase." },
+      "pioneer": { "question": "How do I qualify as a Pioneer?", "answer": "Build a genuine account with a clear introduction, specific services and real work or a useful package. Acceptance follows the eligible cohort's rules; your account shows its current status. Positive reviews or promotional posts are not required for acceptance." }
+    },
+    "finalBody": "Start with a useful profile, not just a place on an email list. Try the experience and tell us what needs improvement.", "buyerIntro": "Have a project and need help?", "buyerCta": "Contact our team during early access", "footerLabel": "Early registration links", "contact": "Contact us", "legal": "Privacy and terms", "joinTitle": "Get your profile ready.", "joinNotice": "You are joining the early registration phase. New profiles are private by default and publication is your choice. Public discovery, contracts and payments follow in later stages.",
+    "markets": {
+      "jo": { "title": "Let your work be seen.", "titleEnd": "Be here from the beginning.", "intro": "Run an agency or work independently? We are building a network for the people behind marketing. Registration is open: add your work and services, and prepare your profile before public discovery opens.", "pioneerTitle": "Why join early? The first cohort has its advantages.", "finalTitle": "Bring your work. Start with us." },
+      "sa": { "title": "Let your work be seen.", "titleEnd": "Be here from the beginning.", "intro": "Run an agency or work independently in Saudi Arabia? Register free, add your work and services, and prepare your profile before Sawwiq opens public discovery.", "pioneerTitle": "Why join early? The first cohort has its advantages.", "finalTitle": "Get ready from the beginning." },
+      "eg": { "title": "Let your work be seen.", "titleEnd": "Be here from the beginning.", "intro": "An agency or independent professional in Egypt? Join the early provider phase, add your work and services, and get your profile ready before public discovery opens.", "pioneerTitle": "Why join early? The first cohort has its advantages.", "finalTitle": "Bring your work. Start with us." },
+      "gulf": { "title": "Let your work be seen.", "titleEnd": "Be here from the beginning.", "intro": "Run an agency or work independently? Register free and prepare your portfolio and services in a network being built for marketing professionals across the region.", "pioneerTitle": "Why join early? The first cohort has its advantages.", "finalTitle": "Get ready from the beginning." }
+    },
+    "examples": {
+      "title": "See how your profile could look.", "notice": "Illustrative example only—not a registered account. Names and content demonstrate the interface, not a real provider or work completed through Sawwiq.", "tabsLabel": "Example profile sections", "tabs": { "work": "Work", "services": "Services", "about": "About" }, "mediaNotice": "These images are Sawwiq demonstration material, not client work or claimed results.", "imageAlt": "Illustrative portfolio presentation", "contactNotice": "This is the profile's contact area. Contact and follow actions are disabled in this example; there are no invented reviews or activity figures.",
+      "agency": { "label": "Agency example", "name": "Marketing agency — example", "bio": "A space to explain your team's expertise and services. This is sample wording, not an advertisement for a real agency.", "about": "Explain your agency's focus, how the team works and the sectors you serve. Use accurate information and work you have permission to display." },
+      "freelancer": { "label": "Freelancer example", "name": "Independent photographer — example", "bio": "A space to describe your specialty, approach and service area. This is an example, not a real person's account.", "about": "Describe your expertise, services and whether you work remotely or on site. Help a visitor understand what they can request and support the description with your real work." },
+      "projects": [ { "title": "Your project title", "body": "An image or video with a description of your role and the service you delivered." }, { "title": "Explain the campaign", "body": "Describe the goal and what you actually did. Only publish results that are documented and cleared for sharing." }, { "title": "Show your specialty", "body": "Group related projects so a visitor can quickly understand the work you do best." } ],
+      "services": { "brief": { "title": "Clear services", "body": "Describe what you provide, for whom, and what you need before a project starts." }, "deliver": { "title": "Defined scope", "body": "Explain the deliverables and expected timing. Prices depend on the services and packages you choose to add." }, "collaborate": { "title": "Your role on a team", "body": "Explain how an agency or another freelancer could collaborate with you." } },
+      "aboutTitle": "Introduction and working approach", "yourTurn": "Now make it your own.", "yourTurnBody": "Start free and add your genuine details and work. A new account remains private until you choose otherwise."
+    },
+    "studio": {
+      "notice": "This is the profile-preparation phase. Your account and work carry into the next stage without registering again. Review publication settings before sharing a link.", "eyebrow": "Your early-access account", "title": "Get your profile ready.", "intro": "Describe your services, add real work and preview how your page will look when you choose to share it.", "stepsTitle": "Start with these steps", "visibilityTitle": "Who can see your profile?", "visibilityLink": "Publication settings", "preview": "Preview your profile",
+      "steps": { "profile": { "title": "Introduce your services", "body": "A clear introduction, specialties and the places or markets you serve." }, "work": { "title": "Add work or a package", "body": "Use real work you have permission to show. Start with one example and add more later." }, "visibility": { "title": "Choose your profile visibility", "body": "Keeping a profile private is a valid choice. Public disclosure is not required to complete your account." } },
+      "pioneerTitle": "Pioneer benefit status", "pioneerEligible": "Your account meets the current qualification requirements. Benefits follow their own terms and activation dates; they are not all available today.", "pioneerPending": "Your account is in the cohort but qualification is not complete. Add an introduction, services and genuine work or a package, then check your status here.", "pioneerUnavailable": "Free registration is available to your account. Pioneer benefits are for accounts accepted into the eligible cohort, not automatically for every registration.",
+      "addWork": "Add your work", "addPackage": "Services and packages", "help": "Need help?", "archiveTitle": "Previous activity", "archiveBody": "Changing the launch phase does not delete previous agreements or messages. New platform contracts and payment features are unavailable during registration.", "archiveMessages": "Previous messages", "archiveContracts": "Existing contracts", "archiveNdas": "Existing NDAs", "archiveNotifications": "Notifications", "savedWork": "Work saved to your profile. Visibility follows the publication settings you selected."
+    },
+    "publication": {
+      "title": "Profile and portfolio visibility", "intro": "This choice is independent of the launch phase. Opening public discovery later will not silently change your privacy setting.", "legacy": "This account predates the current registration phase, so its existing public link has been preserved. It is not included in public browsing during registration. You can change the choice here.", "choose": "Choose who can access your page", "saved": "Your publication choice has been saved.", "consentError": "Choose a visibility setting and acknowledge its effect before saving.",
+      "states": { "private": { "title": "Private preview", "summary": "Your profile is private to its owner and authorized Sawwiq staff.", "body": "Visitors cannot open it even if they know its URL. New portfolio uploads use access-controlled delivery. You can complete your account and keep it private." }, "unlisted": { "title": "Anyone with the link", "summary": "Your profile is available through its link, but excluded from directories and search indexing.", "body": "Anyone who receives the link can view the profile and its work. This is not suitable for confidential files. It stays out of public browsing after discovery opens." }, "public": { "title": "Allow public publication", "summary": "You have allowed link sharing now and directory inclusion when public discovery opens.", "body": "Visitors can open the link now. When the discovery phase opens, the profile may appear in listings and search engines, subject to platform rules." } },
+      "acknowledge": "I understand and agree to this visibility choice, and I have the right to share the content with the audience I selected.", "mediaNote": "Switching to private stops new access through Sawwiq; it cannot erase copies downloaded or cached elsewhere. Older content previously served through public URLs may remain accessible at its source or in external caches.", "save": "Save publication choice", "preview": "Preview your profile"
+    },
+    "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
+    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
+  }
+}
