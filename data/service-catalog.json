@@ -135,7 +135,7 @@
     },
     {
       "key": "seo_specialist",
-      "name_ar": "مختص سيو",
+      "name_ar": "مختص SEO",
       "name_en": "SEO specialist"
     },
     {
@@ -2750,7 +2750,7 @@
       "key": "seo",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "تحسين محركات البحث (السيو)",
+      "name_ar": "SEO",
       "name_en": "SEO",
       "aliases": [
         "سيو",
@@ -2768,7 +2768,7 @@
       "key": "arabic_seo",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "السيو العربي",
+      "name_ar": "SEO العربي",
       "name_en": "Arabic SEO",
       "aliases": [
         "سيو عربي",
@@ -2785,7 +2785,7 @@
       "key": "technical_seo",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "السيو التقني وسرعة الموقع",
+      "name_ar": "SEO التقني وسرعة الموقع",
       "name_en": "Technical SEO and site speed",
       "aliases": [
         "سيو تقني",
@@ -2803,7 +2803,7 @@
       "key": "local_seo",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "السيو المحلي",
+      "name_ar": "SEO المحلي",
       "name_en": "Local SEO",
       "aliases": [
         "سيو محلي",
@@ -2838,7 +2838,7 @@
       "key": "seo_content_writing",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "كتابة مقالات السيو والمدونات",
+      "name_ar": "كتابة مقالات SEO والمدونات",
       "name_en": "SEO articles and blog writing",
       "aliases": [
         "مقالات سيو",
@@ -2873,7 +2873,7 @@
       "key": "seo_audit",
       "group": "digital",
       "parent": "seo",
-      "name_ar": "تدقيق السيو وتحليل الكلمات المفتاحية",
+      "name_ar": "تدقيق SEO وتحليل الكلمات المفتاحية",
       "name_en": "SEO audit and keyword research",
       "aliases": [
         "تدقيق سيو",

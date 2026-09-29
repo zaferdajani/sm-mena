@@ -20,7 +20,7 @@ import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
 import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar } from "@/lib/images";
 import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
-import { ROLE_KEYS } from "@/lib/services/catalog";
+import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
 import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
@@ -184,8 +184,8 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
     services: picked.services,
     pendingServices: [...new Set([...agency.pendingServices, ...picked.pending])],
     kind: formData.get("kind") === "freelancer" ? "freelancer" : "agency",
-    teamRoles: list(formData, "teamRoles").filter((r) => ROLE_KEYS.includes(r)),
-    seeksRoles: formData.get("kind") === "freelancer" ? [] : list(formData, "seeksRoles").filter((r) => ROLE_KEYS.includes(r)),
+    teamRoles: normalizeRoleSelection(list(formData, "teamRoles")),
+    seeksRoles: formData.get("kind") === "freelancer" ? [] : normalizeRoleSelection(list(formData, "seeksRoles")),
     platforms: oneOf(list(formData, "platforms") as unknown as typeof PLATFORMS, PLATFORMS) as string[],
     industries: oneOf(list(formData, "industries") as unknown as typeof INDUSTRIES, INDUSTRIES) as string[],
     languages: oneOf(list(formData, "languages") as unknown as readonly ["ar", "en"], ["ar", "en"] as const) as string[],

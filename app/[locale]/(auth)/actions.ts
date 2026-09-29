@@ -1,6 +1,7 @@
 "use server";
 
-import { JOIN_ROLES, ROLE_KEYS } from "@/lib/services/catalog";
+import { JOIN_ROLES } from "@/lib/services/catalog";
+import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
@@ -127,7 +128,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     const all = (k: string) => formData.getAll(k).map(String).filter(Boolean);
     const picked = await resolveServices(null, all("services"), all("newServices"));
     const kind = formData.get("kind") === "freelancer" ? "freelancer" : "agency";
-    const teamRoles = all("teamRoles").filter((r) => ROLE_KEYS.includes(r));
+    const teamRoles = normalizeRoleSelection(all("teamRoles"));
     const created = await createAgency(user.id, {
       handle: data.handle,
       name: data.name,

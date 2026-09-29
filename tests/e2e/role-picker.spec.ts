@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { joinAgency, uniqueHandle } from "./helpers";
+import { uniqueHandle } from "./helpers";
 
 for (const locale of ["ar", "en"]) {
   test(`${locale} role suggestions reuse SEO aliases and require confirmation for distinct specialties`, async ({ page }, info) => {
