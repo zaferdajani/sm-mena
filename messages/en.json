@@ -4512,7 +4512,8 @@
       "archiveContracts": "Existing contracts",
       "archiveNdas": "Existing NDAs",
       "archiveNotifications": "Notifications",
-      "savedWork": "Work saved to your profile. Visibility follows the publication settings you selected."
+      "savedWork": "Work saved to your profile. Visibility follows the publication settings you selected.",
+      "publishNote": "Adding work saves it to your page under your chosen visibility. A private page stays private; adding a project never enrolls it in the public directory."
     },
     "publication": {
       "title": "Profile and portfolio visibility",

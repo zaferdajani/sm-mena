@@ -157,6 +157,7 @@ export async function reportPost(_: ReportState, formData: FormData): Promise<Re
     .safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "generic" };
   const visitorId = await getVisitorId({ create: true });
+  if (!(await getPost(parsed.data.postId))) return { error: "generic" };
   if (!rateLimit(`report:${visitorId}`, 10, 24 * 3600 * 1000)) return { error: "generic" };
   await createReport({ postId: parsed.data.postId, reason: parsed.data.reason, details: parsed.data.details ?? "", visitorId });
   return { ok: true };

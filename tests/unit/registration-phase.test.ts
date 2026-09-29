@@ -15,6 +15,7 @@ import { agencies, profilePublications } from "@/lib/db/schema";
 import { isPrivateKey, storage } from "@/lib/storage";
 import { SIGNATURE_PNG } from "./png";
 import sharp from "sharp";
+import { discoverCollaborators } from "@/lib/data/collab-discovery";
 
 const actor = vi.hoisted(() => ({ userId: null as string | null, agencyId: null as string | null, staff: false, pilot: false }));
 vi.mock("@/lib/launch-access", () => ({
@@ -103,6 +104,18 @@ describe("private profiles, not just hidden navigation", () => {
     expect(await mayIndexAgency(agency)).toBe(false);
     expect((await publicationFor(agency.id)).visibility).toBe("public");
   });
+  it("excludes private and unlisted collaborators, including pilot discovery", async () => {
+    vi.stubEnv("LAUNCH_PHASE", "registration");
+    const target = await account("hidden.collaborator");
+    vi.stubEnv("LAUNCH_PHASE", "full");
+    const buyer = await account("searching.collaborator");
+    expect((await discoverCollaborators(buyer.agency, { roles: [] })).items.map((v) => v.card.id)).not.toContain(target.agency.id);
+    await setPublication(target.user.id, target.agency.id, "unlisted");
+    expect((await discoverCollaborators(buyer.agency, { roles: [] })).items.map((v) => v.card.id)).not.toContain(target.agency.id);
+    vi.stubEnv("LAUNCH_PHASE", "registration"); actor.pilot = true;
+    await setPublication(target.user.id, target.agency.id, "private");
+    expect((await discoverCollaborators(buyer.agency, { roles: [] })).items.map((v) => v.card.id)).not.toContain(target.agency.id);
+  });
   it("keeps already published legacy links, without including them in the registration directory", async () => {
     vi.stubEnv("LAUNCH_PHASE", "full");
     const { agency } = await account("legacy");
@@ -121,7 +134,7 @@ describe("transaction release boundary", () => {
     vi.stubEnv("LAUNCH_PHASE", "full");
     const { agency } = await account("archive");
     const draft: ContractInput = {
-      title: "Existing client project", summary: "Agreed work before phase transition", items: [], startDate: "2026-10-01", endDate: "2026-11-30", paymentMode: "direct", nda: false,
+      specialRequests: "", title: "Existing client project", summary: "Agreed work before phase transition", items: [], startDate: "2026-10-01", endDate: "2026-11-30", paymentMode: "direct", nda: false,
       client: { name: "Test Client", phone: "+962790000001" }, milestones: [{ title: "First delivery", dueDate: "2026-10-31", amountFils: 100000, checks: ["Deliver agreed files"] }], signerName: "Test Provider", signature: SIGNATURE_PNG, locale: "en",
     };
     const created = await createContract(agency.id, draft);

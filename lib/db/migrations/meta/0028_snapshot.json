@@ -6952,7 +6952,7 @@
           "value": "\"profile_publications\".\"visibility\" in ('private', 'unlisted', 'public')"
         }
       },
-      "isRLSEnabled": false
+      "isRLSEnabled": true
     },
     "public.project_requests": {
       "name": "project_requests",

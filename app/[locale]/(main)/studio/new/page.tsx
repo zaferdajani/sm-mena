@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { FileUp, Palette } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -16,6 +17,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
   const ti = await getTranslations("PortfolioImport");
   const tb = await getTranslations("BehanceImport");
   const tg = await getTranslations("CreatorSetup");
+  const phaseCopy = await getTranslations("Registration");
   // The outline goes into the caption, so it follows the page's content language, not the interface.
   const outline = await getTranslations({ locale: contentLang(agency.contentLang), namespace: "CreatorSetup" });
   return (
@@ -42,7 +44,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
         </div>
       )}
       <PostForm mode="create" contentLang={contentLang(agency.contentLang)} {...await postFormOptions(agency.services, agency.id)} />
-      <p className="mt-4 text-sm leading-7 text-muted-foreground">{tg("publishReminder")}</p>
+      <p className="mt-4 text-sm leading-7 text-muted-foreground">{isRegistrationPhase() ? phaseCopy("studio.publishNote") : tg("publishReminder")}</p>
     </div>
   );
 }

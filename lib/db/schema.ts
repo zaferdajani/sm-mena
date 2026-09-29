@@ -2020,4 +2020,4 @@ export const profilePublications = pgTable("profile_publications", {
   visibility: text("visibility").$type<"private" | "unlisted" | "public">().notNull().default("private"),
   consentVersion: text("consent_version").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [index("profile_publications_visibility_idx").on(t.visibility), check("profile_publications_visibility_check", sql`${t.visibility} in ('private', 'unlisted', 'public')`)]);
+}, (t) => [index("profile_publications_visibility_idx").on(t.visibility), check("profile_publications_visibility_check", sql`${t.visibility} in ('private', 'unlisted', 'public')`)]).enableRLS();
