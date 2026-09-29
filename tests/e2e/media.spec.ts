@@ -32,10 +32,16 @@ test("a large camera photo is compressed in the browser and stored small", async
   expect(sent).toBeGreaterThan(0);
   expect(sent).toBeLessThan(3.8 * 1024 * 1024);
 
-  const src = await page.getByTestId("post-card").locator('img[src*="/api/portfolio-media/"], img[src*="/media/posts/"]').first().getAttribute("src");
-  expect(src).toMatch(/\/media\/posts\/.+\.(webp|jpg|png)$/);
+  // New uploads use the privacy-aware route even when the profile is public.
+  // Keep compression checks and assert private/no-store delivery as well.
+  const src = await page.getByTestId("post-card").locator('img[src*="/api/portfolio-media/"]').first().getAttribute("src");
+  expect(src).toMatch(/^\/api\/portfolio-media\/portfolio\/[a-f0-9-]{36}\/posts\/[a-f0-9-]+\.(webp|jpg|png)$/);
   const stored = await page.request.get(src!);
   expect(stored.ok()).toBe(true);
+  expect(stored.headers()["cache-control"]).toContain("private");
+  expect(stored.headers()["cache-control"]).toContain("no-store");
+  expect(stored.headers()["vary"]).toContain("Cookie");
+  expect(stored.headers()["content-type"]).toMatch(/^image\/(webp|jpeg|png)/);
   const bytes = (await stored.body()).byteLength;
   console.info(`photo: original ${photo.byteLength} B, sent ${sent} B, stored ${bytes} B`);
   expect(bytes).toBeLessThan(250 * 1024);
