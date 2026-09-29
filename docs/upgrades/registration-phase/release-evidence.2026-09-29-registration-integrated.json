@@ -1,0 +1,135 @@
+{
+  "template": false,
+  "status": "tested_not_deployed",
+  "release": "registration-2026-09-29-v1 (UI_REVISION) on feat/registration-phase-integrated",
+  "recorded_at_utc": "2026-09-29T11:49:19Z",
+  "recorded_at_asia_amman": "2026-09-29T14:49:19+03:00",
+  "implementation_commits": [
+    "f60a299 main — site check closes only its own recovered monitor/site_check errors; 'not seen for 72h' is stale, never fixed; reopen clears resolution; history kept; tests/unit/site-check.test.ts",
+    "96c09da main — site-check runner imports no server-only module (lib/data/error-fingerprint.ts); /ar/start and /ar/login expectations; docs/branch-manifest-2026-09-29.md",
+    "4983d71 branch — registration-phase candidate (run 36539397596's retained artifact, branch feat/registration-phase) applied on current main: lib/launch-phase.ts, lib/launch-access.ts, lib/launch-route.ts, lib/data/publication.ts, components/registration/*, app/styles/registration.css, /studio/publication, /examples, private /api/portfolio-media route, tests/unit/registration-phase.test.ts, tests/registration/registration.spec.ts, playwright.registration.config.ts, docs/54; its CI change isolated as docs/proposals/ci-registration-job.diff (no workflow edited, no permission broadened)",
+    "469630e branch — marketing alignment (brand kit cohort note, content calendar, asset manifest M4 retired, marketing/08-alignment-2026-09-29.md); Home.agenciesBody, Agent.shareText, Agreements.paymentHeading, Admin/AdminStats real-only caveat",
+    "7cd69ae branch — merge of origin/main a078796 (PR #23: /portfolio-setup wizard, platform connections, node-postgres driver, migration 0028_portfolio_setup_social). This branch's parallel /setup wizard and onboarding_drafts were dropped; profile_publications renumbered to 0029; message catalogs merged key by key",
+    "df399e0 branch — the wizard's publish note, button and finished screen follow the page's registration-phase publication choice; registration browser test; docs 53/54, onboarding README, branch manifest updated"
+  ],
+  "main_commit": "a0787961b7714477a4703fe86738d0ce39e4f315 (origin/main at the time of this record; production /api/version reports it with revision collaboration-v2-r3.2)",
+  "candidate_commit": "df399e07f81ab9b7d036193dfa91015176004cd4",
+  "reconciliation": {
+    "finding": "While this branch was being checked, another session squash-merged PR #23 to main with its own five-step first-run wizard at /portfolio-setup (portfolio_setups, portfolio_setup_media, migration 0028_portfolio_setup_social) plus platform-connection code, and Vercel deployed it (production commit a078796). Two wizards and two migrations numbered 0028 cannot coexist.",
+    "decision": "Main's wizard is canonical: it is merged, tested (tests/unit/portfolio-setup.test.ts, tests/unit/social-connections.test.ts, tests/e2e/portfolio-setup.spec.ts), deployed, and covers the same FIRST_RUN_WIZARD.md contract (five steps, private resumable drafts, upload/PDF/Behance/platform sources, explicit publish-once, retention). This branch's /setup wizard (7b63cd7, 3286d5f, 7956ebe) was removed in the merge commit; nothing of it reached production. The registration-phase candidate, its publication table (now 0029), the private portfolio media route, the docs and the marketing alignment stay.",
+    "kept_from_this_branch_for_the_wizard": "the registration-phase audience wording (private / anyone with the link / public) and the link to Studio → Visibility (df399e0)"
+  },
+  "checks": {
+    "lint": "pass on df399e0 (eslint .: 0 errors; 3 unused-variable warnings in local, git-ignored .data/ capture scripts only)",
+    "typecheck": "pass on df399e0 (next typegen + tsc --noEmit)",
+    "unit_and_integration": "pass on df399e0: entire suite, 76 files / 457 tests, 0 failed, 0 skipped (includes main's tests/unit/portfolio-setup.test.ts and social-connections.test.ts, this branch's registration-phase.test.ts and site-check.test.ts, and the message-parity test over the merged catalogs)",
+    "build": "pass on df399e0: rm -rf .next && next build after lint/typecheck and before the unit and browser runs; no source change in between",
+    "full_playwright": "pass on df399e0 against that same build: 312 passed, 0 failed, 2 flaky, 9 skipped, exit 0, 24.0 min, CI=1, retries 1, mobile + desktop + switches (teardown) projects, LAUNCH_PHASE=full, 0 MISSING_MESSAGE lines. Flaky (failed once, passed on retry, both seen flaky in earlier runs on other commits): [mobile] contracts.spec.ts:104 protections (first attempt hit the 60 s test timeout) and [mobile] work-orders.spec.ts:39 quote → work order. Skipped are the suite's standing viewport-conditional skips (one project only each): admin-console checkout (mobile), demo-isolation empty state (mobile+desktop), features checklist (mobile), feed desktop card list (mobile), media ffmpeg.wasm (mobile), referral-agents (mobile), feed phone snap (desktop), sign-up-entry phone header (desktop).",
+    "registration_playwright": "pass on df399e0: 14 passed, 0 failed, 0 flaky, 0 skipped, 4.1 min, LAUNCH_PHASE=registration on port 3101 with its own store (registration-mobile 390px + registration-desktop 1440px), 0 MISSING_MESSAGE lines; includes the new test: sign-up lands in /portfolio-setup, providers all unavailable, private client, upload, note data-audience=private with no Explore promise, button 'Save this project', finished screen 'Your first project is saved' with a Visibility link, project and page 404 for an anonymous visitor, readable by the owner"
+  },
+  "ci_runs": [],
+  "migrations": {
+    "pglite": "0028_portfolio_setup_social (main) and 0029_profile_publication applied on the unit store, the full-phase e2e store and the registration e2e store by the suites above",
+    "postgres": "disposable PostgreSQL 16 (127.0.0.1:5499), production path rehearsed: database 'prodlike' migrated with main a078796 (0000–0028, 77 tables) and seeded with main's seed (29 agencies, 247 posts), then migrated with this branch: 78 tables, profile_publications present (agency_id uuid PK, visibility text not null default 'private' with check, consent_version, updated_at; RLS enabled), 0 rows, seeded counts unchanged, contracts fingerprint unchanged; a second run applied nothing and raised nothing. Database 'fresh2' migrated from empty with this branch: 78 tables. The earlier 'fresh'/'populated' rehearsal databases carried this branch's pre-merge 0028/0029 pair and were not reused (production never had that state).",
+    "populated_upgrade": "pass (prodlike above)",
+    "rollback_compatible": true,
+    "evidence_refs": [
+      "docs/54-registration-phase.md §Deployment and migration order",
+      "lib/db/migrations/0029_profile_publication.sql (CREATE TABLE IF NOT EXISTS, index IF NOT EXISTS, RLS)"
+    ]
+  },
+  "reviews": {
+    "implementation": "reconciliation reviewed file by file: 23 overlapping files; main's version taken for wizard-only files (components/setup/wizard.tsx, creator-guide, sign-up redirect, retention job, the e2e specs that register through the form, importer files); both sides kept in lib/db/schema.ts, lib/storage/index.ts (private prefixes collab/, drafts/, portfolio/), lib/data/posts.ts, docs/08; messages merged key by key with a three-way script (155 keys applied per language, 109 wizard-only keys dropped, 0 conflicts)",
+    "security_and_payments": "no new money path; contracts, NDAs, protected payments, checkout and paid plans remain denied outside the full phase (TRANSACTION_FEATURES); main's platform connections stay unavailable with no developer app or SOCIAL_TOKEN_KEY (docs/53 readiness gates); draft media served only to the owner (/api/setup-media) and portfolio media only to readers the publication choice allows (/api/portfolio-media); the earlier read-only review of the registration candidate (0 blocking, findings applied in 3286d5f) still holds for the candidate files, which are unchanged by the merge",
+    "visual_qa": "pass on df399e0, real screenshots reviewed by eye: full phase (LAUNCH_PHASE=full, own seeded store) Arabic and English at 320/390/768/1440 px, eight screens each (step 1, sources, platforms list, client, project with three images and cover, preview, finished, the public page) = 64 screenshots; registration phase (LAUNCH_PHASE=registration) Arabic and English at 390/1440 = 32 screenshots. Every capture waited for fonts and for all images to load; 0 horizontal overflow, 0 MISSING_MESSAGE/INTERNAL_SERVER_ERROR, 0 broken images. RTL mirrors correctly; the preview carousel shows the uploaded cover; the finished screen says 'published' in the full phase and 'saved' with a Visibility link in the registration phase. Known and unchanged: full-page screenshots show the sticky action bar and phone bottom navigation mid-page (an artifact of fixed elements in full-page captures, not overlap in the viewport); the 320 px app header truncates the country name (pre-existing on main). Eight representative frames are kept in docs/upgrades/registration-phase/visual-2026-09-29/; the full set (96) was handed to the owner as a zip. Dark mode, keyboard-only and 200% zoom were not captured in this pass."
+  },
+  "deployment": {
+    "id": null,
+    "environment": "not deployed (branch pushed for a preview build only; see decision_needed)",
+    "source_sha": "df399e07f81ab9b7d036193dfa91015176004cd4",
+    "result": "not_run"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "observed_at_utc": "2026-09-29T11:49:19Z",
+      "body": {
+        "revision": "collaboration-v2-r3.2",
+        "commit": "a0787961b7714477a4703fe86738d0ce39e4f315",
+        "environment": "production"
+      }
+    },
+    "rendered_stamp_match": "not_run for this candidate (it is not deployed)",
+    "ancestry_verified": "candidate df399e07f81ab9b7d036193dfa91015176004cd4 contains a078796 (origin/main) and f60a299/96c09da",
+    "real_intro_playback": "not_run (unchanged since the R3-hardening-2 record)",
+    "authenticated_smoke": "blocked: no authorized real provider account; no founding seat consumed; no guessed passwords",
+    "routes": [],
+    "artifact_refs": [
+      "docs/upgrades/registration-phase/visual-2026-09-29/*.png (branch screenshots, not production)"
+    ]
+  },
+  "rollback": {
+    "previous_deployment": "production a078796 (main)",
+    "strategy": "revert the merge commit on main or redeploy a078796 from Vercel; 0029 is additive and can stay in place",
+    "rehearsal": "not_run"
+  },
+  "decision_needed": "The candidate defaults LAUNCH_PHASE to 'registration' when the variable is unset (fail-closed, docs/54). Pushing it to main switches sawwiq.org into the registration beta on deploy: registration front page, discovery routes redirected, contracts/NDAs/checkout denied, focused Studio, new accounts private. This session cannot read Vercel's environment (403 on the env listing), so it is unknown whether LAUNCH_PHASE is set. Owner options: (a) push to main as is to start the beta; (b) set LAUNCH_PHASE=full in Vercel first, deploy today's behaviour plus the fixes, and flip to registration when ready.",
+  "remaining_tasks": [
+    "owner: choose (a) or (b) above; then push HEAD to main via the existing path and verify /api/version and the rendered stamp",
+    "owner: register developer apps if platform connections are wanted (docs/53 readiness gates); until then every platform shows 'Not available yet'",
+    "owner: delete the three MERGED-ANCESTOR branches on GitHub (proxy returns 403 on branch deletion); re-check feat/creator-guidance-social-connections against a078796 (docs/branch-manifest-2026-09-29.md)",
+    "owner: decide on docs/proposals/ci-registration-job.diff (adds the registration Playwright job to CI without changing permissions)"
+  ],
+  "blockers": [
+    "production acceptance of the wizard and of the registration phase needs an authorized real provider account and a recorded journey (AC14 of FIRST_RUN_WIZARD.md)",
+    "AC36 pilot: prepared, not run",
+    "Vercel plan and environment cannot be read from this session (403)"
+  ],
+  "business_validation": {
+    "pilot_status": "prepared_not_run",
+    "participants": null,
+    "baseline_comparison": null,
+    "longitudinal_outcomes": null
+  },
+  "decision": "tested_on_branch_not_deployed",
+  "stage_status": {
+    "note": "Separate stages: implemented, tested, deployed, production_accepted. A later stage never implies an earlier one.",
+    "implemented": {
+      "result": "pass",
+      "commits": [
+        "f60a299",
+        "96c09da",
+        "4983d71",
+        "469630e",
+        "7cd69ae",
+        "df399e0"
+      ],
+      "evidence": [
+        "git log origin/main..HEAD"
+      ]
+    },
+    "tested": {
+      "result": "pass",
+      "commit": "df399e07f81ab9b7d036193dfa91015176004cd4",
+      "evidence": [
+        "checks above",
+        "migrations.postgres"
+      ]
+    },
+    "deployed": {
+      "result": "not_run",
+      "commit": null,
+      "evidence": [
+        "awaiting the LAUNCH_PHASE decision"
+      ]
+    },
+    "production_accepted": {
+      "result": "blocked",
+      "evidence": [],
+      "blockers": [
+        "authorized real provider account",
+        "AC36 pilot"
+      ]
+    }
+  }
+}
