@@ -9,7 +9,7 @@ const noOverflow = (page: Page) => page.evaluate(() => document.documentElement.
 
 test("a new provider sets up a first project: profile, upload, client, project, preview, publish", async ({ page }) => {
   test.setTimeout(120_000);
-  const { handle } = await joinAgency(page, "wiz");
+  const { handle } = await joinAgency(page, "wiz", { stay: true });
   await expect(page).toHaveURL(/\/en\/portfolio-setup$/);
   const wizard = page.getByTestId("setup-wizard");
   await expect(wizard).toHaveAttribute("data-step", "1");
@@ -96,7 +96,7 @@ test("a new provider sets up a first project: profile, upload, client, project, 
 });
 
 test("finish later resumes the saved draft; ordinary Studio routes still work", async ({ page }) => {
-  await joinAgency(page, "wizp");
+  await joinAgency(page, "wizp", { stay: true });
   await page.getByTestId("setup-profile-skip").click();
   await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "2");
   await page.getByTestId("setup-later").click();
@@ -113,7 +113,7 @@ test("finish later resumes the saved draft; ordinary Studio routes still work", 
 
 test("a Behance project comes back into the same draft (Arabic)", async ({ page }) => {
   test.setTimeout(120_000);
-  await joinAgency(page, "wizb");
+  await joinAgency(page, "wizb", { stay: true });
   await page.goto("/ar/portfolio-setup");
   await page.getByTestId("setup-profile-skip").click();
   await page.getByTestId("source-import").click();
