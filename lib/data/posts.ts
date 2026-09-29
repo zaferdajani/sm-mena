@@ -2,7 +2,7 @@ import { mayReadAgency, mayReadAgencyId, discoverableProfiles } from "@/lib/data
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb } from "@/lib/db";
-import { agencies, portfolioClients, postImages, posts, type Agency } from "@/lib/db/schema";
+import { agencies, portfolioClients, postImages, posts, type Agency, type PostEmbed } from "@/lib/db/schema";
 import { newImageKeys, processImage, STORED_TYPE, type ProcessedImage, type StoredFormat } from "@/lib/images";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
@@ -23,6 +23,8 @@ export type PostInput = {
   translation?: PostTranslation;
   /** Where the work was imported from (a Behance project), validated by the caller. */
   sourceUrl?: string | null;
+  /** A work sample from a connected platform (docs/53): its provider, stable item id and official player. */
+  source?: { provider: string; itemId: string; embed: PostEmbed | null } | null;
 };
 
 export type FeedFilters = {
@@ -66,6 +68,8 @@ export type PostView = {
   app: PostApp | null;
   /** The Behance project this work was imported from, if any (credit link). */
   sourceUrl: string | null;
+  /** The official player of a work sample imported from a connected platform (docs/53). */
+  embed?: PostEmbed | null;
   likeCount: number;
   saveCount: number;
   viewCount: number;
@@ -146,6 +150,9 @@ export async function createPostFromStoredImages(agencyId: string, input: PostIn
         clientId: input.clientId ?? null,
         app: input.app ?? null,
         sourceUrl: input.sourceUrl ?? null,
+        sourceProvider: input.source?.provider ?? null,
+        sourceItemId: input.source?.itemId ?? null,
+        embed: input.source?.embed ?? null,
         translation: input.translation ?? {},
         searchText: postSearchText(input, agency),
         ...(createdAt ? { createdAt } : {}),
@@ -296,6 +303,7 @@ async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Age
     client: (post.clientId && clientById.get(post.clientId)) || null,
     app: post.app ?? null,
     sourceUrl: post.sourceUrl ?? null,
+    embed: post.embed ?? null,
     likeCount: post.likeCount,
     saveCount: post.saveCount,
     viewCount: post.viewCount,

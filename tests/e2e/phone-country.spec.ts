@@ -19,7 +19,8 @@ test("sign-up starts the WhatsApp code from the visitor's country, and any count
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await page.waitForURL(/\/en\/(setup|studio\/profile)/);
+  // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
+  await page.waitForURL(/\/en\/portfolio-setup/);
   await page.goto("/en/studio/profile?welcome=1");
   // Saved as +20…, and the studio shows it back under Egypt.
   const saved = page.getByTestId("phone-whatsapp");

@@ -18,8 +18,8 @@ export function CreatorSetupNudge({ hasWork }: { hasWork: boolean }) {
     <aside className="mb-5 space-y-2 rounded-2xl border border-brand-line bg-brand-soft p-4" data-testid="creator-setup-nudge">
       <h2 className="font-semibold">{t("nudgeTitle")}</h2>
       <p className="text-sm leading-7">{t("nudgeBody")}</p>
-      <Link href="/setup" className={`${control} bg-background text-brand`} data-testid="creator-setup-start">{t("startSetup")}</Link>
-      <Link href="/studio/setup" className={`${control} bg-background text-brand`}>{t("openGuide")}</Link>
+      <Link href="/portfolio-setup" className={`${control} bg-primary text-primary-foreground`} data-testid="creator-setup-start">{t("startSetup")}</Link>
+      <Link href="/studio/setup" className={`${control} ms-2 bg-background text-brand`}>{t("openGuide")}</Link>
     </aside>
   );
 }
@@ -162,7 +162,6 @@ export function PortfolioClientGuide() {
     <aside className="space-y-2 rounded-2xl border border-brand-line bg-brand-soft p-4" data-testid="portfolio-client-guide">
       <h2 className="font-semibold">{t("clientTitle")}</h2>
       <p className="text-sm leading-7">{t("clientBody")}</p>
-      <Link href="/setup" className={`${control} bg-background text-brand`} data-testid="creator-setup-start">{t("startSetup")}</Link>
       <Link href="/studio/setup" className={`${control} bg-background text-brand`}>{t("openGuide")}</Link>
     </aside>
   );

@@ -11,7 +11,8 @@ test("an agency writes its page in Arabic and English; each reader sees their la
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page" }).click();
-  await expect(page).toHaveURL(/\/en\/setup\?welcome=1/);
+  // Sign-up opens the short portfolio setup; the full editor keeps its welcome path.
+  await expect(page).toHaveURL(/\/en\/portfolio-setup$/);
   await page.goto("/en/studio/profile?welcome=1");
 
   await page.fill("#bio", "محتوى عربي للمطاعم");

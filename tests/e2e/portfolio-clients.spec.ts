@@ -28,7 +28,6 @@ test("demo data: clients tab groups accounts and work by client", async ({ page 
 
 test("agency adds an introduction, countries served and a client with accounts", async ({ page }) => {
   const { handle } = await joinAgency(page, "clients");
-  await page.goto("/en/studio/profile?welcome=1");
 
   // Profile: introduction, strengths, serves the Gulf.
   await page.fill("#about", "We are a small studio for cafés.");

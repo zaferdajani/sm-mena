@@ -188,3 +188,12 @@ actually erased by the account-erasure process. The existing audit trail records
 only the audience and consent version, never contact details. Operational legal
 retention continues independently. No new marketing subscription is introduced;
 registration alone is not consent to unsolicited promotional messages.
+
+## First-run setup and platform connections (docs/53)
+
+- **Setup drafts** (`portfolio_setups`, `portfolio_setup_media`): the owner's own project text and images before publishing. Images live in private storage (`drafts/…`), are served only to that agency, never to AI, and are deleted when published or after 60 days. Draft text stays until the next project replaces it or the agency is deleted.
+- **Platform connections** (`social_grants`, `social_resources`): the platform's account id, granted scopes, and access/refresh tokens sealed with AES-256-GCM under `SOCIAL_TOKEN_KEY` (not the 2FA key), bound to their grant, platform and agency. Tokens never reach the browser, logs, analytics or AI. Consent is the platform's own screen, recorded with `consent_version` (`social-2026-09`). Disconnect deletes the tokens, the chosen channels/Pages and unpublished items at once, removes the platform player from published projects (the owner's text and images stay), and asks the platform to revoke where it offers that; otherwise the owner is told where to remove Sawwiq.
+- **Picked items** (`social_import_items`): bounded title/caption/link/thumbnail of published items. Browsed but not picked: deleted after 24 hours. Picked: deleted after 30 days if unused (YouTube's metadata rule, applied to every platform); for published projects the title, caption and thumbnail are cleared after 30 days and only the id and link remain.
+- **Authorization attempts**: only a hash of the state, the session binding and sealed PKCE verifier/nonce; deleted an hour after expiry.
+- **Meta deauthorization / data deletion**: verified signed requests remove that person's connections in every agency; the deletion request keeps only its code, platform and count for 180 days.
+- Connecting an account is evidence of access only: it never sets verification, client confirmation, Founder status or matching.

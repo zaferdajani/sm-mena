@@ -10,9 +10,8 @@ import { aiImportAvailable } from "@/lib/portfolio-import/ai";
 import { postFormOptions } from "@/lib/studio-options";
 
 /** Studio → Import a PDF portfolio (docs/36-portfolio-import.md). */
-export default async function ImportPortfolioPage({ params, searchParams }: PageProps<"/[locale]/studio/import">) {
+export default async function ImportPortfolioPage({ params }: PageProps<"/[locale]/studio/import">) {
   const { locale } = await params;
-  const setup = (await searchParams).from === "setup";
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const gate = await featureGate("portfolio_import");
@@ -42,7 +41,6 @@ export default async function ImportPortfolioPage({ params, searchParams }: Page
         clients={options.clients}
         agencyServices={agency.services}
         aiAvailable={aiImportAvailable()}
-        setup={setup}
       />
     </div>
   );

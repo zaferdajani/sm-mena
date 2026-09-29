@@ -22,7 +22,8 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.fill("#password", "password-123");
   await agencyPage.check('input[name="consent"]');
   await agencyPage.getByRole("button", { name: "Create page" }).click();
-  await agencyPage.waitForURL(/\/en\/(setup|studio\/profile)/);
+  // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
+  await agencyPage.waitForURL(/\/en\/portfolio-setup/);
   await agencyPage.goto("/en/studio/profile?welcome=1");
   // Waiting for review in the studio, not on the public page yet.
   await expect(agencyPage.getByTestId("service-picker")).toContainText(service);

@@ -39,8 +39,7 @@ export type BehanceImportInput = {
 } & Omit<PostInput, "sourceUrl">;
 
 /** Downloads the kept images, processes them like an upload, and publishes the post with its Behance credit. */
-/** Downloads and processes a project's kept images; the setup wizard stages these privately instead of publishing. */
-export async function fetchBehanceImages(input: Pick<BehanceImportInput, "projectUrl" | "images">, fetcher = defaultFetcher()) {
+export async function importBehanceProject(agencyId: string, input: BehanceImportInput, fetcher = defaultFetcher()) {
   const urls = [...new Set(input.images)];
   if (!urls.length) throw new BehanceImportError("noImages");
   if (urls.length > MAX_IMAGES_PER_POST) throw new BehanceImportError("tooMany");
@@ -54,11 +53,6 @@ export async function fetchBehanceImages(input: Pick<BehanceImportInput, "projec
       throw new BehanceImportError(e instanceof ImageError ? "badImage" : "unreachable");
     }
   }
-  return { processed, sourceUrl };
-}
-
-export async function importBehanceProject(agencyId: string, input: BehanceImportInput, fetcher = defaultFetcher()) {
-  const { processed, sourceUrl } = await fetchBehanceImages(input, fetcher);
   const { projectUrl: _p, images: _i, publishedAt, ...fields } = input;
   void _p;
   void _i;

@@ -201,15 +201,15 @@
     {
       "idx": 28,
       "version": "7",
-      "when": 1790671169562,
-      "tag": "0028_profile_publication",
+      "when": 1790668031645,
+      "tag": "0028_portfolio_setup_social",
       "breakpoints": true
     },
     {
       "idx": 29,
       "version": "7",
-      "when": 1790671712428,
-      "tag": "0029_onboarding_drafts",
+      "when": 1790679392121,
+      "tag": "0029_profile_publication",
       "breakpoints": true
     }
   ]
