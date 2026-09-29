@@ -1,0 +1,62 @@
+name: Release review context
+on:
+  push:
+    branches: [ops/vercel-access-recovery]
+    paths: [.github/workflows/release-review-context.yml]
+permissions:
+  contents: read
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Export only tracked text from the exact candidates; no secrets or fonts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import subprocess, pathlib, zipfile, json
+          refs = {'main': 'a0787961b7714477a4703fe86738d0ce39e4f315', 'onboarding': '4a025aa5b0385412f36c3f377afea6a4d8ec660e', 'registration': '758dd6bdd724fb1b3d45784855dcef290ad85d3c'}
+          extensions = {'.ts', '.tsx', '.js', '.mjs', '.cjs', '.json', '.md', '.txt', '.css', '.yml', '.yaml', '.sql', '.py'}
+          pathlib.Path('review-context').mkdir(exist_ok=True)
+          with zipfile.ZipFile('review-context/source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+            for label, ref in refs.items():
+              subprocess.run(['git', 'cat-file', '-e', ref + '^{commit}'], check=True)
+              names = subprocess.check_output(['git', 'ls-tree', '-rz', '--name-only', ref]).decode().split('\0')
+              for name in names:
+                p = pathlib.PurePosixPath(name)
+                if not name or p.suffix not in extensions or name.startswith(('public/', '.env', 'node_modules/')): continue
+                raw = subprocess.check_output(['git', 'show', ref + ':' + name])
+                if len(raw) < 2500000:
+                  raw.decode('utf-8')
+                  z.writestr(label + '/' + name, raw)
+            z.writestr('refs.json', json.dumps(refs, indent=2))
+            z.writestr('main-to-onboarding.patch', subprocess.check_output(['git', 'diff', refs['main'], refs['onboarding']]))
+            z.writestr('onboarding-to-registration.patch', subprocess.check_output(['git', 'diff', refs['onboarding'], refs['registration']]))
+          print('Exported pinned text source for review; no production account or environment access.')
+          PY
+      - name: Read the installed Next guides from the matching lockfile
+        shell: bash
+        run: |
+          git checkout --detach 4a025aa5b0385412f36c3f377afea6a4d8ec660e
+          npm ci --ignore-scripts
+          python3 - <<'PY'
+          import pathlib, zipfile
+          root = pathlib.Path('node_modules/next/dist/docs')
+          assert root.is_dir(), 'Matching Next.js documentation is required'
+          with zipfile.ZipFile('review-context/source.zip', 'a', zipfile.ZIP_DEFLATED) as z:
+            for p in root.rglob('*.md'):
+              z.writestr('next-docs/' + str(p.relative_to(root)), p.read_bytes())
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sawwiq-release-source-context
+          path: review-context/source.zip
+          retention-days: 3
+          if-no-files-found: error
