@@ -1,3 +1,4 @@
+import { documentsOpen } from "@/lib/launch-phase";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { FileSignature } from "lucide-react";
 import { BehanceShortcut } from "@/components/studio/behance-shortcut";
@@ -39,9 +40,9 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
       {rows.map((p) => (
         <div key={p.id} className="space-y-1">
           <PackageForm services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} initial={p} />
-          <Link href={{ pathname: "/studio/contracts/new", query: { package: p.id } }} className="flex items-center gap-1 px-1 text-sm text-brand hover:underline" data-testid="package-contract">
+          {documentsOpen() && <Link href={{ pathname: "/studio/contracts/new", query: { package: p.id } }} className="flex items-center gap-1 px-1 text-sm text-brand hover:underline" data-testid="package-contract">
             <FileSignature className="size-4" /> {tc("fromPackage")}
-          </Link>
+          </Link>}
         </div>
       ))}
       {rows.length < MAX_PACKAGES ? <PackageForm key={`new-${rows.length}`} services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} /> : <p className="text-sm text-muted-foreground">{t("studio.limit")}</p>}

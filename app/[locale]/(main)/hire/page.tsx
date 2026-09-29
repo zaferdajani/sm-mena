@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -8,12 +9,14 @@ import { serviceOptions } from "@/lib/labels";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/hire">): Promise<Metadata> {
   const { locale } = await params;
+  await requireDirectory();
   const t = await getTranslations({ locale, namespace: "Hire" });
   return pageMeta({ locale, path: "/hire", title: t("indexTitle"), description: t("indexSubtitle") });
 }
 
 export default async function HireIndex({ params }: PageProps<"/[locale]/hire">) {
   const { locale } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const t = await getTranslations("Hire");
   const { services } = await serviceCounts({ realOnly: true });

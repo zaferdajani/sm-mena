@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { CheckCircle2, Circle, Construction, ShieldCheck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FeatureSwitch, GoLiveTick } from "@/components/admin/feature-switch";
@@ -18,9 +19,11 @@ export default async function AdminFeatures({ params }: PageProps<"/[locale]/adm
   setRequestLocale(locale);
   await requireStaff("features.manage");
   const t = await getTranslations("Features");
+  const r = await getTranslations("Registration");
   const [features, golive] = await Promise.all([getFeatures(), goLiveChecklist()]);
   return (
     <div className="space-y-6" data-testid="admin-features">
+      {isRegistrationPhase() && <aside className="registration-notice" data-testid="admin-launch-phase">{r("adminPhase")}</aside>}
       <header>
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="text-sm text-muted-foreground">{t("intro")}</p>

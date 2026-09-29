@@ -1,3 +1,5 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
+import { redirect } from "@/i18n/navigation";
 import { Search, Store } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -18,6 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/demo">):
 export default async function DemoPage({ params }: PageProps<"/[locale]/demo">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  if (isRegistrationPhase()) redirect({ href: "/examples", locale });
   const t = await getTranslations("Demo");
   // The demo view can be switched off (Admin → Features → demo view).
   const open = await canUse("demo_view");

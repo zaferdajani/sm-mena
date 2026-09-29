@@ -1,3 +1,5 @@
+import { StudioRegistration } from "@/components/registration/studio-registration";
+import { isRegistrationPhase, isLaunchPilot } from "@/lib/launch-phase";
 import { CheckCircle2, Circle, ExternalLink, Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClicksChart } from "@/components/studio/clicks-chart";
@@ -19,6 +21,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
   const saved = (await searchParams).saved === "profile";
   setRequestLocale(locale);
   const { agency } = await requireAgency();
+  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <StudioRegistration agency={agency} />;
   const t = await getTranslations("Studio");
   const ent = entitlementsFor(agency);
   const days = Math.min(30, ent.insightsDays);

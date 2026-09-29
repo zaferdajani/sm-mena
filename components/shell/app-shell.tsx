@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { LifeBuoy, LogIn } from "lucide-react";
 import { BrandLockup } from "@/components/brand-lockup";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -19,6 +20,8 @@ import { canUse } from "@/lib/feature-gate";
 /** Side navigation on desktop, top bar and bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("Nav");
+  const reg = isRegistrationPhase();
+  const rt = await getTranslations("Registration");
   const th = await getTranslations("Header");
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
@@ -30,7 +33,11 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))}
       label={th("country")} locateLabel={th("useLocation")} />
   );
-  const items: NavItem[] = [
+  const items: NavItem[] = reg ? [
+    { href: "/", label: rt("navHome"), icon: "home" },
+    { href: "/examples", label: rt("navExamples"), icon: "explore" },
+    isStaffRole(user?.role) ? { href: "/admin", label: t("admin"), icon: "admin" } : user?.role === "agent" ? { href: "/agent", label: t("agent"), icon: "studio" } : user && user.role !== "client" ? { href: "/studio", label: t("studio"), icon: "studio" } : { href: "/start", label: t("join"), icon: "join" },
+  ] : [
     { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
     ...(matchOpen ? [{ href: "/match", label: t("match"), icon: "match" } as NavItem] : []),
@@ -52,7 +59,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav aria-label={t("menu")}>
           <SideNav items={[
-            ...items.slice(0, 3), { href: "/hire", label: t("hire"), icon: "hire" }, ...items.slice(3),
+            ...items.slice(0, 3), ...(!reg ? [{ href: "/hire", label: t("hire"), icon: "hire" } as NavItem] : []), ...items.slice(3),
             ...(user ? [] : [{ href: "/login", label: t("login"), icon: "login" } as NavItem]),
           ]} />
           <HeaderBell variant="row" />
@@ -84,7 +91,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <main className="flex min-h-dvh min-w-0 flex-1 flex-col pb-20 md:pb-10">
-        <DemoBanner />
+        {!reg && <DemoBanner />}
         <div className="min-w-0 flex-1" data-testid="app-page-content">{children}</div>
         <SiteFooter />
       </main>

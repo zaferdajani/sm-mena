@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -31,9 +32,11 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   const t = await getTranslations("Auth");
   const [countries, country, phoneFrom, behance] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry(), canUse("portfolio_import")]);
   const tb = await getTranslations("BehanceImport.shortcut");
+  const r = await getTranslations("Registration");
   return (
     <>
-      <h1 className="text-xl font-bold">{t("joinTitle")}</h1>
+      <h1 className="text-xl font-bold">{isRegistrationPhase() ? r("joinTitle") : t("joinTitle")}</h1>
+      {isRegistrationPhase() && <aside className="registration-notice" data-testid="registration-join-notice"><strong>{r("phaseLabel")}</strong><p>{r("joinNotice")}</p><Link href="/examples">{r("exampleCta")}</Link></aside>}
       <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>
       {/* Providers who already keep a portfolio on Behance learn up front that it carries over (docs/47). */}
       {behance && (

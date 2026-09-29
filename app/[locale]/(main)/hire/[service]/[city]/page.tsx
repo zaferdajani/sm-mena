@@ -1,3 +1,4 @@
+import { requireDirectory } from "@/lib/launch-access";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
@@ -17,6 +18,7 @@ function placeOf(segment: string): Place | null {
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[service]/[city]">): Promise<Metadata> {
   const { locale, service, city: segment } = await params;
+  await requireDirectory();
   const place = placeOf(segment);
   if (!isServiceKey(service) || !place) return {};
   const currency = currencyLabel(currencyOf(place.country ?? countryOfCity(place.city)), locale);
@@ -37,6 +39,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/hire/[se
 
 export default async function HireServicePlacePage({ params }: PageProps<"/[locale]/hire/[service]/[city]">) {
   const { locale, service, city: segment } = await params;
+  await requireDirectory();
   setRequestLocale(locale);
   const place = placeOf(segment);
   if (!isServiceKey(service) || !place) notFound();

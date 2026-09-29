@@ -1,3 +1,5 @@
+import { RegistrationStudioShell } from "@/components/registration/studio-shell";
+import { isRegistrationPhase, isLaunchPilot } from "@/lib/launch-phase";
 import { ExternalLink, LogOut } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -21,6 +23,7 @@ export const metadata: Metadata = { robots: { index: false } };
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const { agency } = await requireAgency();
+  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <RegistrationStudioShell agency={agency}>{children}</RegistrationStudioShell>;
   const t = await getTranslations("Studio");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");

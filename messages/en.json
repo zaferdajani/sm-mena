@@ -4422,5 +4422,244 @@
     "connectionsBody": "A public link is not an authorized connection. Google, YouTube, Instagram, Facebook and TikTok need their own consent-based integrations. Do not share passwords or paste access tokens. Automatic social imports are not enabled by this guide.",
     "linkOwn": "Edit my public profile links",
     "linkClient": "Edit a client’s social links"
+  },
+  "Registration": {
+    "metaTitle": "Sawwiq | Early registration for marketing agencies and freelancers",
+    "metaDescription": "Join free and prepare your work, services and profile before public discovery opens. Explore an example profile and learn about the Pioneer program.",
+    "phaseLabel": "Early registration phase",
+    "eyebrow": "Early provider registration is open",
+    "cta": "Create your free profile",
+    "exampleCta": "See an example profile",
+    "freeNote": "Free registration and profile creation · No payment card",
+    "navHome": "Start here",
+    "navExamples": "Examples",
+    "photoTitle": "A place for the people behind the work.",
+    "photoBody": "Agencies · Freelancers · Content creators",
+    "visionEyebrow": "Providers first",
+    "visionTitle": "Bring your work. Build your next working relationships.",
+    "visionBody": "We are building Sawwiq to connect marketing professionals across the region: a place to show your work, help businesses find relevant expertise, and find specialists to collaborate with. Profile preparation is open now; discovery and collaboration follow in the next stage.",
+    "availableNow": "Available now",
+    "nextStage": "Next stage",
+    "values": {
+      "portfolio": {
+        "title": "Your work in one place.",
+        "body": "Add images, videos and designs, and explain your services and packages. Already have a portfolio? Import it, review the result and save the work you want to include."
+      },
+      "opportunities": {
+        "title": "Be ready for relevant work.",
+        "body": "We are preparing a way for businesses to explain what they need and see suitable providers. Build your profile now so you are ready when public discovery opens."
+      },
+      "partners": {
+        "title": "Need someone for a project?",
+        "body": "An agency needs a photographer. A freelancer needs a designer. Sawwiq is being built for both client opportunities and collaboration between professionals."
+      }
+    },
+    "pioneersEyebrow": "Sawwiq Pioneers",
+    "pioneersBody": "The first cohort helps the network start with genuine work and expertise. Providers accepted into the Pioneer program receive specific advantages, revealed progressively—not simply a badge next to a name.",
+    "pioneerOpportunity": "An early window on relevant opportunities when available",
+    "pioneerTools": "Try new work tools before wider release",
+    "pioneerVoice": "Practical feedback that helps shape the experience",
+    "pioneersNote": "This is a preview of the benefits. Eligibility, acceptance and each feature's availability apply. Registration alone does not activate benefits or guarantee clients or contracts.",
+    "stagesTitle": "One platform, opening in stages.",
+    "currentStage": "Open now",
+    "laterStage": "Later",
+    "stages": {
+      "registration": {
+        "title": "Prepare your profile.",
+        "body": "Register, add your services and work, and preview your page. Public account browsing has not opened yet."
+      },
+      "discovery": {
+        "title": "Meet relevant people.",
+        "body": "Provider discovery, work inquiries and collaboration open in stages as each experience is ready."
+      },
+      "full": {
+        "title": "Manage more of the project.",
+        "body": "Contracts and payment services follow only after testing and required arrangements are complete. Sawwiq does not receive project funds during registration."
+      }
+    },
+    "whoTitle": "Independent or part of a team? There is a place for you.",
+    "whoBody": "Marketing agencies, freelancers, content creators, photographers, editors, designers, advertising specialists, writers, web developers, event teams and offline marketing providers.",
+    "faqTitle": "Before you join",
+    "faq": {
+      "privacy": {
+        "question": "Does my profile become public when I register?",
+        "answer": "New accounts start with a private preview for the owner and authorized Sawwiq staff. You choose whether to keep it private, share it through an unlisted link, or allow inclusion when public discovery opens. Existing published profiles retain their links unless their owner changes that choice."
+      },
+      "free": {
+        "question": "Is registration free?",
+        "answer": "Yes. Registration and profile creation are free and do not require a payment card. No paid subscription is activated automatically by registering."
+      },
+      "beta": {
+        "question": "What can I actually do now?",
+        "answer": "Create your account, describe your services, add or import work, organize packages and preview your profile. Example profiles demonstrate the interface; they are not real members or work won on Sawwiq. Public browsing, new contracts and platform payments are not available in this phase."
+      },
+      "pioneer": {
+        "question": "How do I qualify as a Pioneer?",
+        "answer": "Build a genuine account with a clear introduction, specific services and real work or a useful package. Acceptance follows the eligible cohort's rules; your account shows its current status. Positive reviews or promotional posts are not required for acceptance."
+      }
+    },
+    "finalBody": "Start with a useful profile, not just a place on an email list. Try the experience and tell us what needs improvement.",
+    "buyerIntro": "Have a project and need help?",
+    "buyerCta": "Contact our team during early access",
+    "footerLabel": "Early registration links",
+    "contact": "Contact us",
+    "legal": "Privacy and terms",
+    "joinTitle": "Get your profile ready.",
+    "joinNotice": "You are joining the early registration phase. New profiles are private by default and publication is your choice. Public discovery, contracts and payments follow in later stages.",
+    "markets": {
+      "jo": {
+        "title": "Let your work be seen.",
+        "titleEnd": "Be here from the beginning.",
+        "intro": "Run an agency or work independently? We are building a network for the people behind marketing. Registration is open: add your work and services, and prepare your profile before public discovery opens.",
+        "pioneerTitle": "Why join early? The first cohort has its advantages.",
+        "finalTitle": "Bring your work. Start with us."
+      },
+      "sa": {
+        "title": "Let your work be seen.",
+        "titleEnd": "Be here from the beginning.",
+        "intro": "Run an agency or work independently in Saudi Arabia? Register free, add your work and services, and prepare your profile before Sawwiq opens public discovery.",
+        "pioneerTitle": "Why join early? The first cohort has its advantages.",
+        "finalTitle": "Get ready from the beginning."
+      },
+      "eg": {
+        "title": "Let your work be seen.",
+        "titleEnd": "Be here from the beginning.",
+        "intro": "An agency or independent professional in Egypt? Join the early provider phase, add your work and services, and get your profile ready before public discovery opens.",
+        "pioneerTitle": "Why join early? The first cohort has its advantages.",
+        "finalTitle": "Bring your work. Start with us."
+      },
+      "gulf": {
+        "title": "Let your work be seen.",
+        "titleEnd": "Be here from the beginning.",
+        "intro": "Run an agency or work independently? Register free and prepare your portfolio and services in a network being built for marketing professionals across the region.",
+        "pioneerTitle": "Why join early? The first cohort has its advantages.",
+        "finalTitle": "Get ready from the beginning."
+      }
+    },
+    "examples": {
+      "title": "See how your profile could look.",
+      "notice": "Illustrative example only—not a registered account. Names and content demonstrate the interface, not a real provider or work completed through Sawwiq.",
+      "tabsLabel": "Example profile sections",
+      "tabs": {
+        "work": "Work",
+        "services": "Services",
+        "about": "About"
+      },
+      "mediaNotice": "These images are Sawwiq demonstration material, not client work or claimed results.",
+      "imageAlt": "Illustrative portfolio presentation",
+      "contactNotice": "This is the profile's contact area. Contact and follow actions are disabled in this example; there are no invented reviews or activity figures.",
+      "agency": {
+        "label": "Agency example",
+        "name": "Marketing agency — example",
+        "bio": "A space to explain your team's expertise and services. This is sample wording, not an advertisement for a real agency.",
+        "about": "Explain your agency's focus, how the team works and the sectors you serve. Use accurate information and work you have permission to display."
+      },
+      "freelancer": {
+        "label": "Freelancer example",
+        "name": "Independent photographer — example",
+        "bio": "A space to describe your specialty, approach and service area. This is an example, not a real person's account.",
+        "about": "Describe your expertise, services and whether you work remotely or on site. Help a visitor understand what they can request and support the description with your real work."
+      },
+      "projects": [
+        {
+          "title": "Your project title",
+          "body": "An image or video with a description of your role and the service you delivered."
+        },
+        {
+          "title": "Explain the campaign",
+          "body": "Describe the goal and what you actually did. Only publish results that are documented and cleared for sharing."
+        },
+        {
+          "title": "Show your specialty",
+          "body": "Group related projects so a visitor can quickly understand the work you do best."
+        }
+      ],
+      "services": {
+        "brief": {
+          "title": "Clear services",
+          "body": "Describe what you provide, for whom, and what you need before a project starts."
+        },
+        "deliver": {
+          "title": "Defined scope",
+          "body": "Explain the deliverables and expected timing. Prices depend on the services and packages you choose to add."
+        },
+        "collaborate": {
+          "title": "Your role on a team",
+          "body": "Explain how an agency or another freelancer could collaborate with you."
+        }
+      },
+      "aboutTitle": "Introduction and working approach",
+      "yourTurn": "Now make it your own.",
+      "yourTurnBody": "Start free and add your genuine details and work. A new account remains private until you choose otherwise."
+    },
+    "studio": {
+      "notice": "This is the profile-preparation phase. Your account and work carry into the next stage without registering again. Review publication settings before sharing a link.",
+      "eyebrow": "Your early-access account",
+      "title": "Get your profile ready.",
+      "intro": "Describe your services, add real work and preview how your page will look when you choose to share it.",
+      "stepsTitle": "Start with these steps",
+      "visibilityTitle": "Who can see your profile?",
+      "visibilityLink": "Publication settings",
+      "preview": "Preview your profile",
+      "steps": {
+        "profile": {
+          "title": "Introduce your services",
+          "body": "A clear introduction, specialties and the places or markets you serve."
+        },
+        "work": {
+          "title": "Add work or a package",
+          "body": "Use real work you have permission to show. Start with one example and add more later."
+        },
+        "visibility": {
+          "title": "Choose your profile visibility",
+          "body": "Keeping a profile private is a valid choice. Public disclosure is not required to complete your account."
+        }
+      },
+      "pioneerTitle": "Pioneer benefit status",
+      "pioneerEligible": "Your account meets the current qualification requirements. Benefits follow their own terms and activation dates; they are not all available today.",
+      "pioneerPending": "Your account is in the cohort but qualification is not complete. Add an introduction, services and genuine work or a package, then check your status here.",
+      "pioneerUnavailable": "Free registration is available to your account. Pioneer benefits are for accounts accepted into the eligible cohort, not automatically for every registration.",
+      "addWork": "Add your work",
+      "addPackage": "Services and packages",
+      "help": "Need help?",
+      "archiveTitle": "Previous activity",
+      "archiveBody": "Changing the launch phase does not delete previous agreements or messages. New platform contracts and payment features are unavailable during registration.",
+      "archiveMessages": "Previous messages",
+      "archiveContracts": "Existing contracts",
+      "archiveNdas": "Existing NDAs",
+      "archiveNotifications": "Notifications",
+      "savedWork": "Work saved to your profile. Visibility follows the publication settings you selected."
+    },
+    "publication": {
+      "title": "Profile and portfolio visibility",
+      "intro": "This choice is independent of the launch phase. Opening public discovery later will not silently change your privacy setting.",
+      "legacy": "This account predates the current registration phase, so its existing public link has been preserved. It is not included in public browsing during registration. You can change the choice here.",
+      "choose": "Choose who can access your page",
+      "saved": "Your publication choice has been saved.",
+      "consentError": "Choose a visibility setting and acknowledge its effect before saving.",
+      "states": {
+        "private": {
+          "title": "Private preview",
+          "summary": "Your profile is private to its owner and authorized Sawwiq staff.",
+          "body": "Visitors cannot open it even if they know its URL. New portfolio uploads use access-controlled delivery. You can complete your account and keep it private."
+        },
+        "unlisted": {
+          "title": "Anyone with the link",
+          "summary": "Your profile is available through its link, but excluded from directories and search indexing.",
+          "body": "Anyone who receives the link can view the profile and its work. This is not suitable for confidential files. It stays out of public browsing after discovery opens."
+        },
+        "public": {
+          "title": "Allow public publication",
+          "summary": "You have allowed link sharing now and directory inclusion when public discovery opens.",
+          "body": "Visitors can open the link now. When the discovery phase opens, the profile may appear in listings and search engines, subject to platform rules."
+        }
+      },
+      "acknowledge": "I understand and agree to this visibility choice, and I have the right to share the content with the audience I selected.",
+      "mediaNote": "Switching to private stops new access through Sawwiq; it cannot erase copies downloaded or cached elsewhere. Older content previously served through public URLs may remain accessible at its source or in external caches.",
+      "save": "Save publication choice",
+      "preview": "Preview your profile"
+    },
+    "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
+    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
   }
 }
