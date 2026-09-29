@@ -19,7 +19,7 @@ const clip = (s: string | null | undefined, n: number) => (s ? s.slice(0, n) : n
 export const normalizePath = (path: string | null | undefined) =>
   path ? path.split(/[?#]/)[0].replace(/\/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, "/:id").replace(/\/(a|p|r|review)\/[^/]+/g, "/$1/:x").slice(0, 200) : null;
 
-export function errorFingerprint(e: Pick<ErrorInput, "source" | "kind" | "message" | "path">) {
+export function errorFingerprint(e: { source: string; kind: string; message: string; path?: string | null }) {
   const message = e.message.replace(/\d+/g, "N").slice(0, 300);
   return createHash("md5").update(`${e.source}|${e.kind}|${normalizePath(e.path) ?? ""}|${message}`).digest("hex");
 }
@@ -45,8 +45,12 @@ export async function recordError(e: ErrorInput) {
         lastSeenAt: sql`now()`,
         stack: sql`coalesce(excluded.stack, ${errorEvents.stack})`,
         userAgent: sql`excluded.user_agent`,
-        // A "fixed" error that happens again is not fixed.
+        // A "fixed" error that happens again is not fixed: it reopens and its resolution is cleared (the note keeps the history).
         status: sql`case when ${errorEvents.status} in ('fixed', 'cannot_reproduce') then 'open'::error_status else ${errorEvents.status} end`,
+        resolutionNotes: sql`case when ${errorEvents.status} in ('fixed', 'cannot_reproduce') then coalesce(${errorEvents.resolutionNotes} || E'\n', '') || 'Reopened: happened again after being closed.' else ${errorEvents.resolutionNotes} end`,
+        resolvedAt: sql`case when ${errorEvents.status} in ('fixed', 'cannot_reproduce') then null else ${errorEvents.resolvedAt} end`,
+        resolvedBy: sql`case when ${errorEvents.status} in ('fixed', 'cannot_reproduce') then null else ${errorEvents.resolvedBy} end`,
+        resolutionCommit: sql`case when ${errorEvents.status} in ('fixed', 'cannot_reproduce') then null else ${errorEvents.resolutionCommit} end`,
       },
     });
 }
@@ -103,15 +107,18 @@ export async function staleErrorCount(hours: number) {
 }
 
 /**
- * Marks every unresolved error not seen in the last `hours` as fixed, with
- * one note. Errors that still happen are left alone, and recordError()
- * reopens any of these if it comes back. Returns how many were closed.
+ * A person closes every unresolved error not seen in the last `hours`, with one
+ * note and an explicit status: "fixed" when a fix was deployed (the commit is
+ * asked for), "cannot_reproduce" when it merely stopped appearing. Not being
+ * seen is never turned into "fixed" automatically (lib/data/site-check.ts).
+ * Errors that still happen are left alone; recordError() reopens any that
+ * comes back. Returns how many were closed.
  */
-export async function resolveStaleErrors(adminId: string, patch: { hours: number; notes: string; commit?: string }) {
+export async function resolveStaleErrors(adminId: string, patch: { hours: number; notes: string; commit?: string; status?: "fixed" | "cannot_reproduce" }) {
   const db = await getDb();
   const rows = await db
     .update(errorEvents)
-    .set({ status: "fixed", resolutionNotes: clip(patch.notes, 2000), resolutionCommit: clip(patch.commit, 80), resolvedAt: new Date(), resolvedBy: adminId })
+    .set({ status: patch.status ?? "cannot_reproduce", resolutionNotes: clip(patch.notes, 2000), resolutionCommit: clip(patch.commit, 80), resolvedAt: new Date(), resolvedBy: adminId })
     .where(staleWhere(patch.hours))
     .returning({ id: errorEvents.id });
   return rows.length;
