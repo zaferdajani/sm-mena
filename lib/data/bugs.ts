@@ -1,7 +1,7 @@
 import "server-only";
-import { createHash } from "node:crypto";
 import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
+import { errorFingerprint, normalizePath } from "./error-fingerprint";
 import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
 
 // Automatic error journal (browser and server errors) and user-submitted
@@ -15,14 +15,7 @@ export const SUPPORT_STATUSES = ["new", "planned", "done", "declined"] as const;
 export type SupportStatus = (typeof SUPPORT_STATUSES)[number];
 
 const clip = (s: string | null | undefined, n: number) => (s ? s.slice(0, n) : null);
-/** Paths without query strings, ids or handles collapsed so similar pages group together. */
-export const normalizePath = (path: string | null | undefined) =>
-  path ? path.split(/[?#]/)[0].replace(/\/[0-9a-f]{8}-[0-9a-f-]{27,}/gi, "/:id").replace(/\/(a|p|r|review)\/[^/]+/g, "/$1/:x").slice(0, 200) : null;
-
-export function errorFingerprint(e: { source: string; kind: string; message: string; path?: string | null }) {
-  const message = e.message.replace(/\d+/g, "N").slice(0, 300);
-  return createHash("md5").update(`${e.source}|${e.kind}|${normalizePath(e.path) ?? ""}|${message}`).digest("hex");
-}
+export { errorFingerprint, normalizePath } from "./error-fingerprint";
 
 export async function recordError(e: ErrorInput) {
   const db = await getDb();
