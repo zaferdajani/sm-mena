@@ -1,0 +1,294 @@
+[
+ {
+  "name": "dark-390-ar-step1",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-ar-step2-social",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-ar-step3",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-ar-step4",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-ar-step5",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-ar-finished",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-step1",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-step2-social",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-step3",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-step4",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-step5",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-ar-finished",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-step1",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-step2-social",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-step3",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-step4",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-step5",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-390-en-finished",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-step1",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-step2-social",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-step3",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-step4",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-step5",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "dark-1440-en-finished",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-step1",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-step2-social",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-step3",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-step4",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-step5",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-ar-finished",
+  "url": "http://localhost:3106/ar/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-step1",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-step2-social",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-step3",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-step4",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-step5",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "zoom200-en-finished",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0
+ },
+ {
+  "name": "kbd-en-step1-focus-save",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0,
+  "path": [
+   "input#service-search[Search services]",
+   "button#popular-service:+ Social media account managem",
+   "button#popular-service:+ Meta ads (Facebook and Insta",
+   "button#popular-service:+ Social media content creatio",
+   "button#popular-service:+ SEO",
+   "button#popular-service:+ Website design",
+   "button#popular-service:+ Brand identity design",
+   "button#popular-service:+ Photography",
+   "button#popular-service:+ Video production",
+   "button#setup-profile-save:Save and continue"
+  ],
+  "reachedSave": true,
+  "focusVisible": "outline"
+ },
+ {
+  "name": "kbd-en-step2",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0,
+  "picked": false,
+  "moved": true,
+  "focusAfter": "h2:Where is your work?"
+ },
+ {
+  "name": "kbd-en-step3",
+  "url": "http://localhost:3106/en/portfolio-setup",
+  "overflow": false,
+  "bad": false,
+  "broken": 0,
+  "step3": true,
+  "focusAfter": "h2:Who did you make this for?"
+ }
+]

@@ -152,10 +152,12 @@ type StepProps = {
   back?: () => void;
 };
 
+// scroll-mt: focus moves to this heading on every step change; the margin keeps "Step n of 5" and
+// "Finish later" below the sticky site header when the browser scrolls the heading into view (seen at 200% zoom).
 function Heading({ heading, title, body }: { heading: StepProps["heading"]; title: string; body?: string }) {
   return (
     <header className="space-y-1">
-      <h2 id="setup-heading" ref={heading} tabIndex={-1} className="text-xl font-bold outline-none">{title}</h2>
+      <h2 id="setup-heading" ref={heading} tabIndex={-1} className="scroll-mt-32 text-xl font-bold outline-none">{title}</h2>
       {body && <p className="text-sm leading-7 text-muted-foreground">{body}</p>}
     </header>
   );

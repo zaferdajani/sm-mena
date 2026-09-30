@@ -141,7 +141,13 @@ test("protections: targets and reporting, extra money only by the client's appro
 
   // The agency can only ask for more; the contract total doesn't move until the client accepts.
   await page.goto(agencyUrl);
-  await page.getByText("Ask for extra work or money").click();
+  // The request form sits in a <details>; on a busy phone run the summary click can land while React is still
+  // hydrating the page and the panel never opens, so open it the way a person would: click until it is open.
+  const request = page.locator("details", { hasText: "Ask for extra work or money" });
+  await expect(async () => {
+    if (!(await request.getAttribute("open"))) await request.locator("summary").click();
+    await expect(request.locator('input[name="title"]')).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
   await page.fill('input[name="title"]', "Neo launch campaign");
   await page.fill('textarea[name="reason"]', "The online store opens earlier than planned");
   await page.fill('input[name="amount"]', "300");

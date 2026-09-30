@@ -155,8 +155,12 @@ test("from an accepted quote to an approved work order that releases the protect
   await agency.reload();
   const image = agency.getByTestId("asset-image").first();
   await expect(image).toBeVisible();
-  await image.click({ position: { x: 40, y: 30 } });
-  await expect(agency.getByTestId("comment-form")).toContainText("Pinned at");
+  // The pin is React state on the image's button; a tap that lands before hydration does nothing (seen on the
+  // phone project under two workers), so tap until the form confirms the pin, as a person would.
+  await expect(async () => {
+    await image.click({ position: { x: 40, y: 30 } });
+    await expect(agency.getByTestId("comment-form")).toContainText("Pinned at", { timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
   await agency.getByTestId("comment-input").fill("Crop tighter on the plate.");
   await agency.getByTestId("comment-submit").click();
   await expect(agency.getByTestId("asset-comment")).toContainText("Crop tighter");
