@@ -44,6 +44,8 @@ next-env.d.ts
 
 # playwright
 /test-results/
+/registration-results/
+/registration-report/
 /playwright-report/
 /blob-report/
 

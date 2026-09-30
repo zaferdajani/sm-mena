@@ -75,7 +75,7 @@ the publication screen explains this limitation rather than promising erasure.
 
 ## Deployment and migration order
 
-`0028_profile_publication` is additive; it changes no existing user or money rows.
+`0029_profile_publication` (after main's `0028_portfolio_setup_social`) is additive; it changes no existing user or money rows.
 The Drizzle snapshot/journal accompanies the schema. Vercel's existing build
 command applies migrations before building. An old deployed app can keep running
 while the new table exists. Never reset, re-seed, backfill private visibility or
