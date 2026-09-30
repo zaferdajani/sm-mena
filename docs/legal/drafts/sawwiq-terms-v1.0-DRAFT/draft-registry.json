@@ -1,0 +1,36 @@
+{
+  "documentId": "sawwiq-terms",
+  "version": "sawwiq-terms-v1.0-DRAFT",
+  "status": "draft_not_issued",
+  "ownerApprovedForPublication": false,
+  "legalReviewComplete": false,
+  "publishedAt": null,
+  "effectiveAt": null,
+  "acceptanceCollectionEnabled": false,
+  "customerRemindersEnabled": false,
+  "adminTrackingImplemented": false,
+  "runtimeConfiguration": false,
+  "languages": ["en", "ar"],
+  "retainedFor": "reference_and_future_versioned_acceptance",
+  "sourceArchive": {
+    "filename": "Sawwiq_Terms_and_Acknowledgements_Package.zip",
+    "sha256": "87425e11b649fe6d7149e385b6a52f28b042f1629b113e6c66e9591ece2c845c",
+    "origin": "owner-approved-for-reference conversation artifact; not approved for live legal acceptance"
+  },
+  "originalFileSha256": {
+    "terms.en.md": "937575178d699cb91a49bb5f9ba2c09f8e8cef819d72a1d7c00339962ce4fcc5",
+    "terms.ar.md": "2a1190f6b5eb659e726db8a58455b8e8b93177c14575847efd9e06f73ee33eae",
+    "acknowledgements.en.md": "57a08c86595466fc9467434327c687879009d6a1fbf2276b1114d181c7271671",
+    "acknowledgements.ar.md": "b109bd9e08cde4b033cd148bc3565eff776d707dc0e16ac5575e45dfe60ac40c"
+  },
+  "unresolvedFields": [
+    "LEGAL_OPERATOR_NAME",
+    "LEGAL_FORM_AND_REGISTRATION",
+    "OPERATOR_ADDRESS",
+    "LEGAL_CONTACT_EMAIL",
+    "PRIVACY_CONTACT_EMAIL",
+    "EFFECTIVE_DATE"
+  ],
+  "acceptanceCounts": null,
+  "acceptanceCountsReason": "No user records queried or written. Do not infer acceptance or noncompliance for a draft that has not been issued."
+}

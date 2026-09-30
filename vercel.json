@@ -5,5 +5,10 @@
   "crons": [
     { "path": "/api/cron/google", "schedule": "17 3 * * *" },
     { "path": "/api/cron/retention", "schedule": "41 3 * * *" }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "docs/legal-drafts-2026-09-30": false
+    }
+  }
 }
