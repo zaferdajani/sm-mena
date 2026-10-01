@@ -112,7 +112,7 @@
  .launch-strip > p { display: block; text-align: start; line-height: 1.7; font-size: .9375rem; }
  .launch-strip-kicker { display: block; font-size: 1rem; }
  .launch-strip-body::after { content: " · "; color: var(--launch-gold); }
- .launch-strip-link { display: inline; min-block-size: 0; padding: .15rem 0; border: 0; border-radius: 0; text-decoration: underline; text-underline-offset: .3em; text-decoration-color: var(--launch-gold); }
+ .launch-strip-link { display: inline; min-block-size: 0; padding: .15rem 0; border: 0; border-radius: 0; white-space: nowrap; text-decoration: underline; text-underline-offset: .3em; text-decoration-color: var(--launch-gold); }
  .launch-strip-link svg { display: inline; vertical-align: -.15em; margin-inline-start: .15rem; }
  .launch-early { grid-template-columns: minmax(0, 1fr); }
  .launch-badge { margin-block-end: .9rem; }
