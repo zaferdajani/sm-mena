@@ -1394,6 +1394,37 @@ export const portfolioSetupMedia = pgTable(
   (t) => [index("setup_media_agency_idx").on(t.agencyId, t.position)],
 );
 
+// Admin → Prospects (docs/55): agencies and freelancers worth inviting at launch.
+// Businesses only (public website / handle); the owner's own contact notes live
+// in `note`. Never a sign-up, never shown outside the admin console.
+export const prospectStatus = pgEnum("prospect_status", ["new", "contacted", "replied", "joined", "declined"]);
+export const prospects = pgTable(
+  "prospects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name").notNull(),
+    /** Lower-cased, punctuation-free name: one row per business however it is spelled. */
+    nameKey: text("name_key").notNull().unique(),
+    website: text("website"),
+    instagram: text("instagram"),
+    city: text("city").notNull().default("amman"),
+    country: text("country").notNull().default("JO"),
+    services: text("services").array().notNull().default(sql`'{}'::text[]`),
+    note: text("note"),
+    /** Where the name came from: "owner" or the research directory it was found in. */
+    source: text("source").notNull().default("owner"),
+    status: prospectStatus("status").notNull().default("new"),
+    priority: boolean("priority").notNull().default(false),
+    contactedAt: timestamp("contacted_at", { withTimezone: true }),
+    agencyId: uuid("agency_id").references(() => agencies.id, { onDelete: "set null" }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("prospects_status_idx").on(t.status)],
+);
+export type Prospect = typeof prospects.$inferSelect;
+
 export const siteChecks = pgTable(
   "site_checks",
   {

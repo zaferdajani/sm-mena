@@ -6,6 +6,7 @@
 // admin:       day-to-day operations incl. payments, disputes and feature switches; no staff management.
 // backbone:    core engineering: health, statistics, error journal, audit log, read-only users/agencies.
 // maintenance: keeps things running: health, statistics, error journal and user reports.
+// prospects.manage (owner, admin): the launch prospect list.
 // support:     helps people: users and agencies (read), verification and moderation, user reports,
 //              chat transcripts (read-only, audited; docs/23-chat-and-notifications.md).
 
@@ -40,6 +41,8 @@ export const PERMISSIONS = [
   "features.manage",
   // Referral agents: add them, set pay, record payouts, void referrals (docs/42).
   "agents.manage",
+  // Launch prospects: the list of agencies to invite, with contact status (docs/55).
+  "prospects.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

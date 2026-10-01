@@ -1,0 +1,407 @@
+{
+  "researchedOn": "2026-10-01",
+  "country": "JO",
+  "prospects": [
+    {
+      "name": "UPT House",
+      "website": "https://www.upthouse.com",
+      "instagram": "theupthouse",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "video",
+        "branding"
+      ],
+      "note": "Owner's pick. Social media, Reels/TikTok, video and branding; says trusted by mega brands since 2017 (Samsung, Orange, Careem, Hikma listed on its site).",
+      "source": "owner; clutch.co social media Jordan ranking; upthouse.com",
+      "priority": true
+    },
+    {
+      "name": "Muhannad",
+      "website": null,
+      "instagram": null,
+      "city": "amman",
+      "services": [
+        "social_media"
+      ],
+      "note": "Owner's pick. No agency or page under this name was found in the directories searched on 1 Oct 2026; add the website or Instagram handle here.",
+      "source": "owner",
+      "priority": true
+    },
+    {
+      "name": "UBlac",
+      "website": "https://ublac.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "branding",
+        "design"
+      ],
+      "note": "Social media management and online branding; top of Clutch's social media list for Jordan (10-49 people).",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "HM Marketing Consultant (Hazem Araqa)",
+      "website": "https://hazemaraqa.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads",
+        "branding"
+      ],
+      "note": "Social media ads and branding consultancy, 10-49 people.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "IMPRESSIONS Digital Marketing",
+      "website": "https://impressionsdgtl.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads",
+        "strategy"
+      ],
+      "note": "Tailored social media strategies; 10-49 people; enterprise-focused.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Jeel Media",
+      "website": "https://jeelmedia.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "seo",
+        "performance",
+        "influencers"
+      ],
+      "note": "360-degree digital agency, 50-249 people; content, social, performance and Arabic SEO.",
+      "source": "clutch.co social media Jordan ranking; al5otwa.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Sudacé Digital Agency",
+      "website": "https://sudace.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "branding",
+        "reputation"
+      ],
+      "note": "Digital branding and social strategy; says 100+ clients across the Middle East.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Humanize Social Media Agency",
+      "website": "https://humanize.social",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "content"
+      ],
+      "note": "Content and social media agency since 2013.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Masar Agency",
+      "website": "https://masar.me",
+      "city": "amman",
+      "services": [
+        "social_media"
+      ],
+      "note": "Social media marketing agency since 2019, 10-49 people.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "emango agency",
+      "website": "https://emango.co",
+      "city": "amman",
+      "services": [
+        "social_media"
+      ],
+      "note": "Social media marketing agency since 2019.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Prestige Marketing",
+      "website": "https://prestigemarketing.agency",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "video"
+      ],
+      "note": "Social media firm with multimedia production, 50-249 people.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Smart Cube",
+      "website": "https://smartcubejo.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "seo"
+      ],
+      "note": "Social media marketing and SEO, 50-249 people.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Smart Media",
+      "website": "https://smartmediajo.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "design"
+      ],
+      "note": "Social media marketing and graphic design.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Extra Expand",
+      "website": "https://extraexpand.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "strategy"
+      ],
+      "note": "Social media marketing company focused on digital strategy.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "TruTed Studio",
+      "website": "https://truted.studio",
+      "city": "amman",
+      "services": [
+        "branding",
+        "social_media"
+      ],
+      "note": "Branding studio with social media services, 50-249 people.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Hex Corner",
+      "website": "https://hexcorner.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads",
+        "content"
+      ],
+      "note": "Social media agency in Amman: content, account management and ads on Facebook, Instagram, TikTok and LinkedIn.",
+      "source": "hexcorner.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "AlGurus",
+      "website": "https://algurus.com",
+      "city": "amman",
+      "services": [
+        "ads",
+        "social_media"
+      ],
+      "note": "Social media ads agency; says it is a Meta Business Partner and Google Premier Partner.",
+      "source": "algurus.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Dot Media",
+      "website": "https://www.dotmediajo.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "video",
+        "web",
+        "seo"
+      ],
+      "note": "Creative production and marketing agency: video, branding, social, SEO, web.",
+      "source": "entasher.com; dotmediajo.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Mrketly (ماركتلي)",
+      "website": "https://mrketly.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads"
+      ],
+      "note": "Arabic-first social media agency: account management and ad campaigns.",
+      "source": "mrketly.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "RANWA Production (رنوة للإنتاج)",
+      "website": "https://ranwaproduction.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "content",
+        "video"
+      ],
+      "note": "Content production and social media management since 2015.",
+      "source": "al5otwa.com; ranwaproduction.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Ebda3 Marketing & Production (إبداع)",
+      "website": "https://ebda3marketing.net",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads",
+        "video"
+      ],
+      "note": "Social media, visual content, paid ads; real estate marketing focus.",
+      "source": "al5otwa.com; ebda3marketing.net",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Digital Image (Ramzi Rihani)",
+      "website": "https://ramzirihani.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "video"
+      ],
+      "note": "Social media and video, 250-999 people, since 2012.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Flare Digital Marketing Agency",
+      "website": "https://flaremarketing.net",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "ads"
+      ],
+      "note": "Full marketing services including social media management.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Holoproduction",
+      "website": "https://holoproduction.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "video"
+      ],
+      "note": "Social media and production company since 2020.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Digital Feelings Marketing",
+      "website": "https://dfeelings.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "strategy"
+      ],
+      "note": "Digital strategy and social media since 2013.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Socialanji",
+      "website": "https://socialanji.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "strategy"
+      ],
+      "note": "Marketing strategy and social media since 2016.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "DoT.Social-me",
+      "website": "https://dotsocial-me.com",
+      "city": "amman",
+      "services": [
+        "social_media",
+        "research"
+      ],
+      "note": "Social media with market research, since 2018.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Moringa",
+      "website": "https://moringa.click",
+      "city": "amman",
+      "services": [
+        "social_media"
+      ],
+      "note": "Small social media marketing company.",
+      "source": "clutch.co social media Jordan ranking",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "MNI View (ام ان اي فيو)",
+      "website": null,
+      "city": "amman",
+      "services": [
+        "social_media",
+        "seo",
+        "web"
+      ],
+      "note": "Full-service creative agency: social media management, SEO, web and e-commerce.",
+      "source": "al5otwa.com",
+      "instagram": null,
+      "priority": false
+    },
+    {
+      "name": "Ain Design (عين ديزاين)",
+      "website": null,
+      "city": "amman",
+      "services": [
+        "design",
+        "video",
+        "web",
+        "social_media"
+      ],
+      "note": "Creative design with digital marketing: graphic design, video, web, 3D.",
+      "source": "al5otwa.com",
+      "instagram": null,
+      "priority": false
+    }
+  ]
+}

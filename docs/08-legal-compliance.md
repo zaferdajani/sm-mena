@@ -177,6 +177,11 @@ No contact data is added. Notifications carry names and titles only. Audit: `col
 - **Meta deauthorization / data deletion**: verified signed requests remove that person's connections in every agency; the deletion request keeps only its code, platform and count for 180 days.
 - Connecting an account is evidence of access only: it never sets verification, client confirmation, Founder status or matching.
 
+## Launch prospects (docs/55, 2026-10-01)
+- **What is stored:** business names, public websites and Instagram handles of agencies the owner may invite, with a status and the owner's note. Sources are public directories and the owner's own knowledge. No sign-up, no consent event: these are businesses' public details, used only for the owner's outreach.
+- **People:** no fields for a person's phone number or email; the admin page asks staff to keep them out of the notes. A prospect that joins is linked by website host to its page, which then carries the consented data.
+- **Retention:** until the owner removes the row; removal and every change are audited.
+
 ## Registration-phase publication choices (2026-09-29)
 
 `profile_publications` stores the provider's chosen audience (private, unlisted,

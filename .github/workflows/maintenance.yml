@@ -7,6 +7,7 @@
 #   recover-owner       owner locked out: clears the owner's 2FA and, with OWNER_RECOVERY_PASSWORD, sets a new password
 #   db-activity         what the live database is busy with (connection states, long waits); read-only
 #   pooler-check        read-only: runs admin-style queries through Supabase's transaction pooler with both drivers, counts stalls
+#   seed-prospects      add the researched launch prospects (data/prospects-jordan.json) to Admin → Prospects; keeps existing rows
 #   traffic-breakdown   read-only: how many of the last 30 days' views, clicks and visitors come from the same browser (no IPs are kept)
 # Every Sunday at 02:17 UTC it also runs rebuild-demo-media, so the shared demo at
 # /demo starts the week clean (docs/37-demo-link.md). Only demo agencies are touched.
@@ -23,7 +24,7 @@ on:
         description: What to run
         required: true
         type: choice
-        options: [migrate, seed-demo, rebuild-demo-media, reset-staff-2fa, recover-owner, db-activity, pooler-check, traffic-breakdown]
+        options: [migrate, seed-demo, seed-prospects, rebuild-demo-media, reset-staff-2fa, recover-owner, db-activity, pooler-check, traffic-breakdown]
   schedule:
     - cron: "17 2 * * 0"
 
@@ -66,6 +67,7 @@ jobs:
           case "$TASK" in
             migrate) npm run --silent db:migrate ;;
             seed-demo) npm run --silent db:migrate && npx tsx lib/db/seed.ts ;;
+            seed-prospects) npm run --silent db:migrate && npx tsx lib/db/seed-prospects.ts ;;
             rebuild-demo-media) npm run --silent db:migrate && npx tsx lib/db/rebuild-demo-media.ts ;;
             reset-staff-2fa) npx tsx lib/db/reset-staff-2fa.ts ;;
             db-activity) npx tsx lib/db/db-activity.ts ;;
