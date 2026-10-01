@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
-import { readPdf, type ReadPage, type ReadProgress } from "@/lib/portfolio-import/read-pdf";
+import type { ReadPage, ReadProgress } from "@/lib/portfolio-import/read-pdf";
 import { IMPORT_LIMITS, type DraftPost, type ImageRef, type ImportPlan } from "@/lib/portfolio-import/types";
 import { cn } from "@/lib/utils";
 import { PicturePicker, picturesOf, type PictureKind } from "./picture-picker";
@@ -93,6 +93,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     if (file.size > MAX_MB * 1024 * 1024) return setError("tooBig");
     setPhase("reading");
     try {
+      // pdf.js and the OCR glue load only once a PDF is chosen (the setup wizard does the same), so the page's first paint stays light.
+      const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
       const read = await readPdf(file, (p: ReadProgress) => {
         setPhase(p.step === "ocr" ? "ocr" : "reading");
         setProgress({ done: p.done, total: p.total });

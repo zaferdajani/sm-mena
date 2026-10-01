@@ -4319,11 +4319,11 @@
     }
   },
   "Registration": {
-    "metaTitle": "سوّق | التسجيل المبكر للوكالات والمستقلين",
-    "metaDescription": "خلّي شغلك يبين وكون معنا من البداية. التسجيل وإنشاء صفحتك مجاناً. جهّز أعمالك وخدماتك واطّلع على نموذج للصفحة قبل فتح التصفّح العام.",
+    "metaTitle": "سوّق قادم قريباً | التسجيل المبكر للدفعة الأولى مفتوح",
+    "metaDescription": "في شي جديد عم يتجهّز لأهل التسويق في المنطقة. انضم للدفعة الأولى مجاناً، جهّز صفحتك وأعمالك بخصوصية، وكن جاهزاً قبل فتح التصفّح العام.",
     "phaseLabel": "مرحلة التسجيل المبكر",
-    "eyebrow": "التسجيل للدفعة الأولى مفتوح",
-    "cta": "أنشئ صفحتك مجاناً",
+    "eyebrow": "التسجيل المبكر مفتوح الآن",
+    "cta": "احجز مكانك في الدفعة الأولى",
     "exampleCta": "شوف نموذج للصفحة",
     "freeNote": "التسجيل وإنشاء الصفحة مجاناً · بدون بطاقة دفع",
     "navHome": "البداية",
@@ -4556,7 +4556,35 @@
       "preview": "عاين صفحتك"
     },
     "adminPhase": "مرحلة الإطلاق الحالية: التسجيل المبكر. إعداد المرحلة مستقل عن مفاتيح الميزات؛ تفعيل ميزة هنا لا يفتح التصفّح العام أو المدفوعات في هذه المرحلة.",
-    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
+    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
+    "launch": {
+      "label": "إعلان الإطلاق",
+      "kicker": "سوّق قادم قريباً",
+      "body": "التسجيل المبكر للدفعة الأولى مفتوح الآن",
+      "link": "انضم من البداية"
+    },
+    "cohort": {
+      "kicker": "تسجيل مبكر",
+      "name": "الدفعة الأولى",
+      "year": "2026"
+    },
+    "trust": {
+      "free": "مجاني خلال التسجيل المبكر",
+      "noCard": "بدون بطاقة دفع",
+      "private": "صفحتك تبقى خاصة إلى أن تقرر أنت"
+    },
+    "early": {
+      "eyebrow": "ليش تنضم من البداية؟",
+      "title": "كن من الناس اللي بدأوا معنا.",
+      "body": "قبل ما نفتح سوّق للجمهور، نبني هنا أول مجتمع من الوكالات والمستقلين وصنّاع المحتوى في المنطقة. الدفعة الأولى هي اللي بتعطي سوّق شكله الحقيقي.",
+      "points": {
+        "prepare": "جهّز صفحتك قبل الإطلاق",
+        "organise": "رتّب أعمالك وخدماتك من الآن",
+        "ready": "كن جاهزاً لحظة ما يبدأ الاكتشاف العام",
+        "community": "كن جزءاً من أول مجتمع يبدأ معه سوّق"
+      },
+      "note": "التسجيل المبكر مجاني ولا يُلزمك بشيء. ووقت ما يفتح الاكتشاف العام، صفحتك بتكون موجودة وجاهزة بدل ما تبدأ من الصفر."
+    }
   },
   "CreatorSetup": {
     "nav": "دليل البداية",

@@ -4319,11 +4319,11 @@
     }
   },
   "Registration": {
-    "metaTitle": "Sawwiq | Early registration for marketing agencies and freelancers",
-    "metaDescription": "Join free and prepare your work, services and profile before public discovery opens. Explore an example profile and learn about the Pioneer program.",
+    "metaTitle": "Sawwiq is coming | Early registration for the first cohort is open",
+    "metaDescription": "Something new for the region's marketing community is on its way. Join the first cohort free, build your profile and portfolio privately, and be ready before public discovery opens.",
     "phaseLabel": "Early registration phase",
-    "eyebrow": "Early provider registration is open",
-    "cta": "Create your free profile",
+    "eyebrow": "Early registration is open now",
+    "cta": "Join the first cohort",
     "exampleCta": "See an example profile",
     "freeNote": "Free registration and profile creation · No payment card",
     "navHome": "Start here",
@@ -4405,28 +4405,28 @@
       "jo": {
         "title": "Let your work be seen.",
         "titleEnd": "Be here from the beginning.",
-        "intro": "Run an agency or work independently? We are building a network for the people behind marketing. Registration is open: add your work and services, and prepare your profile before public discovery opens.",
+        "intro": "For agencies, freelancers and creators across the region: add your work and services now, and have your profile ready before public discovery opens.",
         "pioneerTitle": "Why join early? The first cohort has its advantages.",
         "finalTitle": "Bring your work. Start with us."
       },
       "sa": {
         "title": "Let your work be seen.",
         "titleEnd": "Be here from the beginning.",
-        "intro": "Run an agency or work independently in Saudi Arabia? Register free, add your work and services, and prepare your profile before Sawwiq opens public discovery.",
+        "intro": "For agencies, freelancers and creators in Saudi Arabia: add your work and services now, and have your profile ready before public discovery opens.",
         "pioneerTitle": "Why join early? The first cohort has its advantages.",
         "finalTitle": "Get ready from the beginning."
       },
       "eg": {
         "title": "Let your work be seen.",
         "titleEnd": "Be here from the beginning.",
-        "intro": "An agency or independent professional in Egypt? Join the early provider phase, add your work and services, and get your profile ready before public discovery opens.",
+        "intro": "For agencies, freelancers and creators in Egypt: add your work and services now, and have your profile ready before public discovery opens.",
         "pioneerTitle": "Why join early? The first cohort has its advantages.",
         "finalTitle": "Bring your work. Start with us."
       },
       "gulf": {
         "title": "Let your work be seen.",
         "titleEnd": "Be here from the beginning.",
-        "intro": "Run an agency or work independently? Register free and prepare your portfolio and services in a network being built for marketing professionals across the region.",
+        "intro": "For agencies, freelancers and creators across the Gulf and the region: add your work and services now, and have your profile ready before public discovery opens.",
         "pioneerTitle": "Why join early? The first cohort has its advantages.",
         "finalTitle": "Get ready from the beginning."
       }
@@ -4556,7 +4556,35 @@
       "preview": "Preview your profile"
     },
     "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
-    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n"
+    "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
+    "launch": {
+      "label": "Launch announcement",
+      "kicker": "Sawwiq is coming",
+      "body": "Early registration for the first cohort is open now",
+      "link": "Join from the beginning"
+    },
+    "cohort": {
+      "kicker": "Early access",
+      "name": "The first cohort",
+      "year": "2026"
+    },
+    "trust": {
+      "free": "Free during early registration",
+      "noCard": "No payment card",
+      "private": "Your page stays private until you decide otherwise"
+    },
+    "early": {
+      "eyebrow": "Why join from the beginning?",
+      "title": "Be one of the people who started with us.",
+      "body": "Before Sawwiq opens to the public, we are building the region's first community of agencies, freelancers and content creators here. The first cohort is what gives Sawwiq its real shape.",
+      "points": {
+        "prepare": "Get your page ready before launch",
+        "organise": "Organise your work and services now",
+        "ready": "Be ready the moment public discovery opens",
+        "community": "Be part of the first community Sawwiq starts with"
+      },
+      "note": "Early registration is free and commits you to nothing. When public discovery opens, your page is already there instead of starting from zero."
+    }
   },
   "CreatorSetup": {
     "nav": "Setup guide",

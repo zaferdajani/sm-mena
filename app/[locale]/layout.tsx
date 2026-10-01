@@ -1,5 +1,5 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -33,6 +33,9 @@ const notoArabic = Noto_Sans_Arabic({
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+// The browser chrome colour outside an installed app follows the brochure surfaces (app/globals.css).
+export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f2f2ed" }, { media: "(prefers-color-scheme: dark)", color: "#0f2a20" }] };
 
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
