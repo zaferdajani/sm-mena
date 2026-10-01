@@ -1,11 +1,14 @@
 {
   "template": false,
-  "status": "tested_green_merging",
+  "status": "deployed_and_verified",
   "release": "early-access campaign layer + mobile-ready architecture foundation (branch feat/early-access-campaign)",
   "recorded_at_utc": "2026-10-01T09:03:51Z",
   "candidate_commit": "bb45e3236135a9202374772d8764c07ae8cacab9",
   "base_main_commit": "ecbb2a6661de00b6cfa8b235c13106572c428b76",
-  "implementation_commits": ["abb06ce campaign layer, roadmap, audit, error contract, boundary test, manifest, lazy PDF import", "bb45e32 phone strip, docs/55"],
+  "implementation_commits": [
+    "abb06ce campaign layer, roadmap, audit, error contract, boundary test, manifest, lazy PDF import",
+    "bb45e32 phone strip, docs/55"
+  ],
   "scope": {
     "implemented_now": [
       "registration landing: launch strip, first-cohort mark, cohort CTA, three-point promise line, why-join-early section, opt-in entrance motion, organization JSON-LD; weak phase label removed (components/registration/registration-view.tsx, app/styles/registration.css, messages Registration.*)",
@@ -16,9 +19,22 @@
       "tests/registration/campaign.spec.ts (ar/en hierarchy, truth rules, fold, keyboard, reduced motion, manifest)",
       "docs/55-early-access-campaign.md, docs/architecture/mobile-and-api-roadmap.md, docs/architecture/dependency-audit.md"
     ],
-    "prepared_not_implemented": ["service worker / offline / push (roadmap §6: needs review)", "/api/v1 slice A, bearer sessions, decision guards, request-context adapter (roadmap §3 steps 5–10)", "monorepo folder moves (roadmap §2–3)", "maskable icon", "shadcn → devDependencies, @supabase/ssr removal, AI SDK lazy-load (audit: needs review)"],
-    "owner_approval_needed": ["cohort number in marketing copy (docs/44 says capacity, kit says 100)", "any Founder/Pioneer benefit beyond the existing reviewed block", "LAUNCH_PHASE changes", "legal terms activation (draft Terms stay inactive)"],
-    "future_native_phase": ["Expo app after slice A's API exists (roadmap §7–8, M2→M3)"]
+    "prepared_not_implemented": [
+      "service worker / offline / push (roadmap §6: needs review)",
+      "/api/v1 slice A, bearer sessions, decision guards, request-context adapter (roadmap §3 steps 5–10)",
+      "monorepo folder moves (roadmap §2–3)",
+      "maskable icon",
+      "shadcn → devDependencies, @supabase/ssr removal, AI SDK lazy-load (audit: needs review)"
+    ],
+    "owner_approval_needed": [
+      "cohort number in marketing copy (docs/44 says capacity, kit says 100)",
+      "any Founder/Pioneer benefit beyond the existing reviewed block",
+      "LAUNCH_PHASE changes",
+      "legal terms activation (draft Terms stay inactive)"
+    ],
+    "future_native_phase": [
+      "Expo app after slice A's API exists (roadmap §7–8, M2→M3)"
+    ]
   },
   "checks": {
     "lint": "pass on bb45e3236135a9202374772d8764c07ae8cacab9 (eslint .: 0 errors; warnings only in git-ignored .data scripts)",
@@ -37,7 +53,18 @@
     "truth": "every promise line statement is enforced by the product today (free, no card, private by default with owner-controlled visibility); no counts, countdowns, seats, deadlines, testimonials, rewards or guaranteed visibility; tests fail on scarcity words in both languages"
   },
   "protected_behaviour": "registration flow, private-by-default publication, five-step setup, save/resume, auth, roles, consent, launch-phase gates, release stamp, media permissions and schema untouched; draft Terms not activated (verified by the unchanged registration suite and by diff scope: no change under lib/data, lib/auth, lib/db, app/[locale]/(auth)/actions.ts)",
-  "deployment": { "result": "pending: main fast-forwarded to the tested commit after this record; Vercel builds main (see docs/OPEN-ITEMS.md for the verified result)" },
-  "production": { "canonical_origin": "https://sawwiq.org", "version_response": "recorded after deploy in docs/OPEN-ITEMS.md", "routes_checked": "recorded after deploy in docs/OPEN-ITEMS.md" },
+  "deployment": {
+    "result": "live: main fast-forwarded ecbb2a6 → d3e971b (code identical to the tested bb45e32 plus this record); /api/version returned d3e971b at 2026-10-01T09:06:41Z with launchPhase registration"
+  },
+  "production": {
+    "canonical_origin": "https://sawwiq.org",
+    "version_response": {
+      "revision": "registration-setup-2026-09-29",
+      "commit": "d3e971b6d6906147ccbc85bf06e6a8d3df3e6146",
+      "environment": "production",
+      "launchPhase": "registration"
+    },
+    "routes_checked": "/ar 200, /en 200, /ar/examples 200, /en/join 200, /manifest.webmanifest 200; the served HTML of /ar carries the launch strip, the cohort CTA and the why-early section; /en carries 'Sawwiq is coming', 'Join the first cohort' and the promise line; manifest shortcuts are /ar/join and /ar/examples with id /ar. Unauthenticated fetches only; no account used, no seat consumed."
+  },
   "decision": "merge: every gate green on the exact candidate; main unchanged since the branch point (ecbb2a6)"
 }

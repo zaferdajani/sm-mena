@@ -1,7 +1,7 @@
 # Sawwiq — open items (living list)
 
 Kept current by the working session; every report to the owner ends with this list.
-Last update: 2026-10-01 09:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase (`/api/version` → revision registration-setup-2026-09-29, launchPhase registration); the scheduled site check is green.
+Last update: 2026-10-01 09:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase with the early-access campaign (`/api/version` → d3e971b, revision registration-setup-2026-09-29, launchPhase registration; verified 2026-10-01 09:06 UTC); the scheduled site check is green.
 
 ## Owner decisions (nobody else can close these)
 
