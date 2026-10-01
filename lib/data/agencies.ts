@@ -115,6 +115,8 @@ export type AgencySummary = {
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
+  /** Pioneer seal number (docs/57), shown as a small seal on cards. */
+  pioneerNumber: number | null;
   country: string;
   servesCountries: string[];
   kind: Agency["kind"];
@@ -140,6 +142,7 @@ export function toSummary(a: Agency): AgencySummary {
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
     isVerified: a.isVerified,
+    pioneerNumber: a.pioneerNumber ?? null,
     isDemo: a.isDemo,
     country: a.country,
     servesCountries: a.servesCountries,

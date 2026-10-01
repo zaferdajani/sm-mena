@@ -262,3 +262,30 @@ html.reel-snap [data-testid="site-footer"] {
   background-clip: text;
   color: transparent;
 }
+
+/* Pioneer letters (docs/57): A5 sheets, one side per language, printed from /pioneer-letters. */
+.pioneer-letters { background: #e9e6df; padding-block: 1rem; }
+.pioneer-letter {
+  box-sizing: border-box; inline-size: 148mm; min-block-size: 210mm; margin: 0 auto 1rem; padding: 16mm 14mm;
+  background: #fbf9f4; color: #15251d; font-size: 11.5pt; line-height: 1.75; break-after: page; page-break-after: always;
+  border: 1px solid #d8d2c4;
+}
+.pioneer-letter p { margin: 0 0 .7em; }
+.pioneer-letter__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-block-end: 8mm; }
+.pioneer-letter__eyebrow { font-size: 9pt; letter-spacing: .06em; color: #0d5c42; font-weight: 700; }
+.pioneer-letter__title { font-size: 20pt; line-height: 1.3; font-weight: 800; margin: 0 0 4mm; color: #0d5c42; }
+.pioneer-letter__to { font-weight: 700; }
+.pioneer-letter__seal { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6mm; margin: 6mm 0 2mm; padding: 5mm; border: 1px solid #cfd9d3; border-radius: 4mm; background: #f1f6f3; }
+.pioneer-letter__number { font-size: 14pt; font-weight: 800; margin: 0; }
+.pioneer-letter__expiry { margin: 0; font-size: 10pt; color: #4c5b53; }
+.pioneer-letter__qr { inline-size: 30mm; block-size: 30mm; background: #fff; padding: 2mm; border-radius: 2mm; }
+.pioneer-letter__qr svg { inline-size: 100%; block-size: 100%; display: block; }
+.pioneer-letter__caption { font-size: 9.5pt; color: #4c5b53; }
+.pioneer-letter__foot { margin-block-start: 8mm; font-size: 10pt; }
+.pioneer-letter__honest { color: #6b746f; font-size: 8.5pt; }
+@media print {
+  @page { size: A5; margin: 0; }
+  .pioneer-letters { background: none; padding: 0; }
+  .pioneer-letter { margin: 0; border: 0; min-block-size: 210mm; }
+  body > *:not(:has(.pioneer-letters)) { display: none !important; }
+}

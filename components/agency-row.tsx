@@ -25,6 +25,10 @@ export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary
         <p className="flex items-center gap-1 font-semibold">
           <span className="truncate">{agencyName(agency, locale)}</span>
           {agency.isVerified && <VerifiedBadge label={tc("verified")} />}
+          {agency.pioneerNumber && agency.postCount > 0 ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/brand/pioneer-seal.svg" alt={tc("pioneer")} title={tc("pioneer")} width={16} height={16} className="shrink-0" data-testid="row-pioneer" />
+          ) : null}
           {agency.kind === "freelancer" && <span className="shrink-0 rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand">{tpart("kinds.freelancer")}</span>}
         </p>
         <p className="truncate text-sm text-muted-foreground">

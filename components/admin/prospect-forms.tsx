@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { useActionState, useState, useTransition } from "react";
 import {
   addProspectAction,
+  extendInvitationAction,
   importResearchedAction,
+  inviteProspectAction,
   removeProspectAction,
   saveProspectDetailsAction,
   setProspectPriorityAction,
@@ -117,6 +119,34 @@ export function ProspectControls({ id, status, priority, note, website, instagra
           </div>
           <SubmitButton className="sm:col-span-2">{t("save")}</SubmitButton>
         </form>
+      )}
+    </div>
+  );
+}
+
+/** The letter for one prospect: create it, open its page, print it, extend a lapsed one. */
+export function InvitationControls({ prospectId, name, invitation, siteUrl }: { prospectId: string; name: string; siteUrl: string; invitation: { id: string; code: string; number: string; scans: number; watched: boolean; state: "open" | "claimed" | "expired"; expiresOn: string; claimedHandle: string | null } | null }) {
+  const t = useTranslations("AdminProspects.letter");
+  const [pending, start] = useTransition();
+  if (!invitation) {
+    return (
+      <Button size="sm" variant="outline" disabled={pending} onClick={() => start(() => inviteProspectAction(prospectId, name))} data-testid="prospect-invite">
+        {t("create")}
+      </Button>
+    );
+  }
+  const url = `${siteUrl}/i/${invitation.code}`;
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-xs" data-testid="prospect-invitation" data-state={invitation.state}>
+      <span className="rounded-full bg-brand-soft px-2 py-0.5 font-bold" data-testid="invitation-number">{t("number", { number: invitation.number })}</span>
+      <a href={url} target="_blank" rel="noopener noreferrer" className="text-brand underline underline-offset-4" dir="ltr" data-testid="invitation-link">{url.replace(/^https?:\/\//, "")}</a>
+      <span>{t(`state.${invitation.state}`, { date: invitation.expiresOn })}</span>
+      <span>{t("scans", { count: invitation.scans })}</span>
+      <span data-testid="invitation-watched" data-watched={invitation.watched}>{invitation.watched ? t("watched") : t("notWatched")}</span>
+      {invitation.claimedHandle && <span dir="ltr">@{invitation.claimedHandle}</span>}
+      <a href={`/pioneer-letters?code=${invitation.code}`} target="_blank" rel="noopener" className="rounded-md border px-2 py-1" data-testid="invitation-letter">{t("print")}</a>
+      {invitation.state !== "claimed" && (
+        <Button size="sm" variant="ghost" disabled={pending} onClick={() => start(() => extendInvitationAction(invitation.id))} data-testid="invitation-extend">{t("extend")}</Button>
       )}
     </div>
   );
