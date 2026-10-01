@@ -1,9 +1,11 @@
 # Sawwiq — open items (living list)
 
 Kept current by the working session; every report to the owner ends with this list.
-Last update: 2026-09-30 07:30 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase (`/api/version` → revision registration-setup-2026-09-29, launchPhase registration); the scheduled site check is green.
+Last update: 2026-10-01 09:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase (`/api/version` → revision registration-setup-2026-09-29, launchPhase registration); the scheduled site check is green.
 
 ## Owner decisions (nobody else can close these)
+
+0. **Early-access campaign (docs/55) is on main.** Look at sawwiq.org/ar and /en on your phone and desktop and say if the wording should change; the copy keys are `Registration.launch`, `cohort`, `trust`, `early` in messages/{ar,en}.json. Architecture direction for web + PWA + native lives in docs/architecture/; the next engineering step (M1, shared brains) needs no decision, the API slice (M2) and the Expo app (M3) do.
 
 1. **Founding-cohort wording.** docs/44 approves 0% commission on the first project, 7% for the launch year and six months of Pro; the earlier "first 40 founding agencies, lifetime free Pro" line was replaced in the catalogs. Confirm the cohort size the marketing kit may quote (marketing/02 says 100, per docs/44 "cohort capacity").
 2. **Platform connections.** All five providers show "Not available yet" until a developer app is registered per platform, its secrets set in Vercel (never in chat), the platform approves the permissions and a controlled live test with an authorized account passes (docs/53 readiness gates).
@@ -18,9 +20,14 @@ Last update: 2026-09-30 07:30 UTC, main at the commit that carries this file. Pr
 
 ## Engineering follow-ups (small, unblocked)
 
-None open. Everything the sessions can do without owner access is done; new items are added here as they appear.
+9. Roadmap M1 (docs/architecture/mobile-and-api-roadmap.md §3 steps 1–5): move catalogs and pure rules under a shared folder behind re-export shims, lift the Zod schemas out of the actions, swap `next-intl`'s `createTranslator` for `use-intl` inside lib/. Each step is small and covered by the existing suites; the boundary test guards the result.
+10. Dependency audit "needs review" items: delete `@supabase/ssr` and lib/supabase/* if no Supabase Auth work is planned; lazy-load the AI SDKs; move `shadcn` to devDependencies.
+11. Draw a maskable 512 px icon for the manifest.
 
 ## Closed since the last list
+
+- Early-access campaign layer shipped (docs/55): strip, cohort mark, cohort CTA, promise line, why-join-early; validated at 320–1440, dark, reduced motion, keyboard; full and registration suites green on bb45e32.
+- Mobile-ready foundation: docs/architecture/mobile-and-api-roadmap.md, dependency-audit.md, shared error contract, framework-boundary test, phase-aware manifest, lazy PDF reader on the studio importer.
 
 - PR #1 closed (superseded by lib/price-stats.ts on main).
 - Two flaky phone tests root-caused (a click landing before React hydration: a <details> summary in the contract change request, the pin tap on a work-order asset) and made deterministic; 3 consecutive runs with retries off passed.
