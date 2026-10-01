@@ -3365,6 +3365,46 @@
     "voidReason": "Reason it doesn't count",
     "void": "Don't count"
   },
+  "AdminProspects": {
+    "nav": "Prospects",
+    "title": "Launch prospects",
+    "intro": "The agencies and freelancers worth inviting first. Add the names you hear of; the researched list comes from public agency directories. Change the status as you contact them. Businesses only: keep people's phone numbers and emails out of the notes.",
+    "import": "Add the researched list ({count})",
+    "researched": "Researched on {date} from public directories (Clutch, al5otwa, entasher and the agencies' own sites).",
+    "importDone": "{added} added, {skipped} already on the list.",
+    "add": "Add a prospect",
+    "name": "Agency or freelancer name",
+    "city": "City",
+    "website": "Website",
+    "instagram": "Instagram",
+    "services": "Services",
+    "servicesHint": "Comma-separated, e.g. social media, video, branding",
+    "note": "Note (why they fit, who to talk to by role, what they said)",
+    "priority": "Top priority",
+    "addButton": "Add to the list",
+    "added": "{name} was added.",
+    "exists": "{name} is already on the list.",
+    "statusLabel": "Status",
+    "status": {
+      "new": "To contact",
+      "contacted": "Contacted",
+      "replied": "Replied",
+      "joined": "Joined",
+      "declined": "Not interested"
+    },
+    "markContacted": "Mark contacted",
+    "contactedOn": "contacted {date}",
+    "edit": "Edit",
+    "save": "Save",
+    "remove": "Remove",
+    "removeConfirm": "Remove this prospect from the list?",
+    "source": "Source",
+    "joinedPage": "Page: @{handle}",
+    "empty": "No prospects yet. Add the researched list or a name.",
+    "errors": {
+      "invalid": "Check the details: a name of at least 2 letters, a valid website and an Instagram handle without spaces."
+    }
+  },
   "BehanceImport": {
     "title": "Import from Behance",
     "intro": "Pull the projects you already published on Behance into your Sawwiq page. You review every project before anything is published, and each post keeps a link to its Behance project.",
