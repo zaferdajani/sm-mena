@@ -13,6 +13,7 @@ import { completeMfaSession, createSession, destroySession, getPendingMfaUser } 
 import { audit } from "@/lib/data/agencies";
 import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
 import { assignFoundingSeats } from "@/lib/data/teaser";
+import { claimPioneerFromCookie } from "@/lib/data/pioneers";
 import { mergeDeviceInteractions } from "@/lib/data/interactions";
 import { attributeReferral } from "@/lib/data/referrals";
 import { getVisitorId } from "@/lib/visitor";
@@ -144,6 +145,8 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     });
     // The marketing agent whose link or code brought them (docs/42).
     await attributeReferral(created.id, formData.get("ref"), data.email).catch(() => false);
+    // A Pioneer letter's code left by its landing page (docs/57): the seal is given once, here.
+    await claimPioneerFromCookie(created.id, user.id).catch(() => null);
   } catch {
     // e.g. the handle was taken a moment ago; do not leave an orphan account
     await deleteUser(user.id);

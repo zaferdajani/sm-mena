@@ -182,6 +182,11 @@ No contact data is added. Notifications carry names and titles only. Audit: `col
 - **People:** no fields for a person's phone number or email; the admin page asks staff to keep them out of the notes. A prospect that joins is linked by website host to its page, which then carries the consented data.
 - **Retention:** until the owner removes the row; removal and every change are audited.
 
+## First Wave letters (docs/57, 2026-10-01)
+- **What is stored:** per letter, the addressee's business name, a random code, the reserved number, the window, a scan count with the time of the last scan, whether the video was watched to the end, and the page that claimed it. No visitor identifiers, no cookies beyond the 30-day `sw_pioneer` code cookie set only when the invitee presses "Claim" (httpOnly, cleared at sign-up).
+- **Consent:** the seal is attached in the same sign-up step that records the account's consent version; nothing is attached to anyone who did not sign up.
+- **Retention:** letters are kept with the campaign; the admin can extend or leave a lapsed letter; every create, extend and claim is audited (`pioneer.*`).
+
 ## Registration-phase publication choices (2026-09-29)
 
 `profile_publications` stores the provider's chosen audience (private, unlisted,

@@ -8,6 +8,7 @@ import { AgencyAvatar } from "@/components/agency-avatar";
 import { ContactLink } from "@/components/post/contact-link";
 import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/verified-badge";
+import { sealNumber } from "@/lib/pioneers";
 import { compactNumber, whatsappLink } from "@/lib/text";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -31,6 +32,8 @@ export type ProfileData = {
   memberNo?: number | null;
   /** Dated founding-cohort recognition, never a quality rank. */
   founding?: boolean;
+  /** Pioneer seal number (docs/57): invited first names; recognition, never a rank. */
+  pioneerNumber?: number | null;
   postCount: number;
   followerCount: number;
   services: string[];
@@ -79,6 +82,13 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               {agency.kind === "freelancer" && <span className={styles.badge} data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
               {agency.isDemo && <span className={styles.badge}>{tc("demo")}</span>}
               {agency.founding && <span className={cn(styles.badge, styles.founderBadge)} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
+              {agency.pioneerNumber ? (
+                <span className={cn(styles.badge, styles.founderBadge)} data-testid="pioneer-badge" title={t("pioneerTitle")}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/pioneer-seal.svg" alt="" width={18} height={18} />
+                  {t("pioneerBadge", { number: sealNumber(agency.pioneerNumber, locale) })}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>

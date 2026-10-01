@@ -138,7 +138,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader registrationMode={isRegistrationPhase()}
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency) }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
         following={following}
         followersHref={(await getCurrentAgency())?.id === agency.id ? "/studio/followers" : undefined}
         servesNote={note}

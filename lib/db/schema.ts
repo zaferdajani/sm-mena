@@ -278,6 +278,8 @@ export const agencies = pgTable(
     referralVoidReason: text("referral_void_reason"),
     // Founding seat: 1, 2, 3… in the order real providers joined; never reused (docs/39).
     foundingSeat: integer("founding_seat").unique(),
+    // Pioneer seal number (docs/57): claimed through a personal invitation letter; permanent; never a rank.
+    pioneerNumber: integer("pioneer_number").unique(),
     status: agencyStatus("status").notNull().default("active"),
     deactivatedAt: timestamp("deactivated_at", { withTimezone: true }),
     deactivationReason: text("deactivation_reason"), // self | admin | demo_cleanup
@@ -1424,6 +1426,32 @@ export const prospects = pgTable(
   (t) => [index("prospects_status_idx").on(t.status)],
 );
 export type Prospect = typeof prospects.$inferSelect;
+
+// Pioneer invitations (docs/57): one letter per invited business, with the seal
+// number printed on it. The code is what the QR carries; scans are counted
+// without any visitor data.
+export const pioneerInvitations = pgTable(
+  "pioneer_invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    code: text("code").notNull().unique(),
+    number: integer("number").notNull().unique(),
+    /** Who the letter is addressed to, as printed. */
+    name: text("name").notNull(),
+    prospectId: uuid("prospect_id").references(() => prospects.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    scans: integer("scans").notNull().default(0),
+    lastScanAt: timestamp("last_scan_at", { withTimezone: true }),
+    /** The video was watched to the end on the letter's page: the first of the two steps that earn the seal. */
+    watchedAt: timestamp("watched_at", { withTimezone: true }),
+    claimedAgencyId: uuid("claimed_agency_id").unique().references(() => agencies.id, { onDelete: "set null" }),
+    claimedAt: timestamp("claimed_at", { withTimezone: true }),
+    createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("pioneer_invitations_prospect_idx").on(t.prospectId)],
+);
+export type PioneerInvitation = typeof pioneerInvitations.$inferSelect;
 
 export const siteChecks = pgTable(
   "site_checks",

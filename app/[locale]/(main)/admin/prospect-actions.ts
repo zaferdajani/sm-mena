@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/guards";
 import { addProspect, importResearched, linkJoinedProspects, removeProspect, updateProspect } from "@/lib/data/prospects";
+import { createInvitation, extendInvitation } from "@/lib/data/pioneers";
 import { PROSPECT_STATUSES, prospectInput, prospectPatch, splitServices } from "@/lib/prospects";
 
 // Admin → Prospects (docs/55).
@@ -59,5 +60,21 @@ export async function removeProspectAction(id: string) {
   const staff = await requireStaff("prospects.manage");
   if (!z.string().uuid().safeParse(id).success) return;
   await removeProspect(id, staff.id);
+  refresh();
+}
+
+// Pioneer letters (docs/57): one numbered invitation per prospect.
+export async function inviteProspectAction(prospectId: string, name: string) {
+  const staff = await requireStaff("prospects.manage");
+  const parsed = z.object({ prospectId: z.string().uuid(), name: z.string().trim().min(2).max(120) }).safeParse({ prospectId, name });
+  if (!parsed.success) return;
+  await createInvitation({ name: parsed.data.name, prospectId: parsed.data.prospectId }, staff.id);
+  refresh();
+}
+
+export async function extendInvitationAction(id: string) {
+  const staff = await requireStaff("prospects.manage");
+  if (!z.string().uuid().safeParse(id).success) return;
+  await extendInvitation(id, staff.id);
   refresh();
 }
