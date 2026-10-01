@@ -1,4 +1,3 @@
-import "server-only";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
