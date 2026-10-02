@@ -7,9 +7,11 @@ import { PioneerSeal } from "@/components/pioneer/pioneer-seal";
 type Props = {
   code: string;
   name: string;
-  number: string;
+  /** The medal number once claimed in time; null before that. */
+  number: string | null;
+  left: string;
   cap: string;
-  state: "open" | "claimed" | "expired";
+  state: "open" | "claimed" | "late" | "expired" | "full";
   expiresOn: string;
   claimedHandle: string | null;
   watched: boolean;
@@ -18,7 +20,7 @@ type Props = {
 };
 
 /** The page behind the letter's QR code (docs/57): the number, the video, one button. */
-export async function PioneerInvite({ code, name, number, cap, state, expiresOn, claimedHandle, watched, signedIn, video }: Props) {
+export async function PioneerInvite({ code, name, number, left, cap, state, expiresOn, claimedHandle, watched, signedIn, video }: Props) {
   const t = await getTranslations("Pioneer");
   const locale = await getLocale();
   const primary = "inline-flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-primary-foreground";
@@ -41,10 +43,10 @@ export async function PioneerInvite({ code, name, number, cap, state, expiresOn,
       <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("eyebrow")}</p>
       <h1 className="mt-2 text-center text-2xl font-bold">{t("greeting", { name })}</h1>
       <section className="mt-5 flex items-center gap-4 rounded-2xl border border-brand-line bg-brand-soft p-4" data-testid="pioneer-number">
-        <PioneerSeal number={number} size={72} />
+        <PioneerSeal number={number ?? ""} size={72} />
         <div className="min-w-0">
-          <p className="text-lg font-bold">{t("numberLine", { number, cap })}</p>
-          <p className="text-sm text-muted-foreground">{state === "open" ? t("holdsUntil", { date: expiresOn }) : state === "claimed" ? t("claimedLine") : t("expiredLine")}</p>
+          <p className="text-lg font-bold" data-testid="pioneer-medals-left">{state === "claimed" && number ? t("numberLine", { number, cap }) : t("medalsLeft", { left, cap })}</p>
+          <p className="text-sm text-muted-foreground">{t(`stateLine.${state}`, { date: expiresOn })}</p>
         </div>
       </section>
       {canClaim ? (
@@ -66,6 +68,8 @@ export async function PioneerInvite({ code, name, number, cap, state, expiresOn,
           <Link href={`/a/${claimedHandle}`} className={primary} data-testid="pioneer-claimed-page">{t("seePage", { handle: claimedHandle })}</Link>
         )}
         {state === "expired" && <p className="text-center text-sm" data-testid="pioneer-expired">{t("expiredHelp")}</p>}
+        {(state === "full" || state === "late") && <p className="text-center text-sm" data-testid="pioneer-full">{t("fullHelp")}</p>}
+        {state === "full" && !signedIn && <Link href="/join" className={primary} data-testid="pioneer-join-anyway">{t("joinAnyway")}</Link>}
         {state === "open" && signedIn?.hasSeal && <p className="text-center text-sm" data-testid="pioneer-have-seal">{t("haveSeal")}</p>}
         {state === "open" && !signedIn && <Link href={`/login?next=/i/${code}`} className={secondary}>{t("haveAccount")}</Link>}
         <Link href="/examples" className="block text-center text-sm text-brand underline underline-offset-4">{t("examples")}</Link>

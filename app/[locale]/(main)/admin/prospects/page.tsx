@@ -33,7 +33,7 @@ export default async function AdminProspects({ params }: PageProps<"/[locale]/ad
       </p>
       <ImportResearchedButton count={research.prospects.length} researchedOn={research.researchedOn} />
       <section className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="pioneer-summary">
-        <p>{tl("summary", { issued: localizeDigits(invitations.length, locale), cap: localizeDigits(PIONEER.cap, locale), claimed: localizeDigits(invitations.filter((i) => i.state === "claimed").length, locale), scans: localizeDigits(invitations.reduce((n, i) => n + i.scans, 0), locale) })}</p>
+        <p data-testid="pioneer-summary-line">{tl("summary", { issued: localizeDigits(invitations.length, locale), cap: localizeDigits(PIONEER.cap, locale), claimed: localizeDigits(invitations.filter((i) => i.state === "claimed").length, locale), late: localizeDigits(invitations.filter((i) => i.state === "late").length, locale), scans: localizeDigits(invitations.reduce((n, i) => n + i.scans, 0), locale) })}</p>
         {invitations.length > 0 && <a href="/pioneer-letters" target="_blank" rel="noopener" className="rounded-md border bg-background px-3 py-1.5 font-medium" data-testid="print-all-letters">{tl("printAll")}</a>}
       </section>
       <AddProspectForm cities={CITIES.map((key) => ({ key, label: cityLabel(key) }))} />
@@ -70,7 +70,7 @@ export default async function AdminProspects({ params }: PageProps<"/[locale]/ad
                 prospectId={p.id}
                 name={p.name}
                 siteUrl={SITE_URL}
-                invitation={(() => { const i = byProspect.get(p.id); return i ? { id: i.id, code: i.code, number: sealNumber(i.number, locale), scans: i.scans, watched: Boolean(i.watchedAt), state: i.state, expiresOn: i.expiresAt.toISOString().slice(0, 10), claimedHandle: i.claimedHandle } : null; })()}
+                invitation={(() => { const i = byProspect.get(p.id); return i ? { id: i.id, code: i.code, number: i.number ? sealNumber(i.number, locale) : null, scans: i.scans, watched: Boolean(i.watchedAt), state: i.state, expiresOn: i.expiresAt.toISOString().slice(0, 10), claimedHandle: i.claimedHandle } : null; })()}
               />
             </li>
           ))}

@@ -17,7 +17,7 @@
     "step3Title": "Choose with confidence",
     "step3Body": "Compare prices, reviews and portfolios, then start with the best fit.",
     "agenciesTitle": "Run a marketing agency?",
-    "agenciesBody": "Founding cohort (docs/44): 0% platform commission on your first Sawwiq project, then 7% for the launch year, and six months of Pro when it launches.",
+    "agenciesBody": "Early-member cohort (docs/44): 0% platform commission on your first Sawwiq project, then 7% for the launch year, and six months of Pro when it launches.",
     "introTitle": "Find the right marketing and social media agency for your business in Jordan",
     "introBody": "Browse real work from local agencies, filter by service, city and budget, then contact them directly. No sign-up.",
     "introCta": "Start exploring",
@@ -342,8 +342,8 @@
     "confirmedByClient": "Confirmed by the client",
     "notConfirmed": "Listed by the agency",
     "card": "Behind-the-Page card",
-    "foundingBadge": "Founding member {year}",
-    "foundingTitle": "One of the first 100 providers on Sawwiq. A dated badge, not a quality rank.",
+    "foundingBadge": "Early member {year}",
+    "foundingTitle": "One of the first 100 providers to register on Sawwiq. A dated badge, not a quality rank.",
     "seeFollowers": "See who follows you",
     "pioneerBadge": "Founding Member №{number}",
     "pioneerTitle": "One of the first fifty invited names, who watched, built the page and saved a first project. A permanent medal, not a quality rank."
@@ -3090,7 +3090,7 @@
   },
   "Teaser": {
     "metaTitle": "Sawwiq: join before we open to clients",
-    "metaDescription": "Agency, freelancer or creator? Put your work where future clients and collaborators can find it. Join free before Sawwiq opens to buyers; founder benefits are revealed gradually.",
+    "metaDescription": "Agency, freelancer or creator? Put your work where future clients and collaborators can find it. Join free before Sawwiq opens to buyers; early-member benefits are revealed gradually.",
     "who": {
       "agencies": "Marketing & social media agencies",
       "freelancers": "Freelancers",
@@ -3233,25 +3233,25 @@
     }
   },
   "Founding": {
-    "memberTitle": "Sawwiq founder · {year}",
-    "notMemberTitle": "Founder advantages",
-    "memberUntil": "Your Founder Pro access runs until {date}.",
-    "memberPending": "You are a founder. Six months of Pro starts when paid tools actually launch, not when you registered.",
-    "stillOpen": "Founder eligibility is still open to qualifying providers before launch.",
-    "closed": "The founding cohort is closed. Normal registration remains open.",
-    "notRank": "Founder status records that you helped the network start. It never overrides relevance, quality or client matching.",
+    "memberTitle": "Sawwiq early member · {year}",
+    "notMemberTitle": "Early-member advantages",
+    "memberUntil": "Your early-member Pro access runs until {date}.",
+    "memberPending": "You are an early member. Six months of Pro starts when paid tools actually launch, not when you registered.",
+    "stillOpen": "Early-member eligibility is still open to qualifying providers before launch.",
+    "closed": "The early-member cohort is closed. Normal registration remains open.",
+    "notRank": "Early-member status records that you helped the network start. It never overrides relevance, quality or client matching.",
     "benefits": {
       "firstProject": {
         "what": "First Sawwiq project: 0% commission",
         "limit": "Applies to the first completed Sawwiq-acquired project after protected payments go live."
       },
       "founderRate": {
-        "what": "7% founder platform rate",
+        "what": "7% early-member platform rate",
         "limit": "After the first project, for the first year of live protected payments. Payment-provider charges, if any, are separate."
       },
       "early": {
         "what": "Early window on qualified opportunities",
-        "limit": "Relevant work can reach founders earlier; relevance still comes first."
+        "limit": "Relevant work can reach early members earlier; relevance still comes first."
       },
       "premium": {
         "what": "Six months of Pro",
@@ -3262,16 +3262,16 @@
         "limit": "Project collaboration opportunities and early access to provider tools."
       },
       "status": {
-        "what": "Permanent Founder · 2026 status",
+        "what": "Permanent Early member · 2026 badge",
         "limit": "A dated record that you helped the network start. Never a quality certification, a ranking or a matching boost."
       },
       "ownClients": {
         "what": "Your existing clients",
-        "limit": "Founder terms for contracts and workflows with clients you already have are still to be decided, once real payment-provider costs are known."
+        "limit": "Early-member terms for contracts and workflows with clients you already have are still to be decided, once real payment-provider costs are known."
       }
     },
-    "activationReady": "Your Founder benefits are activated. Financial benefits apply under the published terms when protected payments go live.",
-    "activationTodo": "Complete your profile and add genuine work or a useful package to activate Founder benefits. Registration alone is not enough."
+    "activationReady": "Your early-member benefits are activated. Financial benefits apply under the published terms when protected payments go live.",
+    "activationTodo": "Complete your profile and add genuine work or a useful package to activate early-member benefits. Registration alone is not enough."
   },
   "Agent": {
     "title": "My referrals",
@@ -3411,14 +3411,16 @@
       "create": "Create letter",
       "number": "Founding Member №{number}",
       "state": {
-        "open": "reserved until {date}",
-        "claimed": "claimed",
-        "expired": "lapsed on {date}"
+        "open": "open until {date}",
+        "claimed": "medal claimed",
+        "expired": "lapsed on {date}",
+        "late": "registered after the medals ran out",
+        "full": "medals ran out before they registered"
       },
       "scans": "{count, plural, =0 {no scans} one {# scan} other {# scans}}",
       "print": "Letter",
       "extend": "Extend 21 days",
-      "summary": "Letters: {issued} of {cap} · claimed {claimed} · scans {scans}",
+      "summary": "Letters: {issued} · medals: {claimed} of {cap} · late: {late} · scans {scans}",
       "printAll": "Print all open letters",
       "watched": "video watched",
       "notWatched": "video not finished"
@@ -3431,9 +3433,6 @@
     "greeting": "{name}, this page is yours.",
     "videoSoon": "The one-minute introduction is on its way. Everything below already works.",
     "numberLine": "Founding Member medal №{number} of {cap}",
-    "holdsUntil": "Reserved for you until {date}.",
-    "claimedLine": "This medal is on its page.",
-    "expiredLine": "The reservation window has passed.",
     "points": {
       "private": "Your page stays private until you decide to publish it.",
       "minutes": "One sitting on your phone: profile, one client, one project.",
@@ -3453,10 +3452,10 @@
       "headline": "Your work deserves more than 24 hours.",
       "to": "To {name},",
       "p1": "Your work gets seen, then it disappears from the story. Sawwiq is one place for the work of Arab agencies and freelancers, organised by client and result, where business owners look for who did what.",
-      "p2": "This letter went to fifty names we chose by hand. Yours comes with Founding Member medal №{number}: a permanent mark on your page that cannot be bought and says you were there from the start.",
+      "p2": "This letter went to names we chose by hand, and there are only {cap} medals. The Founding Member medal goes to the first {cap} invited names who register, numbered in the order they arrive: a permanent mark on the page that cannot be bought and says you were there from the start.",
       "p3": "Scan the code: a one-minute video, then one sitting on your phone to set up the page and save one project. The medal appears when that is done. Nothing is public until you decide.",
-      "numberLine": "Founding Member №{number} of {cap}",
-      "expiry": "Reserved until {date}",
+      "numberLine": "Only {cap} medals · first come, first numbered",
+      "expiry": "Invitation valid until {date}",
       "qrCaption": "Scan with your phone camera:",
       "signature": "Zafer Dajani · Sawwiq · sawwiq.org",
       "honest": "The medal marks the first names, never a ranking and never a promise of clients.",
@@ -3464,7 +3463,17 @@
     },
     "watchFirst": "Watch the one-minute introduction to the end, then claim your medal.",
     "watched": "Watched. Your medal is ready to claim.",
-    "earn": "The medal is earned, not handed out: watch the introduction, create your page, and save your first project. Then it appears."
+    "earn": "The medal goes to the first fifty invited names who finish the steps: watch the video to the end, register, and save a first project. Numbers follow the order of registration.",
+    "medalsLeft": "{left} of {cap} medals left",
+    "stateLine": {
+      "open": "Medals go to the first fifty invited names who watch the video and register. This invitation runs until {date}.",
+      "claimed": "This medal is on its page.",
+      "late": "You registered after the fifty medals were taken.",
+      "expired": "This invitation has expired.",
+      "full": "The fifty medals have all been claimed."
+    },
+    "fullHelp": "You can still join: Sawwiq's early members get the launch benefits, without the medal.",
+    "joinAnyway": "Create my page"
   },
   "BehanceImport": {
     "title": "Import from Behance",

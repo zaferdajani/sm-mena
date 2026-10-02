@@ -225,6 +225,13 @@
       "when": 1790876336771,
       "tag": "0031_pioneer_invitations",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1790931476187,
+      "tag": "0032_medal_claim_order",
+      "breakpoints": true
     }
   ]
 }

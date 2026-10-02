@@ -8,12 +8,19 @@ The owner chose «عضو مؤسس» / "Founding Member" (2 Oct 2026), shown as a
 ## Medal
 `public/brand/first-wave-seal.webp` (512) and `-192.webp`: the gold medal generated with Higgsfield in the site palette and cut out on transparency, used at 48 px and up (QR page, letters, video). `public/brand/pioneer-seal.svg` is the same shape drawn for small sizes (profile badge, cards).
 
+## Who gets the medal (owner decision, 2 Oct 2026)
+- **Only invited names**, and only **the first fifty to claim**. Letters carry no number; more letters than medals can go out (`PIONEER.letterCap`, 300). The medal number is given at sign-up, in claim order (№001…№050), under a database lock so two people never get the same number or a 51st medal.
+- **Earned:** the invitee watches the introduction to the end on the letter's page (recorded, and checked again on the server before the claim), registers from that page, and saves a first project; then «عضو مؤسس رقم ٠١٢» appears.
+- **Too late:** an invitee who registers after the fiftieth medal still joins normally; the letter shows "registered after the medals ran out" in the admin, and the page gets the early-member benefits without a medal. Once all fifty are taken, open letters show "the fifty medals have all been claimed" and offer "Create my page".
+- **Everyone else** who registers early (the first 100 providers, docs/39, docs/44) gets the early-member benefits and the plain dated badge «من الأوائل 2026» / "Early member 2026". That program was renamed from «مؤسِّس» so «عضو مؤسس» belongs to the invited only. A page shows one of the two, never both.
+
 ## Flow
-1. Admin → Prospects → "Create letter" on a prospect: `pioneer_invitations` gets the next number (≤ `PIONEER.cap`, under a transaction lock), an 8-character code without look-alike characters, and a 21-day window. One letter per prospect.
-2. "Letter" / "Print all open letters" opens `/pioneer-letters` (staff only): A5, Arabic front, English back, the seal, the number, the window, and a QR to `sawwiq.org/i/<code>`. Print → Save as PDF.
-3. `/i/<code>`: never indexed. Counts a scan (count and time only). Shows the number, the video and the claim button; the button opens only after the video ends (`watched_at` recorded once). Claim sets the `sw_pioneer` cookie and opens `/join`; a signed-in provider without a seal can claim for their own page.
-4. `/join` claims from the cookie in the same step that creates the page (`claimPioneerFromCookie`): the letter is marked claimed, the page gets `agencies.pioneer_number`, the prospect becomes "joined" with its page linked, and the cookie is cleared. Replays, other pages, expired letters, demo pages and second seals are refused.
-5. The badge renders only when the page has at least one project (`postCount > 0`): profile header, agency cards.
+1. Admin → Prospects → "Create letter": a code without look-alike characters and a 21-day window, one letter per prospect.
+2. "Letter" / "Print all open letters" opens `/pioneer-letters` (staff only): A5, Arabic front, English back, the medal, "only 50 medals · first come, first numbered", the window and a QR to `sawwiq.org/i/<code>`.
+3. `/i/<code>`: never indexed; counts scans (count and time only); shows the medals left out of 50, the video and the claim button, which opens only after the video ends and the server has recorded it. Claim sets the `sw_pioneer` cookie and opens `/join`; a signed-in provider without a medal can claim for their own page.
+4. `/join` claims from the cookie in the same step that creates the page (`claimPioneerFromCookie` → `claimPioneer`): next number in order, or "late" when the fifty are gone; the prospect becomes "joined" with its page linked. Replays, other pages, expired letters, demo pages and second medals are refused.
+5. The badge renders only once the page has at least one project.
+6. Admin row: medal number once claimed, window, scans, video watched, claimed page, "late" or "medals ran out"; summary: letters, medals given of 50, late, scans.
 
 ## Honesty rules
 - The letter and the page say what the seal is (recognition, cannot be bought, no ranking, no promise of clients) and what it is not.

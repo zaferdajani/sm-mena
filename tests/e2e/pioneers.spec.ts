@@ -17,7 +17,8 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   const invitation = row.getByTestId("prospect-invitation");
   await expect(invitation).toHaveAttribute("data-state", "open");
   await expect(invitation.getByTestId("invitation-watched")).toHaveAttribute("data-watched", "false");
-  const number = (await invitation.getByTestId("invitation-number").textContent())!.replace(/\D/g, "");
+  // Letters carry no number: medals are numbered in claim order.
+  await expect(invitation.getByTestId("invitation-number")).toHaveCount(0);
   const link = (await invitation.getByTestId("invitation-link").textContent())!.trim();
   const code = link.split("/i/")[1];
   expect(code).toMatch(/^[a-hj-km-np-z2-9]{8}$/);
@@ -27,13 +28,13 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   await expect(admin.getByTestId("pioneer-letter")).toHaveCount(2);
   await expect(admin.getByTestId("pioneer-letter").first()).toHaveAttribute("data-locale", "ar");
   await expect(admin.getByTestId("pioneer-letter").first().locator(".pioneer-letter__qr svg")).toBeVisible();
-  await expect(admin.getByTestId("pioneer-letter").last()).toContainText(`Founding Member №${number}`);
+  await expect(admin.getByTestId("pioneer-letter").last()).toContainText("Only 50 medals");
 
   // The invitee scans the code on a phone.
   const phone = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
   await phone.goto(`/ar/i/${code}`);
   await expect(phone.getByTestId("pioneer-invite")).toHaveAttribute("data-state", "open");
-  await expect(phone.getByTestId("pioneer-number")).toContainText("عضو مؤسس");
+  await expect(phone.getByTestId("pioneer-medals-left")).toContainText("من ٥٠ وسام");
   const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   // Without a deployed video the claim opens at once; with one it waits for the end of the video.
@@ -67,4 +68,5 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   await expect(after).toHaveAttribute("data-status", "joined");
   await expect(after.getByTestId("prospect-invitation")).toHaveAttribute("data-state", "claimed");
   if (hasVideo) await expect(after.getByTestId("invitation-watched")).toHaveAttribute("data-watched", "true");
+  await expect(after.getByTestId("invitation-number")).toContainText("Founding Member №");
 });

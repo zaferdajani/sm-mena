@@ -8,6 +8,8 @@ import { randomInt } from "node:crypto";
 export const PIONEER = {
   /** Seals that can ever exist; the number is printed on the letter. */
   cap: 50,
+  /** Letters that can be printed; more letters than medals is the point: the first fifty to claim win. */
+  letterCap: 300,
   /** Days a letter's reservation holds from the day the invitation is created. */
   inviteDays: 21,
   /** The cookie that carries the letter's code from the landing page to sign-up. */
@@ -39,8 +41,14 @@ export const localizeDigits = (n: number, locale: string) => (locale === "ar" ? 
 
 export const inviteExpiry = (from = new Date()) => new Date(from.getTime() + PIONEER.inviteDays * 24 * 3600 * 1000);
 
-export type InvitationState = "open" | "claimed" | "expired";
-export function invitationState(i: { claimedAgencyId: string | null; expiresAt: Date }, now = new Date()): InvitationState {
-  if (i.claimedAgencyId) return "claimed";
-  return i.expiresAt.getTime() < now.getTime() ? "expired" : "open";
+/**
+ * open: can still be claimed · claimed: registered in time, medal №number · late: registered after
+ * the fifty medals were gone (early-member benefits, no medal) · expired: the letter's window passed ·
+ * full: unclaimed, and the fifty medals are already taken.
+ */
+export type InvitationState = "open" | "claimed" | "late" | "expired" | "full";
+export function invitationState(i: { claimedAgencyId: string | null; number: number | null; expiresAt: Date }, medalsLeft: number, now = new Date()): InvitationState {
+  if (i.claimedAgencyId) return i.number ? "claimed" : "late";
+  if (i.expiresAt.getTime() < now.getTime()) return "expired";
+  return medalsLeft > 0 ? "open" : "full";
 }
