@@ -249,7 +249,7 @@
     "copied": "Link copied",
     "share": "Share",
     "demo": "Demo account",
-    "pioneer": "First Wave seal"
+    "pioneer": "Founding Member medal"
   },
   "Post": {
     "like": "Like",
@@ -345,8 +345,8 @@
     "foundingBadge": "Founding member {year}",
     "foundingTitle": "One of the first 100 providers on Sawwiq. A dated badge, not a quality rank.",
     "seeFollowers": "See who follows you",
-    "pioneerBadge": "First Wave №{number}",
-    "pioneerTitle": "One of the first fifty invited names, who watched, built the page and saved a first project. A permanent seal, not a quality rank."
+    "pioneerBadge": "Founding Member №{number}",
+    "pioneerTitle": "One of the first fifty invited names, who watched, built the page and saved a first project. A permanent medal, not a quality rank."
   },
   "Explore": {
     "title": "Explore",
@@ -3409,7 +3409,7 @@
     },
     "letter": {
       "create": "Create letter",
-      "number": "First Wave №{number}",
+      "number": "Founding Member №{number}",
       "state": {
         "open": "reserved until {date}",
         "claimed": "claimed",
@@ -3425,46 +3425,46 @@
     }
   },
   "Pioneer": {
-    "title": "A letter for the First Wave",
-    "metaTitle": "{name}: your First Wave seal on Sawwiq",
-    "eyebrow": "Sawwiq First Wave · a personal invitation",
+    "title": "A letter for the Founding Members",
+    "metaTitle": "{name}: your Founding Member medal on Sawwiq",
+    "eyebrow": "Sawwiq Founding Members · a personal invitation",
     "greeting": "{name}, this page is yours.",
     "videoSoon": "The one-minute introduction is on its way. Everything below already works.",
-    "numberLine": "First Wave seal №{number} of {cap}",
+    "numberLine": "Founding Member medal №{number} of {cap}",
     "holdsUntil": "Reserved for you until {date}.",
-    "claimedLine": "This seal is on its page.",
+    "claimedLine": "This medal is on its page.",
     "expiredLine": "The reservation window has passed.",
     "points": {
       "private": "Your page stays private until you decide to publish it.",
       "minutes": "One sitting on your phone: profile, one client, one project.",
-      "permanent": "The First Wave seal stays on your page and your work. It cannot be bought.",
-      "window": "When public discovery opens, the First Wave sees relevant business requests first."
+      "permanent": "The Founding Member medal stays on your page and your work. It cannot be bought.",
+      "window": "When public discovery opens, Founding Members see relevant business requests first."
     },
-    "honest": "The seal marks the first names, that is all. It never ranks anyone above anyone, and it is not a promise of clients.",
-    "claim": "Claim my seal",
+    "honest": "The medal marks the first names, that is all. It never ranks anyone above anyone, and it is not a promise of clients.",
+    "claim": "Claim my medal",
     "haveAccount": "I already have a page",
-    "claimMine": "Put the seal on @{handle}",
-    "haveSeal": "Your page already carries a Pioneer seal.",
+    "claimMine": "Put the medal on @{handle}",
+    "haveSeal": "Your page already carries a Founding Member medal.",
     "seePage": "See @{handle}",
     "expiredHelp": "Message Zafer on WhatsApp and the reservation is renewed.",
     "examples": "See an example page first",
     "letter": {
-      "eyebrow": "A letter for {cap} names · Sawwiq First Wave",
+      "eyebrow": "A letter for {cap} names · Sawwiq Founding Members",
       "headline": "Your work deserves more than 24 hours.",
       "to": "To {name},",
       "p1": "Your work gets seen, then it disappears from the story. Sawwiq is one place for the work of Arab agencies and freelancers, organised by client and result, where business owners look for who did what.",
-      "p2": "This letter went to fifty names we chose by hand. Yours comes with First Wave seal №{number}: a permanent mark on your page that cannot be bought and says you were there first.",
-      "p3": "Scan the code: a one-minute video, then one sitting on your phone to set up the page and save one project. The seal appears when that is done. Nothing is public until you decide.",
-      "numberLine": "First Wave №{number} of {cap}",
+      "p2": "This letter went to fifty names we chose by hand. Yours comes with Founding Member medal №{number}: a permanent mark on your page that cannot be bought and says you were there from the start.",
+      "p3": "Scan the code: a one-minute video, then one sitting on your phone to set up the page and save one project. The medal appears when that is done. Nothing is public until you decide.",
+      "numberLine": "Founding Member №{number} of {cap}",
       "expiry": "Reserved until {date}",
       "qrCaption": "Scan with your phone camera:",
       "signature": "Zafer Dajani · Sawwiq · sawwiq.org",
-      "honest": "The seal marks the first names, never a ranking and never a promise of clients.",
+      "honest": "The medal marks the first names, never a ranking and never a promise of clients.",
       "printHint": "{count} letters, Arabic front and English back. Print → Save as PDF, A5, no margins."
     },
-    "watchFirst": "Watch the one-minute introduction to the end, then claim your seal.",
-    "watched": "Watched. Your seal is ready to claim.",
-    "earn": "The seal is earned, not handed out: watch the introduction, create your page, and save your first project. Then it appears."
+    "watchFirst": "Watch the one-minute introduction to the end, then claim your medal.",
+    "watched": "Watched. Your medal is ready to claim.",
+    "earn": "The medal is earned, not handed out: watch the introduction, create your page, and save your first project. Then it appears."
   },
   "BehanceImport": {
     "title": "Import from Behance",

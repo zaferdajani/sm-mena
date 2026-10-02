@@ -1,14 +1,14 @@
-# 56 · The First Wave (الرعيل الأول): the invitation campaign playbook
+# 56 · The Founding Member (عضو مؤسس): the invitation campaign playbook
 
-The owner hand-delivers printed, numbered invitation letters to the best social media agencies and marketers in Amman during the registration phase (docs/51). Each letter carries a personal QR code that opens `sawwiq.org/i/<code>`: a 24-second intro video in Modern Standard Arabic, the invitee's reserved First Wave number, "Claim your seal", then the normal `/join` and the five-step setup (docs/53). Nothing is public until the invitee says so.
+The owner hand-delivers printed, numbered invitation letters to the best social media agencies and marketers in Amman during the registration phase (docs/51). Each letter carries a personal QR code that opens `sawwiq.org/i/<code>`: a 24-second intro video in Modern Standard Arabic, the invitee's reserved Founding Member number, "Claim your seal", then the normal `/join` and the five-step setup (docs/53). Nothing is public until the invitee says so.
 
-> **As built (docs/57):** the seal is earned in three steps: the invitee watches the introduction to the end on the letter's page (recorded), creates the page from that page's "Claim" button, and saves a first project; only then does «الرعيل الأول رقم ٠١٢» appear. A letter's number stays reserved for its window (21 days) and an admin can extend it; claimed numbers are permanent. Where this playbook and docs/57 differ, docs/57 describes the code.
+> **As built (docs/57):** the seal is earned in three steps: the invitee watches the introduction to the end on the letter's page (recorded), creates the page from that page's "Claim" button, and saves a first project; only then does «عضو مؤسس رقم ٠١٢» appear. A letter's number stays reserved for its window (21 days) and an admin can extend it; claimed numbers are permanent. Where this playbook and docs/57 differ, docs/57 describes the code.
 
-**The First Wave seal («ختم الرعيل الأول», "First Wave №012")** is a permanent numbered mark on the holder's page and posts. Rules, all enforced in code once built:
+**The Founding Member medal («وسام العضو المؤسس», "Founding Member №012")** is a permanent numbered mark on the holder's page and posts. Rules, all enforced in code once built:
 
 - Capped at 50. Numbers are reserved per letter, claimed once, never sold, never reissued once claimed. A reservation that passes its printed date is released; the printed letter said "reserved until", so it stays true.
 - Only for names the owner invited, who claim within the letter's window. Registration itself stays open to everyone; the cap is on the recognition, not on joining.
-- It gives recognition, and the early window on relevant business requests when discovery opens. That window is the existing First Wave/Founder head start (docs/44 §3, docs/45): relevance-gated, time-boxed, and subject to the same eligibility (real profile, services, one genuine work). Relevance never changes; a non-member can rank above a First Wave member.
+- It gives recognition, and the early window on relevant business requests when discovery opens. That window is the existing Founding Member/Founder head start (docs/44 §3, docs/45): relevance-gated, time-boxed, and subject to the same eligibility (real profile, services, one genuine work). Relevance never changes; a non-member can rank above a Founding Member member.
 - No money attached. It does not alter Founder economics (0% first project, 7% launch year, Pro months: docs/44), Founder eligibility, payments, pricing or the seat number (docs/39). Founder status is earned by the docs/44 rules whether or not a seal exists.
 - Lost only if the page is removed.
 
@@ -95,7 +95,7 @@ A5, 200 gsm or heavier, Arabic on the front, English on the reverse. One QR code
 **Paragraph 3:**
 المطلوب قليل: امسحوا الرمز، شاهدوا فيديو مدته ٣٦ ثانية، طالبوا بالختم، ثم أنشئوا صفحتكم من الهاتف في جلسة واحدة. الصفحة تبقى خاصة إلى أن تقرروا نشرها. وإن أردتم، أجهّز لكم مسودة الصفحة من روابط أعمالكم وتراجعونها قبل أي نشر.
 
-**Number line:** الرعيل الأول رقم ٠١٢ من ٥٠
+**Number line:** عضو مؤسس رقم ٠١٢ من ٥٠
 
 **QR caption:** امسحوا الرمز لفتح صفحتكم الخاصة · sawwiq.org/i/{code}
 
@@ -111,12 +111,12 @@ A5, 200 gsm or heavier, Arabic on the front, English on the reverse. One QR code
 I am writing to you personally. Sawwiq is being built in Amman to bring marketing agencies, freelancers and content creators into one place: a page for their work, and a way for the right business requests to reach them when public discovery opens. Before the doors open I wanted a small number of the best people in this field to be there from the start, and your work was among the first I thought of.
 
 **Paragraph 2:**
-I have reserved one of only fifty numbers for you, offered by name only. Whoever claims their seal within the window carries the "First Wave" mark with their number on their page and posts, permanently. The seal cannot be bought and is not given to anyone who was not invited. It is recognition, and an early window on relevant business requests when discovery opens. It does not change ranking and carries no money.
+I have reserved one of only fifty numbers for you, offered by name only. Whoever claims their seal within the window carries the "Founding Member" mark with their number on their page and posts, permanently. The seal cannot be bought and is not given to anyone who was not invited. It is recognition, and an early window on relevant business requests when discovery opens. It does not change ranking and carries no money.
 
 **Paragraph 3:**
 Little is asked: scan the code, watch a 36-second video, claim the seal, then build your page from your phone in one sitting. The page stays private until you decide to publish it. If you prefer, I will stage a draft from links to your work for you to review before anything is published.
 
-**Number line:** First Wave №012 of 50
+**Number line:** Founding Member №012 of 50
 
 **QR caption:** Scan to open your private page · sawwiq.org/i/{code}
 
@@ -131,8 +131,8 @@ To the team at {Agency} · a personal invitation, delivered by hand
 
 ### Insert card for freelancers (A7, with the same letter)
 
-ختم الرعيل الأول للأشخاص كما للشركات. رقمكم محفوظ: الرعيل الأول رقم ٠٢٣ من ٥٠. الصفحة باسمكم، أعمالكم وحدها، خاصة إلى أن تقرروا.
-The First Wave seal is for people as much as companies. Your number is reserved: First Wave №023 of 50. The page is in your name, your work alone, private until you decide.
+وسام العضو المؤسس للأشخاص كما للشركات. رقمكم محفوظ: عضو مؤسس رقم ٠٢٣ من ٥٠. الصفحة باسمكم، أعمالكم وحدها، خاصة إلى أن تقرروا.
+The Founding Member medal is for people as much as companies. Your number is reserved: Founding Member №023 of 50. The page is in your name, your work alone, private until you decide.
 
 Words to keep out of every piece: «الأفضل», «رقم ١», «مضمون», "revolutionary", "guaranteed", "best", "#1", "hurry", «سارع», «مقاعد متبقية». Per market copy rules (marketing/08).
 
@@ -160,7 +160,7 @@ Go in person, mid-morning or mid-afternoon, Sunday to Thursday. Dress like a cli
 What the invitee sees after scanning `sawwiq.org/i/<code>` (Arabic by default, English offered, phone-first):
 
 1. **Video** (36 s, captioned, plays muted) with the Sawwiq mark; no autoplay audio.
-2. **Number**: «الرعيل الأول رقم ٠١٢ من ٥٠ محفوظ لـ {الاسم} لغاية {date}» and, below, the count of seals already claimed; names only with consent.
+2. **Number**: «عضو مؤسس رقم ٠١٢ من ٥٠ محفوظ لـ {الاسم} لغاية {date}» and, below, the count of seals already claimed; names only with consent.
 3. **Claim**: one button, «أطالب بختمي». An expired or already-claimed code shows a calm message and the ordinary `/join` link, never an error page.
 4. **Join**: the normal `/join` with the invitation attached; the seal is bound to the account at creation, in the same transaction as its private `profile_publications` row.
 5. **Setup**: the five-step first run (docs/53). The Studio shows the seal and the existing Founder status panel; the two are different things and the copy says so.
@@ -172,7 +172,7 @@ What Admin → Prospects must show so the owner can act (one row per prospect, n
 | Column | Values |
 |---|---|
 | Name, wave, social lead's name | from the prospect row |
-| Invitation code, First Wave number | reserved / claimed / expired / voided |
+| Invitation code, Founding Member number | reserved / claimed / expired / voided |
 | Letter delivered | date (one tap) |
 | Scans | count · first · last |
 | Claimed | date, account linked |

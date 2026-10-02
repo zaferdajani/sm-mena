@@ -81,11 +81,11 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               )}
               {agency.kind === "freelancer" && <span className={styles.badge} data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
               {agency.isDemo && <span className={styles.badge}>{tc("demo")}</span>}
-              {agency.founding && <span className={cn(styles.badge, styles.founderBadge)} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
+              {agency.founding && !agency.pioneerNumber && <span className={cn(styles.badge, styles.founderBadge)} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
               {agency.pioneerNumber ? (
                 <span className={cn(styles.badge, styles.founderBadge)} data-testid="pioneer-badge" title={t("pioneerTitle")}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/brand/pioneer-seal.svg" alt="" width={18} height={18} />
+                  <img src="/brand/pioneer-seal.svg" alt="" width={22} height={22} />
                   {t("pioneerBadge", { number: sealNumber(agency.pioneerNumber, locale) })}
                 </span>
               ) : null}

@@ -1,6 +1,6 @@
-# First Wave intro video (`public/pioneers/intro.mp4`)
+# Founding Member intro video (`public/pioneers/intro.mp4`)
 
-The intro for the "الرعيل الأول" (First Wave) invitation letter is made from this folder, with no
+The intro for the "عضو مؤسس" (Founding Member) invitation letter is made from this folder, with no
 video-generation service: an HTML motion page with CSS animations, real product screenshots from
 the local build, Playwright to scrub and capture the page frame by frame, and ffmpeg to encode.
 Shot list, copy and subtitles: `docs/pioneer-video-script.md`.
