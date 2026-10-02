@@ -175,7 +175,7 @@
 @media (max-width: 850px) {
   .registration-site-v2 { padding-inline: 1rem; }
   .registration-site-v2 .registration-header { padding-block-end: 1.2rem; }
-  .registration-hero-v2 { min-block-size: auto; gap: 1.6rem; }
+  .registration-hero-v2 { min-block-size: auto; gap: 1.6rem; grid-template-columns: minmax(0, 1fr); }
   .registration-hero-v2 h1 { font-size: clamp(2.35rem, 11vw, 3.6rem); line-height: 1.22; }
   .registration-hero-product { min-block-size: 25rem; border-radius: 1.4rem; }
   .registration-audiences, .registration-how, .registration-faq-v2 { padding-block: 4.5rem; }
