@@ -33,7 +33,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # NODE_ENV=production would skip devDependencies (tsx, Playwright).
+      - run: npm ci --include=dev
       - run: npx playwright install --with-deps chromium
       - name: Create the QA letter
         id: letter
