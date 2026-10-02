@@ -286,6 +286,13 @@ html.reel-snap [data-testid="site-footer"] {
 @media print {
   @page { size: A5; margin: 0; }
   .pioneer-letters { background: none; padding: 0; }
-  .pioneer-letter { margin: 0; border: 0; min-block-size: 210mm; }
-  body > *:not(:has(.pioneer-letters)) { display: none !important; }
+  /* One sheet per side: tighter type so the English side never spills onto a second page. */
+  .pioneer-letter { margin: 0; border: 0; block-size: 210mm; min-block-size: 0; padding: 11mm 12mm; font-size: 10pt; line-height: 1.6; overflow: hidden; }
+  .pioneer-letter__head { margin-block-end: 5mm; }
+  .pioneer-letter__title { font-size: 17pt; margin-block-end: 3mm; }
+  .pioneer-letter__seal { margin-block: 4mm 1mm; padding: 4mm; }
+  .pioneer-letter__qr { inline-size: 27mm; block-size: 27mm; }
+  .pioneer-letter__foot { margin-block-start: 5mm; }
+  /* The letters wrapper can itself be a direct child of body, so exclude it as well as its ancestors. */
+  body > *:not(.pioneer-letters):not(:has(.pioneer-letters)) { display: none !important; }
 }
