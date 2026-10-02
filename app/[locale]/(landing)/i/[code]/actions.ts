@@ -10,7 +10,7 @@ export async function claimForMyPageAction(code: string) {
   const { user, agency } = await requireAgency();
   const r = await claimPioneer(agency.id, code, user.id);
   const locale = await getLocale();
-  return redirect({ href: r.ok ? `/a/${agency.handle}?pioneer=1` : `/i/${code}`, locale });
+  return redirect({ href: r.ok || r.reason === "full" ? "/studio" : `/i/${code}`, locale });
 }
 
 /** The introduction played to its end on the letter's page. */

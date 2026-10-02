@@ -6,6 +6,7 @@ import { getItemForAgency, listConnections, pendingResources, providerStates } f
 import { getSetup, openSetup } from "@/lib/data/portfolio-setup";
 import { listClients } from "@/lib/data/portfolio-clients";
 import { setupExamples } from "@/lib/data/setup-examples";
+import { awardMedalIfComplete } from "@/lib/data/pioneers";
 import { publicationFor } from "@/lib/data/publication";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { postFormOptions } from "@/lib/studio-options";
@@ -24,6 +25,8 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const q = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
   const view = (await getSetup(agency.id)) ?? (await openSetup(agency.id, user.id));
+  // A letter's page earns its Founding Member medal the moment it is complete (docs/57).
+  await awardMedalIfComplete(agency.id).catch(() => null);
   const [clients, connections, imports, examples, publication] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), setupExamples(), publicationFor(agency.id)]);
   const grant = one(q.grant);
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];

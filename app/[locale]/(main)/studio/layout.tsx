@@ -1,4 +1,5 @@
 import { RegistrationStudioShell } from "@/components/registration/studio-shell";
+import { MedalPanel } from "@/components/pioneer/medal-panel";
 import { isRegistrationPhase, isLaunchPilot } from "@/lib/launch-phase";
 import { ExternalLink, LogOut } from "lucide-react";
 import type { Metadata } from "next";
@@ -23,7 +24,7 @@ export const metadata: Metadata = { robots: { index: false } };
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const { agency } = await requireAgency();
-  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <RegistrationStudioShell agency={agency}>{children}</RegistrationStudioShell>;
+  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <RegistrationStudioShell agency={agency}><MedalPanel agencyId={agency.id} />{children}</RegistrationStudioShell>;
   const t = await getTranslations("Studio");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
@@ -93,6 +94,7 @@ export default async function StudioLayout({ children }: { children: React.React
       </div>
       <div className="sw-workspace-body px-4 py-5">
         <CreatorSetupNudge hasWork={agency.postCount > 0} />
+        <MedalPanel agencyId={agency.id} />
         {children}
       </div>
     </div>

@@ -18,6 +18,7 @@ import { Field } from "@/components/studio/chips";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { InvitationState } from "@/lib/pioneers";
 import { PROSPECT_STATUSES, type ProspectStatus } from "@/lib/prospects";
 
 type Option = { key: string; label: string };
@@ -125,7 +126,7 @@ export function ProspectControls({ id, status, priority, note, website, instagra
 }
 
 /** The letter for one prospect: create it, open its page, print it, extend a lapsed one. */
-export function InvitationControls({ prospectId, name, invitation, siteUrl }: { prospectId: string; name: string; siteUrl: string; invitation: { id: string; code: string; number: string | null; scans: number; watched: boolean; state: "open" | "claimed" | "late" | "expired" | "full"; expiresOn: string; claimedHandle: string | null } | null }) {
+export function InvitationControls({ prospectId, name, invitation, siteUrl }: { prospectId: string; name: string; siteUrl: string; invitation: { id: string; code: string; number: string | null; scans: number; watched: boolean; state: InvitationState; expiresOn: string; claimedHandle: string | null } | null }) {
   const t = useTranslations("AdminProspects.letter");
   const [pending, start] = useTransition();
   if (!invitation) {
