@@ -3414,8 +3414,9 @@
         "open": "open until {date}",
         "claimed": "medal claimed",
         "expired": "lapsed on {date}",
-        "late": "registered after the medals ran out",
-        "full": "medals ran out before they registered"
+        "late": "completed after the medals ran out",
+        "full": "medals ran out before they registered",
+        "linked": "registered · page not complete yet"
       },
       "scans": "{count, plural, =0 {no scans} one {# scan} other {# scans}}",
       "print": "Letter",
@@ -3452,8 +3453,8 @@
       "headline": "Your work deserves more than 24 hours.",
       "to": "To {name},",
       "p1": "Your work gets seen, then it disappears from the story. Sawwiq is one place for the work of Arab agencies and freelancers, organised by client and result, where business owners look for who did what.",
-      "p2": "This letter went to names we chose by hand, and there are only {cap} medals. The Founding Member medal goes to the first {cap} invited names who register, numbered in the order they arrive: a permanent mark on the page that cannot be bought and says you were there from the start.",
-      "p3": "Scan the code: a one-minute video, then one sitting on your phone to set up the page and save one project. The medal appears when that is done. Nothing is public until you decide.",
+      "p2": "This letter went to names we chose by hand, and there are only {cap} medals. The Founding Member medal goes to the first {cap} invited pages that are complete with published work, numbered in the order they finish: a permanent mark on the page that cannot be bought and says you were there from the start.",
+      "p3": "Scan the code: a one-minute video, then set up the whole page on your phone and publish a first project. The medal appears when the page is complete. Nothing is public until you decide.",
       "numberLine": "Only {cap} medals · first come, first numbered",
       "expiry": "Invitation valid until {date}",
       "qrCaption": "Scan with your phone camera:",
@@ -3463,17 +3464,34 @@
     },
     "watchFirst": "Watch the one-minute introduction to the end, then claim your medal.",
     "watched": "Watched. Your medal is ready to claim.",
-    "earn": "The medal goes to the first fifty invited names who finish the steps: watch the video to the end, register, and save a first project. Numbers follow the order of registration.",
+    "earn": "The medal is earned, not handed out: watch the video to the end, register, complete the whole page (logo, introduction, services, platforms, price, WhatsApp) and publish a first project. The first fifty invited pages to be complete get the medals, numbered in the order they finish.",
     "medalsLeft": "{left} of {cap} medals left",
     "stateLine": {
-      "open": "Medals go to the first fifty invited names who watch the video and register. This invitation runs until {date}.",
+      "open": "Medals go to the first fifty invited pages that are complete. Register before {date}.",
       "claimed": "This medal is on its page.",
-      "late": "You registered after the fifty medals were taken.",
+      "late": "The fifty medals went to pages that were completed first.",
       "expired": "This invitation has expired.",
-      "full": "The fifty medals have all been claimed."
+      "full": "The fifty medals have all been claimed.",
+      "linked": "Your page is registered. Complete it and publish a first project; the medal is yours if any are left."
     },
     "fullHelp": "You can still join: Sawwiq's early members get the launch benefits, without the medal.",
-    "joinAnyway": "Create my page"
+    "joinAnyway": "Create my page",
+    "studio": {
+      "title": "Your Founding Member medal is waiting",
+      "body": "{left} of {cap} medals left. They go to the first invited pages to be complete. Done {done} of {total}:",
+      "lateTitle": "The Founding Member medals are all taken",
+      "lateBody": "The fifty medals went to pages that were completed first. Your page has the early-member benefits.",
+      "awarded": "Your page carries Founding Member medal №{number}.",
+      "items": {
+        "logo": "A logo or page photo",
+        "bio": "A clear introduction (at least 40 characters)",
+        "services": "Your services",
+        "platforms": "The platforms you work on",
+        "price": "A starting price, or a package",
+        "contact": "A WhatsApp number",
+        "project": "A first published project with images"
+      }
+    }
   },
   "BehanceImport": {
     "title": "Import from Behance",

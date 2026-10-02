@@ -3,8 +3,8 @@ import path from "node:path";
 import { and, asc, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "@/lib/db";
-import { agencies, pioneerInvitations, prospects, type PioneerInvitation } from "@/lib/db/schema";
-import { PIONEER, inviteExpiry, invitationState, isPioneerCode, newPioneerCode, normalizePioneerCode, type InvitationState } from "@/lib/pioneers";
+import { agencies, packages, pioneerInvitations, postImages, posts, prospects, type PioneerInvitation } from "@/lib/db/schema";
+import { PIONEER, inviteExpiry, invitationState, isPioneerCode, medalChecklist, medalReady, newPioneerCode, normalizePioneerCode, type InvitationState, type MedalInput, type MedalItem } from "@/lib/pioneers";
 import { audit } from "./agencies";
 
 // The Pioneer seal (docs/57): invitations, scans and claims.
@@ -129,21 +129,20 @@ export async function markWatched(raw: unknown): Promise<boolean> {
 }
 
 export type ClaimResult =
-  | { ok: true; number: number }
+  | { ok: true }
   | { ok: false; reason: "invalid" | "claimed" | "expired" | "already" | "notWatched" | "full" };
 
 /**
- * The medal goes from the letter to the page once, numbered in claim order. The first
- * PIONEER.cap invited names who finished the video and registered get №1…№cap; anyone
- * after that still joins (early-member benefits) and the letter is recorded as "late".
+ * Registering from the letter links it to the new page (once; a page holds one letter). The
+ * medal is not given here: it goes to the first PIONEER.cap linked pages that are complete
+ * (`awardMedalIfComplete`), numbered in the order they finish.
  */
 export async function claimPioneer(agencyId: string, raw: unknown, by: string | null, { requireWatched = introVideoDeployed() } = {}): Promise<ClaimResult> {
   const code = normalizePioneerCode(raw);
   if (!isPioneerCode(code)) return { ok: false, reason: "invalid" };
   const db = await getDb();
+  const left = await medalsLeft();
   return db.transaction(async (tx) => {
-    // One claim at a time, so two people can never get the same number or the 51st medal.
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext('pioneer_medals'))`);
     const [inv] = await tx.select().from(pioneerInvitations).where(eq(pioneerInvitations.code, code)).for("update");
     if (!inv) return { ok: false as const, reason: "invalid" as const };
     if (inv.claimedAgencyId) return { ok: false as const, reason: inv.claimedAgencyId === agencyId ? ("already" as const) : ("claimed" as const) };
@@ -152,14 +151,60 @@ export async function claimPioneer(agencyId: string, raw: unknown, by: string | 
     const [agency] = await tx.select({ id: agencies.id, pioneerNumber: agencies.pioneerNumber, isDemo: agencies.isDemo }).from(agencies).where(eq(agencies.id, agencyId)).for("update");
     if (!agency || agency.isDemo) return { ok: false as const, reason: "invalid" as const };
     if (agency.pioneerNumber) return { ok: false as const, reason: "already" as const };
-    const [{ max }] = (await tx.select({ max: sql<number | null>`max(${pioneerInvitations.number})` }).from(pioneerInvitations)) as { max: number | null }[];
-    const number = (max ?? 0) + 1;
-    const late = number > PIONEER.cap;
-    await tx.update(pioneerInvitations).set({ claimedAgencyId: agencyId, claimedAt: new Date(), number: late ? null : number }).where(eq(pioneerInvitations.id, inv.id));
-    if (!late) await tx.update(agencies).set({ pioneerNumber: number }).where(eq(agencies.id, agencyId));
+    const [linked] = await tx.select({ id: pioneerInvitations.id }).from(pioneerInvitations).where(eq(pioneerInvitations.claimedAgencyId, agencyId));
+    if (linked) return { ok: false as const, reason: "already" as const };
+    await tx.update(pioneerInvitations).set({ claimedAgencyId: agencyId, claimedAt: new Date() }).where(eq(pioneerInvitations.id, inv.id));
     if (inv.prospectId) await tx.update(prospects).set({ status: "joined", agencyId, updatedAt: new Date() }).where(eq(prospects.id, inv.prospectId));
-    await tx.insert((await import("@/lib/db/schema")).auditLogs).values({ actorUserId: by, action: late ? "pioneer.late" : "pioneer.claimed", entity: "agency", entityId: agencyId, meta: { number: late ? null : number, invitationId: inv.id } });
-    return late ? { ok: false as const, reason: "full" as const } : { ok: true as const, number };
+    await tx.insert((await import("@/lib/db/schema")).auditLogs).values({ actorUserId: by, action: "pioneer.linked", entity: "agency", entityId: agencyId, meta: { invitationId: inv.id } });
+    return left > 0 ? { ok: true as const } : { ok: false as const, reason: "full" as const };
+  });
+}
+
+export type MedalStatus =
+  | { state: "none" }
+  | { state: "awarded"; number: number }
+  | { state: "pending"; checklist: { item: MedalItem; done: boolean }[]; left: number }
+  | { state: "late"; checklist: { item: MedalItem; done: boolean }[] };
+
+async function medalInput(agencyId: string): Promise<MedalInput | null> {
+  const db = await getDb();
+  const [a] = await db.select().from(agencies).where(eq(agencies.id, agencyId));
+  if (!a) return null;
+  const [{ packageCount }] = (await db.select({ packageCount: sql<number>`count(*)::int` }).from(packages).where(eq(packages.agencyId, agencyId))) as { packageCount: number }[];
+  const [{ projects }] = (await db
+    .select({ projects: sql<number>`count(*)::int` })
+    .from(posts)
+    .where(and(eq(posts.agencyId, agencyId), eq(posts.status, "published"), sql`exists (select 1 from ${postImages} where ${postImages.postId} = ${posts.id})`))) as { projects: number }[];
+  return { avatarKey: a.avatarKey, bio: a.bio, services: a.services, platforms: a.platforms, startingPriceJod: a.startingPriceJod, packageCount: Number(packageCount), whatsapp: a.whatsapp, projectCount: Number(projects) };
+}
+
+/**
+ * Gives the medal to a linked page the moment it is complete, if medals are left: the next
+ * number in finishing order, under a lock so two pages never share a number or exceed the cap.
+ * Called when the Studio or the setup is shown, which is right after every save.
+ */
+export async function awardMedalIfComplete(agencyId: string): Promise<MedalStatus> {
+  const db = await getDb();
+  const [inv] = await db.select().from(pioneerInvitations).where(eq(pioneerInvitations.claimedAgencyId, agencyId));
+  if (!inv) return { state: "none" };
+  if (inv.number) return { state: "awarded", number: inv.number };
+  const input = await medalInput(agencyId);
+  if (!input) return { state: "none" };
+  const checklist = medalChecklist(input);
+  const left = await medalsLeft();
+  if (left <= 0) return { state: "late", checklist };
+  if (!medalReady(input)) return { state: "pending", checklist, left };
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtext('pioneer_medals'))`);
+    const [fresh] = await tx.select().from(pioneerInvitations).where(eq(pioneerInvitations.id, inv.id)).for("update");
+    if (fresh?.number) return { state: "awarded" as const, number: fresh.number };
+    const [{ max, given }] = (await tx.select({ max: sql<number | null>`max(${pioneerInvitations.number})`, given: sql<number>`count(${pioneerInvitations.number})::int` }).from(pioneerInvitations)) as { max: number | null; given: number }[];
+    if (given >= PIONEER.cap) return { state: "late" as const, checklist };
+    const number = (max ?? 0) + 1;
+    await tx.update(pioneerInvitations).set({ number }).where(eq(pioneerInvitations.id, inv.id));
+    await tx.update(agencies).set({ pioneerNumber: number }).where(eq(agencies.id, agencyId));
+    await tx.insert((await import("@/lib/db/schema")).auditLogs).values({ actorUserId: null, action: "pioneer.awarded", entity: "agency", entityId: agencyId, meta: { number, invitationId: inv.id } });
+    return { state: "awarded" as const, number };
   });
 }
 
