@@ -85,7 +85,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               {agency.pioneerNumber ? (
                 <span className={cn(styles.badge, styles.founderBadge)} data-testid="pioneer-badge" title={t("pioneerTitle")}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/brand/pioneer-seal.svg" alt="" width={18} height={18} />
+                  <img src="/brand/pioneer-seal.svg" alt="" width={22} height={22} />
                   {t("pioneerBadge", { number: sealNumber(agency.pioneerNumber, locale) })}
                 </span>
               ) : null}
