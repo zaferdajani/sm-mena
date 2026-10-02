@@ -2,7 +2,7 @@
 
 The owner hand-delivers printed, numbered invitation letters to the best social media agencies and marketers in Amman during the registration phase (docs/51). Each letter carries a personal QR code that opens `sawwiq.org/i/<code>`: a 24-second intro video in Modern Standard Arabic, the invitee's reserved Founding Member number, "Claim your seal", then the normal `/join` and the five-step setup (docs/53). Nothing is public until the invitee says so.
 
-> **As built (docs/57):** the seal is earned in three steps: the invitee watches the introduction to the end on the letter's page (recorded), creates the page from that page's "Claim" button, and saves a first project; only then does «عضو مؤسس رقم ٠١٢» appear. A letter's number stays reserved for its window (21 days) and an admin can extend it; claimed numbers are permanent. Where this playbook and docs/57 differ, docs/57 describes the code.
+> **As built (docs/57, 2 Oct 2026):** letters carry no number. The invitee watches the introduction to the end on the letter's page (checked on the server), registers from it, which links the letter to the page, then completes the page: logo, an introduction of at least 40 characters, services, platforms, a starting price or a package, a WhatsApp number and at least one published project with images. The first fifty linked pages to be complete get the medal, numbered in the order they finish; the Studio shows each invitee a checklist and the medals left. Later invitees keep the early-member benefits without a medal. Where this playbook and docs/57 differ, docs/57 describes the code.
 
 **The Founding Member medal («وسام العضو المؤسس», "Founding Member №012")** is a permanent numbered mark on the holder's page and posts. Rules, all enforced in code once built:
 
