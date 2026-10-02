@@ -1,9 +1,12 @@
-# 57. The First Wave seal (الرعيل الأول) and the invitation letters
+# 57. The Founding Member medal (عضو مؤسس) and the invitation letters
 
-The campaign (docs/56) hand-delivers printed letters to the best agencies and marketers. Each letter carries a reserved number and a personal QR code. The seal is **earned**, not handed out: the invitee watches the one-minute introduction to the end, creates the page, and saves a first project. Then «الرعيل الأول رقم ٠١٢» / "First Wave №012" appears on the page and on its cards. It is recognition for the first names, capped at 50, permanent, and never a rank: relevance, matching and money are untouched. It is separate from the Founding seats (docs/39, docs/44), which keep their own numbers and economics.
+The campaign (docs/56) hand-delivers printed letters to the best agencies and marketers. Each letter carries a reserved number and a personal QR code. The seal is **earned**, not handed out: the invitee watches the one-minute introduction to the end, creates the page, and saves a first project. Then «عضو مؤسس رقم ٠١٢» / "Founding Member №012" appears on the page and on its cards. It is recognition for the first names, capped at 50, permanent, and never a rank: relevance, matching and money are untouched. It is separate from the Founding seats (docs/39, docs/44), which keep their own numbers and economics.
 
 ## Name
-«الرعيل الأول» ("the first generation / first wave") says they were there first without saying the platform depends on them. «المؤسّسون» was rejected for that reason (and is already the Founding program's word). The name lives in message keys only (`Pioneer.*`, `Profile.pioneerBadge`, `Common.pioneer`, `AdminProspects.letter.*`), so it can change in minutes.
+The owner chose «عضو مؤسس» / "Founding Member" (2 Oct 2026), shown as a numbered gold medal («وسام»). Profiles already carried a dated «عضو مؤسِّس 2026» badge for the first 100 providers (docs/39, docs/44); a page that holds the numbered medal shows only the medal, so no page shows two founding badges. The medal's economics are unchanged: recognition only. The name lives in message keys only (`Pioneer.*`, `Profile.pioneerBadge`, `Common.pioneer`, `AdminProspects.letter.*`), so it can change in minutes.
+
+## Medal
+`public/brand/first-wave-seal.webp` (512) and `-192.webp`: the gold medal generated with Higgsfield in the site palette and cut out on transparency, used at 48 px and up (QR page, letters, video). `public/brand/pioneer-seal.svg` is the same shape drawn for small sizes (profile badge, cards).
 
 ## Flow
 1. Admin → Prospects → "Create letter" on a prospect: `pioneer_invitations` gets the next number (≤ `PIONEER.cap`, under a transaction lock), an 8-character code without look-alike characters, and a 21-day window. One letter per prospect.

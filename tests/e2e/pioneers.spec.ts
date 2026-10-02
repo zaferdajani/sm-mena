@@ -27,13 +27,13 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   await expect(admin.getByTestId("pioneer-letter")).toHaveCount(2);
   await expect(admin.getByTestId("pioneer-letter").first()).toHaveAttribute("data-locale", "ar");
   await expect(admin.getByTestId("pioneer-letter").first().locator(".pioneer-letter__qr svg")).toBeVisible();
-  await expect(admin.getByTestId("pioneer-letter").last()).toContainText(`First Wave №${number}`);
+  await expect(admin.getByTestId("pioneer-letter").last()).toContainText(`Founding Member №${number}`);
 
   // The invitee scans the code on a phone.
   const phone = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
   await phone.goto(`/ar/i/${code}`);
   await expect(phone.getByTestId("pioneer-invite")).toHaveAttribute("data-state", "open");
-  await expect(phone.getByTestId("pioneer-number")).toContainText("الرعيل الأول");
+  await expect(phone.getByTestId("pioneer-number")).toContainText("عضو مؤسس");
   const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   // Without a deployed video the claim opens at once; with one it waits for the end of the video.
