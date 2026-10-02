@@ -232,6 +232,13 @@
       "when": 1790931476187,
       "tag": "0032_medal_claim_order",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1790938107291,
+      "tag": "0033_qa_letters",
+      "breakpoints": true
     }
   ]
 }

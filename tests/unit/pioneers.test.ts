@@ -131,6 +131,11 @@ describe("Founding Member medal (docs/57)", () => {
     await db.update(agencies).set({ isDemo: true }).where(eq(agencies.id, demo.agency.id));
     const third = await letter(admin.id);
     expect(await claimPioneer(demo.agency.id, third.code, demo.user.id, { requireWatched: false })).toEqual({ ok: false, reason: "invalid" });
+    // …except the live check's QA letter, which the workflow deletes right after.
+    const qa = await letter(admin.id, "QA live check");
+    await db.update(pioneerInvitations).set({ qa: true }).where(eq(pioneerInvitations.id, qa.id));
+    expect(await claimPioneer(demo.agency.id, qa.code, demo.user.id, { requireWatched: false })).toEqual({ ok: true });
+    await db.delete(pioneerInvitations).where(eq(pioneerInvitations.id, qa.id));
 
     // c registers in time but the remaining medals go to others first: c is late, no medal.
     expect(await claimPioneer(c.agency.id, other.code, c.user.id, { requireWatched: false })).toEqual({ ok: true });

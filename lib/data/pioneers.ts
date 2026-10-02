@@ -149,7 +149,8 @@ export async function claimPioneer(agencyId: string, raw: unknown, by: string | 
     if (inv.expiresAt.getTime() < Date.now()) return { ok: false as const, reason: "expired" as const };
     if (requireWatched && !inv.watchedAt) return { ok: false as const, reason: "notWatched" as const };
     const [agency] = await tx.select({ id: agencies.id, pioneerNumber: agencies.pioneerNumber, isDemo: agencies.isDemo }).from(agencies).where(eq(agencies.id, agencyId)).for("update");
-    if (!agency || agency.isDemo) return { ok: false as const, reason: "invalid" as const };
+    // Demo pages never carry a medal, except for the live check's QA letter, which is deleted right after.
+    if (!agency || (agency.isDemo && !inv.qa)) return { ok: false as const, reason: "invalid" as const };
     if (agency.pioneerNumber) return { ok: false as const, reason: "already" as const };
     const [linked] = await tx.select({ id: pioneerInvitations.id }).from(pioneerInvitations).where(eq(pioneerInvitations.claimedAgencyId, agencyId));
     if (linked) return { ok: false as const, reason: "already" as const };

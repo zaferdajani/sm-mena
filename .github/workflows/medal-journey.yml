@@ -1,0 +1,53 @@
+# Live medal check (docs/57): creates one QA letter, runs the real path on the live site with the
+# seeded demo provider (letter page, video, claim, Studio medal, profile badge), then deletes the
+# QA letter and takes back its medal number, whatever happened. No account, seat or medal is
+# used up. Actions → Medal journey → Run workflow.
+name: Medal journey
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: Site to check
+        default: https://sawwiq.org
+
+concurrency:
+  group: maintenance
+  cancel-in-progress: false
+
+jobs:
+  medal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: production
+      SITE_URL: ${{ inputs.site || 'https://sawwiq.org' }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DEMO_EMAIL: nakhla-studio@sawwiq.test
+      DEMO_PASSWORD: ${{ secrets.SEED_DEMO_PASSWORD }}
+    steps:
+      - name: Check the secrets are there
+        run: '[ -n "$DATABASE_URL" ] && [ -n "$DEMO_PASSWORD" ] || { echo "::error::Needs DATABASE_URL and SEED_DEMO_PASSWORD."; exit 1; }'
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Create the QA letter
+        id: letter
+        run: npm run --silent db:migrate && npx tsx lib/db/qa-medal.ts create
+      - name: Run the medal journey
+        env:
+          CODE: ${{ steps.letter.outputs.code }}
+        run: node tests/live/medal-journey.mjs
+      - name: Delete the QA letter and take back its medal
+        if: always()
+        run: npx tsx lib/db/qa-medal.ts cleanup
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: medal-journey
+          path: live-evidence/
+          retention-days: 14

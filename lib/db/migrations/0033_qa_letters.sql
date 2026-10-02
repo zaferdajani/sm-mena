@@ -1,0 +1,1 @@
+ALTER TABLE "pioneer_invitations" ADD COLUMN IF NOT EXISTS "qa" boolean DEFAULT false NOT NULL;
