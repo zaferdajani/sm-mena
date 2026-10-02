@@ -74,7 +74,7 @@ Per letter, day by day. Follow-ups come from the owner's own phone, to a number 
 
 **WhatsApp 2 (day 10):**
 
-> مرحبا {الاسم}، تذكير أخير وما رح أزعجك بعده: حجز رقم {٠١٢} بينتهي {date}. الرابط: sawwiq.org/i/{code}. إذا الوقت مش مناسب هسا، احكيلي وبنشيل الرقم بدون أي إحراج.
+> مرحبا {الاسم}، تذكير أخير وما رح أزعجك بعده: حجز رقم {٠١٢} بينتهي {date}. الرابط: sawwiq.org/i/{code}. إذا الوقت مش مناسب حالياً، احكيلي وبنشيل الرقم بدون أي إحراج.
 
 Nothing else: no broadcasts, no groups, no "did you see my message".
 
