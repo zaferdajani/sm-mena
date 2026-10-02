@@ -29,6 +29,12 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   await expect(admin.getByTestId("pioneer-letter").first()).toHaveAttribute("data-locale", "ar");
   await expect(admin.getByTestId("pioneer-letter").first().locator(".pioneer-letter__qr svg")).toBeVisible();
   await expect(admin.getByTestId("pioneer-letter").last()).toContainText("Only 50 medals");
+  // Printed: the letters stay visible and each side fits one A5 sheet.
+  await admin.emulateMedia({ media: "print" });
+  await expect(admin.getByTestId("pioneer-letters")).toBeVisible();
+  const spill = await admin.getByTestId("pioneer-letter").evaluateAll((els) => els.map((e) => e.scrollHeight - e.clientHeight));
+  expect(spill).toEqual([0, 0]);
+  await admin.emulateMedia({ media: "screen" });
 
   // The invitee scans the code on a phone.
   const phone = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
