@@ -58,15 +58,22 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
 
   // Claimed, and the letter page now says so; the seal waits for the first project.
   await phone.goto(`/ar/i/${code}`);
-  await expect(phone.getByTestId("pioneer-invite")).toHaveAttribute("data-state", "claimed");
-  await expect(phone.getByTestId("pioneer-claimed-page")).toBeVisible();
+  // Registered: the letter is linked; the medal waits for a complete page with published work.
+  await expect(phone.getByTestId("pioneer-invite")).toHaveAttribute("data-state", "linked");
   await phone.goto(`/ar/a/${handle}`);
   await expect(phone.getByTestId("pioneer-badge")).toHaveCount(0);
 
   await admin.goto("/en/admin/prospects");
   const after = admin.getByTestId("prospect-row").filter({ hasText: name });
   await expect(after).toHaveAttribute("data-status", "joined");
-  await expect(after.getByTestId("prospect-invitation")).toHaveAttribute("data-state", "claimed");
+  await expect(after.getByTestId("prospect-invitation")).toHaveAttribute("data-state", "linked");
   if (hasVideo) await expect(after.getByTestId("invitation-watched")).toHaveAttribute("data-watched", "true");
-  await expect(after.getByTestId("invitation-number")).toContainText("Founding Member №");
+  await expect(after.getByTestId("invitation-number")).toHaveCount(0);
+
+  // The Studio shows what is left before the medal, with a link for each item.
+  await phone.goto("/ar/studio");
+  const panel = phone.getByTestId("medal-panel");
+  await expect(panel).toHaveAttribute("data-state", "pending");
+  await expect(panel.locator('[data-item="project"]')).toHaveAttribute("data-done", "false");
+  await expect(panel.locator('[data-item="contact"]')).toHaveAttribute("data-done", "true");
 });

@@ -42,13 +42,47 @@ export const localizeDigits = (n: number, locale: string) => (locale === "ar" ? 
 export const inviteExpiry = (from = new Date()) => new Date(from.getTime() + PIONEER.inviteDays * 24 * 3600 * 1000);
 
 /**
- * open: can still be claimed · claimed: registered in time, medal №number · late: registered after
- * the fifty medals were gone (early-member benefits, no medal) · expired: the letter's window passed ·
- * full: unclaimed, and the fifty medals are already taken.
+ * What a page needs before it earns the medal: a page buyers can actually use, with
+ * real content in it. The setup steps fill all of it (profile, services, a project);
+ * prices and platforms come from the Studio profile or a package.
  */
-export type InvitationState = "open" | "claimed" | "late" | "expired" | "full";
+export const MEDAL_ITEMS = ["logo", "bio", "services", "platforms", "price", "contact", "project"] as const;
+export type MedalItem = (typeof MEDAL_ITEMS)[number];
+export const MEDAL_BIO_MIN = 40;
+export type MedalInput = {
+  avatarKey: string | null;
+  bio: string;
+  services: string[];
+  platforms: string[];
+  startingPriceJod: number | null;
+  packageCount: number;
+  whatsapp: string | null;
+  /** Published projects with at least one image or video. */
+  projectCount: number;
+};
+export function medalChecklist(a: MedalInput): { item: MedalItem; done: boolean }[] {
+  const done: Record<MedalItem, boolean> = {
+    logo: Boolean(a.avatarKey),
+    bio: a.bio.trim().length >= MEDAL_BIO_MIN,
+    services: a.services.length > 0,
+    platforms: a.platforms.length > 0,
+    price: (a.startingPriceJod ?? 0) > 0 || a.packageCount > 0,
+    contact: Boolean(a.whatsapp?.trim()),
+    project: a.projectCount > 0,
+  };
+  return MEDAL_ITEMS.map((item) => ({ item, done: done[item] }));
+}
+export const medalReady = (a: MedalInput) => medalChecklist(a).every((c) => c.done);
+
+/**
+ * open: can still be registered from · linked: registered, the page is being completed (the
+ * medal is not theirs yet) · claimed: completed in time, medal №number · late: the fifty medals
+ * went to pages that finished first · expired: the letter's window to register passed ·
+ * full: never registered, and the fifty medals are already taken.
+ */
+export type InvitationState = "open" | "linked" | "claimed" | "late" | "expired" | "full";
 export function invitationState(i: { claimedAgencyId: string | null; number: number | null; expiresAt: Date }, medalsLeft: number, now = new Date()): InvitationState {
-  if (i.claimedAgencyId) return i.number ? "claimed" : "late";
+  if (i.claimedAgencyId) return i.number ? "claimed" : medalsLeft > 0 ? "linked" : "late";
   if (i.expiresAt.getTime() < now.getTime()) return "expired";
   return medalsLeft > 0 ? "open" : "full";
 }

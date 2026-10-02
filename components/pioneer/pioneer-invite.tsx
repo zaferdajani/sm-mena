@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { claimForMyPageAction } from "@/app/[locale]/(landing)/i/[code]/actions";
 import { PioneerClaim } from "@/components/pioneer/pioneer-claim";
+import type { InvitationState } from "@/lib/pioneers";
 import { PioneerSeal } from "@/components/pioneer/pioneer-seal";
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
   number: string | null;
   left: string;
   cap: string;
-  state: "open" | "claimed" | "late" | "expired" | "full";
+  state: InvitationState;
   expiresOn: string;
   claimedHandle: string | null;
   watched: boolean;
