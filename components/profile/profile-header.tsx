@@ -81,7 +81,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               )}
               {agency.kind === "freelancer" && <span className={styles.badge} data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
               {agency.isDemo && <span className={styles.badge}>{tc("demo")}</span>}
-              {agency.founding && !agency.pioneerNumber && <span className={cn(styles.badge, styles.founderBadge)} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
+              {agency.founding && !agency.pioneerNumber && <span className={styles.badge} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
               {agency.pioneerNumber ? (
                 <span className={cn(styles.badge, styles.founderBadge)} data-testid="pioneer-badge" title={t("pioneerTitle")}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}

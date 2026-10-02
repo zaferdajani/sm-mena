@@ -1435,7 +1435,8 @@ export const pioneerInvitations = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     code: text("code").notNull().unique(),
-    number: integer("number").notNull().unique(),
+    /** The medal number, given at claim time in claim order (1…PIONEER.cap); null until then or when it came too late. */
+    number: integer("number").unique(),
     /** Who the letter is addressed to, as printed. */
     name: text("name").notNull(),
     prospectId: uuid("prospect_id").references(() => prospects.id, { onDelete: "set null" }),

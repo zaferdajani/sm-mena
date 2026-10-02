@@ -1,10 +1,8 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PioneerInvite } from "@/components/pioneer/pioneer-invite";
 import { getCurrentAgency } from "@/lib/auth/session";
-import { invitationByCode, recordScan } from "@/lib/data/pioneers";
+import { introVideoDeployed, invitationByCode, medalsLeft, recordScan } from "@/lib/data/pioneers";
 import { PIONEER, localizeDigits, sealNumber } from "@/lib/pioneers";
 import { notFound } from "next/navigation";
 
@@ -25,12 +23,14 @@ export default async function PioneerInvitePage({ params }: PageProps<"/[locale]
   if (!inv) notFound();
   await recordScan(inv.code);
   const me = await getCurrentAgency();
-  const video = existsSync(path.join(process.cwd(), "public", "pioneers", "intro.mp4"));
+  const video = introVideoDeployed();
+  const left = await medalsLeft();
   return (
     <PioneerInvite
       code={inv.code}
       name={inv.name}
-      number={sealNumber(inv.number, locale)}
+      number={inv.number ? sealNumber(inv.number, locale) : null}
+      left={localizeDigits(left, locale)}
       cap={localizeDigits(PIONEER.cap, locale)}
       state={inv.state}
       expiresOn={new Intl.DateTimeFormat(locale === "ar" ? "ar-JO" : "en-GB", { day: "numeric", month: "long", year: "numeric" }).format(inv.expiresAt)}

@@ -24,7 +24,7 @@ export function PioneerClaim({ code, locale, video, watchedBefore, mode, handle 
             preload="metadata"
             poster="/pioneers/intro-poster.jpg"
             data-testid="pioneer-video"
-            onEnded={() => { setWatched(true); start(() => markWatchedAction(code)); }}
+            onEnded={() => start(async () => { await markWatchedAction(code); setWatched(true); })}
           >
             <source src="/pioneers/intro.mp4" type="video/mp4" />
             <track kind="subtitles" srcLang="en" src="/pioneers/intro.vtt" label="English" />
