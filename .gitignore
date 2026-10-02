@@ -54,3 +54,6 @@ next-env.d.ts
 
 # vendored wasm engines (copied from node_modules by scripts/vendor-engines.mjs)
 /public/engines/
+
+# Screenshots and JSON from the live checks (tests/live/*), uploaded as workflow artifacts
+/live-evidence/

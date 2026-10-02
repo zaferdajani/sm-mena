@@ -1446,6 +1446,8 @@ export const pioneerInvitations = pgTable(
     /** The video was watched to the end on the letter's page: the first of the two steps that earn the seal. */
     watchedAt: timestamp("watched_at", { withTimezone: true }),
     claimedAgencyId: uuid("claimed_agency_id").unique().references(() => agencies.id, { onDelete: "set null" }),
+    /** A QA letter for the live check (Actions → Medal journey): the demo account may use it; it is deleted right after. */
+    qa: boolean("qa").notNull().default(false),
     claimedAt: timestamp("claimed_at", { withTimezone: true }),
     createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: createdAt(),
