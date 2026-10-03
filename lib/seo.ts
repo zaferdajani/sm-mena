@@ -78,7 +78,7 @@ export const defaultOgImage = (locale: string) => ({
   url: `/og/sawwiq-${locale === "ar" ? "ar" : "en"}.jpg`,
   width: 1200,
   height: 630,
-  alt: locale === "ar" ? "سوّق: شركات التسويق والسوشيال ميديا في الأردن" : "Sawwiq: social media and marketing agencies in Jordan",
+  alt: locale === "ar" ? "سوّق: شركات التسويق ووسائل التواصل الاجتماعي في الأردن" : "Sawwiq: social media and marketing agencies in Jordan",
 });
 
 type OgImage = { url: string; width?: number; height?: number; alt?: string };

@@ -21,7 +21,7 @@ Last update: 2026-10-03 20:34 UTC, main at the commit that carries this file. Pr
 
 8. **Owner matching: built and deployed (#59 → 36379a9, dpl_9jRGYn72VUYqKXAbfurwEfE2KYez; docs/59).** The rule matches each registered owner to up to five providers by country, city, service groups, industry and page completeness; Admin → Owners computes the matches now. Sending (one plain email per owner, listing the matches with a link to /owner/matches, where the owner accepts or declines each; acceptance notifies and emails the provider) stays closed during the registration phase: it opens with the full phase or earlier if you set `OWNER_MATCH_EMAILS=on` in Vercel. A daily cron (`/api/cron/owner-matches`, 04:23 UTC) recomputes and, once open, sends. Nothing is owed here except that switch.
 
-9. Roadmap M3 (Expo client) needs your decision before it starts (docs/architecture/mobile-and-api-roadmap.md §5); M1 and M2 are on main. To try the API on a staging deployment set `API_V1_ENABLED=true` there (never in production until the mobile beta).
+9. **Roadmap M3 (Expo client): code delivered (docs/60), device run owed.** `mobile/` implements slice A against `/api/v1` with Keychain sessions, Arabic-first RTL, `upgrade_required` handling and the same publish rule and service catalog as the web; the app's client completes the whole slice against the e2e server in CI. What closes M3 is yours: a staging deployment with `API_V1_ENABLED=true` (never production), then one provider completing the slice in Expo Go on an iPhone and an Android phone (docs/60 §3, §6). Service-worker decision for the web: none in the registration phase (docs/60 §5).
 
 ## Closed since the last list
 

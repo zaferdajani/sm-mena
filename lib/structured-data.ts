@@ -20,7 +20,7 @@ export function organizationLd() {
     alternateName: BRAND.en,
     url: SITE_URL,
     logo: `${SITE_URL}/brand/mark-512.png`,
-    description: "الشبكة العربية للعثور على وكالات التسويق والسوشيال ميديا ومقارنتها وتوظيفها. The Arabic network for marketing and social media agencies.",
+    description: "الشبكة العربية للعثور على وكالات التسويق ووسائل التواصل الاجتماعي ومقارنتها وتوظيفها. The Arabic network for marketing and social media agencies.",
     slogan: "فريقك التسويقي يبدأ من هنا",
     foundingDate: "2026",
     knowsLanguage: ["ar", "en"],
@@ -39,7 +39,7 @@ export function websiteLd(locale: string) {
     inLanguage: ["ar", "en"],
     description:
       locale === "ar"
-        ? "الشبكة العربية لمقارنة وكالات التسويق والسوشيال ميديا وتوظيفها في الأردن والخليج ومصر."
+        ? "الشبكة العربية لمقارنة وكالات التسويق ووسائل التواصل الاجتماعي وتوظيفها في الأردن والخليج ومصر."
         : "The Arabic network to find, compare and hire marketing and social media agencies in Jordan, the Gulf and Egypt.",
     publisher: { "@id": ORG_ID },
     potentialAction: {

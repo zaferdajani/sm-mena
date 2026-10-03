@@ -71,6 +71,21 @@ describe("switch and identity", () => {
       process.env.API_V1_ENABLED = "true";
     }
   });
+  it("tells an app older than API_MIN_APP_VERSION to update, and nobody else", async () => {
+    process.env.API_MIN_APP_VERSION = "2.1.0";
+    try {
+      const old = await call(me, "/api/v1/me", { headers: { "x-sawwiq-app": "expo/2.0.9 (ios)" } });
+      expect(old.status).toBe(426);
+      expect(old.body.error).toMatchObject({ code: "upgrade_required", reason: "minVersion" });
+      expect(old.headers.get("x-min-app-version")).toBe("2.1.0");
+      // A current app, a malformed header and no header at all are each judged on their own merits (here: no token → 401).
+      expect((await call(me, "/api/v1/me", { headers: { "x-sawwiq-app": "expo/2.1.0 (android)" } })).status).toBe(401);
+      expect((await call(me, "/api/v1/me", { headers: { "x-sawwiq-app": "not-a-version" } })).status).toBe(401);
+      expect((await call(me, "/api/v1/me")).status).toBe(401);
+    } finally {
+      delete process.env.API_MIN_APP_VERSION;
+    }
+  });
   it("signs a provider in with the web's rules and never through a cookie", async () => {
     const bad = await call(login, "/api/v1/auth/login", { method: "POST", json: { email: owner.email, password: "wrong" } });
     expect(bad.status).toBe(401);

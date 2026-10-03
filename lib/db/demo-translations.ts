@@ -29,7 +29,7 @@ export const DEMO_TRANSLATIONS: Record<string, DemoTranslation> = {
     name: "Sahel Media",
     bio: "Account management and ad campaigns for clinics and medical centres.",
     captions: {
-      "تصوير استقبال عيادة في إربد لحساباتها على السوشيال ميديا: مكان نظيف ومريح للمرضى.": "Photographing a clinic's reception in Irbid for its social accounts: clean and welcoming for patients.",
+      "تصوير استقبال عيادة في إربد لحساباتها على وسائل التواصل الاجتماعي: مكان نظيف ومريح للمرضى.": "Photographing a clinic's reception in Irbid for its social accounts: clean and welcoming for patients.",
       "محتوى يقدّمه الطبيب: طبيب أسنان يشرح للمريض خطوات العلاج بلغة بسيطة.": "Doctor-led content: a dentist explains each step of treatment in plain words.",
       "حملة توعية صحية: منشورات بألوان العيادة وحساب إنستغرام متجدد.": "A health-awareness campaign: posts in the clinic's colours and a refreshed Instagram account.",
     },
@@ -90,7 +90,7 @@ export const DEMO_TRANSLATIONS: Record<string, DemoTranslation> = {
     captions: {
       "تصوير طبق مطعم في الرياض لسناب شات بالهاتف والجيمبال.": "Filming a Riyadh restaurant dish for Snapchat on a phone and gimbal.",
       "محتوى عمودي لصانع محتوى سعودي في بوليفارد الرياض ليلًا.": "Vertical content with a Saudi creator at Riyadh Boulevard at night.",
-      "تصوير متجر عبايات في الرياض لحساباته على السوشيال ميديا.": "Photographing an abaya boutique in Riyadh for its social accounts.",
+      "تصوير متجر عبايات في الرياض لحساباته على وسائل التواصل الاجتماعي.": "Photographing an abaya boutique in Riyadh for its social accounts.",
     },
   },
   "gulf.pixel.kw": {
