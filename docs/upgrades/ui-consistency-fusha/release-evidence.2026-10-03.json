@@ -157,7 +157,7 @@
           "هسا"
         ]
       },
-      "studio_routes": "Live journey workflow run 37151583332 on 99d31d1: journey job success (seeded demo provider, no account created)",
+      "studio_routes": "Live journey run 37151583332 on 99d31d1: journey 10/10. After PR #60 (66bac21) the same workflow measures the Studio on production: run 37156362499 (production commit 7667d51, same tree as 99d31d1 plus docs) — 12/12 OK: studio measure 8 routes, content 80–1120, tabs 80–1120, footer 80–1120, sidebar 1200–1440, no overflow; studio hover pills apart 4 px; test project deleted (HTTP 404). Artifact live-journey 11285477593 holds the eight Studio screenshots and the hover crop.",
       "capture_note": "Two captures through the sandbox proxy returned a page with a truncated stylesheet (sections at 0–1440 or an 8px offset). Those frames were re-captured and accepted only when fully styled; every accepted live value equals the local measurement."
     }
   },
