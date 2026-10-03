@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { getSessionUser } from "@/lib/auth/session";
+import { respondToOwnerMatch } from "@/lib/data/owner-matching";
 import { saveOwnerNeed } from "@/lib/data/owner-needs";
 import { ownerNeedFromForm, ownerNeedSchema } from "@/lib/validation/owner-needs";
 
@@ -26,4 +28,21 @@ export async function saveOwnerNeedAction(_: OwnerNeedState, formData: FormData)
   }
   await saveOwnerNeed(user.id, parsed.data, locale);
   redirect(`/${locale}/owner/done`);
+}
+
+export type MatchAnswerState = { done?: "accepted" | "declined"; error?: "signin" | "notFound" | "notSent" } | undefined;
+
+/** The owner's answer to one match (docs/59): acceptance is the consent that introduces the two sides. */
+export async function answerOwnerMatchAction(_: MatchAnswerState, formData: FormData): Promise<MatchAnswerState> {
+  const user = await getSessionUser();
+  const locale = await getLocale();
+  if (!user || user.role !== "client") return { error: "signin" };
+  const matchId = String(formData.get("matchId") ?? "");
+  const answer = formData.get("answer") === "decline" ? "decline" : "accept";
+  if (!/^[0-9a-f-]{36}$/.test(matchId)) return { error: "notFound" };
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://sawwiq.org").replace(/\/$/, "");
+  const result = await respondToOwnerMatch(user.id, matchId, answer, site, locale);
+  if (result === "notFound" || result === "notSent") return { error: result };
+  revalidatePath(`/${locale}/owner/matches`);
+  return { done: result };
 }

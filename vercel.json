@@ -4,6 +4,7 @@
   "regions": ["lhr1"],
   "crons": [
     { "path": "/api/cron/google", "schedule": "17 3 * * *" },
-    { "path": "/api/cron/retention", "schedule": "41 3 * * *" }
+    { "path": "/api/cron/retention", "schedule": "41 3 * * *" },
+    { "path": "/api/cron/owner-matches", "schedule": "23 4 * * *" }
   ]
 }

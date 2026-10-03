@@ -2488,7 +2488,8 @@
       "reminder_amendment_to_answer": "Reminder: an amendment is waiting for your answer: “{title}”",
       "reminder_inquiry_to_answer": "Reminder: an inquiry is waiting for your reply: “{title}”",
       "reminder_hold_expiring": "Reminder: the capacity hold on “{title}” expires soon",
-      "reminder_availability_stale": "Reminder: your availability needs confirming"
+      "reminder_availability_stale": "Reminder: your availability needs confirming",
+      "owner_intro": "A business owner in {city} asked to be introduced to you: {services}"
     }
   },
   "PortfolioClients": {
@@ -5178,7 +5179,92 @@
         "contact": "You choose whom to talk to. Nobody contacts you before that."
       },
       "edit": "Edit my answers",
-      "home": "Back to Sawwiq"
+      "home": "Back to Sawwiq",
+      "matches": "My provider matches"
     }
+  },
+  "OwnerMatches": {
+    "metaTitle": "Your provider matches · Sawwiq",
+    "signedInAs": "Signed in as",
+    "title": "Providers that fit your business",
+    "intro": "Chosen for {city}, {country}, from what you registered. You decide whom to talk to; nobody contacts you before you accept.",
+    "empty": {
+      "closedTitle": "Providers are still building their pages.",
+      "closedBody": "When public discovery opens, we send you the providers that fit your city and services, and they appear here.",
+      "openTitle": "No matches yet.",
+      "openBody": "We look again every day as more providers complete their pages. You will get an email when there is someone to show you."
+    },
+    "openTitle": "Waiting for your answer",
+    "answeredTitle": "Answered",
+    "kind": {
+      "agency": "Agency",
+      "freelancer": "Freelancer"
+    },
+    "reasons": {
+      "same_city": "Same city",
+      "serves_country": "Serves your country",
+      "services_all": "Covers everything you need",
+      "services_some": "Covers part of what you need",
+      "industry": "Works with your type of business",
+      "has_work": "Has published work"
+    },
+    "accept": "Introduce me",
+    "decline": "Not this one",
+    "status": {
+      "introduced": "Introduced",
+      "declined": "Declined",
+      "accepted": "Accepted"
+    },
+    "introducedNote": "{name} received your request and your contact details, and will reach out.",
+    "privacy": "Only the providers you accept see your email and WhatsApp. Declining is final for that provider; your answers can be changed by writing to us.",
+    "editNeeds": "Update what I need",
+    "home": "Back to Sawwiq",
+    "errors": {
+      "signin": "Your sign-in expired. Please sign in again.",
+      "notFound": "This match no longer exists.",
+      "notSent": "This match has not been sent to you yet."
+    }
+  },
+  "AdminOwners": {
+    "nav": "Business owners",
+    "title": "Business owners and their matches",
+    "intro": "{count, plural, =0 {No owners registered yet.} one {# owner registered.} other {# owners registered.}} Matches are suggestions until the emails go out; owners see nothing before that.",
+    "compute": {
+      "title": "Recompute matches",
+      "body": "Ranks active, non-demo providers for every owner by country, city, needed service groups, business type and published work. Safe to run any time; answered matches are kept.",
+      "button": "Recompute",
+      "result": "{owners} owners · {matched} with matches · {suggestions} suggestions"
+    },
+    "send": {
+      "title": "Send match emails",
+      "bodyOpen": "Discovery is open: every owner with unsent suggestions gets one email listing them with the link to choose.",
+      "bodyClosed": "Discovery is still closed, so nothing is sent. The daily job sends automatically once it opens (or set OWNER_MATCH_EMAILS=on to send during the registration phase).",
+      "button": "Send emails",
+      "result": "{sent} of {attempted} owners emailed",
+      "skipped": "Nothing sent: discovery is closed."
+    },
+    "cols": {
+      "owner": "Owner",
+      "where": "Where",
+      "needs": "Needs",
+      "timing": "Start",
+      "matches": "Matches"
+    },
+    "timings": {
+      "now": "As soon as possible",
+      "month": "Within a month",
+      "quarter": "Next three months",
+      "later": "Later"
+    },
+    "status": {
+      "suggested": "suggested",
+      "sent": "sent",
+      "accepted": "accepted",
+      "declined": "declined",
+      "introduced": "introduced"
+    },
+    "noMatches": "none yet",
+    "empty": "No business owners have registered yet.",
+    "note": "Addresses are partly hidden. An owner's email and WhatsApp reach a provider only after the owner accepts that provider."
   }
 }
