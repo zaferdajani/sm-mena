@@ -1,0 +1,121 @@
+[
+ {
+  "locale": "ar",
+  "w": 1440,
+  "landingStatus": 200,
+  "landing": {
+   "ownerLink": "/ar/owner",
+   "ownerText": "سجّل مشروعك",
+   "overflow": false
+  },
+  "owner": {
+   "url": "/ar/owner",
+   "start": true,
+   "promises": 3,
+   "emailField": true,
+   "consent": true,
+   "toJoin": "/ar/join",
+   "overflow": false,
+   "h1": "عندك مشروع وبدك تسويق؟ سجّل من الآن."
+  },
+  "needsStatus": 200,
+  "guard": {
+   "needsRedirect": "/ar/owner/needs"
+  },
+  "startStatus": 200,
+  "start": {
+   "clientHref": "/ar/owner",
+   "clientText": "عندي مشروع وبدي تسويقلاقِ الوكالة أو المستقل المناسب، احفظ وتابع اللي عجبوك، واط"
+  }
+ },
+ {
+  "locale": "ar",
+  "w": 390,
+  "landingStatus": 200,
+  "landing": {
+   "ownerLink": "/ar/owner",
+   "ownerText": "سجّل مشروعك",
+   "overflow": false
+  },
+  "owner": {
+   "url": "/ar/owner",
+   "start": true,
+   "promises": 3,
+   "emailField": true,
+   "consent": true,
+   "toJoin": "/ar/join",
+   "overflow": false,
+   "h1": "عندك مشروع وبدك تسويق؟ سجّل من الآن."
+  },
+  "needsStatus": 200,
+  "guard": {
+   "needsRedirect": "/ar/owner/needs"
+  },
+  "startStatus": 200,
+  "start": {
+   "clientHref": "/ar/owner",
+   "clientText": "عندي مشروع وبدي تسويقلاقِ الوكالة أو المستقل المناسب، احفظ وتابع اللي عجبوك، واط"
+  }
+ },
+ {
+  "locale": "en",
+  "w": 1440,
+  "landingStatus": 200,
+  "landing": {
+   "ownerLink": "/en/owner",
+   "ownerText": "Register your business",
+   "overflow": false
+  },
+  "owner": {
+   "url": "/en/owner",
+   "start": true,
+   "promises": 3,
+   "emailField": true,
+   "consent": true,
+   "toJoin": "/en/join",
+   "overflow": false,
+   "h1": "Have a business and need marketing? Register now."
+  },
+  "needsStatus": 200,
+  "guard": {
+   "needsRedirect": "/en/owner/needs"
+  },
+  "startStatus": 200,
+  "start": {
+   "clientHref": "/en/owner",
+   "clientText": "I have a business and need marketingFind the right agency or freelancer, save an"
+  }
+ },
+ {
+  "locale": "en",
+  "w": 390,
+  "landingStatus": 200,
+  "landing": {
+   "ownerLink": "/en/owner",
+   "ownerText": "Register your business",
+   "overflow": false
+  },
+  "owner": {
+   "url": "/en/owner",
+   "start": true,
+   "promises": 3,
+   "emailField": true,
+   "consent": true,
+   "toJoin": "/en/join",
+   "overflow": false,
+   "h1": "Have a business and need marketing? Register now."
+  },
+  "needsStatus": 200,
+  "guard": {
+   "needsRedirect": "/en/owner/needs"
+  },
+  "startStatus": 200,
+  "start": {
+   "clientHref": "/en/owner",
+   "clientText": "I have a business and need marketingFind the right agency or freelancer, save an"
+  }
+ },
+ {
+  "proxyRetries": 32
+ }
+]

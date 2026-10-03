@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-03",
+  "pr": 57,
+  "title": "Business owners register early: a door on the landing, one needs screen, counts in studio and admin (docs/58)",
+  "heads": { "first": "75d96c4", "final": "c5abd7f872a5d70d6f369c60347095dea2f62614" },
+  "mergedAs": "920f5585c5d6a5da0c625516f6e60eb28e9e98ec",
+  "deployment": "dpl_GHJR5sNpDQzLH8VBViHGbTy2gotV",
+  "apiVersionSeenAt": "2026-10-03T18:08:03Z",
+  "ci": { "final": "run 37141879991 success (lint/typecheck/unit, registration, full-platform)", "first": "run 37141016443 cancelled by the fix push" },
+  "local": {
+    "first": "registration 34 passed, 4 owner journeys failed: the shared country picker submits only the city, so the contract never received a country and every save failed; React also reset the form after the failed action",
+    "final": "build ok; laptop frames ar/en ×7 CTA in view, no overflow; /owner and /start at 1440/390 clean; registration 38 passed incl. owner.spec; unit 53 incl. owner-needs and boundaries"
+  },
+  "liveChecks": "sawwiq.org ar/en 1440/390 on 920f558: landing owner line → /owner; /owner renders promises, email + consent, provider link; /owner/needs and /owner/done 307 → /owner when anonymous; /start owner card → /owner; no overflow; read-only (no code requested, no account created); proxy relays retried 32",
+  "notes": "Vercel runs db:migrate in its build step, so migration 0034 (owner_needs) was applied with the deploy. Counts in the studio registration view and Admin → Statistics read real rows only.",
+  "method": "Headless Chromium from the build sandbox with proxy 502 relays retried and counted; nothing submitted on production."
+}
