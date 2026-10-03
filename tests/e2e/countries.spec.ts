@@ -34,6 +34,7 @@ test("hire pages work per country and list countries region-wide", async ({ page
 
 test("an agency in Egypt picks its country, then a city in it", async ({ page }) => {
   await page.goto("/en/join");
+  await expect(page.getByTestId("join-form")).toHaveAttribute("data-ready", "true");
   await page.getByTestId("country-select").selectOption("eg");
   await expect(page.locator("#city option", { hasText: "Alexandria" })).toHaveCount(1);
   await expect(page.locator("#city option", { hasText: "Amman" })).toHaveCount(0);

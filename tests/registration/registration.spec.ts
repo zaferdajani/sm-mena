@@ -75,10 +75,15 @@ test("eight markets, both languages and saved theme work on the actual registrat
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.getByTestId("registration-page")).toHaveAttribute("data-country", "sa");
   await page.waitForLoadState("networkidle");
+  // The landing header is deliberately quiet (no theme toggle, no locate button); the theme is switched on the
+  // example page and the choice must follow the visitor back to the landing.
+  await expect(page.getByTestId("theme-toggle")).toHaveCount(0);
+  await page.goto("/en/examples");
   await page.getByTestId("theme-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.reload();
+  await page.goto("/en");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByTestId("registration-page")).toHaveAttribute("data-country", "sa");
   await capture(page, info, "registration-english-dark");
   await page.getByTestId("registration-cta").first().click();
   await expect(page).toHaveURL(/\/en\/join$/);
