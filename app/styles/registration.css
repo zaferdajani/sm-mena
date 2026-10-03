@@ -128,15 +128,20 @@
 
 
 /* Landing v2 — calmer Krooz-inspired hierarchy while preserving Sawwiq identity. */
-.registration-site-v2 { max-inline-size: 82rem; padding-inline: clamp(1rem, 4vw, 3.5rem); background: var(--background); }
-/* The announcement strip bleeds to the page edge: its negative margin must match this layout's wider side padding (the base rule used the old padding, which overflowed at 768px). */
-.registration-site-v2 .launch-strip { margin-inline: calc(-1 * clamp(1rem, 4vw, 3.5rem)); padding-inline: clamp(1rem, 4vw, 3.5rem); }
-.registration-site-v2 .registration-header { padding-block: 1.1rem 2.2rem; border: 0; }
-.registration-hero-v2 { min-block-size: min(46rem, 78vh); grid-template-columns: minmax(0, 1.05fr) minmax(24rem, .95fr); border: 0; border-radius: 0; background: transparent; gap: clamp(2rem, 5vw, 5rem); overflow: visible; align-items: center; }
-.registration-hero-v2 .registration-hero-copy { padding: clamp(1rem, 3vw, 2rem) 0; max-inline-size: 42rem; }
-.registration-hero-v2 h1 { font-size: clamp(2.8rem, 5.2vw, 5.3rem); line-height: 1.2; letter-spacing: -.025em; margin-block: .7rem 1.4rem; text-wrap: balance; }
-.registration-hero-v2 .registration-lead { max-inline-size: 38rem; font-size: clamp(1.08rem, 1.6vw, 1.28rem); line-height: 1.9; color: var(--muted-foreground); }
-.registration-hero-product { min-block-size: 34rem; border-radius: 2rem; overflow: hidden; box-shadow: 0 24px 70px rgb(16 46 37 / .13); }
+/* The page spans the whole viewport so the announcement strip and the proof band reach both screen edges on
+   any laptop or monitor; each other section is capped and centred (--registration-measure). */
+.registration-site-v2 { --registration-inset: clamp(1rem, 4vw, 3.5rem); --registration-measure: 86rem; max-inline-size: none; padding-inline: var(--registration-inset); background: var(--background); }
+.registration-site-v2 > :where(:not(.launch-strip, .registration-proof)) { max-inline-size: var(--registration-measure); margin-inline: auto; }
+/* The announcement strip bleeds to the screen edge: its negative margin matches this layout's side padding. */
+.registration-site-v2 .launch-strip { margin-inline: calc(-1 * var(--registration-inset)); padding-inline: var(--registration-inset); }
+.registration-site-v2 .launch-strip p { max-inline-size: var(--registration-measure); margin-inline: auto; }
+.registration-site-v2 .registration-header { padding-block: 1rem 1.5rem; border: 0; }
+/* The hero fits the first screen of a laptop: the headline scales with the viewport height as well as its width, and the photo never forces the row taller than the screen. */
+.registration-hero-v2 { min-block-size: auto; grid-template-columns: minmax(0, 1.05fr) minmax(22rem, .95fr); border: 0; border-radius: 0; background: transparent; gap: clamp(2rem, 5vw, 5rem); overflow: visible; align-items: center; }
+.registration-hero-v2 .registration-hero-copy { padding: clamp(.5rem, 2vw, 1.5rem) 0; max-inline-size: 42rem; }
+.registration-hero-v2 h1 { font-size: clamp(2.4rem, min(4.6vw, 7.6vh), 4.8rem); line-height: 1.22; letter-spacing: -.02em; margin-block: .6rem 1.1rem; text-wrap: balance; }
+.registration-hero-v2 .registration-lead { max-inline-size: 38rem; font-size: clamp(1.04rem, 1.4vw, 1.2rem); line-height: 1.8; color: var(--muted-foreground); }
+.registration-hero-product { min-block-size: clamp(20rem, 58vh, 32rem); border-radius: 2rem; overflow: hidden; box-shadow: 0 24px 70px rgb(16 46 37 / .13); }
 .registration-hero-product::after { inset: 55% 0 0; background: linear-gradient(transparent, rgb(16 46 37 / .82)); }
 .registration-site-v2 .sw-invitation-cta { min-block-size: 3.2rem; padding-inline: 1.4rem; border-radius: .85rem; font-weight: 800; }
 .registration-site-v2 .registration-secondary { min-block-size: 3.2rem; padding-inline: 1.2rem; background: transparent; }
@@ -152,7 +157,7 @@
 .registration-audience-card p { color: var(--muted-foreground); max-inline-size: 38ch; }
 .registration-text-link { margin-block-start: auto; display: inline-flex; align-items: center; gap: .5rem; color: var(--brand); font-weight: 800; padding-block-start: 1.5rem; }
 
-.registration-proof { margin-inline: calc(-1 * clamp(1rem, 4vw, 3.5rem)); padding: clamp(4.5rem, 8vw, 7rem) clamp(1rem, 4vw, 3.5rem); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; background: color-mix(in oklab, var(--brand-soft) 42%, var(--background)); border-block: 1px solid var(--border); }
+.registration-proof { margin-inline: calc(-1 * var(--registration-inset)); padding: clamp(4.5rem, 8vw, 7rem) max(var(--registration-inset), calc((100% - var(--registration-measure)) / 2 + var(--registration-inset))); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; background: color-mix(in oklab, var(--brand-soft) 42%, var(--background)); border-block: 1px solid var(--border); }
 .registration-proof-list { display: grid; gap: .75rem; }
 .registration-proof-list > div { display: flex; align-items: center; gap: 1rem; padding: 1.15rem 0; border-block-end: 1px solid var(--border); font-weight: 700; }
 .registration-proof-list svg { inline-size: 1.5rem; block-size: 1.5rem; color: var(--brand); flex: none; }
@@ -175,8 +180,7 @@
 .registration-final-v2 .registration-eyebrow, .registration-final-v2 .registration-actions, .registration-final-v2 .launch-trust { justify-content: center; }
 
 @media (max-width: 850px) {
-  .registration-site-v2 { padding-inline: 1rem; }
-  .registration-site-v2 .launch-strip { margin-inline: -1rem; padding-inline: 1rem; }
+  .registration-site-v2 { --registration-inset: 1rem; }
   .registration-site-v2 .registration-header { padding-block-end: 1.2rem; }
   .registration-hero-v2 { min-block-size: auto; gap: 1.6rem; grid-template-columns: minmax(0, 1fr); }
   /* Phones: the headline stays large but must leave the cohort CTA inside a 390×844 viewport in both languages (campaign spec). */
@@ -193,4 +197,15 @@
   .registration-step-number { margin-block-end: .8rem; }
   .launch-early-v2 { padding: 2.25rem 1.25rem; border-radius: 1.5rem; }
   .registration-final-v2 { padding: 3rem 1.25rem; border-radius: 1.5rem; }
+}
+
+/* Laptop screens are wide but short (1366×768, 1536×864 at 125 % scaling): the hero keeps the strip, badge, headline, lead and CTA on the first screen. */
+@media (min-width: 851px) and (max-height: 840px) {
+  .registration-site-v2 .launch-strip { padding-block: .65rem; }
+  .registration-site-v2 .registration-header { padding-block: .8rem 1rem; }
+  .registration-hero-v2 .registration-hero-copy { padding-block: .25rem; }
+  .registration-hero-v2 h1 { font-size: clamp(1.9rem, min(6.4vh, 3.6vw), 3.6rem); margin-block: .45rem .8rem; }
+  .registration-hero-v2 .registration-lead { font-size: 1.02rem; line-height: 1.7; }
+  .registration-site-v2 .launch-trust { margin-block-start: 1rem; }
+  .registration-hero-product { min-block-size: clamp(18rem, 56vh, 28rem); }
 }
