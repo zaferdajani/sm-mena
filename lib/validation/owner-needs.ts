@@ -2,7 +2,7 @@
 // Pure: the page action and any later API route parse with the same rules.
 import { z } from "zod";
 import { BUSINESS_TYPES } from "@/lib/core/catalog/business-types";
-import { citiesOf, COUNTRY_CODES } from "@/lib/core/catalog/countries";
+import { citiesOf, COUNTRY_CODES, countryOfCity } from "@/lib/core/catalog/countries";
 import { SERVICE_GROUPS } from "@/lib/core/catalog/services/catalog";
 
 export const OWNER_TIMINGS = ["now", "month", "quarter", "later"] as const;
@@ -41,12 +41,16 @@ export const ownerNeedSchema = z
 
 export type OwnerNeedInput = z.infer<typeof ownerNeedSchema>;
 
-/** FormData → the schema's input shape (checkbox groups arrive as repeated keys). */
+/**
+ * FormData → the schema's input shape. Checkbox groups arrive as repeated keys; the country picker submits only
+ * the city (components/country-city-field.tsx), so the country is read from it when absent.
+ */
 export function ownerNeedFromForm(form: FormData) {
   const str = (k: string) => (typeof form.get(k) === "string" ? String(form.get(k)) : "");
+  const city = str("city");
   return {
-    country: str("country"),
-    city: str("city"),
+    country: str("country") || countryOfCity(city) || "",
+    city,
     businessType: str("businessType"),
     services: form.getAll("services").filter((v): v is string => typeof v === "string"),
     timing: str("timing"),

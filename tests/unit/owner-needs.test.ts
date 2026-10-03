@@ -28,6 +28,12 @@ describe("ownerNeedSchema", () => {
     expect(ownerNeedSchema.safeParse(ownerNeedFromForm(form({ services: ["not_a_group"] }))).success).toBe(false);
     expect(ownerNeedSchema.safeParse(ownerNeedFromForm(form({ timing: "tomorrow" }))).success).toBe(false);
   });
+  it("reads the country from the city when the form sends only the city (the shared picker)", () => {
+    const f = form({ city: "riyadh" }); f.delete("country");
+    const r = ownerNeedSchema.safeParse(ownerNeedFromForm(f));
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.country).toBe("sa");
+  });
   it("drops unknown business types and blank optionals instead of failing", () => {
     const r = ownerNeedSchema.safeParse(ownerNeedFromForm(form({ businessType: "spaceport", whatsapp: "", note: "   " })));
     expect(r.success).toBe(true);
