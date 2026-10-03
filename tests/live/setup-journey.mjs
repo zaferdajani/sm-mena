@@ -1,8 +1,10 @@
 // Controlled signed-in journey on the live site (docs/53): the seeded demo
 // provider (a fixture account, is_demo) opens the first-run setup, uploads an
 // image, resumes after a reload, saves/publishes one project, checks it, and
-// deletes it again. Nothing else is touched; no account is created; the demo
-// agency is exempt from Founder seats. Screenshots go to ./live-evidence.
+// deletes it again; then, at 1440x900, it measures the eight Studio routes (one
+// content measure, tab strip and footer on it, sidebar pills apart). Nothing
+// else is touched; no account is created; the demo agency is exempt from
+// Founder seats. Screenshots go to ./live-evidence.
 // Env: SITE_URL, DEMO_EMAIL, DEMO_PASSWORD (repository secrets on the runner).
 import { chromium } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -23,7 +25,8 @@ const shot = async (page, name) => {
   shots.push(name);
 };
 const png = (c) => sharp({ create: { width: 1000, height: 750, channels: 3, background: c } }).png().toBuffer();
-const browser = await chromium.launch();
+// A local run may point at an installed Chromium; the runner uses Playwright's own.
+const browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {});
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "ar" });
 const page = await ctx.newPage();
 const evidence = { site, startedAt: new Date().toISOString(), steps: [] };
@@ -113,6 +116,63 @@ try {
   const shown = await page.getByText("فحص الإعداد المباشر").first().isVisible();
   step("project page opens for the owner", shown);
   await shot(page, "6-project-page");
+
+  // Studio geometry (PR #58): signed in as the same demo provider at 1440x900, the
+  // eight Studio routes share one content measure, the tab strip and footer sit
+  // on that measure (the footer never under the sidebar), nothing overflows, and
+  // the sidebar's selected pill and the hovered Notifications pill stay apart.
+  const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "ar", storageState: await ctx.storageState() });
+  const dpage = await desktop.newPage();
+  const studioRoutes = ["/ar/studio", "/ar/studio/setup", "/ar/studio/profile", "/ar/studio/publication", "/ar/studio/new", "/ar/studio/posts", "/ar/studio/packages", "/ar/studio/clients"];
+  const geometry = [];
+  for (const route of studioRoutes) {
+    const res = await dpage.goto(`${site}${route}`, { waitUntil: "load", timeout: 60_000 });
+    await dpage.locator(".sw-workspace-body").waitFor({ timeout: 30_000 });
+    const m = await dpage.evaluate(() => {
+      const box = (el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { l: Math.round(r.left), r: Math.round(r.right) };
+      };
+      return {
+        body: box(document.querySelector(".sw-workspace-body")),
+        nav: box(document.querySelector(".sw-workspace-nav")),
+        footer: box(document.querySelector(".registration-footer, footer")),
+        aside: box(document.querySelector(".sw-app > aside")),
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      };
+    });
+    geometry.push({ route, status: res?.status(), ...m });
+    const name = `7-studio${route.replace("/ar/studio", "").replace(/\//g, "-") || "-home"}`;
+    await dpage.screenshot({ path: `live-evidence/${name}.png`, fullPage: true });
+    shots.push(name);
+  }
+  const near = (a, b) => a && b && Math.abs(a.l - b.l) <= 1 && Math.abs(a.r - b.r) <= 1;
+  const span = (x) => (x ? `${x.l}–${x.r}` : "none");
+  const first = geometry[0];
+  const aligned = geometry.every(
+    (g) =>
+      g.status === 200 && !g.overflow && near(g.body, first.body) && near(g.nav, g.body) && near(g.footer, g.body) &&
+      (!g.aside || g.footer.r <= g.aside.l || g.footer.l >= g.aside.r),
+  );
+  step("studio measure", aligned, `${geometry.length} routes, content ${span(first.body)}, tabs ${span(first.nav)}, footer ${span(first.footer)}, sidebar ${span(first.aside)}`);
+  await dpage.goto(`${site}/ar/studio`, { waitUntil: "load", timeout: 60_000 });
+  const bell = dpage.getByTestId("notification-bell").first();
+  await bell.waitFor({ timeout: 30_000 });
+  await bell.hover();
+  await dpage.waitForTimeout(200);
+  const hoverGap = await dpage.evaluate(() => {
+    const b = document.querySelector('[data-testid="notification-bell"]');
+    const c = document.querySelector('.sw-app > aside nav a[aria-current="page"]');
+    if (!b || !c) return null;
+    const a = b.getBoundingClientRect(), s = c.getBoundingClientRect();
+    return Math.round(Math.max(a.top - s.bottom, s.top - a.bottom));
+  });
+  await dpage.screenshot({ path: "live-evidence/8-sidebar-hover.png", clip: { x: 1440 - 320, y: 0, width: 320, height: 420 } });
+  shots.push("8-sidebar-hover");
+  step("studio hover pills apart", hoverGap !== null && hoverGap >= 2, `${hoverGap} px between the selected pill and the hovered Notifications pill`);
+  evidence.studio = { viewport: "1440x900", geometry, hoverGap };
+  await desktop.close();
 } catch (e) {
   evidence.error = String(e?.message ?? e);
   await shot(page, "error").catch(() => undefined);

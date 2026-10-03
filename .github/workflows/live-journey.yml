@@ -1,6 +1,8 @@
 # Controlled signed-in check on the live site (docs/53): the seeded demo
 # provider runs the first-run setup end to end (upload, reload/resume, save,
-# open, delete). Run it after a deploy: Actions → Live journey → Run workflow.
+# open, delete) and then measures the eight Studio routes at 1440x900 (one
+# content measure, tab strip and footer on it, sidebar pills apart). Run it
+# after a deploy: Actions → Live journey → Run workflow.
 # Needs the SEED_DEMO_PASSWORD repository secret: add it once, run Maintenance →
 # seed-demo (it gives the demo accounts that password), then run this. Creates no
 # account and leaves nothing behind. Screenshots and journey.json are uploaded.
