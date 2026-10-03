@@ -4730,6 +4730,12 @@
         "community": "Be part of the first community Sawwiq starts with"
       },
       "note": "Early registration is free and commits you to nothing. When public discovery opens, your page is already there instead of starting from zero."
+    },
+    "slides": {
+      "label": "What Sawwiq is",
+      "goTo": "Slide {n} of 3",
+      "platform": "The platform that connects business owners with social media and marketing providers, in Arabic and English.",
+      "owners": "A business owner finds the specialty they need."
     }
   },
   "CreatorSetup": {
