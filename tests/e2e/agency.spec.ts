@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { pngBuffer, uniqueHandle } from "./helpers";
+import { pngBuffer, uniqueHandle, nextJoinStep } from "./helpers";
 
 test("an agency joins, completes its page, publishes and deletes a post", async ({ page }) => {
   const handle = uniqueHandle();
@@ -8,6 +8,8 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await expect(page.getByTestId("join-behance")).toContainText("Behance");
   await page.fill("#name", "E2E Agency");
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");

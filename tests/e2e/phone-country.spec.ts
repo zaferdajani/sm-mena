@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle } from "./helpers";
+import { uniqueHandle, nextJoinStep } from "./helpers";
 
 // The WhatsApp field starts with the visitor's country (from the IP address),
 // and any country can be picked (lib/dial-codes.ts).
@@ -14,6 +14,8 @@ test("sign-up starts the WhatsApp code from the visitor's country, and any count
   const handle = uniqueHandle("phone");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0101 234 5678");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");

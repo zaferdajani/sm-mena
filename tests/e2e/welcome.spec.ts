@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle } from "./helpers";
+import { uniqueHandle, nextJoinStep } from "./helpers";
 
 // First-time visitors are asked who they are; returning ones aren't.
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -22,8 +22,10 @@ test("an agency signs up with what it offers", async ({ page }) => {
   const handle = uniqueHandle("welcome");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
   await page.getByTestId("service-search").fill("SEO");
   await page.getByTestId("service-suggestion").first().click();
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");

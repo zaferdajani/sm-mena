@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, joinAgency, login, uniqueHandle } from "./helpers";
+import { ADMIN, joinAgency, login, uniqueHandle, nextJoinStep } from "./helpers";
 
 // Services as tags (with admin review of new ones) and agencies finding partners (docs/30).
 
@@ -10,6 +10,7 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.goto("/en/join");
   await agencyPage.fill("#name", `Agency ${handle}`);
   await agencyPage.fill("#handle", handle);
+  await nextJoinStep(agencyPage);
   // Who's on the team: no videographer, so partners are offered for it.
   await agencyPage.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
   await agencyPage.getByTestId("service-search").fill("reels");
@@ -17,6 +18,7 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.getByTestId("service-search").fill(service);
   await agencyPage.getByTestId("service-add-new").click();
   await expect(agencyPage.getByTestId("new-service")).toContainText(service);
+  await nextJoinStep(agencyPage);
   await agencyPage.fill("#whatsapp", "0791112233");
   await agencyPage.fill("#email", `${handle}@test.jo`);
   await agencyPage.fill("#password", "password-123");

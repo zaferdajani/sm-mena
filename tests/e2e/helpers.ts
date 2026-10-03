@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const DEMO_AGENCY = { email: "nakhla-studio@sawwiq.test", password: "demo-pass-123", handle: "nakhla.studio" };
 export const ADMIN = { email: "admin@sawwiq.test", password: "admin-pass-123" };
@@ -21,6 +21,13 @@ export async function pngBuffer(color: string, width = 800, height = 800) {
   return sharp({ create: { width, height, channels: 3, background: color } }).png().toBuffer();
 }
 
+/** Sign-up is three steps on one form (join-form.tsx): this moves to the next step after its fields are filled. */
+export async function nextJoinStep(page: Page) {
+  const before = await page.getByTestId("join-form").getAttribute("data-step");
+  await page.getByTestId("join-next").click();
+  await expect(page.getByTestId("join-form")).toHaveAttribute("data-step", String(Number(before ?? 0) + 1));
+}
+
 /** Creates a fresh agency account and leaves the page signed in on its studio. */
 export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = {}) {
   const handle = uniqueHandle(prefix);
@@ -29,6 +36,8 @@ export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = 
   await page.goto("/en/join");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", email);
   await page.fill("#password", password);

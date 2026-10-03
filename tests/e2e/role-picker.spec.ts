@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle } from "./helpers";
+import { uniqueHandle, nextJoinStep } from "./helpers";
 
 for (const locale of ["ar", "en"]) {
   test(`${locale} role suggestions reuse SEO aliases and require confirmation for distinct specialties`, async ({ page }, info) => {
@@ -44,14 +44,16 @@ test("added roles survive signup, reload, profile save and removal", async ({ pa
   await page.goto("/en/join");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
-  await page.fill("#whatsapp", "0791112233");
-  await page.fill("#email", `${handle}@test.jo`);
-  await page.fill("#password", "password-123");
+  await nextJoinStep(page);
   const box = page.getByTestId("role-picker-teamRoles");
   await box.getByRole("combobox").fill("Healthcare set stylist");
   await box.getByTestId("role-create").click();
   await box.getByRole("combobox").fill("SEO");
   await box.getByRole("combobox").press("Enter");
+  await nextJoinStep(page);
+  await page.fill("#whatsapp", "0791112233");
+  await page.fill("#email", `${handle}@test.jo`);
+  await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
   await page.getByRole("button", { name: "Create page", exact: true }).click();
   await page.waitForURL(/\/en\/portfolio-setup/);

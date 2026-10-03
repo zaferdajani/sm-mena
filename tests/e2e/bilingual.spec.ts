@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle } from "./helpers";
+import { uniqueHandle, nextJoinStep } from "./helpers";
 
 test("an agency writes its page in Arabic and English; each reader sees their language", async ({ page }) => {
   const handle = uniqueHandle();
   await page.goto("/en/join");
   await page.fill("#name", "استوديو ثنائي");
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");

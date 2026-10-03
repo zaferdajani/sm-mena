@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, login, uniqueHandle } from "./helpers";
+import { ADMIN, login, uniqueHandle, nextJoinStep } from "./helpers";
 
 // Referral agents (docs/42): an admin adds an agent, a provider signs up through
 // the agent's link, and the agent sees the sign-up and what it still needs.
@@ -26,6 +26,9 @@ test("an agent's link credits the sign-up, and the agent sees it on their page",
   const handle = uniqueHandle("ref");
   await provider.fill("#name", `Agency ${handle}`);
   await provider.fill("#handle", handle);
+  await nextJoinStep(provider);
+  await nextJoinStep(provider);
+  await expect(provider.getByTestId("join-ref")).toHaveValue(code);
   await provider.fill("#whatsapp", "0791112233");
   await provider.fill("#email", `${handle}@test.jo`);
   await provider.fill("#password", "password-123");

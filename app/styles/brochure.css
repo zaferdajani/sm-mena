@@ -44,6 +44,39 @@
 .sw-auth-card :where(input, textarea) { font-size: 1rem; }
 .sw-auth-card [data-slot="button"] { min-block-size: 3rem; }
 
+/* Sign-up in steps (join-form.tsx): the card widens so a laptop shows the step rail beside the fields and
+   the fields in two columns; a phone stacks the compact rail above one column. */
+.sw-auth-card:has(.sw-join-steps) { max-inline-size: 66rem; }
+.sw-join-steps { display: grid; gap: 1.5rem; margin-block-start: 1rem; }
+.sw-join-rail { display: grid; gap: 1rem; align-content: start; }
+.sw-join-rail-steps { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.sw-join-rail-step { display: flex; align-items: flex-start; gap: .75rem; inline-size: 100%; padding: .6rem .75rem; border-radius: .9rem; border: 1px solid transparent; text-align: start; color: var(--muted-foreground); background: transparent; }
+.sw-join-rail-step[aria-disabled="true"] { cursor: default; }
+.sw-join-rail-steps li[data-state="current"] .sw-join-rail-step { border-color: var(--brand-line); background: var(--brand-soft); color: var(--foreground); }
+.sw-join-rail-steps li[data-state="done"] .sw-join-rail-step { color: var(--foreground); cursor: pointer; }
+.sw-join-rail-number { display: inline-flex; align-items: center; justify-content: center; flex: none; inline-size: 1.75rem; block-size: 1.75rem; border-radius: 999px; border: 1px solid var(--border); font-size: .85rem; font-weight: 800; }
+.sw-join-rail-steps li[data-state="current"] .sw-join-rail-number { background: var(--brand); border-color: var(--brand); color: var(--primary-foreground, #fff); }
+.sw-join-rail-steps li[data-state="done"] .sw-join-rail-number { color: var(--brand); border-color: var(--brand-line); background: var(--card); }
+.sw-join-rail-text { display: grid; gap: .1rem; line-height: 1.5; }
+.sw-join-rail-text > span { font-size: .8rem; color: var(--muted-foreground); }
+.sw-join-draft-note { font-size: .8rem; line-height: 1.7; color: var(--muted-foreground); }
+.sw-join-panels { display: grid; gap: 1rem; align-content: start; min-inline-size: 0; }
+.sw-join-progress { font-size: .85rem; color: var(--muted-foreground); }
+.sw-join-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .75rem; margin-block-start: .5rem; }
+.sw-join-actions .sw-join-next { min-inline-size: 11rem; }
+@media (max-width: 879px) {
+  .sw-join-rail-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+  .sw-join-rail-step { flex-direction: column; align-items: center; gap: .35rem; padding: .5rem .25rem; text-align: center; }
+  .sw-join-rail-text > span { display: none; }
+  .sw-join-rail-text > strong { font-size: .8rem; }
+  .sw-join-actions .sw-join-next { flex: 1; }
+}
+@media (min-width: 880px) {
+  .sw-join-steps { grid-template-columns: 17rem minmax(0, 1fr); gap: 2.5rem; }
+  .sw-join-rail { position: sticky; top: 1.5rem; }
+  .sw-join-progress { display: none; }
+}
+
 /* Existing film, intro, country and locale behaviour remain unchanged. */
 .sw[data-design-surface="landing"] {
   --sw-stone: var(--background); --sw-paper: var(--card); --sw-sunk: var(--muted);
