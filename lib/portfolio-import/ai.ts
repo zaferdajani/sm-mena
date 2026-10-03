@@ -1,5 +1,5 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import type { CountryCode } from "@/lib/countries";
 import { anthropicConfigured, anthropicModel } from "@/lib/ai/providers/anthropic";
@@ -87,8 +87,9 @@ const out = z.object({
 
 export const aiImportAvailable = () => anthropicConfigured();
 
+// Loaded on first use: the importer is rarely hit and the SDK stays out of every other page.
 let client: Anthropic | undefined;
-const getClient = () => (client ??= new Anthropic({ timeout: 120_000 }));
+const getClient = async () => (client ??= new (await import("@anthropic-ai/sdk")).default({ timeout: 120_000 }));
 
 /** Asks Claude to read the portfolio. Throws on any failure (the caller falls back to the rules). */
 export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[]; country: CountryCode }, locale: string): Promise<ImportPlan> {
@@ -108,7 +109,7 @@ export async function planWithAi(pages: ImportPage[], agency: { name: string; se
     const data = p.image?.replace(/^data:image\/jpeg;base64,/, "");
     if (data) content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data } });
   }
-  const response = await getClient().messages.create({
+  const response = await (await getClient()).messages.create({
     model: anthropicModel(),
     max_tokens: 8000,
     system:
