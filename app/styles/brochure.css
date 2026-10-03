@@ -47,8 +47,10 @@
 /* Sign-up in steps (join-form.tsx): the card widens so a laptop shows the step rail beside the fields and
    the fields in two columns; a phone stacks the compact rail above one column. */
 .sw-auth-card:has(.sw-join-steps) { max-inline-size: 66rem; }
-.sw-join-steps { display: grid; gap: 1.5rem; margin-block-start: 1rem; }
-.sw-join-rail { display: grid; gap: 1rem; align-content: start; }
+.sw-join-steps { display: grid; gap: 1.5rem; margin-block-start: 1rem; grid-template-areas: "rail" "panels" "aside"; }
+.sw-join-rail { grid-area: rail; display: grid; gap: 1rem; align-content: start; }
+.sw-join-panels { grid-area: panels; }
+.sw-join-aside { grid-area: aside; display: grid; gap: 1rem; align-content: start; }
 .sw-join-rail-steps { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 .sw-join-rail-step { display: flex; align-items: flex-start; gap: .75rem; inline-size: 100%; padding: .6rem .75rem; border-radius: .9rem; border: 1px solid transparent; text-align: start; color: var(--muted-foreground); background: transparent; }
 .sw-join-rail-step[aria-disabled="true"] { cursor: default; }
@@ -72,8 +74,7 @@
   .sw-join-actions .sw-join-next { flex: 1; }
 }
 @media (min-width: 880px) {
-  .sw-join-steps { grid-template-columns: 17rem minmax(0, 1fr); gap: 2.5rem; }
-  .sw-join-rail { position: sticky; top: 1.5rem; }
+  .sw-join-steps { grid-template-columns: 17rem minmax(0, 1fr); grid-template-areas: "rail panels" "aside panels"; align-items: start; column-gap: 2.5rem; row-gap: 1.25rem; }
   .sw-join-progress { display: none; }
 }
 

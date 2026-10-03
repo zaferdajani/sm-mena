@@ -166,7 +166,6 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
           ))}
         </ol>
         <p className="sw-join-draft-note" data-testid="join-draft-note">{t("draftNote")}</p>
-        {aside}
       </aside>
 
       <div className="sw-join-panels" key={restored ? "restored" : "fresh"}>
@@ -175,7 +174,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
         <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
 
         <div data-step-panel="0" hidden={step !== 0} className="grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 md:items-start">
             <div className="grid gap-1.5">
               <Label htmlFor="name">{t("agencyName")}</Label>
               <Input id="name" name="name" required maxLength={80} defaultValue={f.name || one(d.name)} autoComplete="organization" />
@@ -202,7 +201,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
         </div>
 
         <div data-step-panel="2" hidden={step !== 2} className="grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 md:items-start">
             <div className="grid gap-1.5">
               <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
               <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || one(d.whatsappCountry) || phoneCountry} defaultValue={f.whatsapp || one(d.whatsapp)} countryLabel={t("phoneCountry")} />
@@ -236,6 +235,9 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
             : <SubmitButton className="h-10 sw-join-next">{t("joinButton")}</SubmitButton>}
         </div>
       </div>
+
+      {/* Notices come after the fields on a phone (the form stays first) and under the rail on a laptop. */}
+      {aside && <div className="sw-join-aside">{aside}</div>}
     </form>
   );
 }
