@@ -95,3 +95,20 @@ jobs:
           name: registration-report
           path: registration-report/
           retention-days: 7
+
+  mobile:
+    name: Mobile prototype (Expo) typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
