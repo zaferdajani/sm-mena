@@ -1,4 +1,4 @@
-import { mayReadAgency, mayReadAgencyId, discoverableProfiles } from "@/lib/data/publication";
+import { mayReadAgency, mayReadAgencyId, discoverableProfiles, type Viewer } from "@/lib/data/publication";
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
@@ -386,7 +386,7 @@ export async function getPostsByIds(ids: string[]): Promise<PostView[]> {
 }
 
 /** A single post. Hidden posts are only returned to their owner (ownerAgencyId). */
-export async function getPost(postId: string, ownerAgencyId?: string): Promise<PostView | null> {
+export async function getPost(postId: string, ownerAgencyId?: string, viewer?: Viewer): Promise<PostView | null> {
   const db = await getDb();
   if (!/^[0-9a-f-]{36}$/i.test(postId)) return null;
   const [row] = await db
@@ -395,7 +395,7 @@ export async function getPost(postId: string, ownerAgencyId?: string): Promise<P
     .innerJoin(agencies, eq(posts.agencyId, agencies.id))
     .where(eq(posts.id, postId));
   if (!row) return null;
-  if (ownerAgencyId !== row.agency.id && !(await mayReadAgency(row.agency))) return null;
+  if (ownerAgencyId !== row.agency.id && !(await mayReadAgency(row.agency, viewer))) return null;
   const isOwner = ownerAgencyId === row.agency.id;
   if (!isOwner && (row.post.status !== "published" || row.agency.status !== "active")) return null;
   const [view] = await attachImages([row]);
