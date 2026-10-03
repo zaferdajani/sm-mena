@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { BriefcaseBusiness, Images, UsersRound, Sparkles, ArrowUpLeft, ArrowLeft, Check } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { BrandLockup } from "@/components/brand-lockup";
@@ -6,6 +5,7 @@ import { CountryPicker } from "@/components/country-picker";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ReleaseStamp } from "@/components/release-stamp";
+import { HeroSlides } from "./hero-slides";
 import { JsonLd } from "@/components/seo/json-ld";
 import { organizationLd } from "@/lib/structured-data";
 import { Link } from "@/i18n/navigation";
@@ -13,14 +13,19 @@ import { accountLink } from "@/lib/account-link";
 import { COUNTRIES } from "@/lib/countries";
 import { chosenCountry, currentCountry } from "@/lib/country-choice";
 
-export async function RegistrationHeader({ locale }: { locale: string }) {
+/**
+ * The registration pages' header. `tools="quiet"` (the landing) keeps only what the first fold needs:
+ * country, language and sign-in; the locate button and the theme toggle stay on the other pages.
+ */
+export async function RegistrationHeader({ locale, tools = "full" }: { locale: string; tools?: "full" | "quiet" }) {
   const [h, country, chosen, account] = await Promise.all([getTranslations("Header"), currentCountry(), chosenCountry(), accountLink(locale)]);
-  return <header className="registration-header">
+  const quiet = tools === "quiet";
+  return <header className="registration-header" data-tools={tools}>
     <Link href="/" aria-label={h("brand")}><BrandLockup label={h("brand")} /></Link>
     <div className="registration-tools">
-      <CountryPicker current={country} chosen={chosen !== null} options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))} label={h("country")} locateLabel={h("useLocation")} />
+      <CountryPicker current={country} chosen={chosen !== null} options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))} label={h("country")} locateLabel={h("useLocation")} variant={quiet ? "landing" : "app"} />
       <LocaleSwitcher label={h("switchLocale")} ariaLabel={h("switchLocaleLabel")} />
-      <ThemeToggle labels={{ dark: h("themeDark"), light: h("themeLight") }} />
+      {!quiet && <ThemeToggle labels={{ dark: h("themeDark"), light: h("themeLight") }} />}
     </div>
     <a href={account.href} className="registration-login" data-testid="registration-account">{account.label}</a>
   </header>;
@@ -43,10 +48,18 @@ export async function RegistrationView({ locale }: { locale: string }) {
   return <main className="registration-site registration-site-v2" data-testid="registration-page" data-launch-phase="registration" data-country={country}>
     <JsonLd data={[organizationLd()]} />
     <aside className="launch-strip" aria-label={t("launch.label")} data-testid="launch-strip"><p><span className="launch-strip-kicker"><span aria-hidden>✦</span> {t("launch.kicker")}</span><span className="launch-strip-body">{t("launch.body")}</span><Link href="/join" className="launch-strip-link" data-testid="launch-strip-link">{t("launch.link")}<ArrowLeft className="size-4 shrink-0 ltr:rotate-180" aria-hidden /></Link></p></aside>
-    <RegistrationHeader locale={locale} />
+    <RegistrationHeader locale={locale} tools="quiet" />
     <section className="registration-hero registration-hero-v2" aria-labelledby="registration-title">
       <div className="registration-hero-copy"><p className="launch-badge" data-testid="launch-badge"><span className="launch-badge-kicker">{t("cohort.kicker")}</span><strong>{t("cohort.name")}</strong><span className="launch-badge-year">{t("cohort.year")}</span></p><h1 id="registration-title">{t(`markets.${market}.title`)}<span>{t(`markets.${market}.titleEnd`)}</span></h1><p className="registration-lead">{t(`markets.${market}.intro`)}</p><div className="registration-actions">{cta}<Link href="/examples" className="registration-secondary" data-testid="registration-example">{t("exampleCta")}<ArrowUpLeft className="size-4 ltr:rotate-90" aria-hidden /></Link></div>{trust}</div>
-      <div className="registration-hero-photo registration-hero-product"><Image src="/assets/photos/agency.webp" alt="" fill priority sizes="(min-width: 900px) 48vw, 92vw" /><div className="registration-photo-caption"><strong>{t("photoTitle")}</strong></div></div>
+      <HeroSlides
+        label={t("slides.label")}
+        dotLabels={[1, 2, 3].map((n) => t("slides.goTo", { n }))}
+        slides={[
+          { src: "/assets/photos/agency.webp", title: t("slides.platform") },
+          { src: "/assets/photos/team.webp", title: t("photoTitle") },
+          { src: "/assets/photos/onsite.webp", title: t("slides.owners") },
+        ]}
+      />
     </section>
     <section className="registration-audiences" aria-labelledby="registration-value"><div className="registration-section-heading"><p className="registration-eyebrow">{t("visionEyebrow")}</p><h2 id="registration-value">{t("visionTitle")}</h2><p className="registration-intro">{t("visionBody")}</p></div><div className="registration-audience-grid">
       <article className="registration-audience-card"><BriefcaseBusiness className="registration-icon" aria-hidden /><h3>{t("buyerIntro")}</h3><p>{t("values.opportunities.body")}</p><Link href="/contact" className="registration-text-link">{t("buyerCta")}<ArrowLeft className="size-4 ltr:rotate-180" aria-hidden /></Link></article>

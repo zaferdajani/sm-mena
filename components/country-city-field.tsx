@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type CountryOption = { code: string; name: string; flag: string; cities: { key: string; label: string }[] };
 
@@ -24,6 +24,19 @@ export function CountryCityField({
   const [country, setCountry] = useState(initial);
   const cities = countries.find((c) => c.code === country)?.cities ?? [];
   const [city, setCity] = useState(defaultCity && cities.some((c) => c.key === defaultCity) ? defaultCity : (cities[0]?.key ?? ""));
+  // A country picked before React hydrated (slow connections) must not snap back: adopt what the select holds.
+  useEffect(() => {
+    const el = document.getElementById("country") as HTMLSelectElement | null;
+    const picked = el?.value;
+    if (!picked || picked === initial || !countries.some((c) => c.code === picked)) return;
+    const id = setTimeout(() => {
+      setCountry(picked);
+      setCity(countries.find((c) => c.code === picked)?.cities[0]?.key ?? "");
+    }, 0);
+    return () => clearTimeout(id);
+    // Runs once after hydration.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div className="grid min-w-0 gap-1.5">
