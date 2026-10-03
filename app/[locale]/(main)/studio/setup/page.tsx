@@ -18,7 +18,7 @@ export default async function CreatorSetupPage({ params }: PageProps<"/[locale]/
   const imports = await canUse("portfolio_import");
   const action = "inline-flex min-h-11 items-center justify-center rounded-xl border bg-background px-4 py-2 text-sm font-semibold text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
   return (
-    <div className="mx-auto max-w-3xl space-y-7" data-testid="creator-setup-page">
+    <div className="w-full space-y-6" data-testid="creator-setup-page">
       <header className="space-y-3">
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         <p className="text-sm leading-7 text-muted-foreground">{t("intro")}</p>
