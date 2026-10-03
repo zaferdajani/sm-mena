@@ -3,7 +3,7 @@
   "categories": [
     {
       "key": "social_media",
-      "name_ar": "إدارة السوشيال ميديا",
+      "name_ar": "إدارة وسائل التواصل الاجتماعي",
       "name_en": "Social media management",
       "services": [
         {
@@ -23,7 +23,7 @@
         },
         {
           "key": "smm_strategy",
-          "name_ar": "استراتيجية السوشيال ميديا",
+          "name_ar": "استراتيجية وسائل التواصل الاجتماعي",
           "name_en": "Social media strategy"
         },
         {

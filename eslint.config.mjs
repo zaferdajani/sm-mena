@@ -66,6 +66,9 @@ const eslintConfig = defineConfig([
     "public/engines/**",
     // Marketing recording/render scripts (Node CommonJS), not app code.
     "marketing/tools/**",
+    // The Expo app has its own toolchain (mobile/package.json: typecheck and lint); its pure API client is
+    // still typechecked and tested from here through tests/unit/mobile-client.test.ts.
+    "mobile/**",
   ]),
 ]);
 

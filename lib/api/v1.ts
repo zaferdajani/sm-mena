@@ -9,6 +9,7 @@ import { getAgencyByOwner } from "@/lib/data/agencies";
 import type { SetupError, SetupView } from "@/lib/data/portfolio-setup";
 import type { Viewer } from "@/lib/data/publication";
 import { API_ERROR_STATUS, apiError, fieldsFromIssues, type ApiError, type ApiErrorCode } from "./errors";
+import { upgradeRequired } from "@/lib/core/rules/app-version";
 
 // The bearer API's plumbing (docs/architecture/mobile-and-api-roadmap.md §4, §8). Three rules hold on every
 // route: it exists only while API_V1_ENABLED is "true" on the server (off in production until the mobile
@@ -16,6 +17,9 @@ import { API_ERROR_STATUS, apiError, fieldsFromIssues, type ApiError, type ApiEr
 // data or the shared error contract.
 
 export const apiV1Enabled = () => process.env.API_V1_ENABLED === "true";
+
+/** The oldest native app the API still serves (semver); unset accepts every app. Set it when a release breaks old clients. */
+export const apiMinAppVersion = () => process.env.API_MIN_APP_VERSION?.trim() || null;
 
 const baseHeaders = { "cache-control": "private, no-store", vary: "Authorization", "x-content-type-options": "nosniff", "x-robots-tag": "noindex" };
 
@@ -84,6 +88,9 @@ export async function requireApiAgency(request: Request): Promise<{ token: strin
 export function route<A extends unknown[]>(handler: (request: Request, ...args: A) => Promise<Response>) {
   return async (request: Request, ...args: A): Promise<Response> => {
     if (!apiV1Enabled()) return new Response("Not found", { status: 404, headers: baseHeaders });
+    // A native client names its version; one older than the configured minimum is told to update (426) before anything else runs.
+    const minimum = apiMinAppVersion();
+    if (minimum && upgradeRequired(request.headers.get("x-sawwiq-app"), minimum)) return fail("upgrade_required", { reason: "minVersion" }, { "x-min-app-version": minimum });
     try {
       return await handler(request, ...args);
     } catch (error) {

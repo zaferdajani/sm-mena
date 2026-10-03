@@ -23,6 +23,7 @@ const PURE = [
   "lib/core/catalog/services/role-input.ts",
   // Rules (lib/core/rules)
   "lib/core/rules/launch-phase.ts",
+  "lib/core/rules/app-version.ts",
   "lib/core/rules/founding.ts",
   "lib/core/rules/price-stats.ts",
   "lib/core/rules/auth/permissions.ts",

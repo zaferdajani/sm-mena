@@ -10,7 +10,7 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     name: "سوّق · Sawwiq",
     short_name: "سوّق",
-    description: "شركات التسويق والسوشيال ميديا في الأردن · Social media and marketing agencies in Jordan",
+    description: "شركات التسويق ووسائل التواصل الاجتماعي في الأردن · Social media and marketing agencies in Jordan",
     start_url: "/ar",
     display: "standalone",
     background_color: "#f2f2ed",
