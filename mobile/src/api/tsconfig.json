@@ -1,0 +1,14 @@
+{
+  "// why": "The web repo's tests import these two framework-free files (tests/unit/mobile-client.test.ts, tests/e2e/mobile-client.spec.ts). Their transformers read the nearest tsconfig, and the app's one extends expo/tsconfig.base, which only exists once mobile/node_modules is installed. This file keeps them loadable from the root with no Expo install; the app's own tsc still covers them through mobile/tsconfig.json.",
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2020", "DOM"],
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["./*.ts"]
+}
