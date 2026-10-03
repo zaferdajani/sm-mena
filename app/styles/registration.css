@@ -51,7 +51,7 @@
 .registration-final { padding: clamp(1.5rem, 4vw, 3rem); background: var(--brand-tint); border-radius: 1.5rem; }
 .registration-buyer { text-align: center; padding-block: 2rem; }
 .registration-buyer a, .registration-footer a { color: var(--brand); text-decoration: underline; text-underline-offset: .3em; }
-.registration-footer { border-block-start: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; font-size: .9375rem; }
+.registration-footer { max-inline-size: var(--registration-measure, 65rem); margin-inline: auto; border-block-start: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; font-size: .9375rem; }
 .registration-footer nav { display: flex; flex-wrap: wrap; gap: 1rem; }
 .registration-example-notice { padding: 1.5rem; border: 1px dashed var(--brand-line); border-radius: 1.25rem; margin-block-end: 1.5rem; background: var(--brand-soft); }
 .registration-example { padding-block: 1rem 2rem; }
