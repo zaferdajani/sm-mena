@@ -6,16 +6,16 @@ import { uniqueHandle, nextJoinStep } from "./helpers";
 test("sign-up starts the WhatsApp code from the visitor's country, and any country can be chosen", async ({ browser }) => {
   const page = await (await browser.newContext({ extraHTTPHeaders: { "x-vercel-ip-country": "SA" } })).newPage();
   await page.goto("/en/join");
-  const field = page.getByTestId("phone-whatsapp");
-  await expect(field.getByTestId("phone-dial")).toHaveText("+966");
-  await field.getByTestId("phone-country").selectOption("EG");
-  await expect(field.getByTestId("phone-dial")).toHaveText("+20");
-
   const handle = uniqueHandle("phone");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
   await nextJoinStep(page);
   await nextJoinStep(page);
+  // The WhatsApp field is on the contact step.
+  const field = page.getByTestId("phone-whatsapp");
+  await expect(field.getByTestId("phone-dial")).toHaveText("+966");
+  await field.getByTestId("phone-country").selectOption("EG");
+  await expect(field.getByTestId("phone-dial")).toHaveText("+20");
   await page.fill("#whatsapp", "0101 234 5678");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
