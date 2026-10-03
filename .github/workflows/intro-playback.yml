@@ -1,0 +1,39 @@
+# Plays the intro video from production to its `ended` event in a real browser on a GitHub runner — the build
+# sandbox's egress proxy drops media streams, so this check cannot run from there (docs/OPEN-ITEMS.md item 7).
+# Default run: the production intro files stream and end. With `page` set (the full-phase landing, e.g.
+# https://sawwiq.org/ar?intro=1), it opens that page and waits for the intro sting's own video to end.
+name: Intro playback
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: Site whose intro files to play
+        default: https://sawwiq.org
+      page:
+        description: Optional page whose intro sting should play to the end (leave empty during the registration phase)
+        default: ""
+
+jobs:
+  playback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SITE_URL: ${{ inputs.site || 'https://sawwiq.org' }}
+      INTRO_PAGE: ${{ inputs.page }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Play the intro to its ended event
+        run: node tests/live/intro-playback.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: intro-playback
+          path: live-evidence/
+          retention-days: 14
