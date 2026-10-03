@@ -1,7 +1,7 @@
 # Sawwiq — open items (living list)
 
 Kept current by the working session; every report to the owner ends with this list.
-Last update: 2026-10-03 20:34 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase on 99d31d1 (`/api/version` → 99d31d1; Vercel dpl_Ekt5ph1deXazepGhiTfpQHQziTsX; verified live 20:34 UTC). Today's evidence: docs/upgrades/landing-redesign/release-evidence.2026-10-03{,b,c,d,e}.json, docs/upgrades/owner-early-registration/release-evidence.2026-10-03.json, docs/upgrades/owner-matching/release-evidence.2026-10-03.json, docs/upgrades/ui-consistency-fusha/release-evidence.2026-10-03.json, docs/upgrades/mobile-prototype/release-evidence.2026-10-03.json, docs/upgrades/live-journey-2026-10-03/journey.json, docs/upgrades/intro-playback-2026-10-03/intro-playback.json.
+Last update: 2026-10-03 23:18 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase on c12c12f (`/api/version` → c12c12f; Vercel dpl_4v896w7Kj55GGJPm7ktJWi417337; verified live 23:18 UTC). Today's evidence: docs/upgrades/landing-redesign/release-evidence.2026-10-03{,b,c,d,e}.json, docs/upgrades/owner-early-registration/release-evidence.2026-10-03.json, docs/upgrades/owner-matching/release-evidence.2026-10-03.json, docs/upgrades/ui-consistency-fusha/release-evidence.2026-10-03.json, docs/upgrades/mobile-prototype/release-evidence.2026-10-03.json, docs/upgrades/live-journey-2026-10-03/journey.json, docs/upgrades/intro-playback-2026-10-03/intro-playback.json.
 
 ## Owner decisions (nobody else can close these)
 
