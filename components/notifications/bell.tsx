@@ -58,7 +58,7 @@ export function NotificationBell({ initialCount, href, variant = "icon" }: { ini
 
   if (variant === "row") {
     return (
-      <Link href={href} aria-label={label} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] hover:bg-muted" data-testid="notification-bell">
+      <Link href={href} aria-label={label} className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[15px] hover:bg-muted" data-testid="notification-bell">
         <span className="relative">
           <Bell className="size-6" />
         </span>
