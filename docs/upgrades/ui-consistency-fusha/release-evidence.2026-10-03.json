@@ -1,0 +1,165 @@
+{
+  "feature": "UI consistency and Modern Standard Arabic (PR #58): one Studio measure across 8 routes, aligned landing sections and footer, pioneer section as a contained card, hover pills separated, every user-facing Arabic string in MSA",
+  "pr": 58,
+  "branch": "fix/unify-layout-fusha",
+  "handoff_head": "3747153caa1fc4ce54df4974dfed810bc8698dd7",
+  "handoff_state": "all three CI jobs red; ~165 Arabic strings still colloquial or mechanically broken",
+  "commits_on_top": [
+    "f62de9e fix(fusha): finish the MSA pass and align the tests with it (132 + 34 strings, service-catalog group name, seed bio, founder-copy test asserts one MSA voice)",
+    "8726e7d fix(studio): tab strip and header share the content boundary; footer matches the content measure",
+    "88a2f55 fix(footer): the registration footer follows the page measure",
+    "3626a15 fix(fusha): 23 more strings; landing footer shares the section measure exactly",
+    "21da205 test(teaser): the Saudi teaser heading is the shared MSA statement",
+    "5975f07 fix(fusha): FAQ questions and the unlisted-state note in MSA",
+    "608a14a fix(footer): the studio footer keeps the 65rem content measure",
+    "6db8bfa merge main (PR #59) into the branch",
+    "cd639bb fix(footer): the studio footer takes the full content width up to its cap"
+  ],
+  "validated_head": "cd639bbcc3ba34c4bce4b4242c103825a0b3997f",
+  "ci": {
+    "run": 37150382430,
+    "jobs": [
+      "Lint, typecheck, unit tests",
+      "Full-platform regression (Playwright)",
+      "Registration phase, privacy and mobile journey"
+    ],
+    "conclusion": "success"
+  },
+  "local_proofs": {
+    "build": "next build exit 0 at 6db8bfa and cd639bb",
+    "registration_suite": "42 passed at 6db8bfa (playwright.registration.config.ts); the only delta to cd639bb is one footer CSS line",
+    "unit": "messages, founder-copy, owner-matching: passed",
+    "studio_geometry_1440_ar": {
+      "routes": [
+        "/ar/studio",
+        "/setup",
+        "/profile",
+        "/publication",
+        "/new",
+        "/posts",
+        "/packages",
+        "/clients"
+      ],
+      "workspace": "56–1144",
+      "header_notice_tabs_content_footer": "80–1120 on every route",
+      "aside": "1200–1440 (RTL sidebar on the right, footer never under it)",
+      "hover_gap_studio_to_notifications_px": 4,
+      "overflow": false
+    },
+    "landing_sections": {
+      "ar_1440": {
+        "hero_green_proof_final_footer": "56–1384",
+        "gaps_px": [
+          73,
+          71,
+          72,
+          72,
+          72
+        ],
+        "overflow": false
+      },
+      "en_1440": {
+        "hero_green_proof_final_footer": "56–1384",
+        "gaps_px": [
+          72,
+          72,
+          73,
+          72,
+          72
+        ],
+        "overflow": false
+      },
+      "ar_1366": {
+        "sections": "55–1311",
+        "gaps_px": [
+          68,
+          68,
+          68,
+          68,
+          69
+        ],
+        "overflow": false
+      },
+      "ar_390": {
+        "sections": "16–374 (pioneer card full-bleed container 0–390)",
+        "gaps_px": [
+          48,
+          48,
+          48,
+          47,
+          48
+        ],
+        "overflow": false
+      },
+      "en_390": {
+        "sections": "16–374",
+        "gaps_px": [
+          47,
+          48,
+          48,
+          49,
+          47
+        ],
+        "overflow": false
+      },
+      "ar_320": {
+        "sections": "16–304",
+        "gaps_px": [
+          48,
+          49,
+          47,
+          47,
+          49
+        ],
+        "overflow": false
+      }
+    },
+    "laptop_first_fold": "14/14 frames (ar/en × 1440x900, 1920x1080, 1024x680, 390x844, 1536x722@1.25, 1366x657, 1280x600@1.5): CTA and trust line in view, no overflow",
+    "section_order": "hero → audiences → green early-registration block (centered, bounded) → pioneer card (contained) → stages → FAQ → final CTA → footer",
+    "msa_scan": "three regex passes over messages/ar.json (dialect tokens, بـ-prefixed verbs, ما-negation, ان-passives, Levantine and Egyptian markers): 0 hits at the validated head; banned «أهل التسويق» and «هسا» absent"
+  },
+  "merge_sha": "99d31d18e181e541a07e721eed8f014c7d238b44",
+  "deployment": {
+    "id": "dpl_Ekt5ph1deXazepGhiTfpQHQziTsX",
+    "state": "READY"
+  },
+  "production": {
+    "api_version_commit": "99d31d18e181e541a07e721eed8f014c7d238b44",
+    "checks": {
+      "landing_live_geometry": {
+        "ar_1440": "56–1384, gaps 72/72/71/72/72",
+        "en_1440": "56–1384, gaps 72/72/73/72/72",
+        "ar_1366": "55–1311, gaps 68",
+        "en_1366": "55–1311, gaps 68/69",
+        "ar_390": "16–374, gaps 48",
+        "en_390": "16–374, gaps 47–49",
+        "ar_320": "16–304, gaps 47–49",
+        "footer": "same measure as the sections on every frame",
+        "overflow": false
+      },
+      "laptop_first_fold_live": "14/14 frames: CTA and trust line in view, no overflow",
+      "hero_images": "agency.webp, onsite.webp, team.webp via /_next/image → 200 image/webp",
+      "msa_scan_rendered_pages": {
+        "pages": [
+          "/ar",
+          "/ar/join",
+          "/ar/owner",
+          "/ar/soon",
+          "/ar/signin",
+          "/ar/examples",
+          "/ar/about",
+          "/ar/contact",
+          "/ar/privacy"
+        ],
+        "hits": 0,
+        "banned_absent": [
+          "أهل التسويق",
+          "هسا"
+        ]
+      },
+      "studio_routes": "Live journey workflow run 37151583332 on 99d31d1: journey job success (seeded demo provider, no account created)",
+      "capture_note": "Two captures through the sandbox proxy returned a page with a truncated stylesheet (sections at 0–1440 or an 8px offset). Those frames were re-captured and accepted only when fully styled; every accepted live value equals the local measurement."
+    }
+  },
+  "verified_at": "2026-10-03T20:34:00Z"
+}

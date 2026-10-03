@@ -1,0 +1,29 @@
+{
+  "feature": "Owner matching (docs/59): registered business owners matched to providers by country, city and service groups; one email per owner once sending opens; consent before any introduction",
+  "pr": 59,
+  "branch": "feat/owner-matching",
+  "validated_head": "4c0bb8742d4a0bed5e2e243bf5d5056fc331d5a8",
+  "ci": { "run": 37148046877, "jobs": ["Lint, typecheck, unit tests", "Full-platform regression (Playwright)", "Registration phase, privacy and mobile journey"], "conclusion": "success" },
+  "local": {
+    "unit": "tests/unit/owner-matching.test.ts + boundaries: passed",
+    "registration": "tests/registration/owner-matches.spec.ts (closed-phase page, anonymous redirect): passed",
+    "e2e": "tests/e2e/owner-matching.spec.ts desktop + mobile under playwright.config.ts: 7 passed (owner need → compute → staff send → owner accepts → provider notification names the city and service group)"
+  },
+  "merge_sha": "36379a9b3f440012d9eddcde2d32914c45410608",
+  "deployment": { "id": "dpl_9jRGYn72VUYqKXAbfurwEfE2KYez", "state": "READY", "migration": "0035_owner_matches (db:migrate in the Vercel build step)" },
+  "production": {
+    "api_version": { "commit": "36379a9b3f440012d9eddcde2d32914c45410608", "launchPhase": "registration" },
+    "read_only_checks": {
+      "/ar/owner/matches (anonymous)": "307 → /ar/owner",
+      "/en/owner/matches (anonymous)": "307 → /en/owner",
+      "/ar/admin/owners (anonymous)": "307 → /ar/login",
+      "/en/admin/owners (anonymous)": "307 → /en/login",
+      "/api/cron/owner-matches (no bearer)": 401,
+      "/api/cron/owner-matches (wrong bearer)": 401
+    },
+    "accounts_created": 0,
+    "emails_sent": 0,
+    "note": "Sending is closed during the registration phase (OWNER_MATCH_EMAILS unset). Admin → Owners can compute matches; the send button stays disabled until the phase opens or the switch is set in Vercel."
+  },
+  "verified_at": "2026-10-03T20:05:00Z"
+}
