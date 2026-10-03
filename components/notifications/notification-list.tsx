@@ -64,6 +64,7 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   contract_received: FileSignature,
   contract_completed: BadgeCheck,
   review_invite: Star,
+  owner_intro: Handshake,
 };
 
 const isKind = (kind: string): kind is NotificationKind => (NOTIFICATION_KINDS as readonly string[]).includes(kind);

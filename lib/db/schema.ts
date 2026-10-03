@@ -155,6 +155,35 @@ export const ownerNeeds = pgTable(
 );
 
 /**
+ * Owner ↔ provider matches (docs/59-owner-matching.md): for each registered business owner, the providers that
+ * fit by country, city and needed service groups. Rows start as suggestions staff can preview; when discovery
+ * opens the owner gets one email with them, and only an owner's acceptance introduces the two sides.
+ */
+export const ownerMatchStatus = pgEnum("owner_match_status", ["suggested", "sent", "accepted", "declined", "introduced"]);
+export const ownerMatches = pgTable(
+  "owner_matches",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ownerUserId: uuid("owner_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    agencyId: uuid("agency_id")
+      .notNull()
+      .references(() => agencies.id, { onDelete: "cascade" }),
+    score: integer("score").notNull(),
+    reasons: jsonb("reasons").$type<string[]>().notNull().default([]),
+    status: ownerMatchStatus("status").notNull().default("suggested"),
+    batchId: text("batch_id").notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    respondedAt: timestamp("responded_at", { withTimezone: true }),
+    introducedAt: timestamp("introduced_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("owner_matches_pair_idx").on(t.ownerUserId, t.agencyId), index("owner_matches_agency_idx").on(t.agencyId, t.status)],
+);
+
+/**
  * One-time sign-in codes sent by email (docs/41-client-accounts.md). Only a
  * hash of the code is stored; codes expire after 10 minutes and allow five
  * tries. Rows are deleted after a day.

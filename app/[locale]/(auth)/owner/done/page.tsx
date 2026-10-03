@@ -33,6 +33,7 @@ export default async function OwnerDonePage({ params }: PageProps<"/[locale]/own
         ))}
       </ol>
       <div className="mt-6 flex flex-wrap gap-3">
+        <Link href="/owner/matches" className="registration-secondary" data-testid="owner-to-matches">{t("done.matches")}</Link>
         <Link href="/owner/needs" className="registration-secondary" data-testid="owner-edit">{t("done.edit")}</Link>
         <Link href="/" className="registration-secondary">{t("done.home")}</Link>
       </div>
