@@ -24,6 +24,7 @@ export async function pngBuffer(color: string, width = 800, height = 800) {
 /** Sign-up is three steps on one form (join-form.tsx): this moves to the next step after its fields are filled. */
 export async function nextJoinStep(page: Page) {
   const form = page.getByTestId("join-form");
+  await expect(form).toHaveAttribute("data-ready", "true");
   const before = Number((await form.getAttribute("data-step")) ?? 0);
   // A click that lands before React has hydrated does nothing: retry until the step advances.
   await expect(async () => {

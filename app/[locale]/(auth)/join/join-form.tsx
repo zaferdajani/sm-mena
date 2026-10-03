@@ -176,7 +176,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
         <p className="sw-join-draft-note" data-testid="join-draft-note">{t("draftNote")}</p>
       </aside>
 
-      <div className="sw-join-panels" key={restored ? "restored" : "fresh"}>
+      <div className="sw-join-panels" key={draft ? "draft" : "fresh"}>
         {invite && <input type="hidden" name="invite" value={invite} />}
         <p className="sw-join-progress" data-testid="join-progress">{t("stepOf", { n: step + 1, total: STEPS.length })} · <strong>{t(`steps.${STEPS[step]}.title`)}</strong></p>
         <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
@@ -189,7 +189,21 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="handle">{t("handle")}</Label>
-              <Input id="handle" name="handle" required dir="ltr" autoCapitalize="none" maxLength={30} value={handle} onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ""))} />
+              {/* Uncontrolled on purpose: what is typed before React has hydrated (slow connections, Safari) must survive hydration. */}
+              <Input
+                id="handle"
+                name="handle"
+                required
+                dir="ltr"
+                autoCapitalize="none"
+                maxLength={30}
+                defaultValue={f.handle || one(d.handle)}
+                onChange={(e) => {
+                  const clean = e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, "");
+                  if (clean !== e.target.value) e.target.value = clean;
+                  setHandle(clean);
+                }}
+              />
               <p className="text-xs text-muted-foreground" dir="auto">{t("handleHint", { handle: handle || "your.agency" })}</p>
             </div>
           </div>
