@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle, nextJoinStep } from "./helpers";
+import { nextJoinStep, openJoinTeamStep, uniqueHandle } from "./helpers";
 
 for (const locale of ["ar", "en"]) {
   test(`${locale} role suggestions reuse SEO aliases and require confirmation for distinct specialties`, async ({ page }, info) => {
     await page.goto(`/${locale}/join`);
+    await openJoinTeamStep(page, "roles");
     const box = page.getByTestId("role-picker-teamRoles");
     const input = box.getByRole("combobox");
     await expect(box.locator('input[value="seo_specialist"]')).toHaveCount(1);
@@ -77,6 +78,7 @@ test("added roles survive signup, reload, profile save and removal", async ({ pa
 test("freelancer role entry fits at 320px and switching kind retains choices", async ({ page }, info) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/ar/join");
+  await openJoinTeamStep(page, "narrow");
   const box = page.getByTestId("role-picker-teamRoles");
   await box.getByRole("combobox").fill("مصمم أغلفة طبية");
   if (await box.getByTestId("role-distinct").count()) await box.getByTestId("role-distinct").click();

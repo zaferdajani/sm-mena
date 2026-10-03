@@ -99,7 +99,14 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
   }, [step]);
   const scheduleSave = useCallback(() => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => save(), 250);
+    // Written at once (the form is small) so a quick navigation never loses the last field.
+    save();
+  }, [save]);
+  // Backstop for pickers that change without a form event: write the draft when the page is being left.
+  useEffect(() => {
+    const flush = () => save();
+    window.addEventListener("pagehide", flush);
+    return () => window.removeEventListener("pagehide", flush);
   }, [save]);
 
   const panel = (i: number) => form.current?.querySelector<HTMLElement>(`[data-step-panel="${i}"]`) ?? null;
@@ -129,6 +136,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
       className="sw-join-steps"
       data-testid="join-form"
       data-step={step}
+      data-ready={restored ? "true" : undefined}
       onInput={scheduleSave}
       onChange={scheduleSave}
       onClickCapture={scheduleSave}

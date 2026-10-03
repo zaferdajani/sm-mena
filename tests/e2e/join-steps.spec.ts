@@ -10,6 +10,7 @@ test("steps, validation, a draft that survives navigation, and one final submit"
   const handle = uniqueHandle("steps");
   await page.goto("/en/join");
   const form = page.getByTestId("join-form");
+  await expect(form).toHaveAttribute("data-ready", "true");
   await expect(form).toHaveAttribute("data-step", "0");
   // On a laptop the rail sits beside the fields (two columns), not above them.
   const rail = await page.getByTestId("join-step-page").boundingBox();
@@ -35,6 +36,7 @@ test("steps, validation, a draft that survives navigation, and one final submit"
   // Leave and come back: the answers and the step are still there; the password is not kept anywhere.
   await page.goto("/en/examples");
   await page.goto("/en/join");
+  await expect(form).toHaveAttribute("data-ready", "true");
   await expect(form).toHaveAttribute("data-step", "2");
   await expect(page.locator("#email")).toHaveValue(`${handle}@test.jo`);
   await expect(page.locator("#whatsapp")).toHaveValue("0791112233");
@@ -58,6 +60,7 @@ test("steps, validation, a draft that survives navigation, and one final submit"
   await page.waitForURL(/\/en\/portfolio-setup/);
   // The draft is spent once the account exists: a new visit starts clean.
   await page.goto("/en/join");
+  await expect(page.getByTestId("join-form")).toHaveAttribute("data-ready", "true");
   await expect(page.getByTestId("join-form")).toHaveAttribute("data-step", "0");
   await expect(page.locator("#name")).toHaveValue("");
 });
@@ -65,6 +68,7 @@ test("steps, validation, a draft that survives navigation, and one final submit"
 test("Arabic on a phone: compact rail, one column, no overflow, Enter moves forward", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/ar/join");
+  await expect(page.getByTestId("join-form")).toHaveAttribute("data-ready", "true");
   await expect(page.getByTestId("join-progress")).toBeVisible();
   await page.fill("#name", "استوديو الخطوات");
   await page.fill("#handle", uniqueHandle("ar"));
