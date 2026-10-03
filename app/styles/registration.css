@@ -1,5 +1,9 @@
 /* Registration phase uses the owner-approved brochure tokens and Noto family. */
-.registration-site { max-inline-size: 76rem; margin-inline: auto; padding: clamp(1rem, 3vw, 2rem); color: var(--foreground); }
+/* Every registration-phase page spans the viewport; its sections are capped and centred at one measure, so the
+   landing, the example page and the rest line up on a laptop as on a phone. Full-bleed bands (the launch strip,
+   the proof band) opt out of the cap and use the inset as their negative margin. */
+.registration-site { --registration-inset: clamp(1rem, 4vw, 3.5rem); --registration-measure: 86rem; max-inline-size: none; margin-inline: auto; padding: clamp(1rem, 3vw, 2rem) var(--registration-inset); color: var(--foreground); }
+.registration-site > :where(:not(.launch-strip, .registration-proof)) { max-inline-size: var(--registration-measure); margin-inline: auto; }
 .registration-header { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding-block: .5rem 1.75rem; }
 .registration-header > .registration-tools { margin-inline-start: auto; }
 .registration-tools { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; }
@@ -66,8 +70,8 @@
 /* Early-access campaign layer (docs/55). Tokens are scoped so dark mode keeps contrast; motion is opt-in only. */
 .registration-site { --launch-ink: #fffdf7; --launch-bg: #123f2f; --launch-bg-deep: #0d2d22; --launch-gold: #e8c877; }
 :root[data-theme="dark"] .registration-site { --launch-ink: #f3f7f1; --launch-bg: #0f2a20; --launch-bg-deep: #0a1f17; --launch-gold: #f0cf82; }
-.launch-strip { margin: calc(-1 * clamp(1rem, 3vw, 2rem)) calc(-1 * clamp(1rem, 3vw, 2rem)) 1rem; padding: .85rem clamp(1rem, 3vw, 2rem); background: linear-gradient(100deg, var(--launch-bg-deep), var(--launch-bg) 55%, #1a5a43); color: var(--launch-ink); border-block-end: 2px solid var(--launch-gold); }
-.launch-strip > p { max-inline-size: 76rem; margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 1.25rem; row-gap: .35rem; text-align: center; line-height: 1.8; }
+.launch-strip { margin: calc(-1 * clamp(1rem, 3vw, 2rem)) calc(-1 * var(--registration-inset)) 1rem; padding: .85rem var(--registration-inset); background: linear-gradient(100deg, var(--launch-bg-deep), var(--launch-bg) 55%, #1a5a43); color: var(--launch-ink); border-block-end: 2px solid var(--launch-gold); }
+.launch-strip > p { max-inline-size: var(--registration-measure); margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 1.25rem; row-gap: .35rem; text-align: center; line-height: 1.8; }
 .launch-strip-kicker { font-weight: 800; letter-spacing: .01em; color: var(--launch-gold); }
 .launch-strip-body { font-weight: 600; }
 .launch-strip-link { display: inline-flex; align-items: center; gap: .4rem; min-block-size: 2.75rem; padding-inline: .9rem; border-radius: .6rem; border: 1px solid color-mix(in oklab, var(--launch-ink) 45%, transparent); color: var(--launch-ink); font-weight: 700; }
@@ -130,11 +134,7 @@
 /* Landing v2 — calmer Krooz-inspired hierarchy while preserving Sawwiq identity. */
 /* The page spans the whole viewport so the announcement strip and the proof band reach both screen edges on
    any laptop or monitor; each other section is capped and centred (--registration-measure). */
-.registration-site-v2 { --registration-inset: clamp(1rem, 4vw, 3.5rem); --registration-measure: 86rem; max-inline-size: none; padding-inline: var(--registration-inset); background: var(--background); }
-.registration-site-v2 > :where(:not(.launch-strip, .registration-proof)) { max-inline-size: var(--registration-measure); margin-inline: auto; }
-/* The announcement strip bleeds to the screen edge: its negative margin matches this layout's side padding. */
-.registration-site-v2 .launch-strip { margin-inline: calc(-1 * var(--registration-inset)); padding-inline: var(--registration-inset); }
-.registration-site-v2 .launch-strip p { max-inline-size: var(--registration-measure); margin-inline: auto; }
+.registration-site-v2 { background: var(--background); }
 .registration-site-v2 .registration-header { padding-block: 1rem 1.5rem; border: 0; }
 /* The hero fits the first screen of a laptop: the headline scales with the viewport height as well as its width, and the photo never forces the row taller than the screen. */
 .registration-hero-v2 { min-block-size: auto; grid-template-columns: minmax(0, 1.05fr) minmax(22rem, .95fr); border: 0; border-radius: 0; background: transparent; gap: clamp(2rem, 5vw, 5rem); overflow: visible; align-items: center; }
@@ -180,7 +180,7 @@
 .registration-final-v2 .registration-eyebrow, .registration-final-v2 .registration-actions, .registration-final-v2 .launch-trust { justify-content: center; }
 
 @media (max-width: 850px) {
-  .registration-site-v2 { --registration-inset: 1rem; }
+  .registration-site { --registration-inset: 1rem; }
   .registration-site-v2 .registration-header { padding-block-end: 1.2rem; }
   .registration-hero-v2 { min-block-size: auto; gap: 1.6rem; grid-template-columns: minmax(0, 1fr); }
   /* Phones: the headline stays large but must leave the cohort CTA inside a 390×844 viewport in both languages (campaign spec). */
