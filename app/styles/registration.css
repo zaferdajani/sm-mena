@@ -250,3 +250,11 @@
   .registration-audiences, .registration-how, .registration-faq-v2 { padding-block: 3rem; }
   .registration-proof, .launch-early-v2, .registration-final-v2 { margin-block: 3rem; }
 }
+
+/* Studio pages share the same outer geometry. Individual routes may arrange content internally,
+   but they may not introduce a second, narrower page measure. */
+.sw-workspace-body > :where(div, section, form, article) {
+  inline-size: 100%;
+  max-inline-size: none !important;
+  margin-inline: 0 !important;
+}
