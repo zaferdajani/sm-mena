@@ -83,6 +83,7 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
         const params = n.params ?? {};
         const values = {
           name: String(params.name ?? ""),
+          city: String(params.city ?? ""),
           title: String(params.title ?? ""),
           milestone: String(params.milestone ?? ""),
           date: params.date ? formatDate(new Date(String(params.date)), locale) : "",

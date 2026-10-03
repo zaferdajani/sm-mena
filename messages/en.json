@@ -5237,7 +5237,6 @@
     },
     "send": {
       "title": "Send match emails",
-      "body": "",
       "bodyOpen": "Discovery is open: every owner with unsent suggestions gets one email listing them with the link to choose.",
       "bodyClosed": "Discovery is still closed, so nothing is sent. The daily job sends automatically once it opens (or set OWNER_MATCH_EMAILS=on to send during the registration phase).",
       "button": "Send emails",
