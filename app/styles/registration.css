@@ -25,7 +25,7 @@
 .registration-photo-caption { position: absolute; z-index: 1; inset-inline: 1.5rem; inset-block-end: 1.75rem; display: grid; gap: .5rem; color: #fffdf7; }
 .registration-photo-caption strong { font-size: 1.5rem; line-height: 1.65; }
 .registration-photo-caption span { color: #f0cf82; }
-.registration-section { padding-block: clamp(2rem, 4vw, 3.5rem); }
+.registration-section { padding-block: clamp(3rem, 5vw, 4.5rem); }
 .registration-site h2 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); font-weight: 800; line-height: 1.7; margin-block-end: .75rem; }
 .registration-site h3, .registration-card h2 { font-size: 1.25rem; font-weight: 800; line-height: 1.7; margin-block: .75rem; }
 .registration-site p, .registration-card p { line-height: 1.95; }
@@ -51,7 +51,7 @@
 .registration-final { padding: clamp(1.5rem, 4vw, 3rem); background: var(--brand-tint); border-radius: 1.5rem; }
 .registration-buyer { text-align: center; padding-block: 2rem; }
 .registration-buyer a, .registration-footer a { color: var(--brand); text-decoration: underline; text-underline-offset: .3em; }
-.registration-footer { border-block-start: 1px solid var(--border); padding-block: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; font-size: .9375rem; }
+.registration-footer { inline-size: calc(100% - 2rem); max-inline-size: 68rem; margin-inline: auto; border-block-start: 1px solid var(--border); padding: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; font-size: .9375rem; }
 .registration-footer nav { display: flex; flex-wrap: wrap; gap: 1rem; }
 .registration-example-notice { padding: 1.5rem; border: 1px dashed var(--brand-line); border-radius: 1.25rem; margin-block-end: 1.5rem; background: var(--brand-soft); }
 .registration-example { padding-block: 1rem 2rem; }
@@ -138,7 +138,7 @@
 .registration-site-v2 .registration-secondary { min-block-size: 3.2rem; padding-inline: 1.2rem; background: transparent; }
 .registration-site-v2 .launch-trust { margin-block-start: 1.35rem; }
 
-.registration-audiences, .registration-how, .registration-faq-v2 { padding-block: clamp(5rem, 9vw, 8rem); }
+.registration-audiences, .registration-how, .registration-faq-v2 { padding-block: clamp(3rem, 5vw, 4.5rem); }
 .registration-section-heading { max-inline-size: 46rem; margin-block-end: clamp(2rem, 4vw, 3.5rem); }
 .registration-section-heading .registration-intro { max-inline-size: 42rem; }
 .registration-audience-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
@@ -148,7 +148,7 @@
 .registration-audience-card p { color: var(--muted-foreground); max-inline-size: 38ch; }
 .registration-text-link { margin-block-start: auto; display: inline-flex; align-items: center; gap: .5rem; color: var(--brand); font-weight: 800; padding-block-start: 1.5rem; }
 
-.registration-proof { margin-inline: calc(-1 * var(--registration-inset)); padding: clamp(4.5rem, 8vw, 7rem) max(var(--registration-inset), calc((100% - var(--registration-measure)) / 2 + var(--registration-inset))); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; background: color-mix(in oklab, var(--brand-soft) 42%, var(--background)); border-block: 1px solid var(--border); }
+.registration-proof { margin-block: clamp(3rem, 5vw, 4.5rem); padding: clamp(2rem, 4vw, 3.5rem); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; background: color-mix(in oklab, var(--brand-soft) 42%, var(--card)); border: 1px solid var(--border); border-radius: 2rem; }
 .registration-proof-list { display: grid; gap: .75rem; }
 .registration-proof-list > div { display: flex; align-items: center; gap: 1rem; padding: 1.15rem 0; border-block-end: 1px solid var(--border); font-weight: 700; }
 .registration-proof-list svg { inline-size: 1.5rem; block-size: 1.5rem; color: var(--brand); flex: none; }
@@ -158,7 +158,7 @@
 .registration-stages-v2 li:last-child { border-inline-end: 0; }
 .registration-step-number { display: block; margin-block-end: 2rem; color: var(--brand); font-size: .85rem; font-weight: 900; letter-spacing: .12em; }
 
-.launch-early-v2 { margin: clamp(3rem, 6vw, 6rem) 0; padding: clamp(3rem, 7vw, 6rem); border: 0; border-radius: 2rem; background: radial-gradient(circle at 85% 10%, #236d52 0, transparent 36%), linear-gradient(135deg, #0d2d22, #123f2f 70%); box-shadow: 0 26px 80px rgb(13 45 34 / .18); }
+.launch-early-v2 { margin: clamp(3rem, 5vw, 4.5rem) auto; padding: clamp(2.5rem, 5vw, 4rem); border: 0; border-radius: 2rem; background: radial-gradient(circle at 85% 10%, #236d52 0, transparent 36%), linear-gradient(135deg, #0d2d22, #123f2f 70%); box-shadow: 0 26px 80px rgb(13 45 34 / .18); }
 .launch-early-v2 h2 { font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.35; text-wrap: balance; }
 .launch-early-v2 .launch-early-points li { background: rgb(255 255 255 / .06); border-color: rgb(255 255 255 / .13); }
 .launch-early-v2 .sw-invitation-cta { background: var(--launch-gold); color: var(--launch-bg-deep); }
@@ -166,7 +166,7 @@
 .registration-faq-v2 { max-inline-size: 56rem; margin-inline: auto; }
 .registration-faq-v2 .registration-section-heading { margin-inline: auto; text-align: center; }
 .registration-faq-v2 details { padding-block: 1.35rem; }
-.registration-final-v2 { margin-block: 2rem 5rem; padding: clamp(3rem, 7vw, 6rem); text-align: center; border-radius: 2rem; background: var(--card); border: 1px solid var(--border); }
+.registration-final-v2 { margin-block: clamp(3rem, 5vw, 4.5rem); padding: clamp(3rem, 7vw, 6rem); text-align: center; border-radius: 2rem; background: var(--card); border: 1px solid var(--border); }
 .registration-final-v2 > p:not(.registration-eyebrow) { max-inline-size: 48rem; margin-inline: auto; color: var(--muted-foreground); }
 .registration-final-v2 .registration-eyebrow, .registration-final-v2 .registration-actions, .registration-final-v2 .launch-trust { justify-content: center; }
 
@@ -236,4 +236,17 @@
   .registration-slide-caption { inset-inline: 1.25rem; inset-block-end: 2.75rem; }
   .registration-slide-caption strong { font-size: 1.2rem; padding: .55rem .8rem; border-radius: .9rem; }
   .registration-slide-dots { inset-inline-start: 1.1rem; inset-block-end: .6rem; }
+}
+
+
+/* Shared workspace rhythm: every Studio route uses one measure and one vertical cadence. */
+.sw-workspace { --workspace-gap: 1.5rem; }
+.sw-workspace > :where(* + *) { margin-block-start: var(--workspace-gap); }
+.sw-workspace > .sw-workspace-body { margin-block-start: var(--workspace-gap); }
+.sw-workspace-body > :where(* + *) { margin-block-start: var(--workspace-gap); }
+.sw-workspace .registration-card { inline-size: 100%; }
+@media (max-width: 850px) {
+  .registration-footer { inline-size: calc(100% - 2rem); }
+  .registration-audiences, .registration-how, .registration-faq-v2 { padding-block: 3rem; }
+  .registration-proof, .launch-early-v2, .registration-final-v2 { margin-block: 3rem; }
 }
