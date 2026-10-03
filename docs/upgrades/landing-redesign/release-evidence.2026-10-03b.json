@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-03",
+  "releases": [
+    {
+      "pr": 46, "title": "Replace «أهل التسويق» with provider terminology in all Arabic copy",
+      "head": "9f8263b4221f2c96b416f2f13cabb88685a60c17", "mergedAs": "6eb25182bc77df8b8c29360a30db8dfd65b0580a",
+      "ci": { "run": "https://github.com/zaferdajani/sm-mena/actions/runs/37111411526", "jobs": { "Lint, typecheck, unit tests": "success (111169892813)", "Registration phase, privacy and mobile journey": "success (111169892821)", "Full-platform regression (Playwright)": "success (111169892685)" } },
+      "deployment": { "id": "dpl_7pyty3cMsSaccWekJZXFf9FPysQ5", "createdAt": "2026-10-03T09:13:31Z", "apiVersionSeenAt": "2026-10-03T09:14:39Z" },
+      "liveChecks": { "renderedHtml": { "/ar": { "rejectedPhrase": 0, "hasa": 0, "providerTerm": 20 }, "/ar/join": { "rejectedPhrase": 0, "providerTerm": 8 }, "/ar/examples": { "rejectedPhrase": 0, "providerTerm": 8 } }, "journey": "ar 390/1440/320, en 390/1440: 200, no overflow, no broken images, strip+badge+CTA in first viewport, language switch and CTA → /{locale}/join", "visual": "ar 1440 fold: photo title «مزودو خدمات التسويق، مكانكم معنا.» on one line; ar 390 full page: caption wraps to two lines inside the photo" }
+    },
+    {
+      "pr": 44, "title": "Landing spans the laptop screen: full-width strip, capped sections, hero fits the first screen",
+      "head": "3e99c6d", "mergedAs": "82ff5c398dbd4b59737bd066aa8410aa134b5e85",
+      "ci": "lint/typecheck/unit, registration, full-platform: success on 3e99c6d",
+      "deployment": { "id": "dpl_82XFRrsmGdhT8LGLP1ZScVRT5uKt", "createdAt": "2026-10-03T09:16:32Z", "apiVersionSeenAt": "2026-10-03T09:17:28Z" },
+      "liveChecks": { "frames": ["1536x722@1.25", "1366x657", "1280x600@1.5", "1440x900", "1920x1080", "1024x680", "390x844"], "result": "ar and en: strip 0→viewport width, no horizontal overflow, headline/lead/CTA/trust inside the first screen on every frame (before: strip inset 112px and CTA at 955px on the 722px laptop frame)", "report": "docs/upgrades/landing-redesign/live-2026-10-03b/laptop-report.json" }
+    },
+    {
+      "pr": 43, "title": "M1 shared brains", "head": "b0d1b53", "mergedAs": "e1e66298ca83c111c630a552fee51fa9785b39c5",
+      "ci": "lint/typecheck/unit, registration, full-platform, roles over HTTPS (full, registration): success",
+      "local": "eslint 0, tsc 0, Vitest 534, registration 22, full Playwright 335",
+      "deployment": { "id": "dpl_BLUHgfNGftV1RfCx7SpbRjKNTyFT" }, "liveChecks": "/ar, /en, /ar/join, /en/examples, /api/health 200 on e1e6629"
+    },
+    {
+      "pr": 45, "title": "M2 API slice A behind API_V1_ENABLED (unset in production)", "head": "8cddab0", "mergedAs": "ba40b06a5eee1a245ae84d8c231bb36011273da8",
+      "ci": "lint/typecheck/unit, registration, full-platform: success",
+      "local": "Vitest 578, registration 22, full Playwright 335 + tests/e2e/api-v1.spec.ts",
+      "deployment": { "id": "dpl_FNjB5PvfBCDuSR3Pcy11SWnxjNjA", "createdAt": "2026-10-03T09:18:45Z", "apiVersionSeenAt": "2026-10-03T09:21:00Z" },
+      "liveChecks": { "apiOff": "GET /api/v1/me (bearer) → 404 text/plain; POST /api/v1/auth/login → 404; POST /api/v1/portfolio/open → 404", "web": "journey ar 390/1440/320, en 390/1440 all green on ba40b06" }
+    }
+  ],
+  "method": "Headless Chromium from the build sandbox (viewport emulation, not physical devices); the sandbox proxy's intermittent 502s on static assets were retried and counted; TLS to sawwiq.org verified through the sandbox CA bundle."
+}
