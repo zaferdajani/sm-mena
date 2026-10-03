@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-03",
+  "releases": [
+    {
+      "pr": 47, "title": "Registration pages share the laptop measure (example page gutters)", "head": "81f9fce", "mergedAs": "1a8cdc5c0e83b386a7d79e7147c180e0d4b87d0d",
+      "ci": "lint/typecheck/unit, registration, full-platform: success", "deployment": { "id": "dpl_FCmWtBbZGPXdVcDHd1svpH83tXVK", "createdAt": "2026-10-03T09:46:15Z", "apiVersionSeenAt": "2026-10-03T09:47:17Z" },
+      "liveChecks": "ar/en /examples, /, /soon at 1536×722@1.25 gutter 80 px (was 192 on /examples), 1366×657 55 px, 1920×1080 272 px, 390×844 16 px; no overflow"
+    },
+    {
+      "pr": 48, "title": "Join: sign-up in three short steps with a browser-kept draft", "head": "fa2ed73", "mergedAs": "63ea94c2637a858e93e3aa843fd31f6e0e713de3",
+      "ci": "lint/typecheck/unit, registration, full-platform, roles over HTTPS full + registration (Chromium and WebKit): success",
+      "local": "registration 22; full Playwright 339 + stepped-join specs; built-page captures 1536×722@1.25, 1366×657, 1440×900, 390×844, 320×700 ar/en, no overflow",
+      "repairs": ["WebKit: controlled handle field wiped pre-hydration typing → uncontrolled; fields remount only for a saved draft", "draft written on every change and on pagehide instead of a debounce", "brochure-design and phone-country specs follow the steps"],
+      "deployment": { "id": "dpl_3TaPu1vVWefzTYeb2PjiQADUHiik", "createdAt": "2026-10-03T10:40:37Z", "apiVersionSeenAt": "2026-10-03T10:42:32Z" },
+      "liveChecks": { "frames": ["ar 1536×722@1.25", "ar 390×844", "ar 320×700", "en 1536×722@1.25", "en 390×844"], "result": "no overflow; step 1 fields and Continue on the first screen (320×700: Continue 70 px below the fold); rail beside the fields on laptop, compact above on phone; later fields hidden until reached; steps 2 and 3 reached with placeholder text; after leaving and returning the step and name are restored, the password field is empty and sessionStorage holds no password; nothing submitted, no account created", "journey": "docs/upgrades/join-steps/live-2026-10-03/journey.json" }
+    }
+  ],
+  "method": "Headless Chromium from the build sandbox (viewport emulation, not physical devices); the sandbox proxy's intermittent 502s on static assets were retried and counted; placeholder text only, nothing submitted."
+}

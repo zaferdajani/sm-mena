@@ -1,0 +1,566 @@
+[
+ {
+  "locale": "ar",
+  "width": 1536,
+  "height": 722,
+  "step": "0",
+  "overflow": false,
+  "rail": {
+   "top": 234,
+   "bottom": 300,
+   "left": 987,
+   "right": 1259,
+   "inView": true
+  },
+  "name": {
+   "top": 255,
+   "bottom": 301,
+   "left": 620,
+   "right": 947,
+   "inView": true
+  },
+  "next": {
+   "top": 444,
+   "bottom": 492,
+   "left": 277,
+   "right": 453,
+   "inView": true
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 151,
+   "bottom": 1013,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  },
+  "twoColumns": true
+ },
+ {
+  "locale": "ar",
+  "width": 1536,
+  "step": "1",
+  "overflow": false,
+  "rail": {
+   "top": 234,
+   "bottom": 300,
+   "left": 987,
+   "right": 1259,
+   "inView": true
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": {
+   "top": 969,
+   "bottom": 1017,
+   "left": 277,
+   "right": 453,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 151,
+   "bottom": 1100,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  }
+ },
+ {
+  "locale": "ar",
+  "width": 1536,
+  "step": "2",
+  "overflow": false,
+  "rail": {
+   "top": 234,
+   "bottom": 300,
+   "left": 987,
+   "right": 1259,
+   "inView": true
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": null,
+  "emailHidden": false,
+  "card": {
+   "top": 151,
+   "bottom": 1013,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  },
+  "passwordEmpty": true
+ },
+ {
+  "locale": "ar",
+  "width": 1536,
+  "step": "restored",
+  "restoredStep": "2",
+  "nameKept": true,
+  "draftHasPassword": false,
+  "submitted": false
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "height": 844,
+  "step": "0",
+  "overflow": false,
+  "rail": {
+   "top": 222,
+   "bottom": 292,
+   "left": 250,
+   "right": 349,
+   "inView": true
+  },
+  "name": {
+   "top": 454,
+   "bottom": 501,
+   "left": 41,
+   "right": 349,
+   "inView": true
+  },
+  "next": {
+   "top": 728,
+   "bottom": 776,
+   "left": 41,
+   "right": 349,
+   "inView": true
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 151,
+   "bottom": 1217,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  },
+  "twoColumns": false
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "step": "1",
+  "overflow": false,
+  "rail": {
+   "top": -418,
+   "bottom": -348,
+   "left": 250,
+   "right": 349,
+   "inView": false
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": {
+   "top": 963,
+   "bottom": 1011,
+   "left": 41,
+   "right": 273,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": -489,
+   "bottom": 1452,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  }
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "step": "2",
+  "overflow": false,
+  "rail": {
+   "top": -223,
+   "bottom": -153,
+   "left": 250,
+   "right": 349,
+   "inView": false
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": null,
+  "emailHidden": false,
+  "card": {
+   "top": -294,
+   "bottom": 888,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  },
+  "passwordEmpty": true
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "step": "restored",
+  "restoredStep": "2",
+  "nameKept": true,
+  "draftHasPassword": false,
+  "submitted": false
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "height": 700,
+  "step": "0",
+  "overflow": false,
+  "rail": {
+   "top": 222,
+   "bottom": 292,
+   "left": 203,
+   "right": 279,
+   "inView": true
+  },
+  "name": {
+   "top": 476,
+   "bottom": 523,
+   "left": 41,
+   "right": 279,
+   "inView": true
+  },
+  "next": {
+   "top": 771,
+   "bottom": 819,
+   "left": 41,
+   "right": 279,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 151,
+   "bottom": 1347,
+   "left": 16,
+   "right": 304,
+   "inView": false
+  },
+  "twoColumns": false
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "step": "1",
+  "overflow": false,
+  "rail": {
+   "top": -641,
+   "bottom": -571,
+   "left": 203,
+   "right": 279,
+   "inView": false
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": {
+   "top": 1049,
+   "bottom": 1097,
+   "left": 41,
+   "right": 279,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": -712,
+   "bottom": 1625,
+   "left": 16,
+   "right": 304,
+   "inView": false
+  }
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "step": "2",
+  "overflow": false,
+  "rail": {
+   "top": 49,
+   "bottom": 119,
+   "left": 203,
+   "right": 279,
+   "inView": true
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": null,
+  "emailHidden": false,
+  "card": {
+   "top": -22,
+   "bottom": 1378,
+   "left": 16,
+   "right": 304,
+   "inView": false
+  },
+  "passwordEmpty": true
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "step": "restored",
+  "restoredStep": "2",
+  "nameKept": true,
+  "draftHasPassword": false,
+  "submitted": false
+ },
+ {
+  "locale": "en",
+  "width": 1536,
+  "height": 722,
+  "step": "0",
+  "overflow": false,
+  "rail": {
+   "top": 195,
+   "bottom": 261,
+   "left": 277,
+   "right": 549,
+   "inView": true
+  },
+  "name": {
+   "top": 216,
+   "bottom": 263,
+   "left": 589,
+   "right": 916,
+   "inView": true
+  },
+  "next": {
+   "top": 427,
+   "bottom": 475,
+   "left": 1083,
+   "right": 1259,
+   "inView": true
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 112,
+   "bottom": 1054,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  },
+  "twoColumns": true
+ },
+ {
+  "locale": "en",
+  "width": 1536,
+  "step": "1",
+  "overflow": false,
+  "rail": {
+   "top": 195,
+   "bottom": 261,
+   "left": 277,
+   "right": 549,
+   "inView": true
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": {
+   "top": 1011,
+   "bottom": 1059,
+   "left": 1083,
+   "right": 1259,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 112,
+   "bottom": 1141,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  }
+ },
+ {
+  "locale": "en",
+  "width": 1536,
+  "step": "2",
+  "overflow": false,
+  "rail": {
+   "top": 195,
+   "bottom": 261,
+   "left": 277,
+   "right": 549,
+   "inView": true
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": null,
+  "emailHidden": false,
+  "card": {
+   "top": 112,
+   "bottom": 1054,
+   "left": 240,
+   "right": 1296,
+   "inView": false
+  },
+  "passwordEmpty": true
+ },
+ {
+  "locale": "en",
+  "width": 1536,
+  "step": "restored",
+  "restoredStep": "2",
+  "nameKept": true,
+  "draftHasPassword": false,
+  "submitted": false
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "height": 844,
+  "step": "0",
+  "overflow": false,
+  "rail": {
+   "top": 183,
+   "bottom": 254,
+   "left": 41,
+   "right": 140,
+   "inView": true
+  },
+  "name": {
+   "top": 418,
+   "bottom": 465,
+   "left": 41,
+   "right": 349,
+   "inView": true
+  },
+  "next": {
+   "top": 713,
+   "bottom": 761,
+   "left": 41,
+   "right": 349,
+   "inView": true
+  },
+  "emailHidden": true,
+  "card": {
+   "top": 112,
+   "bottom": 1289,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  },
+  "twoColumns": false
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "step": "1",
+  "overflow": false,
+  "rail": {
+   "top": -464,
+   "bottom": -393,
+   "left": 41,
+   "right": 140,
+   "inView": false
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": {
+   "top": 968,
+   "bottom": 1016,
+   "left": 122,
+   "right": 349,
+   "inView": false
+  },
+  "emailHidden": true,
+  "card": {
+   "top": -535,
+   "bottom": 1544,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  }
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "step": "2",
+  "overflow": false,
+  "rail": {
+   "top": -236,
+   "bottom": -165,
+   "left": 41,
+   "right": 140,
+   "inView": false
+  },
+  "name": {
+   "top": 0,
+   "bottom": 0,
+   "left": 0,
+   "right": 0,
+   "inView": true
+  },
+  "next": null,
+  "emailHidden": false,
+  "card": {
+   "top": -307,
+   "bottom": 990,
+   "left": 16,
+   "right": 374,
+   "inView": false
+  },
+  "passwordEmpty": true
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "step": "restored",
+  "restoredStep": "2",
+  "nameKept": true,
+  "draftHasPassword": false,
+  "submitted": false
+ },
+ {
+  "step": "version",
+  "revision": "registration-setup-2026-09-29",
+  "commit": "63ea94c2637a858e93e3aa843fd31f6e0e713de3",
+  "environment": "production",
+  "launchPhase": "registration",
+  "at": "2026-10-03T10:42:52.777Z",
+  "proxyRetries": 77
+ }
+]
