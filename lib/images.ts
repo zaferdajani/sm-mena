@@ -4,8 +4,8 @@ import { searchSmallestPassing } from "./media/size-search";
 import { lumaPlane, SSIM_FLOOR, ssimLuma, type Pixels } from "./media/ssim";
 import { stripMetadata } from "./media/strip-metadata";
 
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-export const MAX_IMAGES_PER_POST = 10;
+export { MAX_IMAGES_PER_POST, MAX_UPLOAD_BYTES } from "@/lib/core/catalog/media-limits";
+import { MAX_UPLOAD_BYTES } from "@/lib/core/catalog/media-limits";
 const ACCEPTED_FORMATS = new Set(["jpeg", "png", "webp", "heif", "avif", "gif"]);
 
 export class ImageError extends Error {

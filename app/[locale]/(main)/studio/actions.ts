@@ -6,6 +6,7 @@ import { canUse } from "@/lib/feature-gate";
 import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
+import { packageSchema, studioProfileSchema } from "@/lib/validation/studio";
 import { redirect } from "@/i18n/navigation";
 import { pingIndexNow } from "@/lib/indexnow";
 import { requireAgency } from "@/lib/auth/guards";
@@ -22,7 +23,7 @@ import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, proces
 import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
 import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
-import { CITIES, INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
+import { INDUSTRIES, PLATFORMS } from "@/lib/labels";
 import { canCreatePost, canSendProposal, entitlementsFor } from "@/lib/monetization/entitlements";
 import { proposalsThisMonth, submitProposal } from "@/lib/data/requests";
 import { SITE_URL } from "@/lib/site";
@@ -121,26 +122,9 @@ export async function deletePostAction(postId: string) {
   return redirect({ href: "/studio/posts", locale });
 }
 
-const profileSchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  handle: z.string().trim().toLowerCase(),
-  bio: z.string().trim().max(500).default(""),
-  about: z.string().trim().max(1500).default(""),
-  strengths: z.string().max(1000).default(""),
-  city: z.enum(CITIES),
-  startingPriceJod: z.union([z.literal(""), z.coerce.number().int().min(0).max(100000)]),
-  whatsapp: z.string().trim().max(20),
-  phone: z.string().trim().max(20),
-  email: z.union([z.literal(""), z.string().trim().email()]),
-  website: z.string().trim().max(200),
-  instagram: z.string().trim().max(200),
-  foundedYear: z.union([z.literal(""), z.coerce.number().int().min(1950).max(new Date().getFullYear())]),
-  teamSize: z.union([z.literal(""), z.enum(TEAM_SIZES)]),
-});
-
 export async function updateProfileAction(_: StudioState, formData: FormData): Promise<StudioState> {
   const { user, agency } = await requireAgency();
-  const parsed = profileSchema.safeParse(Object.fromEntries(formData));
+  const parsed = studioProfileSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     const field = String(parsed.error.issues[0]?.path[0] ?? "");
     return { error: field === "name" ? "name" : field === "email" ? "email" : "generic" };
@@ -245,14 +229,6 @@ export async function replyReviewAction(formData: FormData) {
   revalidatePath("/[locale]", "layout");
 }
 
-const packageSchema = z.object({
-  title: z.string().trim().min(2).max(80),
-  description: z.string().trim().max(300).default(""),
-  service: z.string().refine(isServiceKey),
-  priceJod: z.coerce.number().int().min(1).max(100000),
-  billing: z.enum(["monthly", "one_off"]),
-  deliverables: z.string().max(1000).default(""),
-});
 
 export async function savePackageAction(_: StudioState, formData: FormData): Promise<StudioState> {
   const { agency } = await requireAgency();

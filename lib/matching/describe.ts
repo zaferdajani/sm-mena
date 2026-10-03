@@ -1,4 +1,4 @@
-import { createTranslator } from "next-intl";
+import { createTranslator } from "use-intl";
 import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 import type { Difference } from "./closeness";

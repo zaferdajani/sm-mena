@@ -4,7 +4,7 @@ import { JOIN_ROLES } from "@/lib/services/catalog";
 import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
 import { getLocale } from "next-intl/server";
-import { z } from "zod";
+import { joinSchema, loginSchema } from "@/lib/validation/auth";
 import { redirect } from "@/i18n/navigation";
 import { verifyPassword } from "@/lib/auth/password";
 import { verifySecondFactor } from "@/lib/auth/mfa";
@@ -20,16 +20,11 @@ import { getVisitorId } from "@/lib/visitor";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
-import { CITIES } from "@/lib/labels";
+
 import { validateHandle } from "@/lib/text";
 import { internationalPhone } from "@/lib/dial-codes";
 
 export type FormState = { error?: string; fields?: Record<string, string> } | undefined;
-
-const loginSchema = z.object({
-  email: z.string().trim().email(),
-  password: z.string().min(1),
-});
 
 export async function login(_: FormState, formData: FormData): Promise<FormState> {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
@@ -85,16 +80,6 @@ export async function cancelLogin() {
   await destroySession();
   return redirect({ href: "/login", locale: await getLocale() });
 }
-
-const joinSchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  handle: z.string().trim().toLowerCase(),
-  city: z.enum(CITIES),
-  whatsapp: z.string().trim().min(7).max(20),
-  email: z.string().trim().email(),
-  password: z.string().min(8).max(200),
-  consent: z.literal("on"),
-});
 
 export async function join(_: FormState, formData: FormData): Promise<FormState> {
   const raw = Object.fromEntries(formData) as Record<string, string>;

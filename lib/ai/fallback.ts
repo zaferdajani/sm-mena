@@ -1,5 +1,5 @@
 import "server-only";
-import { createTranslator } from "next-intl";
+import { createTranslator } from "use-intl";
 import { citiesOf, countryOf, DEFAULT_COUNTRY, isCountryCode, type CountryCode } from "@/lib/countries";
 import { serviceLabel } from "@/lib/labels";
 import { findMatches, marketPrices } from "@/lib/matching";

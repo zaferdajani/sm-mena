@@ -31,6 +31,30 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // Shared brains (docs/architecture/mobile-and-api-roadmap.md §3): business rules, catalogs and input
+    // contracts a native client will import. They must stay free of Next.js, React, the database and
+    // request context; tests/unit/boundaries.test.ts checks the same list file by file.
+    files: ["lib/core/**/*.ts", "lib/validation/**/*.ts", "lib/api/errors.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            { name: "react", message: "lib/core is framework-free." },
+            { name: "server-only", message: "lib/core must also load in a native client and in plain Node tests." },
+            { name: "next-intl", message: "Use use-intl (createTranslator) or take a translator argument." },
+            { name: "next-intl/server", message: "Take locale and translators as arguments; keep the Next wrapper outside lib/core." },
+            { name: "@/lib/db", message: "lib/core never touches the database; pass data in." },
+            { name: "@/i18n/navigation", message: "lib/core never routes." },
+          ],
+          patterns: [
+            { group: ["next", "next/*", "react-dom", "react-dom/*", "@/lib/db/*", "next-intl/*"], message: "lib/core is framework-free (docs/architecture/mobile-and-api-roadmap.md §3)." },
+          ],
+        },
+      ],
+    },
+  },
   globalIgnores([
     ".next/**",
     "out/**",
