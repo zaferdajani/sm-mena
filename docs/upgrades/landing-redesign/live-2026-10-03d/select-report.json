@@ -1,0 +1,46 @@
+[
+ {
+  "locale": "ar",
+  "width": 1440,
+  "appearance": "none",
+  "bgPos": "13.6px 50%",
+  "hasChevron": true,
+  "radius": "16px",
+  "h": 44,
+  "overlapsCity": false,
+  "overflow": false
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "appearance": "none",
+  "bgPos": "13.6px 50%",
+  "hasChevron": true,
+  "radius": "16px",
+  "h": 44,
+  "overlapsCity": false,
+  "overflow": false
+ },
+ {
+  "locale": "en",
+  "width": 1440,
+  "appearance": "none",
+  "bgPos": "right 13.6px 50%",
+  "hasChevron": true,
+  "radius": "16px",
+  "h": 44,
+  "overlapsCity": false,
+  "overflow": false
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "appearance": "none",
+  "bgPos": "right 13.6px 50%",
+  "hasChevron": true,
+  "radius": "16px",
+  "h": 44,
+  "overlapsCity": false,
+  "overflow": false
+ }
+]

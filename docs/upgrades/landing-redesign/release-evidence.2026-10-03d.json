@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-03",
+  "productionAfter": { "commit": "50e5a8255d386d3c638e4573f695b3d4134bfc7c", "deployment": "dpl_78qyjV2Wsx65LGoUCz7bajgE3ym9", "apiVersionSeenAt": "2026-10-03T15:30:27Z" },
+  "releases": [
+    { "pr": 52, "title": "Quiet landing header: no locate button, no theme toggle on the first fold", "head": "7d47062", "mergedAs": "8b3c22d9303a887c4f5aca31c05d25b9323c6c78", "deployment": "dpl_4SYUyjGiyNPH36uywb3eW8mjuPBF",
+      "ci": "run 37129449452 success (the previous head's countries.spec failure was root-caused: a country chosen before hydration snapped back; fixed in the component and the spec waits for data-ready)",
+      "local": "registration 26; laptop and 320–1440 matrices clean; CTA in view on all frames",
+      "liveChecks": "sawwiq.org ar 1440/390/320, en 1440/390 on cd381d1: header data-tools=quiet, 0 theme toggles, 0 locate buttons, no overflow, CTA in the first fold; proxy retries 0" },
+    { "pr": 53, "title": "Hero slides: the platform statement in bold, then providers and business owners", "head": "60c82ed", "mergedAs": "cd381d11c585aa6cd039f39a3db6f96c15c7f092", "deployment": "dpl_9ZEWSMhajsDbUz46AzzELts5gjWe",
+      "ci": "run 37129591544 success", "local": "build ok; registration 30 incl. hero-slides.spec; laptop and 320–1440 matrices clean",
+      "statement": { "ar": "المنصة التي تجمع أصحاب الأعمال بمزودي خدمات التسويق والسوشيال ميديا، بالعربية والإنجليزية.", "en": "The platform that connects business owners with social media and marketing providers, in Arabic and English." },
+      "liveChecks": "3 slides, first caption = the statement, no 'first platform' wording, no «أهل التسويق», no «هسا», dot 2 → index 1, no overflow, CTA in the first fold (ar 1440/390/320, en 1440/390); captures in live-2026-10-03d/",
+      "followUp": "phone: the team slide's caption sat over a bright window → deeper scrim and caption shadow in #54" },
+    { "pr": 54, "title": "Modern select (no browser arrow, one inline-end chevron, brand hover/focus, dark-aware) + deeper slide caption scrim", "head": "d661bd3", "mergedAs": "50e5a8255d386d3c638e4573f695b3d4134bfc7c", "deployment": "dpl_78qyjV2Wsx65LGoUCz7bajgE3ym9",
+      "ci": "run 37131831883 success (lint/typecheck/unit, registration, full-platform)",
+      "local": "5a596e2: join captures ar/en × light/dark × 1440/390 (appearance none, chevron at the inline end — left in Arabic, right in English — 44 px tall, 16 px radius, no overflow); registration 26 + 14; countries 11. a471e35: registration 30 incl. hero-slides (scrim alone darkened the caption band 104 → 74 but still read poorly); d661bd3: hero-slides + registration specs 18, select and slide captures clean.",
+      "liveChecks": "/ar/join and /en/join at 1440/390: appearance none, chevron at the inline end (left in Arabic, right in English), 44 px, 16 px radius, country and city do not overlap, no overflow (29 proxy relays retried, counted); landing ar/en 1440/390: the statement reads on its frosted panel on the team photo, 3 slides, dots work, no overflow, CTA in view; captures in live-2026-10-03d/" }
+  ],
+  "ownerOnly": {
+    "branchDeletions": "the GitHub proxy returns 403 for branch deletion; today's merged branches design/landing-quiet-header, design/landing-hero-slides and design/modern-select join the list in docs/OPEN-ITEMS.md item 3",
+    "closeOnGitHub": "#41 (superseded by #49–#53)"
+  },
+  "method": "Headless Chromium from the build sandbox (viewport emulation); proxy 502 relays retried and counted; nothing submitted; no account created."
+}
