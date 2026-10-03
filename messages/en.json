@@ -4703,12 +4703,6 @@
     },
     "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
     "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
-    "launch": {
-      "label": "Launch announcement",
-      "kicker": "Sawwiq is coming",
-      "body": "Early registration for the first cohort is open now",
-      "link": "Join from the beginning"
-    },
     "cohort": {
       "kicker": "Early access",
       "name": "The first cohort",

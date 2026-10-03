@@ -10,13 +10,9 @@ for (const locale of ["ar", "en"]) {
   test(`${locale}: the launch announcement, cohort mark, promise line and cohort CTA are above the fold and truthful`, async ({ page }, info) => {
     await page.goto(`/${locale}`);
     await expect(page.getByTestId("registration-page")).toBeVisible();
-    // 1. announcement strip, first thing on the page, with a working link
-    const strip = page.getByTestId("launch-strip");
-    await expect(strip).toBeVisible();
-    await expect(strip).toContainText(locale === "ar" ? "سوّق قادم قريباً" : "Sawwiq is coming");
-    await expect(strip).toContainText(locale === "ar" ? "التسجيل المبكر للدفعة الأولى مفتوح الآن" : "Early registration for the first cohort is open now");
-    await expect(page.getByTestId("launch-strip-link")).toHaveAttribute("href", `/${locale}/join`);
-    expect(await strip.evaluate((el) => el.compareDocumentPosition(document.querySelector("header")!) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
+    // 1. the page opens with the header: no announcement strip above it any more (owner direction, 3 Oct)
+    await expect(page.getByTestId("launch-strip")).toHaveCount(0);
+    expect(await page.locator("main > :not(script)").first().evaluate((el) => el.tagName)).toBe("HEADER");
     // 2. cohort mark in the hero, before the headline
     const badge = page.getByTestId("launch-badge");
     await expect(badge).toContainText(locale === "ar" ? "الدفعة الأولى" : "The first cohort");
@@ -31,7 +27,7 @@ for (const locale of ["ar", "en"]) {
     await expect(trust).toContainText(locale === "ar" ? "بدون بطاقة دفع" : "No payment card");
     await expect(trust).toContainText(locale === "ar" ? "خاصة" : "private");
     // above the fold on this project's viewport (390x844 phone, 1440x1000 desktop)
-    for (const id of ["launch-strip", "launch-badge", "registration-cta"]) expect(await inViewport(page, id), `${id} above the fold`).toBe(true);
+    for (const id of ["launch-badge", "registration-cta"]) expect(await inViewport(page, id), `${id} above the fold`).toBe(true);
     // 7. why join early, after the product preview and before the Pioneer block
     const early = page.getByTestId("why-early");
     await expect(early.locator("li")).toHaveCount(4);
@@ -48,22 +44,22 @@ for (const locale of ["ar", "en"]) {
   });
 }
 
-test("the strip link and the CTA are reachable by keyboard with a visible focus ring; entrance motion obeys reduced motion", async ({ page, browser }) => {
+test("the CTA is reachable by keyboard with a visible focus ring; entrance motion obeys reduced motion", async ({ page, browser }) => {
   await page.goto("/en");
   const focused = async () => page.evaluate(() => { const e = document.activeElement!; const cs = getComputedStyle(e); return { id: e.getAttribute("data-testid"), ring: cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0 }; });
   const seen: string[] = [];
   for (let i = 0; i < 16; i++) {
     await page.keyboard.press("Tab");
     const f = await focused();
-    if (f.id === "launch-strip-link" || f.id === "registration-cta") { expect(f.ring, `${f.id} focus ring`).toBe(true); seen.push(f.id); }
+    if (f.id === "registration-cta") { expect(f.ring, `${f.id} focus ring`).toBe(true); seen.push(f.id); }
     if (seen.includes("registration-cta")) break;
   }
-  expect(seen).toEqual(["launch-strip-link", "registration-cta"]);
+  expect(seen).toEqual(["registration-cta"]);
   const quiet = await browser.newContext({ baseURL: "http://localhost:3101", reducedMotion: "reduce" });
   try {
     const p = await quiet.newPage();
     await p.goto("/ar");
-    const names = await p.evaluate(() => ["[data-testid=launch-strip]", "[data-testid=launch-badge]", "h1"].map((s) => getComputedStyle(document.querySelector(s)!).animationName));
+    const names = await p.evaluate(() => ["[data-testid=launch-badge]", "h1"].map((s) => getComputedStyle(document.querySelector(s)!).animationName));
     expect(names.every((n) => n === "none")).toBe(true);
   } finally { await quiet.close(); }
 });
