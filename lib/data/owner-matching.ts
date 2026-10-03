@@ -134,7 +134,7 @@ export async function respondToOwnerMatch(ownerUserId: string, matchId: string, 
   const [agency] = await db.select({ id: agencies.id, email: agencies.email, name: agencies.name, contentLang: agencies.contentLang }).from(agencies).where(eq(agencies.id, row.agencyId)).limit(1);
   if (need && user && agency) {
     const groups = need.services.map((g) => groupLabel(g, agency.contentLang === "en" ? "en" : "ar")).join("، ");
-    await addNotifications([{ agencyId: agency.id, kind: "owner_intro", href: "/studio/notifications", params: { city: need.city, services: groups } }]);
+    await addNotifications([{ agencyId: agency.id, kind: "owner_intro", href: "/studio/notifications", params: { city: need.city, services: need.services.join(",") } }]);
     const ar = agency.contentLang !== "en";
     const lines = ar
       ? [`مرحباً ${agency.name}،`, ``, `صاحب مشروع سجّل على سوّق طلب التعريف بكم.`, ``, `المدينة: ${need.city} (${countryName(need.country, "ar")})`, `ما يحتاج إليه: ${groups}`, `التوقيت: ${need.timing}`, need.note ? `ملاحظته: ${need.note}` : ``, ``, `للتواصل: ${user.email}${need.whatsapp ? ` · واتساب ${need.whatsapp}` : ""}`, ``, `وافق صاحب المشروع على هذا التعريف بنفسه. ${siteUrl}/${locale}/studio/notifications`, ``, `سوّق`]
