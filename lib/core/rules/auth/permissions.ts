@@ -43,6 +43,8 @@ export const PERMISSIONS = [
   "agents.manage",
   // Launch prospects: the list of agencies to invite, with contact status (docs/55).
   "prospects.manage",
+  // Registered business owners and their provider matches (docs/59).
+  "owners.manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

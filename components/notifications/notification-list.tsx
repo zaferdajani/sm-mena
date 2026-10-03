@@ -2,6 +2,7 @@ import { AlarmClock, BadgeCheck, BellRing, FileSignature, FileText, Gavel, Hands
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { NOTIFICATION_KINDS, type NotificationKind } from "@/lib/chat";
+import { SERVICE_GROUPS } from "@/lib/core/catalog/services/catalog";
 import type { Notification } from "@/lib/db/schema";
 import { formatDate, timeAgo } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -64,6 +65,7 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   contract_received: FileSignature,
   contract_completed: BadgeCheck,
   review_invite: Star,
+  owner_intro: Handshake,
 };
 
 const isKind = (kind: string): kind is NotificationKind => (NOTIFICATION_KINDS as readonly string[]).includes(kind);
@@ -82,6 +84,7 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
         const params = n.params ?? {};
         const values = {
           name: String(params.name ?? ""),
+          city: String(params.city ?? ""),
           title: String(params.title ?? ""),
           milestone: String(params.milestone ?? ""),
           date: params.date ? formatDate(new Date(String(params.date)), locale) : "",
@@ -90,7 +93,8 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
           services: String(params.services ?? "")
             .split(",")
             .filter(Boolean)
-            .map((s) => serviceLabel(s, locale))
+            // an owner introduction (docs/59) names service groups; every other kind names service tags
+            .map((s) => (kind === "owner_intro" ? (SERVICE_GROUPS.find((g) => g.key === s) ? (locale === "ar" ? SERVICE_GROUPS.find((g) => g.key === s)!.name_ar : SERVICE_GROUPS.find((g) => g.key === s)!.name_en) : s) : serviceLabel(s, locale)))
             .join(" · "),
         };
         return (

@@ -31,6 +31,7 @@ const PURE = [
   "lib/core/rules/legal/clauses.ts",
   "lib/core/rules/matching/score.ts",
   "lib/core/rules/matching/closeness.ts",
+  "lib/core/rules/matching/owners.ts",
   "lib/core/rules/matching/describe-core.ts",
   "lib/core/rules/monetization/plans.ts",
   "lib/core/rules/monetization/entitlements.ts",

@@ -59,12 +59,17 @@ export async function notifyNewMessage(agency: Agency, conversation: Pick<Conver
  * without RESEND_API_KEY. The address is never logged.
  */
 export async function sendContractEmail(to: string | null | undefined, subject: string, lines: string[], link: string) {
+  return sendPlainEmail(to, subject, [...lines, "", link], "contract");
+}
+
+/** A plain-text email through Resend; a mock log line without the key. The address is never logged. Returns whether a send was attempted. */
+export async function sendPlainEmail(to: string | null | undefined, subject: string, lines: string[], label = "email") {
   const key = process.env.RESEND_API_KEY;
-  if (!to) return;
-  const text = [...lines, "", link].join("\n");
+  if (!to) return false;
+  const text = lines.join("\n");
   if (!key) {
-    if (process.env.NODE_ENV !== "test") console.info(`[notify:mock] contract email: ${subject.slice(0, 80)}`);
-    return;
+    if (process.env.NODE_ENV !== "test") console.info(`[notify:mock] ${label}: ${subject.slice(0, 80)}`);
+    return true;
   }
   try {
     await fetch("https://api.resend.com/emails", {
@@ -73,6 +78,7 @@ export async function sendContractEmail(to: string | null | undefined, subject: 
       body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
     });
   } catch {
-    // Email is a courtesy copy; the in-app notification and the contract page are the record.
+    // Email is a courtesy copy; the in-app notification and the pages are the record.
   }
+  return true;
 }
