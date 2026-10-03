@@ -12,6 +12,7 @@
 :root {
   /* Colours sampled from the owner-approved corrected brochure. */
   --radius: 1rem;
+  --sw-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%234c6257' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
   --background: #f8f6ef;
   --foreground: #102e25;
   --card: #fffdf7;
@@ -57,6 +58,7 @@
 /* Dark is still a visitor choice; the founder page no longer forces night mode. */
 :root[data-theme="dark"] {
   color-scheme: dark;
+  --sw-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23b9ccbd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
   --background: #10241d;
   --foreground: #f8f6ef;
   --card: #18352a;
