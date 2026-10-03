@@ -1,0 +1,23 @@
+{
+  "milestone": "M3 — Expo prototype for slice A (docs/60)",
+  "pr": 61,
+  "branch": "feat/m3-expo-prototype",
+  "validated_head": "2ad3a5a206f1453da9d58561f769f1ea45ac9703",
+  "ci": { "run": 37159156896, "jobs": ["Lint, typecheck, unit tests", "Full-platform regression (Playwright)", "Registration phase, privacy and mobile journey", "Mobile prototype (Expo) typecheck"], "conclusion": "success", "note": "the first run (37158448189) failed on two toolchain gaps — mobile npm ci peer resolution and the app's tsconfig extending expo/tsconfig.base without an Expo install — fixed in 2ad3a5a" },
+  "local_proofs": {
+    "root": "npm run typecheck clean; vitest 93 files / 601 tests; playwright tests/e2e/mobile-client.spec.ts + tests/e2e/api-v1.spec.ts: 11 passed",
+    "mobile": "tsc --noEmit clean with and without the generated expo-env.d.ts; npm ci clean after pinning react-dom; expo export --platform ios --platform android bundled with Metro"
+  },
+  "what_the_e2e_proves": "the app's own API layer signs in (wrong password refused), saves the profile, chooses the upload source, uploads a photo (image/webp back; 401 without the token), resumes from /me, sets the client and project, applies the same publish rule as the server, is refused on a stale version, publishes, reads the project and its image as the owner while anonymous and another provider's app get 404, the web studio shows the work, and logout-all ends a second device's session",
+  "merge_sha": "765f83cbbc8d4777bb54dda59d1a7fcd363cd267",
+  "deployment": { "id": "dpl_C7PPQTJx33Zn5QUji1AEwwYughj9", "state": "READY" },
+  "production": {
+    "api_version_commit": "765f83cbbc8d4777bb54dda59d1a7fcd363cd267",
+    "api_v1_switch": "/api/v1/me → 404 text/plain with and without the app header (API_V1_ENABLED unset in production, as designed)",
+    "manifest_description": "شركات التسويق ووسائل التواصل الاجتماعي في الأردن · Social media and marketing agencies in Jordan",
+    "landing": "/ar, /en, /ar/join, /ar/owner → 200; structured data carries the MSA phrase",
+    "accounts_created": 0
+  },
+  "owed_by_owner": "the device run that closes M3: a staging deployment with API_V1_ENABLED=true (never production), then one provider completing the slice in Expo Go on an iPhone and an Android phone; record it here (docs/60 §6)",
+  "verified_at": "2026-10-03T22:58:00Z"
+}
