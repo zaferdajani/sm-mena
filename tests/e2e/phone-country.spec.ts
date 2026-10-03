@@ -1,19 +1,21 @@
 import { expect, test } from "@playwright/test";
-import { uniqueHandle } from "./helpers";
+import { uniqueHandle, nextJoinStep } from "./helpers";
 
 // The WhatsApp field starts with the visitor's country (from the IP address),
 // and any country can be picked (lib/dial-codes.ts).
 test("sign-up starts the WhatsApp code from the visitor's country, and any country can be chosen", async ({ browser }) => {
   const page = await (await browser.newContext({ extraHTTPHeaders: { "x-vercel-ip-country": "SA" } })).newPage();
   await page.goto("/en/join");
+  const handle = uniqueHandle("phone");
+  await page.fill("#name", `Agency ${handle}`);
+  await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
+  // The WhatsApp field is on the contact step.
   const field = page.getByTestId("phone-whatsapp");
   await expect(field.getByTestId("phone-dial")).toHaveText("+966");
   await field.getByTestId("phone-country").selectOption("EG");
   await expect(field.getByTestId("phone-dial")).toHaveText("+20");
-
-  const handle = uniqueHandle("phone");
-  await page.fill("#name", `Agency ${handle}`);
-  await page.fill("#handle", handle);
   await page.fill("#whatsapp", "0101 234 5678");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");

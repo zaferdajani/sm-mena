@@ -94,7 +94,25 @@
     "refCode": "Agent code (optional)",
     "refCodePlaceholder": "If a Sawwiq agent introduced you",
     "newHere": "New to Sawwiq?",
-    "newHereLink": "Create a free account"
+    "newHereLink": "Create a free account",
+    "steps": {
+      "page": {
+        "title": "Your page",
+        "hint": "Name, link and where you work"
+      },
+      "team": {
+        "title": "Team and services",
+        "hint": "Agency or freelancer, and what you offer"
+      },
+      "contact": {
+        "title": "Contact and sign-in",
+        "hint": "WhatsApp, email and a password"
+      }
+    },
+    "stepOf": "Step {n} of {total}",
+    "next": "Continue",
+    "back": "Back",
+    "draftNote": "What you type stays on this device until you finish, so you can leave and come back."
   },
   "Cities": {
     "amman": "Amman",

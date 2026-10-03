@@ -40,16 +40,27 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   return (
     <>
       <h1 className="text-xl font-bold">{registration ? r("joinTitle") : t("joinTitle")}</h1>
-      {registration
-        ? <aside className="registration-notice" data-testid="registration-join-notice"><strong>{r("phaseLabel")}</strong><p>{r("joinNotice")}</p><Link href="/examples">{r("exampleCta")}</Link></aside>
-        : <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>}
-      {behance && (
-        <p className="mb-5 flex items-start gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="join-behance">
-          <Palette className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
-          <span>{tb("join")}</span>
-        </p>
-      )}
-      <JoinForm countries={countries} defaultCountry={country} phoneCountry={phoneFrom} refCode={refCode} invite={invite} popular={[...FOOTER_SERVICES]} roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))} />
+      {!registration && <p className="mt-1 mb-5 text-sm text-muted-foreground">{t("joinSubtitle")}</p>}
+      <JoinForm
+        countries={countries}
+        defaultCountry={country}
+        phoneCountry={phoneFrom}
+        refCode={refCode}
+        invite={invite}
+        popular={[...FOOTER_SERVICES]}
+        roles={JOIN_ROLES.map((key) => ({ key, label: roleLabel(key, locale) }))}
+        aside={
+          <>
+            {registration && <aside className="registration-notice" data-testid="registration-join-notice"><strong>{r("phaseLabel")}</strong><p>{r("joinNotice")}</p><Link href="/examples">{r("exampleCta")}</Link></aside>}
+            {behance && (
+              <p className="flex items-start gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="join-behance">
+                <Palette className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
+                <span>{tb("join")}</span>
+              </p>
+            )}
+          </>
+        }
+      />
       <p className="mt-5 text-center text-sm text-muted-foreground">
         {t("haveAccount")}{" "}
         <Link href="/login" className="font-medium text-brand">{t("loginLink")}</Link>

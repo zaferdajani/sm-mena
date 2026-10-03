@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, login, uniqueHandle } from "./helpers";
+import { ADMIN, login, uniqueHandle, nextJoinStep } from "./helpers";
 
 // The First Wave seal (docs/57): the admin creates a letter, its page shows the reserved
 // number, the invitee claims it at sign-up, and the seal appears once the page has a project.
@@ -55,6 +55,8 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   const handle = uniqueHandle("wave");
   await phone.fill("#name", name);
   await phone.fill("#handle", handle);
+  await nextJoinStep(phone);
+  await nextJoinStep(phone);
   await phone.fill("#whatsapp", "0791112233");
   await phone.fill("#email", `${handle}@test.jo`);
   await phone.fill("#password", "password-123");

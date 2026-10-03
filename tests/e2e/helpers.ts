@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const DEMO_AGENCY = { email: "nakhla-studio@sawwiq.test", password: "demo-pass-123", handle: "nakhla.studio" };
 export const ADMIN = { email: "admin@sawwiq.test", password: "admin-pass-123" };
@@ -21,6 +21,27 @@ export async function pngBuffer(color: string, width = 800, height = 800) {
   return sharp({ create: { width, height, channels: 3, background: color } }).png().toBuffer();
 }
 
+/** Sign-up is three steps on one form (join-form.tsx): this moves to the next step after its fields are filled. */
+export async function nextJoinStep(page: Page) {
+  const form = page.getByTestId("join-form");
+  await expect(form).toHaveAttribute("data-ready", "true");
+  const before = Number((await form.getAttribute("data-step")) ?? 0);
+  // A click that lands before React has hydrated does nothing: retry until the step advances.
+  await expect(async () => {
+    await page.getByTestId("join-next").click();
+    await expect(form).toHaveAttribute("data-step", String(before + 1), { timeout: 1500 });
+  }).toPass({ timeout: 15_000 });
+}
+
+/** Fills the first sign-up step with a fresh name and handle and moves to the team step. */
+export async function openJoinTeamStep(page: Page, prefix = "e2e") {
+  const handle = uniqueHandle(prefix);
+  await page.fill("#name", `Agency ${handle}`);
+  await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  return handle;
+}
+
 /** Creates a fresh agency account and leaves the page signed in on its studio. */
 export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = {}) {
   const handle = uniqueHandle(prefix);
@@ -29,6 +50,8 @@ export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = 
   await page.goto("/en/join");
   await page.fill("#name", `Agency ${handle}`);
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", email);
   await page.fill("#password", password);

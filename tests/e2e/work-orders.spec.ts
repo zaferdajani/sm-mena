@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { drawSignature, joinAgency, login, pngBuffer } from "./helpers";
+import { drawSignature, joinAgency, login, pngBuffer, nextJoinStep } from "./helpers";
 
 // Collaboration V2 release 2 (docs/49-work-orders.md): a buying agency and a
 // freelancer go from an accepted quote to a versioned work order, the
@@ -13,8 +13,10 @@ async function joinFreelancer(page: Page, prefix: string) {
   await page.goto("/en/join");
   await page.fill("#name", `Free ${handle}`);
   await page.fill("#handle", handle);
+  await nextJoinStep(page);
   await page.getByTestId("kind-freelancer").check();
   await page.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
+  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
