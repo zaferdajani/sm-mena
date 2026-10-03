@@ -36,12 +36,12 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
 .sw-app [data-testid="site-footer"] { border-radius: var(--radius-xl) var(--radius-xl) 0 0; background: var(--brand-soft); }
 .sw-app [data-testid="explore-agency-card"] { background: var(--card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); }
 .sw-workspace { padding-block-start: 1rem; }
-.sw-workspace > div:first-child { margin-inline: 1rem; padding: 1.25rem; border: 1px solid var(--border); border-inline-start: 4px solid var(--gold); border-radius: var(--radius-xl); background: var(--card); }
+.sw-workspace > div:first-child { margin-inline: 0; padding: 1.25rem; border: 1px solid var(--border); border-inline-start: 4px solid var(--gold); border-radius: var(--radius-xl); background: var(--card); }
 .sw-workspace-body { padding-block: 1.5rem 2.5rem; }
 .sw-workspace-body :where(section, fieldset).border { padding: 1.25rem; border-radius: var(--radius-xl); background: var(--card); }
 .sw-workspace [data-testid="profile-form"] { padding: clamp(1rem, 3vw, 1.75rem); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl); }
 .sw-workspace [data-testid="profile-form"] > fieldset + fieldset { padding-block-start: 1.5rem; border-block-start: 1px solid var(--border); }
-.sw-workspace-nav { margin-inline: 1rem; padding: .5rem; gap: .375rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); scrollbar-width: thin; }
+.sw-workspace-nav { margin-inline: 0; padding: .5rem; gap: .375rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); scrollbar-width: thin; }
 .sw-workspace-nav > a { margin: 0; min-block-size: 2.75rem; border: 0; border-radius: .75rem; line-height: 1.7; }
 .sw-workspace-nav > a[aria-current="page"] { color: var(--primary-foreground); background: var(--primary); }
 .sw-app-tools [data-testid="locale-switcher"] { min-block-size: 2.75rem; }
