@@ -3,7 +3,7 @@
    landing, the example page and the rest line up on a laptop as on a phone. Full-bleed bands (the launch strip,
    the proof band) opt out of the cap and use the inset as their negative margin. */
 .registration-site { --registration-inset: clamp(1rem, 4vw, 3.5rem); --registration-measure: 86rem; max-inline-size: none; margin-inline: auto; padding: clamp(1rem, 3vw, 2rem) var(--registration-inset); color: var(--foreground); }
-.registration-site > :where(:not(.launch-strip, .registration-proof)) { max-inline-size: var(--registration-measure); margin-inline: auto; }
+.registration-site > :where(:not(.registration-proof)) { max-inline-size: var(--registration-measure); margin-inline: auto; }
 .registration-header { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding-block: .5rem 1.75rem; }
 .registration-header > .registration-tools { margin-inline-start: auto; }
 .registration-tools { display: flex; align-items: center; flex-wrap: wrap; gap: .65rem; }
@@ -70,13 +70,6 @@
 /* Early-access campaign layer (docs/55). Tokens are scoped so dark mode keeps contrast; motion is opt-in only. */
 .registration-site { --launch-ink: #fffdf7; --launch-bg: #123f2f; --launch-bg-deep: #0d2d22; --launch-gold: #e8c877; }
 :root[data-theme="dark"] .registration-site { --launch-ink: #f3f7f1; --launch-bg: #0f2a20; --launch-bg-deep: #0a1f17; --launch-gold: #f0cf82; }
-.launch-strip { margin: calc(-1 * clamp(1rem, 3vw, 2rem)) calc(-1 * var(--registration-inset)) 1rem; padding: .85rem var(--registration-inset); background: linear-gradient(100deg, var(--launch-bg-deep), var(--launch-bg) 55%, #1a5a43); color: var(--launch-ink); border-block-end: 2px solid var(--launch-gold); }
-.launch-strip > p { max-inline-size: var(--registration-measure); margin-inline: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; column-gap: 1.25rem; row-gap: .35rem; text-align: center; line-height: 1.8; }
-.launch-strip-kicker { font-weight: 800; letter-spacing: .01em; color: var(--launch-gold); }
-.launch-strip-body { font-weight: 600; }
-.launch-strip-link { display: inline-flex; align-items: center; gap: .4rem; min-block-size: 2.75rem; padding-inline: .9rem; border-radius: .6rem; border: 1px solid color-mix(in oklab, var(--launch-ink) 45%, transparent); color: var(--launch-ink); font-weight: 700; }
-.launch-strip-link:hover { background: color-mix(in oklab, var(--launch-ink) 12%, transparent); }
-.launch-strip-link:focus-visible { outline: 3px solid var(--launch-gold); outline-offset: 3px; }
 .launch-badge { display: inline-grid; grid-template-columns: auto auto; align-items: center; column-gap: .75rem; row-gap: 0; padding: .55rem .95rem .55rem .8rem; margin-block-end: 1.1rem; border: 1.5px solid var(--gold); border-radius: .9rem; background: linear-gradient(135deg, color-mix(in oklab, var(--gold-soft) 35%, var(--card)), var(--card)); box-shadow: 0 1px 0 color-mix(in oklab, var(--gold) 40%, transparent) inset; }
 .launch-badge-kicker { grid-column: 1; font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-ink); line-height: 1.4; }
 .launch-badge > strong { grid-column: 1; font-size: 1.2rem; font-weight: 800; line-height: 1.5; color: var(--brand-deep); }
@@ -93,7 +86,6 @@
 .launch-early-note { grid-column: 1 / -1; color: color-mix(in oklab, var(--launch-ink) 72%, transparent); margin: 0; }
 @media (prefers-reduced-motion: no-preference) {
  @keyframes launch-rise { from { opacity: 0; translate: 0 .5rem; } to { opacity: 1; translate: 0 0; } }
- .launch-strip { animation: launch-rise .45s ease-out both; }
  .launch-badge, .registration-hero h1, .registration-lead, .registration-hero .registration-actions, .registration-hero .launch-trust { animation: launch-rise .55s ease-out both; }
  .launch-badge { animation-delay: .1s; } .registration-hero h1 { animation-delay: .18s; } .registration-lead { animation-delay: .26s; } .registration-hero .registration-actions { animation-delay: .34s; } .registration-hero .launch-trust { animation-delay: .42s; }
 }
@@ -112,12 +104,6 @@
  .registration-hero h1 { font-size: clamp(1.8rem, 6.5vw, 2.4rem); }
  .registration-actions > .sw-invitation-cta { inline-size: 100%; }
  /* Phones: the announcement reads as two short lines; the link is an inline text link, never a squeezed box. */
- .launch-strip { padding-block: .6rem; }
- .launch-strip > p { display: block; text-align: start; line-height: 1.7; font-size: .9375rem; }
- .launch-strip-kicker { display: block; font-size: 1rem; }
- .launch-strip-body::after { content: " · "; color: var(--launch-gold); }
- .launch-strip-link { display: inline; min-block-size: 0; padding: .15rem 0; border: 0; border-radius: 0; white-space: nowrap; text-decoration: underline; text-underline-offset: .3em; text-decoration-color: var(--launch-gold); }
- .launch-strip-link svg { display: inline; vertical-align: -.15em; margin-inline-start: .15rem; }
  .launch-early { grid-template-columns: minmax(0, 1fr); }
  .launch-badge { margin-block-end: .9rem; }
 }
@@ -201,7 +187,6 @@
 
 /* Laptop screens are wide but short (1366×768, 1536×864 at 125 % scaling): the hero keeps the strip, badge, headline, lead and CTA on the first screen. */
 @media (min-width: 851px) and (max-height: 840px) {
-  .registration-site-v2 .launch-strip { padding-block: .65rem; }
   .registration-site-v2 .registration-header { padding-block: .8rem 1rem; }
   .registration-hero-v2 .registration-hero-copy { padding-block: .25rem; }
   .registration-hero-v2 h1 { font-size: clamp(1.9rem, min(6.4vh, 3.6vw), 3.6rem); margin-block: .45rem .8rem; }

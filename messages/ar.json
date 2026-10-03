@@ -4703,12 +4703,6 @@
     },
     "adminPhase": "مرحلة الإطلاق الحالية: التسجيل المبكر. إعداد المرحلة مستقل عن مفاتيح الميزات؛ تفعيل ميزة هنا لا يفتح التصفّح العام أو المدفوعات في هذه المرحلة.",
     "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
-    "launch": {
-      "label": "إعلان الإطلاق",
-      "kicker": "سوّق قادم قريباً",
-      "body": "التسجيل المبكر للدفعة الأولى مفتوح الآن",
-      "link": "انضم من البداية"
-    },
     "cohort": {
       "kicker": "تسجيل مبكر",
       "name": "الدفعة الأولى",
