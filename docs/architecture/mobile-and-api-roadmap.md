@@ -1,6 +1,6 @@
 # Mobile and API roadmap — technical design
 
-Status: M0 shipped 1 Oct 2026 (error contract, boundary test, phase-aware manifest). M1 delivered 3 Oct 2026 on `feat/m1-shared-brains` (see the milestone table and §3.1). M2 follows on the same track behind a server switch that is off in production. The production database connection (`lib/db/index.ts`, Supabase via node-postgres on Vercel) is **not** to be touched by any step below. Server-side authorization stays authoritative for every client, web or native.
+Status: M0 shipped 1 Oct 2026 (error contract, boundary test, phase-aware manifest). M1 delivered 3 Oct 2026 on `feat/m1-shared-brains` (see the milestone table and §3.1). M2 delivered 3 Oct 2026 on `feat/m2-api-slice-a` behind `API_V1_ENABLED` (unset in production; see §3.2 and §8.1). The production database connection (`lib/db/index.ts`, Supabase via node-postgres on Vercel) is **not** to be touched by any step below. Server-side authorization stays authoritative for every client, web or native.
 
 Principle throughout: **share the brains, not the pixels** — types, Zod schemas, business rules, API contracts, permissions, country/service catalogs and error contracts are shared; React Server Components, forms, `next-intl` bindings and screens are not.
 
@@ -171,6 +171,16 @@ Each step keeps the old path as a re-export shim until the last importer moves, 
 - `lib/validation/` — `portfolio-setup` (`setupVersionSchema`, `uuidSchema`, `setupSourceSchema`, `setupProfileSchema`, `setupBehanceSchema`, `setupClientSchema`, `setupProjectSchema`), `studio` (`studioProfileSchema`, `packageSchema`), `auth` (`loginSchema`, `joinSchema`); `account`, `match-wizard` and `collab` re-export the schemas that already lived in `lib/`. The server actions parse with these; `/api/v1` (M2) parses with the same objects.
 - `use-intl` is an explicit dependency; `createTranslator` in `lib/matching/describe.ts`, `lib/ai/fallback.ts`, `lib/legal/document.ts`, `lib/data/contract-notify.ts` comes from it. `eslint.config.mjs` forbids framework imports under `lib/core/**`, `lib/validation/**` and `lib/api/errors.ts`; `tests/unit/boundaries.test.ts` lists the files and also fails if any other file under `lib/` imports `next-intl` outside the six Next wrappers.
 
+### 3.2 What M2 placed where
+
+- `lib/auth/session-core.ts` — `hashToken`, `issueSession(userId, {mfaPending})` → `{token, expiresAt}`, `sessionUserByToken`, `pendingMfaUserByToken`, `revokeToken`, `revokeAllForUser`, `rotateSession`. `lib/auth/session.ts` keeps the cookie and `cache()` and delegates; no schema change, same rows.
+- `lib/core/rules/auth/authorize.ts` — `authorizeAgency(user, agency)` and `authorizeStaff(user, mfaRequired, permission, {allowEnroll})` return `{ok}` or `{deny, redirectTo}`; `lib/auth/guards.ts` redirects on a deny, `lib/api/v1.ts` answers `unauthenticated`/`forbidden`.
+- `lib/core/rules/request-context.ts` — the `RequestContext` interface with `clientIpFrom`, `bearerTokenFrom`, `contextFrom` (maps) and `requestContext` (a web `Request`); `lib/request-context.ts` binds it over `headers()/cookies()`; `lib/request.ts#clientIp` reads through it.
+- `lib/core/rules/rate-limit.ts` — `RateLimitStore` (`hit`, `peek`, `clear`) with `MemoryStore`; `lib/rate-limit.ts` keeps `rateLimit`, `isRateLimited`, `resetRateLimits`, adds `rateLimitDetail` (Retry-After) and `useRateLimitStore`.
+- `lib/data/publication.ts` — `mayReadAgency(agency, viewer?)` / `mayReadAgencyId(id, viewer?)` accept an injected `Viewer {userId, staff}`; without one they derive it from the cookie as before. `getPost(id, ownerAgencyId?, viewer?)` passes it through.
+- `lib/validation/api-v1.ts` — the request bodies, composed from the lifted schemas.
+- `lib/api/v1.ts` + `app/api/v1/**` — see §8.1.
+
 Do not start with `lib/data/*` moves: they are already server-only and framework-agnostic enough; moving 60 files buys nothing before an API exists.
 
 ---
@@ -312,6 +322,26 @@ Recommended slice A, scoped to the upload source (no pdf/Behance/social in v1):
 8. `POST /api/v1/portfolio/publish { version, rights }` → `publishSetup` with `personalLabel` taken from `messages/<contentLang>.json` on the server without `next-intl` (step 5 of section 3).
 9. Owner access: `GET /api/v1/projects/:id` → `getPost` + `mayReadAgency`; images via `/api/portfolio-media/**` with bearer → `mayReadAgencyId` (private visibility → owner only; staff → audited later).
 
+### 8.1 Slice A as built (M2)
+
+Switch: every route under `/api/v1` is wrapped by `route()` in `lib/api/v1.ts` and answers a plain 404 unless `API_V1_ENABLED` is exactly `"true"` on the server. Identity: the `Authorization: Bearer <token>` header only; a cookie is never read, so a browser session cannot drive the API and an API token cannot drive the browser. Every answer carries `Cache-Control: private, no-store` and `Vary: Authorization`; errors use §4.2 (`{ error: { code, reason?, fields?, retryAfter? } }`).
+
+| Route | Body / result | Notes |
+|---|---|---|
+| `POST /api/v1/auth/login` | `{email, password}` → 201 `{token, expiresAt, user}` | web password check and the same 8-per-15-minutes failed-attempt limit (429 + Retry-After); accounts with a second factor → 401 `mfa_required`; staff → 403 `staff` (the console never uses bearer tokens) |
+| `POST /api/v1/auth/logout` · `/logout-all` · `/refresh` | → `{ok}` · `{ok}` · 201 `{token, expiresAt}` | refresh rotates: the old token dies at once |
+| `GET /api/v1/me` | → `{user, agency, setup}` | own e-mail only; agency = public summary + owner contact fields + `visibility`; `setup` = the resumable draft with media URLs under `/api/v1/media/:id` |
+| `PATCH /api/v1/profile` | `{version, name?, bio?, services?, newServices?}` → `{changed, setup}` | `patchProfile` with the setup version as the optimistic lock (409 `stale`) |
+| `POST /api/v1/profile/avatar` | multipart `avatar`, `version` | |
+| `POST /api/v1/portfolio/open` · `/restart` | → 201 `{setup}` | |
+| `PATCH /api/v1/portfolio` | `{kind: source\|client\|project\|step\|pause, version, …}` → `{setup}` | sources `upload` and `pdf` (pdf behind the `portfolio_import` feature); Behance and connected platforms are not in slice A |
+| `POST /api/v1/media` · `GET /api/v1/media` · `PUT /api/v1/media/order` · `GET/DELETE /api/v1/media/:id` | multipart `images[]` (≤ `MAX_IMAGES_PER_POST`, all or none) | staged images are private to the uploading agency |
+| `POST /api/v1/portfolio/publish` | `{version, rights}` → 201 `{postId, setup}` | the personal-project label comes from `messages/<contentLang>.json` without next-intl; the post limit of the plan applies |
+| `GET /api/v1/projects/:id` | → `{project, owner}` | `getPost` + `mayReadAgency(agency, viewer)`: a private profile answers 404 to everyone but the owner |
+| `GET /api/portfolio-media/**` | with a bearer header while the switch is on, the token is the reader | otherwise the cookie viewer decides, as before |
+
+Proof: `tests/unit/api-v1.test.ts` (handlers called as Next calls them, PGlite), `tests/unit/session-core.test.ts`, `tests/unit/authorize.test.ts`, `tests/unit/request-and-rate-limit.test.ts`; `tests/e2e/api-v1.spec.ts` runs the whole slice against the e2e server (sign-in → upload → reload → publish → owner-only media, cookie never accepted, web still signed in).
+
 Why A: it is the only flow that is both open in the current launch phase and already engineered as a resumable, versioned server-side state machine; it touches every cross-cutting concern the native client needs (auth, private media, conflicts, gating) with the smallest surface (≈9 endpoints), and its tests exist.
 
 ---
@@ -356,6 +386,6 @@ Other risks: per-instance rate limiting; `mayReadAgency` reading cookies inside 
 |---|---|---|
 | **M0 — now** | this document; manifest fixes (phase-aware shortcuts, `id`, `scope`, `viewport.themeColor` — done on this branch; maskable icon still to draw); boundary test (step 0, `tests/unit/boundaries.test.ts` — done); error-contract module (step 4, `lib/api/errors.ts` — done, not yet adopted by a route) | `npm run lint && typecheck && test` green; installed PWA shortcuts open real pages in the registration phase |
 | **M1 — shared brains** (delivered 3 Oct 2026) | steps 1–3 and 5: catalogs, pure rules, lifted Zod schemas, `use-intl` in `lib/`; shims keep old imports | boundary test covers ≥ 30 files (42); no `next-intl` import remains under `lib/` except Next wrappers (asserted by the test); all existing unit + e2e suites unchanged and green |
-| **M2 — API slice** | steps 6–10: session core, decision guards, request-context adapter, rate-limit store, `/api/v1` for slice A with bearer auth and contract tests; staging only | Playwright API project completes sign-in → upload → reload → publish → owner-only media with a bearer token; web cookie flows unchanged (roles e2e green); zero changes to `lib/db/index.ts` |
+| **M2 — API slice** (delivered 3 Oct 2026, switch off in production) | steps 6–10: session core, decision guards, request-context adapter, rate-limit store, `/api/v1` for slice A with bearer auth and contract tests; staging only | Playwright API project completes sign-in → upload → reload → publish → owner-only media with a bearer token; web cookie flows unchanged (roles e2e green); zero changes to `lib/db/index.ts` |
 | **M3 — Expo prototype** | Expo app implementing slice A against staging; secure-store sessions; RTL; `upgrade_required` handling; SW review decision for the web PWA | one provider completes the slice on a physical iOS and Android device; private media returns 404 without a token; logout-all revokes the device |
 | **M4 — native beta** | TestFlight / internal track; notifications list + count via `/api/v1/notifications`; crash and error reporting into `recordError`; push design (not launch) | 20 pilot providers; no P1 auth or privacy finding; API error budget met for two weeks; decision on push and on the second slice (messages or collaboration) once `LAUNCH_PHASE` leaves registration |

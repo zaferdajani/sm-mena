@@ -37,6 +37,9 @@ const PURE = [
   "lib/core/rules/collab/types.ts",
   "lib/core/rules/collab/time.ts",
   "lib/core/rules/collab/redact.ts",
+  "lib/core/rules/auth/authorize.ts",
+  "lib/core/rules/request-context.ts",
+  "lib/core/rules/rate-limit.ts",
   // Option builders that take (locale, t) (lib/core/options)
   "lib/core/options/translate.ts",
   "lib/core/options/form.ts",
@@ -47,6 +50,7 @@ const PURE = [
   "lib/validation/portfolio-setup.ts",
   "lib/validation/studio.ts",
   "lib/validation/auth.ts",
+  "lib/validation/api-v1.ts",
   "lib/account-schema.ts",
   "lib/match-wizard-schema.ts",
   "lib/collab/schemas.ts",

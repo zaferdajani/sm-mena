@@ -1,22 +1,23 @@
 import "server-only";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import { authorizeAgency, authorizeStaff } from "@/lib/core/rules/auth/authorize";
 import { adminMfaRequired } from "./mfa";
-import { isStaffRole, type Permission } from "./permissions";
+import type { Permission } from "./permissions";
 import { adminAccess } from "./policy";
 import { getCurrentAgency, getSessionUser } from "./session";
 
 export { adminAccess };
 
-/** Signed-in agency owner, or redirect to login. */
+// Web binding of lib/core/rules/auth/authorize.ts: the same decisions, answered with a redirect.
+
+/** Signed-in agency owner, or redirect to login (staff to the console, clients to their saved list, agents to their page). */
 export async function requireAgency() {
   const locale = await getLocale();
   const user = await getSessionUser();
-  if (!user) return redirect({ href: "/login", locale });
-  const agency = await getCurrentAgency();
-  // Staff go to the console; client accounts (docs/41) to their saved list.
-  if (!agency) return redirect({ href: isStaffRole(user.role) ? "/admin" : user.role === "client" ? "/saved" : user.role === "agent" ? "/agent" : "/login", locale });
-  return { user, agency };
+  const decision = authorizeAgency(user, user ? await getCurrentAgency() : null);
+  if (!decision.ok) return redirect({ href: decision.redirectTo, locale });
+  return { user: decision.user, agency: decision.agency };
 }
 
 /**
@@ -27,12 +28,9 @@ export async function requireAgency() {
  */
 export async function requireStaff(permission: Permission = "dashboard.view", { allowEnroll = false } = {}) {
   const locale = await getLocale();
-  const user = await getSessionUser();
-  const access = adminAccess(user, adminMfaRequired(), permission);
-  if (access === "login") return redirect({ href: "/login", locale });
-  if (access === "forbidden") return redirect({ href: user && isStaffRole(user.role) && permission !== "dashboard.view" ? "/admin" : "/", locale });
-  if (access === "enroll" && !allowEnroll) return redirect({ href: "/admin/security", locale });
-  return user!;
+  const decision = authorizeStaff(await getSessionUser(), adminMfaRequired(), permission, { allowEnroll });
+  if (!decision.ok) return redirect({ href: decision.redirectTo, locale });
+  return decision.user;
 }
 
 /** Any staff member (the dashboard permission). */

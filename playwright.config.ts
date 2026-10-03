@@ -26,6 +26,8 @@ const e2eEnv = {
   AUTH_SHOW_CODES: "true",
   // The Behance import reads saved pages instead of the network (docs/47).
   BEHANCE_FIXTURES: "tests/fixtures/behance",
+  // The bearer API (docs/architecture/mobile-and-api-roadmap.md §8) is off in production; tests/e2e/api-v1.spec.ts needs it on.
+  API_V1_ENABLED: "true",
 };
 
 export default defineConfig({
