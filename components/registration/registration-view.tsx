@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { BriefcaseBusiness, Images, UsersRound, Sparkles, ArrowUpLeft, ArrowLeft, Check } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { BrandLockup } from "@/components/brand-lockup";
