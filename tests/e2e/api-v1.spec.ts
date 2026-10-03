@@ -10,6 +10,12 @@ test.describe.configure({ mode: "serial" });
 test("a provider completes the setup flow over the API and only its token can read the private project", async ({ page, request, baseURL }) => {
   test.setTimeout(120_000);
   const account = await joinAgency(page, "apiv1", { stay: true });
+  // Keep the page private (the registration phase does this at sign-up; the e2e server runs the full phase).
+  await page.goto("/en/studio/publication");
+  await page.check('input[name="visibility"][value="private"]');
+  await page.check('input[name="acknowledge"]');
+  await page.getByRole("button", { name: "Save publication choice" }).click();
+  await expect(page).toHaveURL(/saved=1/);
 
   // The browser's cookie session is not an API identity.
   const cookieOnly = await page.request.get("/api/v1/me");
@@ -28,8 +34,8 @@ test("a provider completes the setup flow over the API and only its token can re
   const profile = await me.json();
   expect(profile.user.email).toBe(account.email);
   expect(profile.agency.handle).toBe(account.handle);
-  // A new provider is a private draft until it publishes its page (docs/51).
   expect(profile.agency.visibility).toBe("private");
+  // The first-run setup page already opened the draft when the account was created.
   expect(profile.setup).toMatchObject({ status: "in_progress" });
   let version: number = profile.setup.version;
 
