@@ -178,3 +178,13 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
 @media (prefers-reduced-motion: reduce) {
   .sw-invitation *, .sw-brand-lockup * { scroll-behavior: auto; }
 }
+
+/* Choice chips (the owner's early registration, docs/58): a checkbox or radio wrapped in a pill; the input stays
+   in the accessibility tree, the pill shows the state. */
+.sw-choice-chip { position: relative; display: inline-flex; align-items: center; gap: .45rem; min-block-size: 2.5rem; padding: .35rem .9rem; border: 1px solid var(--input); border-radius: 999px; background: var(--card); font-size: .9375rem; line-height: 1.5; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.sw-choice-chip > input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.sw-choice-chip > span::before { content: ""; display: inline-block; inline-size: .55rem; block-size: .55rem; margin-inline-end: .5rem; border-radius: 999px; border: 1px solid var(--input); vertical-align: middle; transition: background .15s ease, border-color .15s ease; }
+.sw-choice-chip:hover { border-color: var(--brand); }
+.sw-choice-chip:has(> input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-deep, var(--brand)); font-weight: 600; }
+.sw-choice-chip:has(> input:checked) > span::before { background: var(--brand); border-color: var(--brand); }
+.sw-choice-chip:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }

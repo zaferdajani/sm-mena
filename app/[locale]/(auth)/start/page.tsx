@@ -38,7 +38,7 @@ export default async function StartPage({ params }: PageProps<"/[locale]/start">
           <span className="mt-3 inline-flex rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">{t("providerCta")}</span>
         </Link>
         <Link
-          href="/signin"
+          href={isRegistrationPhase() ? "/owner" : "/signin"}
           className="group rounded-xl border-2 p-4 transition-colors hover:border-brand hover:bg-brand-soft"
           data-testid="start-client"
         >
@@ -47,7 +47,7 @@ export default async function StartPage({ params }: PageProps<"/[locale]/start">
             {t("clientTitle")}
           </span>
           <span className="mt-1 block text-sm text-muted-foreground">{t("clientBody")}</span>
-          <span className="mt-3 inline-flex rounded-lg border px-3 py-2 text-sm font-medium">{t("clientCta")}</span>
+          <span className="mt-3 inline-flex rounded-lg border px-3 py-2 text-sm font-medium">{t(isRegistrationPhase() ? "clientCtaRegistration" : "clientCta")}</span>
         </Link>
         <Link href={isRegistrationPhase() ? "/examples" : "/explore"} className="text-center text-sm text-muted-foreground underline-offset-4 hover:underline" data-testid="start-browse">
           {isRegistrationPhase() ? r("exampleCta") : t("clientBrowse")}

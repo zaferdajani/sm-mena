@@ -5,6 +5,8 @@ import { StatTiles } from "@/components/admin/stat-tiles";
 import { requireStaff } from "@/lib/auth/guards";
 import { marketplaceStats, RANGES, trafficStats } from "@/lib/data/stats";
 import { collabMetrics } from "@/lib/data/collab-metrics";
+import { ownerNeedsStats } from "@/lib/data/owner-needs";
+import { SERVICE_GROUPS } from "@/lib/core/catalog/services/catalog";
 import { countryName, countryOfZone } from "@/lib/i18n/country";
 
 export default async function AdminStats({ params, searchParams }: PageProps<"/[locale]/admin/stats">) {
@@ -14,7 +16,8 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
   const sp = await searchParams;
   const days = RANGES.find((r) => String(r) === sp.days) ?? 30;
   const t = await getTranslations("AdminStats");
-  const [traffic, market, collab] = await Promise.all([trafficStats(days), marketplaceStats(days), collabMetrics(days)]);
+  const [traffic, market, collab, owners] = await Promise.all([trafficStats(days), marketplaceStats(days), collabMetrics(days), ownerNeedsStats()]);
+  const groupName = (key: string) => { const g = SERVICE_GROUPS.find((x) => x.key === key); return g ? (locale === "ar" ? g.name_ar : g.name_en) : key; };
   const nf = new Intl.NumberFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
   const fmt = (n: number) => nf.format(n);
   const dateFmt = new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { day: "numeric", month: "short" });
@@ -53,6 +56,16 @@ export default async function AdminStats({ params, searchParams }: PageProps<"/[
       />
       <section className="rounded-xl border p-4">
         <ColumnChart title={weekly ? t("viewsPerWeek") : t("viewsPerDay")} data={columns} fmt={fmt} tableLabels={[t("showTable"), t("viewsPerDay")]} />
+      </section>
+      <section className="rounded-xl border p-4" data-testid="owner-needs-stats">
+        <h2 className="text-sm font-semibold">{t("owners.title")}</h2>
+        <p className="mt-1 text-xs text-muted-foreground">{t("owners.note")}</p>
+        <StatTiles locale={locale} tiles={[{ label: t("owners.total"), value: owners.total }]} />
+        <div className="mt-3 grid gap-4 md:grid-cols-3">
+          <BarList title={t("owners.byCountry")} fmt={fmt} rows={owners.byCountry.map((r) => ({ label: countryName(r.key, locale), value: r.n }))} empty={t("noData")} />
+          <BarList title={t("owners.byService")} fmt={fmt} rows={owners.byService.map((r) => ({ label: groupName(r.key), value: r.n }))} empty={t("noData")} />
+          <BarList title={t("owners.byTiming")} fmt={fmt} rows={owners.byTiming.map((r) => ({ label: t(`owners.timings.${r.key}` as "owners.timings.now"), value: r.n }))} empty={t("noData")} />
+        </div>
       </section>
       <section className="rounded-xl border p-4" data-testid="collab-metrics">
         <BarList title={t("collab.title")} funnel fmt={fmt} rows={collab.funnel.map((f) => ({ label: t(`collab.steps.${f.key}`), value: f.n }))} />

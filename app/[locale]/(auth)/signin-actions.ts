@@ -7,7 +7,9 @@ import { z } from "zod";
 import { checkCode, emailCodesAvailable, issueCode, sendCodeEmail, showCodesOnScreen } from "@/lib/auth/email-code";
 import { createSession } from "@/lib/auth/session";
 import { mergeDeviceInteractions } from "@/lib/data/interactions";
+import { getOwnerNeed } from "@/lib/data/owner-needs";
 import { createUser, getUserByEmail } from "@/lib/data/users";
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { getVisitorId } from "@/lib/visitor";
@@ -56,5 +58,9 @@ export async function verifyCodeAction(_: SignInState, formData: FormData): Prom
   await createSession(user.id);
   await mergeDeviceInteractions(await getVisitorId(), user.id);
   const locale = await getLocale();
-  nextRedirect(user.role === "agent" ? `/${locale}/agent` : safeNext(formData.get("next"), locale));
+  if (user.role === "agent") nextRedirect(`/${locale}/agent`);
+  // During the registration phase a business owner's door is the needs screen (docs/58); afterwards, where they were going.
+  const next = safeNext(formData.get("next"), locale);
+  if (isRegistrationPhase() && !next.startsWith(`/${locale}/owner`) && !(await getOwnerNeed(user.id))) nextRedirect(`/${locale}/owner/needs`);
+  nextRedirect(next);
 }
