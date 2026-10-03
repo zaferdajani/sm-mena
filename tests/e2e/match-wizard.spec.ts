@@ -38,7 +38,7 @@ test("the guided matchmaker walks through choices and stays in Saudi Arabia", as
   await social.click();
   await expect(social).toHaveAttribute("aria-pressed", "true");
   await page.getByTestId("choice-next").click();
-  await expect(page.getByTestId("user-message").last()).toHaveText("السوشيال ميديا");
+  await expect(page.getByTestId("user-message").last()).toHaveText("وسائل التواصل الاجتماعي");
   await expect(choices).toHaveAttribute("data-step", "services");
   await page.getByTestId("choice-any").click();
 

@@ -48,8 +48,8 @@ export default async function StudioLayout({ children }: { children: React.React
     pendingPartnerCount(agency.id),
   ]);
   return (
-    <div data-design-surface="workspace" className="sw-workspace mx-auto w-full max-w-4xl">
-      <div className="flex items-center gap-3 px-4 pt-4 sm:pt-8">
+    <div data-design-surface="workspace" className="sw-workspace mx-auto w-full max-w-[68rem] px-4 sm:px-6">
+      <div className="flex items-center gap-3 pt-6 sm:pt-8">
         <AgencyAvatar name={agency.name} src={mediaUrl(agency.avatarKey)} size={44} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold" dir="auto">{agency.name}</p>
@@ -92,7 +92,7 @@ export default async function StudioLayout({ children }: { children: React.React
           ]}
         />
       </div>
-      <div className="sw-workspace-body px-4 py-5">
+      <div className="sw-workspace-body py-6">
         <CreatorSetupNudge hasWork={agency.postCount > 0} />
         <MedalPanel agencyId={agency.id} />
         {children}

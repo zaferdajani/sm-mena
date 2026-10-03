@@ -77,7 +77,7 @@ test("country flag, invitation copy, language and theme remain usable", async ({
   }
   await picker.selectOption("sa");
   await expect(page.getByTestId("teaser-page")).toHaveAttribute("data-country", "sa");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("نبي");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("نريد");
   await page.getByTestId("locale-switcher").click();
   await expect(page).toHaveURL(/\/en\/soon$/);
   await expect(page.getByTestId("teaser-page")).toHaveAttribute("data-country", "sa");

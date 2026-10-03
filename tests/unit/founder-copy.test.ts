@@ -3,10 +3,17 @@ import { founderCopy } from "@/components/teaser/market-copy";
 import { COUNTRY_CODES } from "@/lib/countries";
 
 describe("pre-launch founder copy", () => {
-  it("uses genuinely different Arabic voices for Jordan, Saudi Arabia and Egypt", () => {
-    expect(founderCopy("ar", "jo").title).toContain("بدنا");
-    expect(founderCopy("ar", "sa").title).toContain("نبي");
-    expect(founderCopy("ar", "eg").title).toContain("عايزين");
+  it("speaks one Modern Standard Arabic voice in every market (no dialect by country)", () => {
+    const colloquial = /(^|[^\u0600-\u06FF])(بدنا|نبي|عايزين|هسا|شو|بدك|اللي|خلّي|خلي|مين|هيك|بس|شي|عشان|ليش)(?![\u0600-\u06FF])/;
+    const banned = /أهل التسويق|سوشيال ميديا|فريلانسر|بورتفوليو/;
+    for (const code of COUNTRY_CODES) {
+      const copy = JSON.stringify(founderCopy("ar", code));
+      expect(copy).not.toMatch(colloquial);
+      expect(copy).not.toMatch(banned);
+    }
+    // the same voice everywhere: the title does not change register between markets
+    expect(founderCopy("ar", "sa").title).toBe(founderCopy("ar", "jo").title);
+    expect(founderCopy("ar", "eg").title).toBe(founderCopy("ar", "jo").title);
   });
 
   it("never sells the registration number as the benefit", () => {

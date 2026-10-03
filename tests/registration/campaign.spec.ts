@@ -18,7 +18,7 @@ for (const locale of ["ar", "en"]) {
     await expect(badge).toContainText(locale === "ar" ? "الدفعة الأولى" : "The first cohort");
     expect(await badge.evaluate((el) => el.compareDocumentPosition(document.querySelector("h1")!) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
     // 3. headline kept, 4. cohort CTA, 5. promise line with exactly the three true statements
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(locale === "ar" ? "من البداية" : "from the beginning");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(locale === "ar" ? "منذ البداية" : "from the beginning");
     const cta = page.getByTestId("registration-cta").first();
     await expect(cta).toHaveText(locale === "ar" ? "احجز مكانك في الدفعة الأولى" : "Join the first cohort");
     await expect(cta).toHaveAttribute("href", `/${locale}/join`);
