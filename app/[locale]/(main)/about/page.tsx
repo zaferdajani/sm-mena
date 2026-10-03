@@ -1,10 +1,9 @@
-import { RegistrationView } from "@/components/registration/registration-view";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import { pageMeta } from "@/lib/seo";
 import { organizationLd } from "@/lib/structured-data";
 
@@ -19,7 +18,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/about">)
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  if (isRegistrationPhase()) return <RegistrationView locale={locale} />;
+  // During registration the story is the landing itself; sending visitors there avoids a second landing nested in the app shell.
+  if (isRegistrationPhase()) redirect({ href: "/", locale });
   const t = await getTranslations("About");
   // Payment promises follow the one readiness switch (lib/payments/readiness.ts).
   const live = protectedPaymentsLive();
