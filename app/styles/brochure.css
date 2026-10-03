@@ -17,7 +17,21 @@
 .sw-app :where(p, label, legend) { overflow-wrap: anywhere; }
 .sw-app :where(fieldset, form) { min-inline-size: 0; }
 .sw-app :where(input, select, textarea, button) { font-family: inherit; }
-.sw-app select:not([multiple]), .sw-auth select:not([multiple]) { min-block-size: 2.75rem; font-size: 1rem; background-color: var(--card); }
+/* Native selects wear the same quiet field as the landing country picker: no browser arrow, one chevron at the
+   inline end (so it swaps sides in Arabic), brand hover and focus, and the theme's own ink in dark mode. */
+.sw-app select:not([multiple]), .sw-auth select:not([multiple]), .registration-site select:not([multiple]) {
+  min-block-size: 2.75rem; font-size: 1rem; line-height: 1.4; color: var(--foreground); background-color: var(--card);
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  padding-inline: .9rem 2.6rem; border: 1px solid var(--input); border-radius: var(--radius-lg);
+  background-image: var(--sw-select-chevron); background-repeat: no-repeat; background-size: 1.05rem;
+  background-position: right .85rem center; text-overflow: ellipsis;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multiple]) { background-position: left .85rem center; }
+:where(.sw-app, .sw-auth, .registration-site) select:not([multiple]):hover { border-color: var(--brand); }
+:where(.sw-app, .sw-auth, .registration-site) select:not([multiple]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-color: var(--brand); }
+:where(.sw-app, .sw-auth, .registration-site) select:not([multiple]):disabled { cursor: default; opacity: .6; }
+:where(.sw-app, .sw-auth, .registration-site) select:not([multiple])::-ms-expand { display: none; }
 .sw-app :where(.font-mono):not(pre):not(code) { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
 .sw-app [data-testid="site-footer"] { border-radius: var(--radius-xl) var(--radius-xl) 0 0; background: var(--brand-soft); }
 .sw-app [data-testid="explore-agency-card"] { background: var(--card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); }

@@ -39,7 +39,7 @@ export function CountryCityField({
   }, []);
   return (
     <>
-      <div className="grid gap-1.5">
+      <div className="grid min-w-0 gap-1.5">
         <label htmlFor="country" className="text-sm font-medium">{countryLabel}</label>
         <select
           id="country"
@@ -49,7 +49,7 @@ export function CountryCityField({
             setCountry(next);
             setCity(countries.find((c) => c.code === next)?.cities[0]?.key ?? "");
           }}
-          className={className}
+          className={`w-full min-w-0 ${className}`}
           data-testid="country-select"
         >
           {countries.map((c) => (
@@ -59,9 +59,9 @@ export function CountryCityField({
           ))}
         </select>
       </div>
-      <div className="grid gap-1.5">
+      <div className="grid min-w-0 gap-1.5">
         <label htmlFor="city" className="text-sm font-medium">{cityLabel}</label>
-        <select id="city" name="city" required value={city} onChange={(e) => setCity(e.target.value)} className={className}>
+        <select id="city" name="city" required value={city} onChange={(e) => setCity(e.target.value)} className={`w-full min-w-0 ${className}`}>
           {cities.map((c) => (
             <option key={c.key} value={c.key}>
               {c.label}
