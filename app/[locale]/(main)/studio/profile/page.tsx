@@ -24,7 +24,7 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
     getTranslations("Platforms"), getTranslations("Industries"), getTranslations("Languages"), getTranslations("TeamSize"),
   ]);
   return (
-    <div className="mx-auto max-w-xl">
+    <div className="w-full">
       {welcome && (
         <div className="mb-5 space-y-3">
           <p className="rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="profile-welcome">{t("welcome")}</p>
