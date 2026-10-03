@@ -51,6 +51,7 @@ const PURE = [
   "lib/validation/studio.ts",
   "lib/validation/auth.ts",
   "lib/validation/api-v1.ts",
+  "lib/validation/owner-needs.ts",
   "lib/account-schema.ts",
   "lib/match-wizard-schema.ts",
   "lib/collab/schemas.ts",

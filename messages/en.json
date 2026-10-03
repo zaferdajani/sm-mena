@@ -1293,7 +1293,21 @@
       "directNote": "Recorded confirmations, not protection; delay not measured",
       "note": "Counted from the records themselves, so retries cannot inflate a step. Excluded: {demo} demo and {staff} staff-owned agencies. Window: the last {days} days by creation date. Payout initiated is not receipt."
     },
-    "realOnly": "Real numbers only: demo pages, team test pages and visits to the admin console are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic."
+    "realOnly": "Real numbers only: demo pages, team test pages and visits to the admin console are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic.",
+    "owners": {
+      "title": "Business owners (early registration)",
+      "total": "Registered owners",
+      "byCountry": "Owners by country",
+      "byService": "What they need",
+      "byTiming": "When they want to start",
+      "timings": {
+        "now": "As soon as possible",
+        "month": "Within a month",
+        "quarter": "Next three months",
+        "later": "Later"
+      },
+      "note": "Real registrations only; one row per owner account."
+    }
   },
   "Billing": {
     "current": "Your plan",
@@ -3602,7 +3616,8 @@
     "clientCta": "Create an account with an email code",
     "clientBrowse": "Or browse providers without an account",
     "have": "Already have an account?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "clientCtaRegistration": "Register your business for early access"
   },
   "Collab": {
     "tab": "Collaborate",
@@ -4670,7 +4685,10 @@
       "archiveNdas": "Existing NDAs",
       "archiveNotifications": "Notifications",
       "savedWork": "Work saved to your profile. Visibility follows the publication settings you selected.",
-      "publishNote": "Adding work saves it to your page under your chosen visibility. A private page stays private; adding a project never enrolls it in the public directory."
+      "publishNote": "Adding work saves it to your page under your chosen visibility. A private page stays private; adding a project never enrolls it in the public directory.",
+      "ownersSoFar": "{count, plural, =0 {No business owners have registered yet.} one {# business owner has registered so far} other {# business owners have registered so far}}",
+      "ownersInCountry": "{count, plural, =0 {none in {country} yet} one {# in {country}} other {# in {country}}}",
+      "ownersNote": "They are matched to providers by city and services when pages open."
     },
     "publication": {
       "title": "Profile and portfolio visibility",
@@ -4730,7 +4748,9 @@
       "goTo": "Slide {n} of 3",
       "platform": "The platform that connects business owners with social media and marketing providers, in Arabic and English.",
       "owners": "A business owner finds the specialty they need."
-    }
+    },
+    "ownerPath": "Have a business and need marketing?",
+    "ownerPathLink": "Register your business"
   },
   "CreatorSetup": {
     "nav": "Setup guide",
@@ -5101,5 +5121,64 @@
     "limit": "You can select up to 40 roles.",
     "selected": "Role added.",
     "removed": "Selection removed."
+  },
+  "OwnerEarly": {
+    "metaTitle": "Register as a business owner · Sawwiq",
+    "metaDescription": "Tell Sawwiq what marketing help your business needs. When the first providers' pages open, you are matched first.",
+    "title": "Have a business and need marketing? Register now.",
+    "intro": "Providers are building their pages during this early phase. Register your business and what you need, and you get first pick when their pages open.",
+    "promises": {
+      "match": "We match you with providers in your city and services before public browsing opens.",
+      "private": "What you write stays private; no provider sees your details until you say so.",
+      "free": "Free, no card, and you can edit or delete your answers any time."
+    },
+    "provider": "Offer marketing services?",
+    "providerLink": "Create your provider page",
+    "needs": {
+      "metaTitle": "What your business needs · Sawwiq",
+      "signedInAs": "Signed in as",
+      "title": "What does your business need?",
+      "titleEdit": "Update what your business needs",
+      "intro": "One minute. This decides who we introduce you to when the first pages open.",
+      "country": "Country",
+      "city": "City",
+      "businessType": "Type of business",
+      "businessTypeAny": "Choose a type (optional)",
+      "services": "What do you need help with?",
+      "servicesHint": "Pick everything that applies.",
+      "timing": "When do you want to start?",
+      "timings": {
+        "now": "As soon as possible",
+        "month": "Within a month",
+        "quarter": "In the next three months",
+        "later": "Later, just looking"
+      },
+      "whatsapp": "WhatsApp (optional)",
+      "whatsappHint": "Only used to introduce you to a provider you accept.",
+      "note": "Anything else? (optional)",
+      "notePlaceholder": "A sentence about the business or the goal",
+      "save": "Save my registration",
+      "saveEdit": "Save changes",
+      "privacy": "Your answers are stored on your account and shown to nobody else. You can change them or ask us to delete them at any time.",
+      "errors": {
+        "signin": "Your sign-in expired. Please sign in again.",
+        "invalid": "Please check the form and try again.",
+        "city": "Pick a city in the chosen country.",
+        "services": "Pick at least one thing you need help with."
+      }
+    },
+    "done": {
+      "metaTitle": "You are registered · Sawwiq",
+      "eyebrow": "Registered",
+      "title": "Thank you. You are on the list.",
+      "intro": "We have your needs and your city in {country}. Nothing else to do now.",
+      "next": {
+        "open": "Providers finish their pages during this phase; public browsing opens after it.",
+        "match": "When pages open, we send you the providers that fit your city and services first.",
+        "contact": "You choose whom to talk to. Nobody contacts you before that."
+      },
+      "edit": "Edit my answers",
+      "home": "Back to Sawwiq"
+    }
   }
 }

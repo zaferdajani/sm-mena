@@ -31,6 +31,9 @@
 .registration-site p, .registration-card p { line-height: 1.95; }
 .registration-intro { max-inline-size: 65ch; font-size: 1.075rem; color: var(--muted-foreground); }
 .registration-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-block-start: 1.5rem; }
+.registration-demand { margin-block-start: .9rem; padding: .75rem 1rem; border-radius: .9rem; background: var(--brand-soft); line-height: 1.8; font-size: .9375rem; }
+.registration-demand strong { color: var(--brand-deep, var(--brand)); }
+.registration-demand span { display: block; color: var(--muted-foreground); font-size: .875rem; }
 .registration-card { padding: clamp(1.25rem, 2vw, 1.75rem); border: 1px solid var(--border); background: var(--card); border-radius: 1.25rem; min-inline-size: 0; }
 .registration-icon { inline-size: 2.9rem; block-size: 2.9rem; padding: .65rem; color: var(--brand); background: var(--brand-tint); border-radius: .75rem; }
 .registration-status { display: inline-flex; border-radius: .5rem; padding: .3rem .6rem; background: var(--brand-soft); color: var(--brand-deep); font-size: .875rem; margin-block: .75rem .25rem; }
@@ -77,6 +80,8 @@
 .launch-trust { list-style: none; margin: 1.1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem .9rem; font-size: .9375rem; color: var(--muted-foreground); }
 .launch-trust li { display: inline-flex; align-items: center; gap: .4rem; line-height: 1.7; }
 .launch-trust svg { color: var(--brand); flex-shrink: 0; }
+.registration-owner-path { margin: 1rem 0 0; font-size: .9375rem; line-height: 1.8; color: var(--muted-foreground); }
+.registration-owner-path a { color: var(--brand); font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
 .launch-early { margin-block: clamp(1.5rem, 3vw, 2.5rem); padding: clamp(1.5rem, 3.5vw, 3rem); border-radius: 1.75rem; background: var(--launch-bg); color: var(--launch-ink); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem); border-inline-start: 4px solid var(--launch-gold); }
 .launch-early .registration-eyebrow { color: var(--launch-gold); }
 .launch-early .registration-intro { color: color-mix(in oklab, var(--launch-ink) 82%, transparent); }

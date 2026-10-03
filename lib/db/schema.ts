@@ -127,6 +127,34 @@ export const users = pgTable("users", {
 });
 
 /**
+ * What a business owner needs, captured when they register during the early
+ * phase (docs/58-owner-early-registration.md): one row per client account,
+ * rewritten when they edit it. Services are catalog group keys; the city tells
+ * the country (lib/core/catalog/countries.ts).
+ */
+export const ownerNeeds = pgTable(
+  "owner_needs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    country: text("country").notNull(),
+    city: text("city").notNull(),
+    businessType: text("business_type"),
+    services: jsonb("services").$type<string[]>().notNull().default([]),
+    timing: text("timing").notNull(),
+    whatsapp: text("whatsapp"),
+    note: text("note"),
+    locale: text("locale").notNull().default("ar"),
+    createdAt: createdAt(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("owner_needs_country_idx").on(t.country, t.createdAt)],
+);
+
+/**
  * One-time sign-in codes sent by email (docs/41-client-accounts.md). Only a
  * hash of the code is stored; codes expire after 10 minutes and allow five
  * tries. Rows are deleted after a day.
