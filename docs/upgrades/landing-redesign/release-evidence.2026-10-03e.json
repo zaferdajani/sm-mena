@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-03",
+  "productionAfter": { "commit": "e9368c1ba2217a5b871bd4cab1a55ea608c17036", "deployment": "dpl_sxgPKasvKR5hWEr8vLAvy7r1gmNV", "apiVersionSeenAt": "2026-10-03T16:30:23Z" },
+  "releases": [
+    { "pr": 55, "title": "Landing: drop the launch strip — the page opens with the header", "head": "9ca44eb", "mergedAs": "03e19e44ab2ea71ab61df56cd51cd506d4eccd6c", "deployment": "dpl_21vUaYtT4kPjn8Gvr5MS2igRb7hA",
+      "ci": "run 37135480036 success (lint/typecheck/unit, registration, full-platform)",
+      "local": "build ok; laptop frames 1536×722@1.25, 1366×657, 1280×600@1.5, 1440×900, 1920×1080, 1024×680, 390×844 ar/en: no overflow, CTA in view, strip absent; 320–1440 matrix clean; registration 30",
+      "liveChecks": "sawwiq.org ar 1440/390/320, en 1440/390 on 03e19e4: 0 strip elements, first element in main is HEADER, tools quiet, 3 slides, CTA in the first fold, no overflow; proxy retries 0; captures in live-2026-10-03e/" },
+    { "pr": 56, "title": "ci: intro playback check from a GitHub runner", "head": "681990e", "mergedAs": "e9368c1ba2217a5b871bd4cab1a55ea608c17036", "deployment": "dpl_sxgPKasvKR5hWEr8vLAvy7r1gmNV (workflow-only change)",
+      "ci": "run 37135674383 success",
+      "run": { "workflow": "Intro playback", "id": 37136798003, "artifact": 11277894276, "result": "webm and mp4 from production both reached ended (4.082 s / 4.074 s), HTTP 200, 83579 / 113051 bytes; evidence in docs/upgrades/intro-playback-2026-10-03/" } }
+  ],
+  "openItemsClosedToday": {
+    "1": "cohort size is 100 everywhere (lib/core/rules/founding.ts, marketing/01, marketing/02; docs/44 now says it)",
+    "6": "Live journey run 37135571604 on production 1be3fb3: 10/10 steps OK, nothing left behind; docs/upgrades/live-journey-2026-10-03/",
+    "7": "production intro files play to ended from a runner; the page-level check waits for the full phase (workflow input page=…)"
+  },
+  "ownerOnly": {
+    "branchDeletions": "proxy returns 403 (re-confirmed 15:50 UTC); merged today: design/landing-quiet-header, design/landing-hero-slides, design/modern-select, design/landing-drop-strip, ci/intro-playback-check, docs/open-items-sweep-2",
+    "platformConnections": "no provider app keys in the Vercel project (names only read); owner registers apps and sets secrets",
+    "hold": "payments, subscriptions, paid vendors, Vercel plan",
+    "pilot": "needs consenting creators, interviewer, segment",
+    "m3": "Expo client decision"
+  },
+  "method": "Headless Chromium from the build sandbox for landing checks (proxy 502 relays retried and counted); GitHub-hosted runners for the signed-in journey and the media playback; nothing submitted; no account created."
+}

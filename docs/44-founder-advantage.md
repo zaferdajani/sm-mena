@@ -22,7 +22,7 @@ Founder status is not a collectible number and never overrides relevance. It rew
 
 A registration alone is not enough for commercial founder benefits. Before benefits activate, the provider must:
 - be a real, non-demo active provider;
-- join before the founding cutoff/cohort capacity;
+- join before the founding cutoff (`FOUNDING_CLOSES_AT`) and while the cohort has capacity — 100 seats, the number `lib/core/rules/founding.ts` enforces and the marketing kit quotes (marketing/01 §Founding 100, marketing/02);
 - complete the core profile (bio + approved services);
 - publish genuine work or a useful package before the activation cutoff;
 - satisfy identity/KYC requirements that apply when money features go live.

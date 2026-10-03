@@ -1,0 +1,50 @@
+{
+ "site": "https://sawwiq.org",
+ "page": null,
+ "at": "2026-10-03T16:26:46.517Z",
+ "ok": true,
+ "results": [
+  {
+   "label": "sawwiq-intro-720-webm",
+   "ms": 4123,
+   "found": true,
+   "ended": true,
+   "currentTime": 4.082,
+   "duration": 4.082,
+   "readyState": 4,
+   "networkState": 1,
+   "error": null,
+   "src": "https://sawwiq.org/assets/brand/intro/sawwiq-intro-720.webm",
+   "events": [
+    "play",
+    "playing",
+    "timeupdate",
+    "ended"
+   ],
+   "status": 200,
+   "contentLength": "83579",
+   "canPlayType": "maybe"
+  },
+  {
+   "label": "sawwiq-intro-720-mp4",
+   "ms": 4123,
+   "found": true,
+   "ended": true,
+   "currentTime": 4.074,
+   "duration": 4.074,
+   "readyState": 4,
+   "networkState": 1,
+   "error": null,
+   "src": "https://sawwiq.org/assets/brand/intro/sawwiq-intro-720.mp4",
+   "events": [
+    "play",
+    "playing",
+    "timeupdate",
+    "ended"
+   ],
+   "status": 200,
+   "contentLength": "113051",
+   "canPlayType": "maybe"
+  }
+ ]
+}

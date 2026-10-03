@@ -1,0 +1,71 @@
+[
+ {
+  "locale": "ar",
+  "width": 1440,
+  "status": 200,
+  "strip": 0,
+  "firstEl": "HEADER",
+  "tools": "quiet",
+  "themeToggles": 0,
+  "locateButtons": 0,
+  "slides": 3,
+  "activeIndex": "0",
+  "activeCaption": "المنصة التي تجمع أصحاب الأعمال بمزودي خدمات التسويق والسوشيال ميديا، بالعربية والإنجليزية.",
+  "firstClaim": false,
+  "ahl": false,
+  "overflow": false,
+  "h1": "خلّي شغلك يبين.وكون معنا من البداية.",
+  "ctaInView": true,
+  "dot": {
+   "activeIndex": "1",
+   "src": "/_next/image?url=%2Fassets%2Fphotos%2Fagency.webp&w=3840&q=75"
+  }
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "status": 200,
+  "strip": 0,
+  "firstEl": "HEADER",
+  "tools": "quiet",
+  "themeToggles": 0,
+  "locateButtons": 0,
+  "slides": 3,
+  "activeIndex": "0",
+  "activeCaption": "The platform that connects business owners with social media and marketing providers, in Arabic and English.",
+  "firstClaim": false,
+  "ahl": false,
+  "overflow": false,
+  "h1": "Let your work be seen.Be here from the beginning.",
+  "ctaInView": true,
+  "dot": {
+   "activeIndex": "1",
+   "src": "/_next/image?url=%2Fassets%2Fphotos%2Fagency.webp&w=3840&q=75"
+  }
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "status": 200,
+  "strip": 0,
+  "firstEl": "HEADER",
+  "tools": "quiet",
+  "themeToggles": 0,
+  "locateButtons": 0,
+  "slides": 3,
+  "activeIndex": "0",
+  "activeCaption": "المنصة التي تجمع أصحاب الأعمال بمزودي خدمات التسويق والسوشيال ميديا، بالعربية والإنجليزية.",
+  "firstClaim": false,
+  "ahl": false,
+  "overflow": false,
+  "h1": "خلّي شغلك يبين.وكون معنا من البداية.",
+  "ctaInView": true,
+  "dot": {
+   "activeIndex": "1",
+   "src": "/_next/image?url=%2Fassets%2Fphotos%2Fagency.webp&w=3840&q=75"
+  }
+ },
+ {
+  "proxyRetries": 0
+ }
+]

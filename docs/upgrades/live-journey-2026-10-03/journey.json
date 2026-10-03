@@ -1,0 +1,70 @@
+{
+  "site": "https://sawwiq.org",
+  "startedAt": "2026-10-03T16:06:34.244Z",
+  "steps": [
+    {
+      "name": "version",
+      "ok": true,
+      "detail": "1be3fb3eef34dab5e81ecb18016925423d6af506 registration-setup-2026-09-29"
+    },
+    {
+      "name": "sign in",
+      "ok": true,
+      "detail": "/en/studio"
+    },
+    {
+      "name": "setup opens",
+      "ok": true,
+      "detail": "step 2"
+    },
+    {
+      "name": "providers honest",
+      "ok": true,
+      "detail": "5 blockers, 0 connect buttons"
+    },
+    {
+      "name": "image staged privately",
+      "ok": true,
+      "detail": "/api/setup-media/51dfe704-d638-43a5-8cc8-6beca87734c5"
+    },
+    {
+      "name": "staged image hidden from others",
+      "ok": true,
+      "detail": "HTTP 404"
+    },
+    {
+      "name": "resume after reload",
+      "ok": true,
+      "detail": "step 4, 1 image"
+    },
+    {
+      "name": "project saved",
+      "ok": true,
+      "detail": "visibility public, /p/ddc37862-1fcf-41dd-8e2e-432ad72b0883"
+    },
+    {
+      "name": "project page opens for the owner",
+      "ok": true
+    },
+    {
+      "name": "test project deleted",
+      "ok": true,
+      "detail": "HTTP 404"
+    }
+  ],
+  "version": {
+    "revision": "registration-setup-2026-09-29",
+    "commit": "1be3fb3eef34dab5e81ecb18016925423d6af506",
+    "environment": "production",
+    "launchPhase": "registration"
+  },
+  "finishedAt": "2026-10-03T16:06:51.598Z",
+  "screenshots": [
+    "1-setup-open",
+    "2-source-providers",
+    "3-project",
+    "4-preview",
+    "5-finished",
+    "6-project-page"
+  ]
+}
