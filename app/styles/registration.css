@@ -209,3 +209,18 @@
   .registration-site-v2 .launch-trust { margin-block-start: 1rem; }
   .registration-hero-product { min-block-size: clamp(18rem, 56vh, 28rem); }
 }
+
+/* First-fold simplification (owner direction, 3 Oct): one focal point (headline + one green button), no
+   duplicate announcements above the fold, quieter supporting elements, more air. */
+.registration-site-v2 .launch-badge { padding: .4rem .85rem; margin-block-end: 1.25rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); box-shadow: none; display: inline-flex; align-items: center; gap: .6rem; }
+.registration-site-v2 .launch-badge-kicker { font-size: .68rem; letter-spacing: .12em; color: var(--muted-foreground); }
+.registration-site-v2 .launch-badge > strong { font-size: .95rem; font-weight: 700; color: var(--foreground); }
+.registration-site-v2 .launch-badge-year { padding-inline-start: .6rem; border-inline-start: 1px solid var(--border); font-size: .9rem; font-weight: 600; color: var(--muted-foreground); }
+.registration-site-v2 .registration-secondary { min-block-size: auto; padding: .25rem .1rem; border: 0; background: transparent; font-weight: 700; color: var(--brand-deep); text-decoration: underline; text-underline-offset: .35em; text-decoration-color: color-mix(in oklab, var(--brand) 45%, transparent); }
+.registration-site-v2 .registration-secondary:hover { text-decoration-color: var(--brand); }
+.registration-site-v2 .registration-actions { gap: 1.5rem; }
+.registration-site-v2 .launch-trust { margin-block-start: 1.5rem; font-size: .92rem; color: var(--muted-foreground); }
+.registration-site-v2 .launch-trust svg { color: var(--brand); }
+.registration-hero-v2 .registration-hero-copy { padding-block: clamp(1rem, 3vw, 2.5rem); }
+.registration-photo-caption { inset-inline: 1.75rem; inset-block-end: 1.75rem; }
+.registration-photo-caption strong { font-size: 1.35rem; font-weight: 700; }
