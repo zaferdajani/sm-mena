@@ -12,8 +12,8 @@ import en from "@/messages/en.json";
 // The option builders take (locale, t): the Next wrappers in lib/*-options.ts read those from the request,
 // a native client passes its own. These tests run them with the real message catalogs and no framework.
 const t = (ns: Record<string, string>) => (key: string) => ns[key] ?? key;
-const arMessages = ar as Record<string, Record<string, string>>;
-const enMessages = en as Record<string, Record<string, string>>;
+const arMessages = ar as unknown as Record<string, Record<string, string>>;
+const enMessages = en as unknown as Record<string, Record<string, string>>;
 
 describe("option builders without Next", () => {
   it("labels services in the page language and cities from the message catalog", () => {
