@@ -1,0 +1,623 @@
+[
+ {
+  "name": "ar-320",
+  "overflow": false,
+  "scrollW": 320,
+  "clientW": 320,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 322,
+   "bottom": 379,
+   "visible": true
+  },
+  "h1": {
+   "top": 398,
+   "bottom": 517,
+   "visible": true
+  },
+  "cta": {
+   "top": 673,
+   "bottom": 724,
+   "visible": true
+  },
+  "trust": {
+   "top": 814,
+   "bottom": 906,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-390",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 438,
+   "visible": true
+  },
+  "cta": {
+   "top": 594,
+   "bottom": 645,
+   "visible": true
+  },
+  "trust": {
+   "top": 734,
+   "bottom": 793,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-768",
+  "overflow": false,
+  "scrollW": 768,
+  "clientW": 768,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 74,
+   "visible": true
+  },
+  "badge": {
+   "top": 244,
+   "bottom": 309,
+   "visible": true
+  },
+  "h1": {
+   "top": 331,
+   "bottom": 439,
+   "visible": true
+  },
+  "cta": {
+   "top": 534,
+   "bottom": 585,
+   "visible": true
+  },
+  "trust": {
+   "top": 675,
+   "bottom": 700,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-1024",
+  "overflow": false,
+  "scrollW": 1024,
+  "clientW": 1024,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 234,
+   "bottom": 299,
+   "visible": true
+  },
+  "h1": {
+   "top": 362,
+   "bottom": 554,
+   "visible": true
+  },
+  "cta": {
+   "top": 699,
+   "bottom": 750,
+   "visible": true
+  },
+  "trust": {
+   "top": 839,
+   "bottom": 898,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-1440",
+  "overflow": false,
+  "scrollW": 1440,
+  "clientW": 1440,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 237,
+   "bottom": 301,
+   "visible": true
+  },
+  "h1": {
+   "top": 364,
+   "bottom": 634,
+   "visible": true
+  },
+  "cta": {
+   "top": 797,
+   "bottom": 849,
+   "visible": true
+  },
+  "trust": {
+   "top": 871,
+   "bottom": 896,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-390-dark",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 438,
+   "visible": true
+  },
+  "cta": {
+   "top": 595,
+   "bottom": 646,
+   "visible": true
+  },
+  "trust": {
+   "top": 736,
+   "bottom": 795,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-1440-dark",
+  "overflow": false,
+  "scrollW": 1440,
+  "clientW": 1440,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 237,
+   "bottom": 301,
+   "visible": true
+  },
+  "h1": {
+   "top": 364,
+   "bottom": 634,
+   "visible": true
+  },
+  "cta": {
+   "top": 798,
+   "bottom": 849,
+   "visible": true
+  },
+  "trust": {
+   "top": 871,
+   "bottom": 897,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-zoom200",
+  "overflow": false,
+  "scrollW": 720,
+  "clientW": 720,
+  "vh": 500,
+  "strip": {
+   "top": 0,
+   "bottom": 74,
+   "visible": true
+  },
+  "badge": {
+   "top": 244,
+   "bottom": 309,
+   "visible": true
+  },
+  "h1": {
+   "top": 331,
+   "bottom": 439,
+   "visible": true
+  },
+  "cta": {
+   "top": 534,
+   "bottom": 585,
+   "visible": false
+  },
+  "trust": {
+   "top": 675,
+   "bottom": 700,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "ar-390-reduced",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 438,
+   "visible": true
+  },
+  "cta": {
+   "top": 594,
+   "bottom": 645,
+   "visible": true
+  },
+  "trust": {
+   "top": 734,
+   "bottom": 793,
+   "visible": true
+  },
+  "bad": false,
+  "animations": [
+   "none",
+   "none",
+   "none"
+  ]
+ },
+ {
+  "name": "en-320",
+  "overflow": false,
+  "scrollW": 320,
+  "clientW": 320,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 322,
+   "bottom": 379,
+   "visible": true
+  },
+  "h1": {
+   "top": 398,
+   "bottom": 557,
+   "visible": true
+  },
+  "cta": {
+   "top": 743,
+   "bottom": 795,
+   "visible": true
+  },
+  "trust": {
+   "top": 884,
+   "bottom": 1002,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-390",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 478,
+   "visible": true
+  },
+  "cta": {
+   "top": 635,
+   "bottom": 686,
+   "visible": true
+  },
+  "trust": {
+   "top": 776,
+   "bottom": 894,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-768",
+  "overflow": false,
+  "scrollW": 768,
+  "clientW": 768,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 74,
+   "visible": true
+  },
+  "badge": {
+   "top": 244,
+   "bottom": 309,
+   "visible": true
+  },
+  "h1": {
+   "top": 331,
+   "bottom": 439,
+   "visible": true
+  },
+  "cta": {
+   "top": 534,
+   "bottom": 586,
+   "visible": true
+  },
+  "trust": {
+   "top": 675,
+   "bottom": 734,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "en-1024",
+  "overflow": false,
+  "scrollW": 1024,
+  "clientW": 1024,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 229,
+   "bottom": 293,
+   "visible": true
+  },
+  "h1": {
+   "top": 356,
+   "bottom": 612,
+   "visible": true
+  },
+  "cta": {
+   "top": 757,
+   "bottom": 808,
+   "visible": true
+  },
+  "trust": {
+   "top": 897,
+   "bottom": 956,
+   "visible": true
+  },
+  "bad": false
+ },
+ {
+  "name": "en-1440",
+  "overflow": false,
+  "scrollW": 1440,
+  "clientW": 1440,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 230,
+   "bottom": 294,
+   "visible": true
+  },
+  "h1": {
+   "top": 358,
+   "bottom": 717,
+   "visible": true
+  },
+  "cta": {
+   "top": 881,
+   "bottom": 932,
+   "visible": true
+  },
+  "trust": {
+   "top": 954,
+   "bottom": 1013,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-390-dark",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 478,
+   "visible": true
+  },
+  "cta": {
+   "top": 635,
+   "bottom": 686,
+   "visible": true
+  },
+  "trust": {
+   "top": 775,
+   "bottom": 893,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-1440-dark",
+  "overflow": false,
+  "scrollW": 1440,
+  "clientW": 1440,
+  "vh": 1000,
+  "strip": {
+   "top": 0,
+   "bottom": 73,
+   "visible": true
+  },
+  "badge": {
+   "top": 230,
+   "bottom": 294,
+   "visible": true
+  },
+  "h1": {
+   "top": 358,
+   "bottom": 717,
+   "visible": true
+  },
+  "cta": {
+   "top": 881,
+   "bottom": 932,
+   "visible": true
+  },
+  "trust": {
+   "top": 955,
+   "bottom": 1014,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-zoom200",
+  "overflow": false,
+  "scrollW": 720,
+  "clientW": 720,
+  "vh": 500,
+  "strip": {
+   "top": 0,
+   "bottom": 74,
+   "visible": true
+  },
+  "badge": {
+   "top": 244,
+   "bottom": 309,
+   "visible": true
+  },
+  "h1": {
+   "top": 331,
+   "bottom": 439,
+   "visible": true
+  },
+  "cta": {
+   "top": 535,
+   "bottom": 586,
+   "visible": false
+  },
+  "trust": {
+   "top": 676,
+   "bottom": 735,
+   "visible": false
+  },
+  "bad": false
+ },
+ {
+  "name": "en-390-reduced",
+  "overflow": false,
+  "scrollW": 390,
+  "clientW": 390,
+  "vh": 844,
+  "strip": {
+   "top": 0,
+   "bottom": 99,
+   "visible": true
+  },
+  "badge": {
+   "top": 270,
+   "bottom": 334,
+   "visible": true
+  },
+  "h1": {
+   "top": 357,
+   "bottom": 478,
+   "visible": true
+  },
+  "cta": {
+   "top": 634,
+   "bottom": 685,
+   "visible": true
+  },
+  "trust": {
+   "top": 774,
+   "bottom": 892,
+   "visible": false
+  },
+  "bad": false,
+  "animations": [
+   "none",
+   "none",
+   "none"
+  ]
+ },
+ {
+  "name": "keyboard",
+  "path": [
+   "a#launch-strip-link:Join from the beginning|outline=true",
+   "a:سوّق|outline=true",
+   "select:🇯🇴 Jordan🇸🇦 Saudi Ar|outline=true",
+   "button:|outline=true",
+   "a#locale-switcher:العربية|outline=true",
+   "button#theme-toggle:|outline=true",
+   "a#registration-account:Sign in|outline=true",
+   "a#registration-cta:Join the first cohort|outline=true"
+  ]
+ },
+ {
+  "name": "proxyRetries",
+  "proxyRetries": 0
+ }
+]

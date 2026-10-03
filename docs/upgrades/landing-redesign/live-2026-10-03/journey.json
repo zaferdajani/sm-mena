@@ -1,0 +1,271 @@
+[
+ {
+  "locale": "ar",
+  "width": 390,
+  "status": 200,
+  "url": "https://sawwiq.org/ar",
+  "lang": "ar",
+  "dir": "rtl",
+  "title": "سوّق قادم قريباً | التسجيل المبكر للدفعة الأولى مفتوح",
+  "scrollW": 390,
+  "clientW": 390,
+  "brokenImgs": [],
+  "styled": true,
+  "stylesheets": 4,
+  "strip": true,
+  "badge": true,
+  "h1": "خلّي شغلك يبين.وكون معنا من البداية.",
+  "ctaHref": "/ar/join",
+  "ctaInView": true,
+  "exampleHref": "/ar/examples",
+  "whyEarly": 4,
+  "navLinks": [
+   "/ar",
+   "/en",
+   "/ar/login"
+  ],
+  "langSwitch": [
+   "/ar/join",
+   "/ar",
+   "/en",
+   "/ar/login",
+   "/ar/examples",
+   "/ar/contact"
+  ],
+  "overflow": false,
+  "failedResponses": [],
+  "proxyRetriesSoFar": 0
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "step": "language-switch",
+  "landed": "https://sawwiq.org/en",
+  "lang": "en"
+ },
+ {
+  "locale": "ar",
+  "width": 390,
+  "step": "cta",
+  "landed": "https://sawwiq.org/ar/join",
+  "status": "page only; nothing submitted",
+  "hasForm": 1
+ },
+ {
+  "locale": "ar",
+  "width": 1440,
+  "status": 200,
+  "url": "https://sawwiq.org/ar",
+  "lang": "ar",
+  "dir": "rtl",
+  "title": "سوّق قادم قريباً | التسجيل المبكر للدفعة الأولى مفتوح",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "brokenImgs": [],
+  "styled": true,
+  "stylesheets": 4,
+  "strip": true,
+  "badge": true,
+  "h1": "خلّي شغلك يبين.وكون معنا من البداية.",
+  "ctaHref": "/ar/join",
+  "ctaInView": true,
+  "exampleHref": "/ar/examples",
+  "whyEarly": 4,
+  "navLinks": [
+   "/ar",
+   "/en",
+   "/ar/login"
+  ],
+  "langSwitch": [
+   "/ar/join",
+   "/ar",
+   "/en",
+   "/ar/login",
+   "/ar/examples",
+   "/ar/contact"
+  ],
+  "overflow": false,
+  "failedResponses": [],
+  "proxyRetriesSoFar": 4
+ },
+ {
+  "locale": "ar",
+  "width": 1440,
+  "step": "language-switch",
+  "landed": "https://sawwiq.org/en",
+  "lang": "en"
+ },
+ {
+  "locale": "ar",
+  "width": 1440,
+  "step": "cta",
+  "landed": "https://sawwiq.org/ar/join",
+  "status": "page only; nothing submitted",
+  "hasForm": 1
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "status": 200,
+  "url": "https://sawwiq.org/ar",
+  "lang": "ar",
+  "dir": "rtl",
+  "title": "سوّق قادم قريباً | التسجيل المبكر للدفعة الأولى مفتوح",
+  "scrollW": 320,
+  "clientW": 320,
+  "brokenImgs": [],
+  "styled": true,
+  "stylesheets": 4,
+  "strip": true,
+  "badge": true,
+  "h1": "خلّي شغلك يبين.وكون معنا من البداية.",
+  "ctaHref": "/ar/join",
+  "ctaInView": true,
+  "exampleHref": "/ar/examples",
+  "whyEarly": 4,
+  "navLinks": [
+   "/ar",
+   "/en",
+   "/ar/login"
+  ],
+  "langSwitch": [
+   "/ar/join",
+   "/ar",
+   "/en",
+   "/ar/login",
+   "/ar/examples",
+   "/ar/contact"
+  ],
+  "overflow": false,
+  "failedResponses": [],
+  "proxyRetriesSoFar": 8
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "step": "language-switch",
+  "landed": "https://sawwiq.org/en",
+  "lang": "en"
+ },
+ {
+  "locale": "ar",
+  "width": 320,
+  "step": "cta",
+  "landed": "https://sawwiq.org/ar/join",
+  "status": "page only; nothing submitted",
+  "hasForm": 1
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "status": 200,
+  "url": "https://sawwiq.org/en",
+  "lang": "en",
+  "dir": "ltr",
+  "title": "Sawwiq is coming",
+  "scrollW": 390,
+  "clientW": 390,
+  "brokenImgs": [],
+  "styled": true,
+  "stylesheets": 4,
+  "strip": true,
+  "badge": true,
+  "h1": "Let your work be seen.Be here from the beginning.",
+  "ctaHref": "/en/join",
+  "ctaInView": true,
+  "exampleHref": "/en/examples",
+  "whyEarly": 4,
+  "navLinks": [
+   "/en",
+   "/ar",
+   "/en/login"
+  ],
+  "langSwitch": [
+   "/en/join",
+   "/en",
+   "/ar",
+   "/en/login",
+   "/en/examples",
+   "/en/contact"
+  ],
+  "overflow": false,
+  "failedResponses": [],
+  "proxyRetriesSoFar": 12
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "step": "language-switch",
+  "landed": "https://sawwiq.org/ar",
+  "lang": "ar"
+ },
+ {
+  "locale": "en",
+  "width": 390,
+  "step": "cta",
+  "landed": "https://sawwiq.org/en/join",
+  "status": "page only; nothing submitted",
+  "hasForm": 1
+ },
+ {
+  "locale": "en",
+  "width": 1440,
+  "status": 200,
+  "url": "https://sawwiq.org/en",
+  "lang": "en",
+  "dir": "ltr",
+  "title": "Sawwiq is coming",
+  "scrollW": 1440,
+  "clientW": 1440,
+  "brokenImgs": [],
+  "styled": true,
+  "stylesheets": 4,
+  "strip": true,
+  "badge": true,
+  "h1": "Let your work be seen.Be here from the beginning.",
+  "ctaHref": "/en/join",
+  "ctaInView": true,
+  "exampleHref": "/en/examples",
+  "whyEarly": 4,
+  "navLinks": [
+   "/en",
+   "/ar",
+   "/en/login"
+  ],
+  "langSwitch": [
+   "/en/join",
+   "/en",
+   "/ar",
+   "/en/login",
+   "/en/examples",
+   "/en/contact"
+  ],
+  "overflow": false,
+  "failedResponses": [],
+  "proxyRetriesSoFar": 16
+ },
+ {
+  "locale": "en",
+  "width": 1440,
+  "step": "language-switch",
+  "landed": "https://sawwiq.org/ar",
+  "lang": "ar"
+ },
+ {
+  "locale": "en",
+  "width": 1440,
+  "step": "cta",
+  "landed": "https://sawwiq.org/en/join",
+  "status": "page only; nothing submitted",
+  "hasForm": 1
+ },
+ {
+  "step": "version",
+  "revision": "registration-setup-2026-09-29",
+  "commit": "ed6569750faa1387f0ac3cfa8da8e1f91b613681",
+  "environment": "production",
+  "launchPhase": "registration",
+  "at": "2026-10-03T08:11:42.091Z",
+  "proxyRetries": 17
+ }
+]

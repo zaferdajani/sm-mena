@@ -1,0 +1,35 @@
+{
+  "release": "Landing redesign: calm premium v2 (PR #42, successor to #41)",
+  "candidate": { "branch": "design/landing-calm-premium-v3", "head": "3db28c204730ae85753641ad3ae94fba3d6845b1", "mergedAs": "ed6569750faa1387f0ac3cfa8da8e1f91b613681", "mergeMethod": "squash", "base": "fd117fca6600af00c394679e1380857141e46b04" },
+  "repair": {
+    "failingRun": "https://github.com/zaferdajani/sm-mena/actions/runs/37104031318/job/111148980528",
+    "rootCauses": [
+      "components/registration/registration-view.tsx carried the why-join-early section twice, so the campaign contract counted 8 points instead of 4",
+      "the v2 phone headline (clamp(2.35rem, 11vw, 3.6rem)) pushed the primary CTA below the fold on 320-390px screens in English",
+      "the launch strip's edge bleed used the old page padding, leaving 7px of horizontal overflow at 768px and 200% zoom"
+    ],
+    "fixes": ["one why-join-early section after the audience cards", "phone headline clamp(1.9rem, 8vw, 2.6rem) with a tighter lead", "strip bleed aligned with the v2 padding"],
+    "noTestWeakened": true
+  },
+  "validationOnCandidate": {
+    "local": { "eslint": "0 errors", "tsc": "0 errors", "vitest": "84 files, 510 tests", "registrationSuite": "22 passed", "fullPlaywright": "335 passed, 10 skipped (14.7 min)", "build": "pass" },
+    "ci": { "run": "https://github.com/zaferdajani/sm-mena/actions/runs/37107343465", "jobs": { "Lint, typecheck, unit tests": "success", "Full-platform regression (Playwright)": "success", "Registration phase, privacy and mobile journey": "success" } }
+  },
+  "deployment": { "provider": "Vercel", "project": "sm-mena (prj_r6vpBm9DQ1RCmBYhDTURXga9bPC1)", "id": "dpl_2JBDn8ChzxQUupu1AV6EUBtE5mbr", "state": "READY", "target": "production", "commit": "ed6569750faa1387f0ac3cfa8da8e1f91b613681", "createdAt": "2026-10-03T08:00:53.269Z", "inspector": "https://vercel.com/zaferdajani/sm-mena/2JBDn8ChzxQUupu1AV6EUBtE5mbr" },
+  "liveVerification": {
+    "at": "2026-10-03T08:11:42Z",
+    "apiVersion": { "url": "https://sawwiq.org/api/version", "commit": "ed6569750faa1387f0ac3cfa8da8e1f91b613681", "revision": "registration-setup-2026-09-29", "launchPhase": "registration" },
+    "method": "Headless Chromium (Playwright) from the build sandbox: viewport emulation, not physical devices. The sandbox reaches the internet through an agent proxy that intermittently answered 502 for static assets under browser load; those relays were retried transparently and counted (17 retries in the journey run, 0 in the capture run); every asset returned 200 directly. The browser contexts ignore the proxy's interception certificate; TLS to sawwiq.org was verified separately through the sandbox CA bundle (HTTP 200, verify result 0).",
+    "journey": [
+      { "url": "https://sawwiq.org/ar", "viewport": "390x844 mobile", "locale": "ar", "dir": "rtl", "overflow": false, "brokenImages": 0, "stripBadgeCtaInViewport": true, "whyEarlyPoints": 4, "languageSwitchLandedOn": "https://sawwiq.org/en", "ctaLandedOn": "https://sawwiq.org/ar/join (form rendered, nothing submitted)" },
+      { "url": "https://sawwiq.org/ar", "viewport": "1440x1000", "locale": "ar", "overflow": false, "brokenImages": 0, "stripBadgeCtaInViewport": true, "languageSwitchLandedOn": "https://sawwiq.org/en", "ctaLandedOn": "https://sawwiq.org/ar/join" },
+      { "url": "https://sawwiq.org/ar", "viewport": "320x844 mobile", "locale": "ar", "overflow": false, "brokenImages": 0, "stripBadgeCtaInViewport": true, "languageSwitchLandedOn": "https://sawwiq.org/en", "ctaLandedOn": "https://sawwiq.org/ar/join" },
+      { "url": "https://sawwiq.org/en", "viewport": "390x844 mobile", "locale": "en", "dir": "ltr", "overflow": false, "brokenImages": 0, "stripBadgeCtaInViewport": true, "languageSwitchLandedOn": "https://sawwiq.org/ar", "ctaLandedOn": "https://sawwiq.org/en/join" },
+      { "url": "https://sawwiq.org/en", "viewport": "1440x1000", "locale": "en", "overflow": false, "brokenImages": 0, "stripBadgeCtaInViewport": true, "languageSwitchLandedOn": "https://sawwiq.org/ar", "ctaLandedOn": "https://sawwiq.org/en/join" }
+    ],
+    "captureMatrix": "ar and en at 320, 390, 768, 1024, 1440 (light), 390 and 1440 (dark), 720 CSS px at 200% zoom, 390 reduced motion: 0 horizontal overflow, 0 broken images, strip, cohort badge, headline and CTA inside the first viewport on every phone and desktop frame (CTA below the 500px-tall zoom frame, as before); reduced motion reports no running animations; keyboard path strip link → brand → country → locate → language → theme → sign in → CTA, all with a visible outline.",
+    "navigation": { "header": ["/ar", "/en", "/ar/login"], "ctas": { "primary": "/{locale}/join", "secondary": "/{locale}/examples" } },
+    "notRun": ["no registration completed", "no production data touched", "no physical device"],
+    "screenshots": "docs/upgrades/landing-redesign/live-2026-10-03/*.png (fold frames: ar 390/1440/320, en 390/1440, and the ar 390 join page reached from the CTA); journey.json and capture-report.json hold the measurements"
+  }
+}

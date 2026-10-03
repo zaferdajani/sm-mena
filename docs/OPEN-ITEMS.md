@@ -1,11 +1,11 @@
 # Sawwiq — open items (living list)
 
 Kept current by the working session; every report to the owner ends with this list.
-Last update: 2026-10-01 09:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase with the early-access campaign (`/api/version` → d3e971b, revision registration-setup-2026-09-29, launchPhase registration; verified 2026-10-01 09:06 UTC); the scheduled site check is green.
+Last update: 2026-10-03 08:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase with the calm premium landing redesign (PR #42) on top of the early-access campaign (`/api/version` → ed65697, revision registration-setup-2026-09-29, launchPhase registration; Vercel deployment dpl_2JBDn8ChzxQUupu1AV6EUBtE5mbr; verified live 2026-10-03 08:11 UTC, docs/upgrades/landing-redesign/release-evidence.2026-10-03.json).
 
 ## Owner decisions (nobody else can close these)
 
-0. **Early-access campaign (docs/55) is on main.** Look at sawwiq.org/ar and /en on your phone and desktop and say if the wording should change; the copy keys are `Registration.launch`, `cohort`, `trust`, `early` in messages/{ar,en}.json. Architecture direction for web + PWA + native lives in docs/architecture/; the next engineering step (M1, shared brains) needs no decision, the API slice (M2) and the Expo app (M3) do.
+0. **Landing redesign (PR #42) and the early-access campaign (docs/55) are live.** Look at sawwiq.org/ar and /en on your phone and desktop and say if the wording or the new sections (audiences, proof, how it works, FAQ, final call) should change; #41 can be closed on GitHub as superseded by #42; the copy keys are `Registration.launch`, `cohort`, `trust`, `early` in messages/{ar,en}.json. Architecture direction for web + PWA + native lives in docs/architecture/; the next engineering step (M1, shared brains) needs no decision, the API slice (M2) and the Expo app (M3) do.
 
 1. **Founding-cohort wording.** docs/44 approves 0% commission on the first project, 7% for the launch year and six months of Pro; the earlier "first 40 founding agencies, lifetime free Pro" line was replaced in the catalogs. Confirm the cohort size the marketing kit may quote (marketing/02 says 100, per docs/44 "cohort capacity").
 2. **Platform connections.** All five providers show "Not available yet" until a developer app is registered per platform, its secrets set in Vercel (never in chat), the platform approves the permissions and a controlled live test with an authorized account passes (docs/53 readiness gates).
@@ -20,11 +20,13 @@ Last update: 2026-10-01 09:20 UTC, main at the commit that carries this file. Pr
 
 ## Engineering follow-ups (small, unblocked)
 
-9. Roadmap M1 (docs/architecture/mobile-and-api-roadmap.md §3 steps 1–5): move catalogs and pure rules under a shared folder behind re-export shims, lift the Zod schemas out of the actions, swap `next-intl`'s `createTranslator` for `use-intl` inside lib/. Each step is small and covered by the existing suites; the boundary test guards the result.
+9. Roadmap M1 (docs/architecture/mobile-and-api-roadmap.md §3 steps 1–5) is being delivered on branch feat/m1-shared-brains (lib/core/catalog, lib/core/rules, lib/core/options, lib/validation; 42 files under the boundary test; use-intl inside lib/); M2 (session core, decision guards, bearer /api/v1 slice A behind API_V1_ENABLED, off in production) follows on the same track.
 10. Dependency audit "needs review" items: delete `@supabase/ssr` and lib/supabase/* if no Supabase Auth work is planned; lazy-load the AI SDKs; move `shadcn` to devDependencies.
 11. Draw a maskable 512 px icon for the manifest.
 
 ## Closed since the last list
+
+- Landing redesign PR #42 repaired (duplicate why-join-early section, phone headline pushing the CTA below the fold, 7px strip overflow), validated green on 3db28c2 (CI run 37107343465: all three jobs; local full Playwright 335 passed), squash-merged as ed65697, deployed by Vercel (dpl_2JBDn8ChzxQUupu1AV6EUBtE5mbr) and verified live on sawwiq.org ar/en at 390/1440 and ar at 320: no overflow, no broken assets, language switch and CTA → /join work, nothing submitted.
 
 - Early-access campaign layer shipped (docs/55): strip, cohort mark, cohort CTA, promise line, why-join-early; validated at 320–1440, dark, reduced motion, keyboard; full and registration suites green on bb45e32.
 - Mobile-ready foundation: docs/architecture/mobile-and-api-roadmap.md, dependency-audit.md, shared error contract, framework-boundary test, phase-aware manifest, lazy PDF reader on the studio importer.
