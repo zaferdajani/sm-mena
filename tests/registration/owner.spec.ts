@@ -38,7 +38,7 @@ for (const locale of ["ar", "en"] as const) {
     // validation: a service is required
     await page.getByTestId("owner-save").click();
     await expect(page.getByTestId("owner-needs-form")).toContainText(locale === "ar" ? "اختر على الأقل" : "at least one");
-    await page.getByTestId("owner-services").locator("label", { hasText: locale === "ar" ? "السوشيال ميديا" : "Social media" }).click();
+    await page.getByTestId("owner-services").locator("label", { hasText: locale === "ar" ? "وسائل التواصل الاجتماعي" : "Social media" }).click();
     await page.getByTestId("owner-timing").locator("label").nth(1).click();
     await page.getByTestId("owner-business-type").selectOption("restaurant_cafe");
     await page.fill("#whatsapp", "+962 79 000 0000");

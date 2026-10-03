@@ -106,7 +106,7 @@ try {
   await page.getByTestId("setup-publish").click();
   await page.getByTestId("setup-finished").waitFor({ timeout: 60_000 });
   await shot(page, "5-finished");
-  const href = await page.getByRole("link", { name: /View the project|شوف المشروع/ }).getAttribute("href");
+  const href = await page.getByRole("link", { name: /View the project|شاهد المشروع/ }).getAttribute("href");
   postId = href?.split("/p/")[1] ?? null;
   step("project saved", Boolean(postId), `visibility ${visibility}, /p/${postId}`);
   await page.goto(`${site}/ar/p/${postId}`);

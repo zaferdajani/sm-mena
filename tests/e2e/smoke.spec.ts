@@ -28,7 +28,7 @@ test("Arabic feed renders right-to-left", async ({ page }) => {
   await page.goto("/ar/feed");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("اعثر على شركة التسويق والسوشيال ميديا المناسبة لنشاطك في الأردن");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("اعثر على شركة التسويق ووسائل التواصل الاجتماعي المناسبة لنشاطك في الأردن");
   await expect(page.getByTestId("post-card").first()).toBeVisible();
 });
 

@@ -3,7 +3,7 @@
   "groups": [
     {
       "key": "social_media",
-      "name_ar": "السوشيال ميديا",
+      "name_ar": "وسائل التواصل الاجتماعي",
       "name_en": "Social media"
     },
     {
@@ -199,14 +199,15 @@
       "key": "smm_content",
       "group": "social_media",
       "parent": "smm_content",
-      "name_ar": "صناعة محتوى السوشيال ميديا",
+      "name_ar": "صناعة محتوى وسائل التواصل الاجتماعي",
       "name_en": "Social media content creation",
       "aliases": [
         "كونتنت",
         "محتوى سوشيال",
         "صناعة محتوى",
         "content creation",
-        "بوستات"
+        "بوستات",
+        "صناعة محتوى السوشيال ميديا"
       ],
       "roles": [
         "social_media_manager",
@@ -235,13 +236,14 @@
       "key": "smm_strategy",
       "group": "social_media",
       "parent": "smm_strategy",
-      "name_ar": "استراتيجية السوشيال ميديا",
+      "name_ar": "استراتيجية وسائل التواصل الاجتماعي",
       "name_en": "Social media strategy",
       "aliases": [
         "خطة سوشيال",
         "استراتيجية سوشيال",
         "social strategy",
-        "خطة تواصل"
+        "خطة تواصل",
+        "استراتيجية السوشيال ميديا"
       ],
       "roles": [
         "strategist",
@@ -463,13 +465,14 @@
       "key": "social_audit",
       "group": "social_media",
       "parent": "smm_strategy",
-      "name_ar": "تقييم وتدقيق حسابات السوشيال",
+      "name_ar": "تقييم وتدقيق حسابات التواصل الاجتماعي",
       "name_en": "Social media audit",
       "aliases": [
         "تدقيق حسابات",
         "تقييم الحساب",
         "audit",
-        "social audit"
+        "social audit",
+        "تقييم وتدقيق حسابات السوشيال"
       ],
       "roles": [
         "strategist",
@@ -499,14 +502,15 @@
       "key": "social_customer_service",
       "group": "social_media",
       "parent": "smm_community",
-      "name_ar": "خدمة العملاء عبر السوشيال ميديا",
+      "name_ar": "خدمة العملاء عبر وسائل التواصل الاجتماعي",
       "name_en": "Customer service on social media",
       "aliases": [
         "الرد على الرسائل",
         "انبوكس",
         "الخاص",
         "DMs",
-        "customer care"
+        "customer care",
+        "خدمة العملاء عبر السوشيال ميديا"
       ],
       "roles": [
         "community_manager"
@@ -570,14 +574,15 @@
       "key": "social_contests",
       "group": "social_media",
       "parent": "smm_content",
-      "name_ar": "المسابقات والسحوبات على السوشيال",
+      "name_ar": "المسابقات والسحوبات على وسائل التواصل الاجتماعي",
       "name_en": "Social contests and giveaways",
       "aliases": [
         "مسابقات",
         "سحب",
         "قيف اواي",
         "giveaway",
-        "هدايا"
+        "هدايا",
+        "المسابقات والسحوبات على السوشيال"
       ],
       "roles": [
         "social_media_manager",
@@ -624,13 +629,14 @@
       "key": "social_reporting",
       "group": "social_media",
       "parent": "analytics",
-      "name_ar": "تقارير أداء السوشيال ميديا",
+      "name_ar": "تقارير أداء وسائل التواصل الاجتماعي",
       "name_en": "Social media performance reports",
       "aliases": [
         "تقرير شهري",
         "تقارير سوشيال",
         "insights",
-        "reporting"
+        "reporting",
+        "تقارير أداء السوشيال ميديا"
       ],
       "roles": [
         "social_media_manager",
@@ -1746,14 +1752,15 @@
       "key": "animated_social_posts",
       "group": "creative",
       "parent": "motion_graphics",
-      "name_ar": "التصاميم المتحركة للسوشيال",
+      "name_ar": "التصاميم المتحركة لوسائل التواصل الاجتماعي",
       "name_en": "Animated social posts",
       "aliases": [
         "بوست متحرك",
         "موشن بوست",
         "GIF",
         "animated post",
-        "ستوري متحرك"
+        "ستوري متحرك",
+        "التصاميم المتحركة للسوشيال"
       ],
       "roles": [
         "motion_designer"
@@ -2112,7 +2119,7 @@
       "key": "social_post_design",
       "group": "creative",
       "parent": "graphic_design",
-      "name_ar": "تصميم منشورات وستوريات السوشيال",
+      "name_ar": "تصميم منشورات وقصص وسائل التواصل الاجتماعي",
       "name_en": "Social post, story and carousel design",
       "aliases": [
         "تصاميم سوشيال",
@@ -2120,7 +2127,8 @@
         "ستوري",
         "كاروسيل",
         "post design",
-        "carousel"
+        "carousel",
+        "تصميم منشورات وستوريات السوشيال"
       ],
       "roles": [
         "graphic_designer"

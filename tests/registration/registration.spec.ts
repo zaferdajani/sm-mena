@@ -69,7 +69,7 @@ test("eight markets, both languages and saved theme work on the actual registrat
     await expect(select).toHaveValue(market);
   }
   await select.selectOption("sa");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("وخلك معنا");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("منذ البداية");
   await capture(page, info, "saudi-registration");
   await page.getByTestId("locale-switcher").click();
   await expect(page).toHaveURL(/\/en$/);
