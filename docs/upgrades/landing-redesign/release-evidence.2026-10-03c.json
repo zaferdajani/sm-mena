@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-03",
+  "productionAfter": { "commit": "1c4f6205b466a648fbd208f7d0dc074d909ceb17", "deployment": "dpl_3UWxRpgCvUpg6ShmKqQfeHJkdSH9", "apiVersionSeenAt": "2026-10-03T11:14:58Z" },
+  "releases": [
+    { "pr": 49, "title": "A quieter first fold (owner's simplification direction)", "head": "e7e4760", "mergedAs": "60958b0ad4761a0bea5d32f3aca78cbd81add477", "deployment": "dpl_DBMGVSPjL6QjmVu1Dkej4W9Jm4Wr",
+      "ci": "lint/typecheck/unit, registration, full-platform: success", "local": "registration 22; laptop and 320–1440 matrices clean",
+      "liveChecks": "no launch-eyebrow in the rendered page; one-line photo caption; ar/en at 1536×722@1.25, 1366×657, 1280×600@1.5, 1440×900, 1920×1080, 1024×680, 390×844: no overflow, CTA on the first screen and 20–40 px higher than before; journey green" },
+    { "pr": 50, "title": "/about redirects to the landing during registration", "head": "7d43261", "mergedAs": "3a741e8d3018d1abdfbfebc7bb66bedd236a2337", "deployment": "shipped in dpl_3UWxRpgCvUpg6ShmKqQfeHJkdSH9 (its own build was superseded)",
+      "ci": "success incl. tests/registration/gated-routes.spec.ts", "liveChecks": "/ar/about → 307 → /ar; /en/about → 307 → /en; one landing, one h1, no app shell, no overflow" },
+    { "pr": 51, "title": "Dependency audit: @supabase/ssr removed, AI SDKs on first use, shadcn dev, maskable icon", "head": "c977792", "mergedAs": "1c4f6205b466a648fbd208f7d0dc074d909ceb17", "deployment": "dpl_3UWxRpgCvUpg6ShmKqQfeHJkdSH9",
+      "ci": "success", "local": "Vitest 90 files / 578 tests", "liveChecks": "manifest lists /brand/mark-512-maskable.png purpose maskable; file 200 image/png 512×512; landing/join/about journeys unchanged" }
+  ],
+  "ownerOnly": {
+    "branchDeletions": "the GitHub proxy returns 403 for DELETE git/refs (write access to that API path is not permitted); git push --delete is refused too",
+    "cohortSize": "decision between marketing/02 (100) and docs/44 (cohort capacity)",
+    "platformApps": "developer apps and secrets per provider",
+    "seedDemoPassword": "SEED_DEMO_PASSWORD secret + one Maintenance → seed-demo run",
+    "introVideoEnded": "a browser outside the sandbox",
+    "m3": "decision to start the Expo client (native apps are on HOLD)",
+    "paymentsLegalPlan": "HOLD"
+  },
+  "method": "Headless Chromium from the build sandbox (viewport emulation); proxy 502 relays retried and counted; nothing submitted."
+}

@@ -1,15 +1,15 @@
 # Sawwiq — open items (living list)
 
 Kept current by the working session; every report to the owner ends with this list.
-Last update: 2026-10-03 10:50 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase on 63ea94c (`/api/version` → 63ea94c; Vercel dpl_3TaPu1vVWefzTYeb2PjiQADUHiik; verified live 10:42 UTC). Today's releases and their live evidence: docs/upgrades/landing-redesign/release-evidence.2026-10-03.json, .2026-10-03b.json and docs/upgrades/join-steps/release-evidence.2026-10-03.json.
+Last update: 2026-10-03 11:20 UTC, main at the commit that carries this file. Production: sawwiq.org runs the registration phase on 1c4f620 (`/api/version` → 1c4f620; Vercel dpl_3UWxRpgCvUpg6ShmKqQfeHJkdSH9; verified live 11:15 UTC). Today's evidence: docs/upgrades/landing-redesign/release-evidence.2026-10-03{,b,c}.json and docs/upgrades/join-steps/release-evidence.2026-10-03.json.
 
 ## Owner decisions (nobody else can close these)
 
-0. **Landing: the next pass is the simplification you described** (the laptop fit, the shared page measure and the stepped join are live; still open: the first fold is busier than you want) (fewer competing elements above the fold, one focal point, restrained green, generous whitespace). Today shipped the terminology fix (#46), the laptop fit (#44) and the redesign (#42); #41 can be closed on GitHub as superseded by #42. Say when you want the simplification pass started; the copy keys are `Registration.launch`, `cohort`, `trust`, `early` in messages/{ar,en}.json. Architecture direction for web + PWA + native lives in docs/architecture/; the next engineering step (M1, shared brains) needs no decision, the API slice (M2) and the Expo app (M3) do.
+0. **Landing first fold: the simplification pass is live (#49).** Eyebrow line gone, quiet cohort pill, text-link secondary action, lighter promise line, one-line caption, more air. Look at sawwiq.org/ar and /en on your laptop and phone and say if the next cut should go further (for example hiding the locate button or the theme toggle on this page, or dropping the strip). #41 can be closed on GitHub as superseded.
 
 1. **Founding-cohort wording.** docs/44 approves 0% commission on the first project, 7% for the launch year and six months of Pro; the earlier "first 40 founding agencies, lifetime free Pro" line was replaced in the catalogs. Confirm the cohort size the marketing kit may quote (marketing/02 says 100, per docs/44 "cohort capacity").
 2. **Platform connections.** All five providers show "Not available yet" until a developer app is registered per platform, its secrets set in Vercel (never in chat), the platform approves the permissions and a controlled live test with an authorized account passes (docs/53 readiness gates).
-3. **Branch deletions on GitHub** (the git proxy refuses branch deletion): merged-ancestor branches fix/planner-redaction-canaries, plan/collaboration-v2-upgrade, style/brochure-design-system; and, after a `git diff` re-check, feat/creator-guidance-social-connections (#23), feat/registration-phase (#24) and feat/registration-phase-integrated (superseded by #24). docs/branch-manifest-2026-09-29.md has the classification.
+3. **Branch deletions on GitHub** (the git proxy refuses `git push --delete` and answers 403 to the REST delete, so only you can do it; today's merged branches can go too: feat/m1-shared-brains, feat/m2-api-slice-a, fix/landing-laptop-fit, fix/remove-ahl-al-tasweeq, fix/registration-pages-measure, feat/join-steps, design/landing-fold-simplify, fix/about-registration-redirect, chore/audit-icon, design/landing-calm-premium-v3): merged-ancestor branches fix/planner-redaction-canaries, plan/collaboration-v2-upgrade, style/brochure-design-system; and, after a `git diff` re-check, feat/creator-guidance-social-connections (#23), feat/registration-phase (#24) and feat/registration-phase-integrated (superseded by #24). docs/branch-manifest-2026-09-29.md has the classification.
 4. **Payment partner, legal sign-off, Vercel plan.** Protected payments, checkout, subscriptions and paid vendors stay on HOLD until a licensed partner and legal review exist; the Vercel plan and environment cannot be read from these sessions (403).
 5. **Pilot (AC36 / FIRST_RUN_WIZARD.md §measurement):** prepared, not run. Needs consenting real creators, an interviewer and a segment.
 
@@ -20,13 +20,12 @@ Last update: 2026-10-03 10:50 UTC, main at the commit that carries this file. Pr
 
 ## Engineering follow-ups (small, unblocked)
 
-8. In the registration phase, /ar/about and /ar/contact render the landing inside the signed-out app shell (sidebar plus a second header). It is the phase gate's fallback, not a width problem; deciding what those routes should show in this phase (redirect to /soon, or the landing without the shell) touches the gate, so it waits for your word.
 
 9. Roadmap M3 (Expo client) needs your decision before it starts (docs/architecture/mobile-and-api-roadmap.md §5); M1 and M2 are on main. To try the API on a staging deployment set `API_V1_ENABLED=true` there (never in production until the mobile beta).
-10. Dependency audit "needs review" items: delete `@supabase/ssr` and lib/supabase/* if no Supabase Auth work is planned; lazy-load the AI SDKs; move `shadcn` to devDependencies.
-11. Draw a maskable 512 px icon for the manifest.
 
 ## Closed since the last list
+
+- 3 Oct (latest): first-fold simplification (#49 → 60958b0); /about no longer nests a second landing in the app shell during registration (#50 → 3a741e8); dependency audit items done and a maskable app icon added (#51 → 1c4f620). All verified live on 1c4f620.
 
 - 3 Oct (later): the example page and every registration page share the landing's laptop measure (#47 → 1a8cdc5; gutter 192 → 80 px on your laptop); sign-up is three short steps with a browser-kept draft (#48 → 63ea94c), verified live in ar/en at 1536/390/320 without creating an account.
 
