@@ -125,3 +125,72 @@
  .launch-badge > strong { font-size: 1.05rem; }
  .registration-hero-copy { padding: 1.1rem; }
 }
+
+
+/* Landing v2 — calmer Krooz-inspired hierarchy while preserving Sawwiq identity. */
+.registration-site-v2 { max-inline-size: 82rem; padding-inline: clamp(1rem, 4vw, 3.5rem); background: var(--background); }
+/* The announcement strip bleeds to the page edge: its negative margin must match this layout's wider side padding (the base rule used the old padding, which overflowed at 768px). */
+.registration-site-v2 .launch-strip { margin-inline: calc(-1 * clamp(1rem, 4vw, 3.5rem)); padding-inline: clamp(1rem, 4vw, 3.5rem); }
+.registration-site-v2 .registration-header { padding-block: 1.1rem 2.2rem; border: 0; }
+.registration-hero-v2 { min-block-size: min(46rem, 78vh); grid-template-columns: minmax(0, 1.05fr) minmax(24rem, .95fr); border: 0; border-radius: 0; background: transparent; gap: clamp(2rem, 5vw, 5rem); overflow: visible; align-items: center; }
+.registration-hero-v2 .registration-hero-copy { padding: clamp(1rem, 3vw, 2rem) 0; max-inline-size: 42rem; }
+.registration-hero-v2 h1 { font-size: clamp(2.8rem, 5.2vw, 5.3rem); line-height: 1.2; letter-spacing: -.025em; margin-block: .7rem 1.4rem; text-wrap: balance; }
+.registration-hero-v2 .registration-lead { max-inline-size: 38rem; font-size: clamp(1.08rem, 1.6vw, 1.28rem); line-height: 1.9; color: var(--muted-foreground); }
+.registration-hero-product { min-block-size: 34rem; border-radius: 2rem; overflow: hidden; box-shadow: 0 24px 70px rgb(16 46 37 / .13); }
+.registration-hero-product::after { inset: 55% 0 0; background: linear-gradient(transparent, rgb(16 46 37 / .82)); }
+.registration-site-v2 .sw-invitation-cta { min-block-size: 3.2rem; padding-inline: 1.4rem; border-radius: .85rem; font-weight: 800; }
+.registration-site-v2 .registration-secondary { min-block-size: 3.2rem; padding-inline: 1.2rem; background: transparent; }
+.registration-site-v2 .launch-trust { margin-block-start: 1.35rem; }
+
+.registration-audiences, .registration-how, .registration-faq-v2 { padding-block: clamp(5rem, 9vw, 8rem); }
+.registration-section-heading { max-inline-size: 46rem; margin-block-end: clamp(2rem, 4vw, 3.5rem); }
+.registration-section-heading .registration-intro { max-inline-size: 42rem; }
+.registration-audience-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.registration-audience-card { min-block-size: 22rem; padding: clamp(1.8rem, 4vw, 3rem); display: flex; flex-direction: column; align-items: flex-start; border: 1px solid var(--border); border-radius: 1.5rem; background: var(--card); }
+.registration-audience-card--accent { background: color-mix(in oklab, var(--brand-tint) 58%, var(--card)); border-color: var(--brand-line); }
+.registration-audience-card h3 { font-size: clamp(1.45rem, 2.4vw, 2rem); margin-block: 1.4rem .7rem; }
+.registration-audience-card p { color: var(--muted-foreground); max-inline-size: 38ch; }
+.registration-text-link { margin-block-start: auto; display: inline-flex; align-items: center; gap: .5rem; color: var(--brand); font-weight: 800; padding-block-start: 1.5rem; }
+
+.registration-proof { margin-inline: calc(-1 * clamp(1rem, 4vw, 3.5rem)); padding: clamp(4.5rem, 8vw, 7rem) clamp(1rem, 4vw, 3.5rem); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; background: color-mix(in oklab, var(--brand-soft) 42%, var(--background)); border-block: 1px solid var(--border); }
+.registration-proof-list { display: grid; gap: .75rem; }
+.registration-proof-list > div { display: flex; align-items: center; gap: 1rem; padding: 1.15rem 0; border-block-end: 1px solid var(--border); font-weight: 700; }
+.registration-proof-list svg { inline-size: 1.5rem; block-size: 1.5rem; color: var(--brand); flex: none; }
+
+.registration-stages-v2 { gap: 0; border-block-start: 1px solid var(--border); }
+.registration-stages-v2 li, .registration-stages-v2 li[data-current="true"] { padding: 2rem clamp(1rem, 2vw, 2rem); border: 0; border-inline-end: 1px solid var(--border); border-radius: 0; background: transparent; }
+.registration-stages-v2 li:last-child { border-inline-end: 0; }
+.registration-step-number { display: block; margin-block-end: 2rem; color: var(--brand); font-size: .85rem; font-weight: 900; letter-spacing: .12em; }
+
+.launch-early-v2 { margin: clamp(3rem, 6vw, 6rem) 0; padding: clamp(3rem, 7vw, 6rem); border: 0; border-radius: 2rem; background: radial-gradient(circle at 85% 10%, #236d52 0, transparent 36%), linear-gradient(135deg, #0d2d22, #123f2f 70%); box-shadow: 0 26px 80px rgb(13 45 34 / .18); }
+.launch-early-v2 h2 { font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.35; text-wrap: balance; }
+.launch-early-v2 .launch-early-points li { background: rgb(255 255 255 / .06); border-color: rgb(255 255 255 / .13); }
+.launch-early-v2 .sw-invitation-cta { background: var(--launch-gold); color: var(--launch-bg-deep); }
+
+.registration-faq-v2 { max-inline-size: 56rem; margin-inline: auto; }
+.registration-faq-v2 .registration-section-heading { margin-inline: auto; text-align: center; }
+.registration-faq-v2 details { padding-block: 1.35rem; }
+.registration-final-v2 { margin-block: 2rem 5rem; padding: clamp(3rem, 7vw, 6rem); text-align: center; border-radius: 2rem; background: var(--card); border: 1px solid var(--border); }
+.registration-final-v2 > p:not(.registration-eyebrow) { max-inline-size: 48rem; margin-inline: auto; color: var(--muted-foreground); }
+.registration-final-v2 .registration-eyebrow, .registration-final-v2 .registration-actions, .registration-final-v2 .launch-trust { justify-content: center; }
+
+@media (max-width: 850px) {
+  .registration-site-v2 { padding-inline: 1rem; }
+  .registration-site-v2 .launch-strip { margin-inline: -1rem; padding-inline: 1rem; }
+  .registration-site-v2 .registration-header { padding-block-end: 1.2rem; }
+  .registration-hero-v2 { min-block-size: auto; gap: 1.6rem; grid-template-columns: minmax(0, 1fr); }
+  /* Phones: the headline stays large but must leave the cohort CTA inside a 390×844 viewport in both languages (campaign spec). */
+  .registration-hero-v2 h1 { font-size: clamp(1.9rem, 8vw, 2.6rem); line-height: 1.3; margin-block: .5rem 1rem; }
+  .registration-hero-v2 .registration-lead { font-size: 1.0625rem; line-height: 1.8; }
+  .registration-hero-v2 .registration-hero-copy { padding-block: .5rem 0; }
+  .registration-hero-product { min-block-size: 25rem; border-radius: 1.4rem; }
+  .registration-audiences, .registration-how, .registration-faq-v2 { padding-block: 4.5rem; }
+  .registration-audience-grid, .registration-proof { grid-template-columns: 1fr; }
+  .registration-audience-card { min-block-size: 18rem; }
+  .registration-proof { margin-inline: -1rem; padding: 4.5rem 1rem; }
+  .registration-stages-v2 { grid-template-columns: 1fr; }
+  .registration-stages-v2 li, .registration-stages-v2 li[data-current="true"] { border-inline-end: 0; border-block-end: 1px solid var(--border); padding-inline: 0; }
+  .registration-step-number { margin-block-end: .8rem; }
+  .launch-early-v2 { padding: 2.25rem 1.25rem; border-radius: 1.5rem; }
+  .registration-final-v2 { padding: 3rem 1.25rem; border-radius: 1.5rem; }
+}
