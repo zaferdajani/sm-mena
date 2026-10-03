@@ -1,4 +1,4 @@
-import { createTranslator } from "next-intl";
+import { createTranslator } from "use-intl";
 import { citiesOf, countryName, countryOf } from "@/lib/countries";
 import type { Contract, Nda } from "@/lib/db/schema";
 import { lineLabel } from "@/lib/deliverables";

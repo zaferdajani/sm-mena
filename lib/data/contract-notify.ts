@@ -1,6 +1,6 @@
 import "server-only";
 import { eq } from "drizzle-orm";
-import { createTranslator } from "next-intl";
+import { createTranslator } from "use-intl";
 import { tryOpen } from "@/lib/auth/secret-box";
 import type { ContractNotificationKind } from "@/lib/chat";
 import { getDb } from "@/lib/db";

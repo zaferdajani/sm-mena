@@ -1,24 +1,11 @@
-import { monetizationEnabled, PLANS, type Plan, type PlanId } from "./plans";
+// Platform binding of the pure entitlement rules (lib/core/rules/monetization/entitlements.ts):
+// the "Paid plans" switch is read here so every caller keeps its one-argument call.
 
-export type Entitlements = Plan & { enforced: boolean };
+import { entitlementsFor as entitlementsWhen, type Entitlements } from "@/lib/core/rules/monetization/entitlements";
+import { monetizationEnabled, type PlanId } from "./plans";
 
-/**
- * What an agency may do. While monetization is off, everyone gets the
- * Business allowance (unlimited posts, full insights) but keeps their own
- * badge state, so switching the flag on only ever tightens limits.
- */
+export { canCreatePost, canSendProposal, type Entitlements } from "@/lib/core/rules/monetization/entitlements";
+
 export function entitlementsFor(agency: { plan: PlanId; planExpiresAt: Date | null }, now = new Date()): Entitlements {
-  const active = agency.plan !== "free" && (!agency.planExpiresAt || agency.planExpiresAt > now) ? agency.plan : "free";
-  if (!monetizationEnabled()) {
-    return { ...PLANS.business, id: active, badge: PLANS[active].badge, rankingBoost: PLANS[active].rankingBoost, enforced: false };
-  }
-  return { ...PLANS[active], enforced: true };
-}
-
-export function canCreatePost(ent: Entitlements, currentPosts: number): boolean {
-  return ent.maxPosts === null || currentPosts < ent.maxPosts;
-}
-
-export function canSendProposal(ent: Entitlements, sentThisMonth: number): boolean {
-  return ent.proposalsPerMonth === null || sentThisMonth < ent.proposalsPerMonth;
+  return entitlementsWhen(agency, { enforced: monetizationEnabled(), now });
 }

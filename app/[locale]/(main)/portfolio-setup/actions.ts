@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
+import { setupBehanceSchema, setupClientSchema, setupProfileSchema, setupProjectSchema, setupSourceSchema, setupVersionSchema, uuidSchema } from "@/lib/validation/portfolio-setup";
 import { requireAgency } from "@/lib/auth/guards";
 import {
   addClientOnce,
@@ -24,7 +25,6 @@ import {
 import { getItemForAgency, stageItem } from "@/lib/data/social";
 import { contentLang } from "@/lib/content-lang";
 import { assertBehanceUrl } from "@/lib/behance/fetch";
-import { BEHANCE_LIMITS } from "@/lib/behance/types";
 import { canUse } from "@/lib/feature-gate";
 import { MAX_IMAGES_PER_POST } from "@/lib/images";
 import { canCreatePost, entitlementsFor } from "@/lib/monetization/entitlements";
@@ -38,8 +38,8 @@ import { isServiceKey } from "@/lib/taxonomy";
 
 export type SetupResult = { view?: SetupView; media?: SetupMediaView[]; error?: SetupError | "avatar" | "limit" | "unavailable"; postId?: string };
 
-const version = z.coerce.number().int().min(0);
-const uuid = z.string().uuid();
+const version = setupVersionSchema;
+const uuid = uuidSchema;
 
 const done = (view: SetupView | { error: SetupError }): SetupResult => ("error" in view ? { error: view.error } : { view });
 
@@ -54,16 +54,10 @@ export async function pauseSetupAction(v: number): Promise<SetupResult> {
   return done(await writeSetup(agency.id, version.parse(v), { status: "paused" }));
 }
 
-const profileSchema = z.object({
-  version,
-  name: z.string().trim().min(2).max(80),
-  bio: z.string().trim().max(500),
-});
-
 /** Step 1: saves the name, introduction, services and picture that changed; nothing else on the profile is touched. */
 export async function saveProfileStepAction(formData: FormData): Promise<SetupResult> {
   const { user, agency } = await requireAgency();
-  const parsed = profileSchema.safeParse({ version: formData.get("version"), name: formData.get("name"), bio: formData.get("bio") ?? "" });
+  const parsed = setupProfileSchema.safeParse({ version: formData.get("version"), name: formData.get("name"), bio: formData.get("bio") ?? "" });
   if (!parsed.success) return { error: "invalid" };
   const currentDraft = await getSetup(agency.id);
   if (!currentDraft || currentDraft.version !== parsed.data.version || currentDraft.status === "finished") return { error: "stale" };
@@ -89,26 +83,17 @@ export async function saveProfileStepAction(formData: FormData): Promise<SetupRe
 /** Step 2: which source the work comes from. Upload (and PDF pictures already staged) go on to the client step. */
 export async function chooseSourceAction(v: number, source: "upload" | "pdf" | "behance" | "social"): Promise<SetupResult> {
   const { agency } = await requireAgency();
-  const s = z.enum(["upload", "pdf", "behance", "social"]).parse(source);
+  const s = setupSourceSchema.parse(source);
   if ((s === "pdf" || s === "behance") && !(await canUse("portfolio_import"))) return { error: "unavailable" };
   // Changing the source drops what another source staged (its images stay only if uploaded here).
   return done(await writeSetup(agency.id, version.parse(v), { data: { source: s }, clear: s === "behance" ? ["socialItemId"] : s === "social" ? ["behance"] : ["behance", "socialItemId"], step: s === "upload" || s === "pdf" ? 3 : 2 }));
 }
 
-const behanceSchema = z.object({
-  projectUrl: z.string().url().max(500),
-  images: z.array(z.string().url().max(1000)).min(1).max(Math.min(MAX_IMAGES_PER_POST, BEHANCE_LIMITS.imagesPerProject)),
-  title: z.string().max(200),
-  caption: z.string().max(BEHANCE_LIMITS.caption),
-  client: z.string().max(80).nullable(),
-  publishedAt: z.string().datetime().nullable().optional(),
-});
-
 /** A Behance project the importer read comes back into this draft (nothing is published by reading). */
 export async function stageBehanceAction(v: number, input: unknown): Promise<SetupResult> {
   const { agency } = await requireAgency();
   if (!(await canUse("portfolio_import"))) return { error: "unavailable" };
-  const parsed = behanceSchema.safeParse(input);
+  const parsed = setupBehanceSchema.safeParse(input);
   if (!parsed.success) return { error: "invalid" };
   const b = parsed.data;
   try {
@@ -147,17 +132,10 @@ export async function stageSocialItemAction(v: number, itemRowId: string): Promi
   return done(await writeSetup(agency.id, version.parse(v), { data: { source: "social", socialItemId: id.data, project, ...(client ? { client } : {}) }, clear: ["behance"], step: 3 }));
 }
 
-const clientSchema = z.object({
-  version,
-  mode: z.enum(["existing", "new", "personal", "private"]),
-  clientId: z.string().uuid().optional(),
-  name: z.string().max(80).optional(),
-});
-
 /** Step 3: an existing client of this agency, a new one (added once), personal work, or a client kept private. */
 export async function saveClientStepAction(input: unknown): Promise<SetupResult> {
   const { agency } = await requireAgency();
-  const parsed = clientSchema.safeParse(input);
+  const parsed = setupClientSchema.safeParse(input);
   if (!parsed.success) return { error: "invalid" };
   const c = parsed.data;
   let client: { mode: "existing" | "personal" | "private"; clientId?: string };
@@ -175,18 +153,10 @@ export async function saveClientStepAction(input: unknown): Promise<SetupResult>
   return done(await writeSetup(agency.id, c.version, { data: { client }, step: 4 }));
 }
 
-const projectSchema = z.object({
-  version,
-  title: z.string().trim().min(2).max(120),
-  contribution: z.string().trim().min(2).max(600),
-  services: z.array(z.string().max(60)).min(1).max(6),
-  behanceImages: z.array(z.string().url().max(1000)).max(MAX_IMAGES_PER_POST).optional(),
-});
-
 /** Step 4: the project text and services; Preview never publishes. */
 export async function saveProjectStepAction(input: unknown): Promise<SetupResult> {
   const { agency } = await requireAgency();
-  const parsed = projectSchema.safeParse(input);
+  const parsed = setupProjectSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0]?.path[0] === "services" ? "noServices" : "noProject" };
   const p = parsed.data;
   const services = [...new Set(p.services)].filter(isServiceKey);
@@ -202,7 +172,7 @@ export async function saveProjectStepAction(input: unknown): Promise<SetupResult
  */
 export async function saveProjectDraftAction(v: number, input: unknown, destination: "back" | "pause"): Promise<SetupResult> {
   const { agency } = await requireAgency();
-  const parsed = projectSchema.extend({ title: z.string().max(120), contribution: z.string().max(600), services: z.array(z.string().max(60)).max(6) })
+  const parsed = setupProjectSchema.extend({ title: z.string().max(120), contribution: z.string().max(600), services: z.array(z.string().max(60)).max(6) })
     .safeParse({ ...(input && typeof input === "object" ? input : {}), version: v });
   if (!parsed.success || !["back", "pause"].includes(destination)) return { error: "invalid" };
   const current = await getSetup(agency.id);
