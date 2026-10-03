@@ -1,5 +1,5 @@
 import "server-only";
-import OpenAI from "openai";
+import type OpenAI from "openai";
 import { SYSTEM_PROMPT } from "../prompt";
 import { runTool, TOOL_DEFINITIONS, type ToolState } from "../tools";
 import { emptyUsage, type ChatMessage, type ProviderResult } from "../types";
@@ -11,8 +11,9 @@ const MAX_STEPS = 6;
 
 export const openaiConfigured = () => Boolean(process.env.OPENAI_API_KEY);
 
+// The SDK is loaded on first use so pages that never call the matchmaker do not carry it.
 let client: OpenAI | undefined;
-const getClient = () => (client ??= new OpenAI({ timeout: 90_000 }));
+const getClient = async () => (client ??= new (await import("openai")).default({ timeout: 90_000 }));
 
 // Same tool schemas as the Claude provider, in the Responses API shape.
 const TOOLS: OpenAI.Responses.FunctionTool[] = TOOL_DEFINITIONS.map((t) => ({
@@ -31,7 +32,7 @@ export async function openaiMatchmaker(history: ChatMessage[]): Promise<Provider
   let reply = "";
 
   for (let step = 0; step < MAX_STEPS; step++) {
-    const response = await getClient().responses.create({
+    const response = await (await getClient()).responses.create({
       model,
       instructions: SYSTEM_PROMPT, // identical every call, so OpenAI's automatic prefix cache applies
       input,

@@ -1,5 +1,5 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "../prompt";
 import { runTool, TOOL_DEFINITIONS, type ToolState } from "../tools";
 import { emptyUsage, type ChatMessage, type ProviderResult } from "../types";
@@ -12,8 +12,9 @@ const MAX_STEPS = 6;
 
 export const anthropicConfigured = () => Boolean(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN);
 
+// The SDK is loaded on first use so pages that never call the matchmaker do not carry it.
 let client: Anthropic | undefined;
-const getClient = () => (client ??= new Anthropic({ timeout: 90_000 }));
+const getClient = async () => (client ??= new (await import("@anthropic-ai/sdk")).default({ timeout: 90_000 }));
 
 export async function anthropicMatchmaker(history: ChatMessage[]): Promise<ProviderResult> {
   const model = anthropicModel();
@@ -26,7 +27,7 @@ export async function anthropicMatchmaker(history: ChatMessage[]): Promise<Provi
   let reply = "";
 
   for (let step = 0; step < MAX_STEPS; step++) {
-    const response = await getClient().beta.messages.create({
+    const response = await (await getClient()).beta.messages.create({
       model,
       max_tokens: advanced ? 16000 : 4000,
       // Server-side fallback: if a safety classifier declines, the API retries

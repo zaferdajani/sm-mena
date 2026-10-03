@@ -30,6 +30,8 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: "/brand/mark-192.png", sizes: "192x192", type: "image/png" },
       { src: "/brand/mark-512.png", sizes: "512x512", type: "image/png" },
+      // Maskable: the mark on its own green, with the safe zone Android and iOS crop into.
+      { src: "/brand/mark-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }
