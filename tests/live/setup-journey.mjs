@@ -117,6 +117,29 @@ try {
   step("project page opens for the owner", shown);
   await shot(page, "6-project-page");
 
+  // Proof of work on the public page (docs/28, feature/share-social-accounts): as the signed-in owner, the
+  // header shows the agency's channels as badges and a Share action; a client card and the account page carry
+  // the "Managed account" chip, the client's live accounts and "Share client portfolio". Nothing is clicked.
+  await page.goto(`${site}/ar/a/nakhla.studio`);
+  await page.getByTestId("provider-profile-header").waitFor({ timeout: 30_000 });
+  const channelCount = await page.getByTestId("profile-socials").getByRole("link").count();
+  const shareProfile = await page.getByTestId("share-profile").count();
+  step("profile channels and share", channelCount >= 1 && shareProfile === 1, `${channelCount} channel badges, share button ${shareProfile}`);
+  await shot(page, "6b-profile-header");
+  await page.goto(`${site}/ar/a/nakhla.studio?tab=clients`);
+  const card = page.getByTestId("client-card").first();
+  await card.waitFor({ timeout: 30_000 });
+  const chipText = (await card.getByTestId("managed-chip").textContent())?.trim() ?? "";
+  const shareClient = await card.getByTestId("share-client").count();
+  step("client card managed chip and share", chipText === "حساب مُدار" && shareClient === 1, `chip «${chipText}», share button ${shareClient}`);
+  const accountHref = await page.getByTestId("client-open").first().getAttribute("href");
+  await page.goto(`${site}${accountHref}`);
+  await page.getByTestId("account-page").waitFor({ timeout: 30_000 });
+  const badges = await page.getByTestId("account-channels").getByTestId("client-link").count();
+  const external = await page.getByTestId("account-channels").getByTestId("client-link").first().getAttribute("target");
+  step("account page live accounts", badges >= 1 && external === "_blank" && (await page.getByTestId("managed-chip").count()) === 1 && (await page.getByTestId("share-client").count()) === 1, `${badges} badges open in a new tab`);
+  await shot(page, "6c-account-page");
+
   // Studio geometry (PR #58): signed in as the same demo provider at 1440x900, the
   // eight Studio routes share one content measure, the tab strip and footer sit
   // on that measure (the footer never under the sidebar), nothing overflows, and

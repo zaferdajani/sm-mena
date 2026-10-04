@@ -4,7 +4,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { countryOfCity } from "@/lib/countries";
 import { agencyConditions, inCountry, realUnless } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
-import { agencies, auditLogs, profilePublications, type Agency } from "@/lib/db/schema";
+import { agencies, auditLogs, profilePublications, type Agency, type ClientLink } from "@/lib/db/schema";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 import { mediaUrl } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
@@ -32,6 +32,7 @@ export type AgencyInput = {
   email?: string | null;
   website?: string | null;
   instagram?: string | null;
+  socialLinks?: ClientLink[];
   foundedYear?: number | null;
   teamSize?: string | null;
   contentLang?: ContentLang;

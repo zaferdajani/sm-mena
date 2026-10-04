@@ -1,11 +1,15 @@
 "use client";
 
-import { Camera, Globe, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Globe, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { ContactLink } from "@/components/post/contact-link";
+import { ShareActions } from "@/components/share-button";
+import { SocialIcon } from "@/components/social-icon";
+import type { ClientLink } from "@/lib/db/schema";
+import { isLinkKind, linkHref, linkLabel, type LinkKind } from "@/lib/social-links";
 import { cn } from "@/lib/utils";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { sealNumber } from "@/lib/pioneers";
@@ -43,6 +47,8 @@ export type ProfileData = {
   email: string | null;
   website: string | null;
   instagram: string | null;
+  /** The agency's own channels (TikTok, YouTube, Facebook, LinkedIn, X, …), docs/28. */
+  socialLinks?: ClientLink[] | null;
   ratingAverage: number | null;
   ratingCount: number;
   googleRating: number | null;
@@ -59,9 +65,12 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
   const tCity = useTranslations("Cities");
   const tpart = useTranslations("Partners");
   const tr = useTranslations("Reviews");
+  const tk = useTranslations("PortfolioClients");
   const locale = useLocale();
   const [followers, setFollowers] = useState(agency.followerCount);
-  const hasContactLinks = Boolean(agency.phone || agency.email || agency.website || agency.instagram);
+  const hasContactLinks = Boolean(agency.phone || agency.email || agency.website);
+  const socials = socialChannels(agency);
+  const profileUrl = `${SITE_URL}/${locale}/a/${agency.handle}`;
 
   return (
     <header className={styles.header} data-testid="provider-profile-header">
@@ -168,11 +177,40 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
             {agency.phone && <ContactLink agencyId={agency.id} channel="phone" href={`tel:${agency.phone}`} className={styles.contactLink} label={t("call")}><Phone className="size-4" aria-hidden /><span>{t("call")}</span></ContactLink>}
             {agency.email && <ContactLink agencyId={agency.id} channel="email" href={`mailto:${agency.email}`} className={styles.contactLink} label={t("email")}><Mail className="size-4" aria-hidden /><span>{t("email")}</span></ContactLink>}
             {agency.website && <ContactLink agencyId={agency.id} channel="website" href={agency.website} className={styles.contactLink} label={t("website")}><Globe className="size-4" aria-hidden /><span>{t("website")}</span></ContactLink>}
-            {agency.instagram && <ContactLink agencyId={agency.id} channel="instagram" href={`https://instagram.com/${agency.instagram}`} className={styles.contactLink} label={t("instagram")}><Camera className="size-4" aria-hidden /><span>{t("instagram")}</span></ContactLink>}
           </div>
+        )}
+        {socials.length > 0 && (
+          <ul className={styles.socialLinks} data-testid="profile-socials" aria-label={t("socialChannels")}>
+            {socials.map((l) => (
+              <li key={`${l.kind}:${l.value}`}>
+                <a href={l.href} target="_blank" rel="noopener noreferrer nofollow" className={styles.socialLink} data-testid={`social-${l.kind}`} title={t("browseLive")}>
+                  <SocialIcon kind={l.kind} className="size-6 text-xs" />
+                  <span className="sr-only">{tk(`kinds.${l.kind}`)}: </span>
+                  <bdi dir="ltr">{l.label}</bdi>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+        {!previewOnly && (
+          <ShareActions url={profileUrl} title={agency.name} text={t("shareText", { name: agency.name })} label={t("share")} testId="share-profile" className={styles.shareRow} />
         )}
         {!readOnly && agency.memberNo ? <p className={styles.member} data-testid="member-no">{t("memberNo", { n: String(agency.memberNo).padStart(4, "0") })}</p> : null}
       </div>
     </header>
   );
+}
+
+/** The agency's channels as tappable badges: its saved links, plus the older Instagram field when no Instagram link repeats it. */
+function socialChannels(agency: Pick<ProfileData, "socialLinks" | "instagram">): { kind: LinkKind; href: string; label: string; value: string }[] {
+  const rows: ClientLink[] = [...(agency.socialLinks ?? [])];
+  if (agency.instagram && !rows.some((l) => l.kind === "instagram")) rows.unshift({ kind: "instagram", value: agency.instagram });
+  const out: { kind: LinkKind; href: string; label: string; value: string }[] = [];
+  for (const l of rows) {
+    const kind = isLinkKind(l.kind) ? l.kind : "other";
+    const href = linkHref(kind, l.value);
+    if (!href || out.some((o) => o.href === href)) continue;
+    out.push({ kind, href, label: linkLabel(kind, l.value), value: l.value });
+  }
+  return out;
 }

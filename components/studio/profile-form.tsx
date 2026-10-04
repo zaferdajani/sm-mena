@@ -1,9 +1,11 @@
 "use client";
 
-import { Camera } from "lucide-react";
+import { Camera, Plus, X } from "lucide-react";
+import { SocialIcon } from "@/components/social-icon";
+import { linkLabel, type LinkKind } from "@/lib/social-links";
 import { CountryCityField, type CountryOption } from "@/components/country-city-field";
 import { useTranslations } from "next-intl";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { updateProfileAction } from "@/app/[locale]/(main)/studio/actions";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { FormError } from "@/components/form-error";
@@ -25,7 +27,7 @@ type Option = { key: string; label: string };
 export type ProfileFormProps = {
   agency: {
     name: string; handle: string; bio: string; about: string; kind: "agency" | "freelancer"; teamRoles: string[]; seeksRoles: string[]; pendingTexts: string[]; strengths: string[]; country: string; servesCountries: string[]; city: string; avatarUrl: string | null; services: string[]; platforms: string[]; industries: string[]; languages: string[];
-    startingPriceJod: number | null; whatsapp: string | null; phone: string | null; email: string | null; website: string | null; instagram: string | null; foundedYear: number | null; teamSize: string | null;
+    startingPriceJod: number | null; whatsapp: string | null; phone: string | null; email: string | null; website: string | null; instagram: string | null; socialLinks?: { kind: string; value: string }[] | null; foundedYear: number | null; teamSize: string | null;
     contentLang: string; translation: AgencyTranslation | null;
   };
   options: { roles: Option[]; popularServices: string[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
@@ -36,7 +38,8 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
   // Saved numbers split back into their country picker and local part.
   const wa = splitPhone(agency.whatsapp, agency.country.toUpperCase());
   const tel = splitPhone(agency.phone, agency.country.toUpperCase());
-  const [state, action] = useActionState(updateProfileAction, undefined);
+  const [state, action, saving] = useActionState(updateProfileAction, undefined);
+  const [, startSave] = useTransition();
   const [preview, setPreview] = useState<string | null>(null);
   const [compressing, setCompressing] = useState(false);
   const avatarInput = useRef<HTMLInputElement>(null);
@@ -64,7 +67,17 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
   };
 
   return (
-    <form ref={form} action={action} className="grid gap-6" data-testid="profile-form">
+    <form
+      ref={form}
+      // Submitted by hand so a refused save (a taken handle, a link on the wrong network) keeps what was typed: form actions reset the form.
+      onSubmit={(e) => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startSave(() => action(data));
+      }}
+      className="grid gap-6"
+      data-testid="profile-form"
+    >
       {welcome && <input type="hidden" name="welcome" value="1" />}
 
       <div className="flex items-center gap-4">
@@ -171,6 +184,8 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
         <Field label={t("instagram")} htmlFor="instagram"><Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={agency.instagram ?? ""} /></Field>
       </fieldset>
 
+      <SocialRows initial={agency.socialLinks ?? []} />
+
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-sm font-medium">{t("details")}</legend>
         <Field label={t("founded")} htmlFor="foundedYear"><Input id="foundedYear" name="foundedYear" type="number" dir="ltr" min={1950} defaultValue={agency.foundedYear ?? ""} /></Field>
@@ -183,7 +198,45 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
       </fieldset>
       {/* Next to Save, where the agency is looking (a saved form moves on to the next page). */}
       <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
-      <SubmitButton className="h-11 text-base" disabled={compressing}>{t(welcome ? "saveContinue" : "save")}</SubmitButton>
+      <SubmitButton className="h-11 text-base" disabled={compressing || saving}>{t(welcome ? "saveContinue" : "save")}</SubmitButton>
     </form>
+  );
+}
+
+// The agency's own channels besides Instagram (docs/28): a handle or a link per row, checked like a client's accounts.
+const SOCIAL_KINDS: LinkKind[] = ["tiktok", "youtube", "facebook", "linkedin", "x", "snapchat", "other"];
+const SOCIAL_STARTER: LinkKind[] = ["tiktok", "youtube", "facebook"];
+let socialSeq = 0;
+const socialRow = (kind: string, value = "") => ({ id: ++socialSeq, kind, value });
+
+function SocialRows({ initial }: { initial: { kind: string; value: string }[] }) {
+  const t = useTranslations("Studio.profileForm");
+  const tk = useTranslations("PortfolioClients");
+  const [rows, setRows] = useState(() => (initial.length ? initial.map((l) => socialRow(l.kind, l.value)) : SOCIAL_STARTER.map((k) => socialRow(k))));
+  return (
+    <fieldset className="grid gap-2" data-testid="social-rows">
+      <legend className="mb-1 text-sm font-medium">{t("socialLinks")}</legend>
+      <p className="-mt-1 text-xs text-muted-foreground">{t("socialLinksHint")}</p>
+      {rows.map((r) => {
+        const kind = (SOCIAL_KINDS as string[]).includes(r.kind) ? (r.kind as LinkKind) : "other";
+        return (
+          <div key={r.id} className="flex items-center gap-2" data-testid="social-link-row">
+            <SocialIcon kind={kind} className="size-8" />
+            <select name="socialKind" aria-label={t("socialLinks")} value={r.kind} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, kind: e.target.value } : x)))} className="h-9 w-32 shrink-0 rounded-lg border border-input bg-transparent px-2 text-sm">
+              {SOCIAL_KINDS.map((k) => <option key={k} value={k}>{tk(`kinds.${k}`)}</option>)}
+            </select>
+            <Input name="socialValue" dir="ltr" aria-label={tk(`kinds.${kind}`)} placeholder={r.value ? linkLabel(kind, r.value) : "@"} value={r.value} maxLength={300} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, value: e.target.value } : x)))} className="min-w-0 flex-1" />
+            <button type="button" aria-label={t("removeSocial")} onClick={() => setRows((rs) => (rs.length > 1 ? rs.filter((x) => x.id !== r.id) : [socialRow("tiktok")]))} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted">
+              <X className="size-4" />
+            </button>
+          </div>
+        );
+      })}
+      {rows.length < 10 && (
+        <button type="button" onClick={() => setRows((rs) => [...rs, socialRow(SOCIAL_KINDS.find((k) => !rs.some((x) => x.kind === k)) ?? "other")])} className="flex w-fit items-center gap-1.5 text-sm font-medium text-brand" data-testid="add-social">
+          <Plus className="size-4" /> {t("addSocial")}
+        </button>
+      )}
+    </fieldset>
   );
 }

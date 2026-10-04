@@ -55,3 +55,11 @@ The Behind-the-Page movement (marketing/05) needs proof, not claims:
 ## Demo data
 
 `lib/db/demo-profiles.ts` gives several demo agencies an introduction, strengths, countries served and made-up clients (marked "demo"). It runs once per database (`demo_profiles_v1` flag): locally with `npm run db:seed`, live with Actions → Maintenance → **seed-demo**.
+
+## Sharing the proof of work (feature/share-social-accounts)
+
+- **The agency's own channels.** Studio → Profile has, besides Instagram, up to ten channel rows (TikTok, YouTube, Facebook, LinkedIn, X, Snapchat, other), checked by the same rules as a client's accounts and stored in `agencies.social_links` (migration `0036_agency_social_links.sql`). The profile header shows every channel as a tappable badge (icon + handle) opening the live account in a new tab; the older Instagram field appears there too when no Instagram row repeats it.
+- **Share profile.** The header has a Share button: the device's share sheet where one exists, otherwise the text and link are copied ("Link copied"); a WhatsApp link sits next to it. Text: "See {agency}'s work on Sawwiq" / «شاهد أعمال {agency} على سوّق».
+- **Managed accounts.** Every client card and the account page carry a "Managed account" / «حساب مُدار» chip (the agency acts for the client; the hint names the agency). The account page lists the client's accounts as larger badges that name the network and the handle, under "Browse the live accounts", so a visitor can judge the work on the real profiles.
+- **Share client portfolio.** On each client card and on the account page: "Share client portfolio" / «مشاركة حساب العميل» with the text "Check out {agency}'s work and managed channels for {client} on Sawwiq" / «شاهد أعمال {agency} وحسابات {client} المُدارة على سوّق» and the account page's link; share sheet, clipboard fallback and WhatsApp as above.
+- Component: `components/share-button.tsx` (`ShareActions`). Tests: `tests/e2e/portfolio-clients.spec.ts`.

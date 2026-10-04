@@ -455,6 +455,10 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
         email: `hello@${demo.handle.replace(/\./g, "-")}.example`,
         website: `https://${demo.handle.replace(/\./g, "-")}.example`,
         instagram: demo.handle.replace(/\./g, "_"),
+        socialLinks: [
+          { kind: "tiktok", value: demo.handle.replace(/\./g, "_") },
+          { kind: "youtube", value: demo.handle.replace(/\./g, "_") },
+        ],
         foundedYear: demo.founded,
         teamSize: demo.team,
       },

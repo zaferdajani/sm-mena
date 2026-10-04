@@ -114,6 +114,10 @@
 .contactLink { display: flex; align-items: center; justify-content: center; gap: .4rem; min-block-size: 2.75rem; padding: .5rem; border: 1px solid var(--border); border-radius: .75rem; font-size: .875rem; line-height: 1.7; background: var(--card); }
 .contactLink svg { flex: 0 0 auto; }
 .contactLink:hover { background: var(--accent); }
+.socialLinks { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .75rem; padding: 0; list-style: none; }
+.socialLink { display: inline-flex; align-items: center; gap: .45rem; min-block-size: 2.75rem; padding: .4rem .8rem; border: 1px solid var(--border); border-radius: 999px; font-size: .875rem; background: var(--card); }
+.socialLink:hover { background: var(--accent); }
+.shareRow { margin-block-start: .75rem; }
 .member { margin-block-start: .9rem; text-align: center; font-size: .8125rem; color: var(--muted-foreground); }
 .header :where(a, button):focus-visible,
 .frame [role="tab"]:focus-visible,

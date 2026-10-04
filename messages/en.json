@@ -267,7 +267,8 @@
     "copied": "Link copied",
     "share": "Share",
     "demo": "Demo account",
-    "pioneer": "Founding Member medal"
+    "pioneer": "Founding Member medal",
+    "shareWhatsapp": "Share on WhatsApp"
   },
   "Post": {
     "like": "Like",
@@ -364,7 +365,15 @@
     "foundingTitle": "One of the first 100 providers to register on Sawwiq. A dated badge, not a quality rank.",
     "seeFollowers": "See who follows you",
     "pioneerBadge": "Founding Member №{number}",
-    "pioneerTitle": "One of the first fifty invited names, who watched, built the page and saved a first project. A permanent medal, not a quality rank."
+    "pioneerTitle": "One of the first fifty invited names, who watched, built the page and saved a first project. A permanent medal, not a quality rank.",
+    "share": "Share profile",
+    "shareText": "See {name}'s work on Sawwiq",
+    "shareClient": "Share client portfolio",
+    "shareClientText": "Check out {agency}'s work and managed channels for {client} on Sawwiq",
+    "managedAccount": "Managed account",
+    "managedAccountHint": "{agency} runs this account on the client's behalf.",
+    "socialChannels": "Channels",
+    "browseLive": "Browse the live accounts"
   },
   "Explore": {
     "title": "Explore",
@@ -603,7 +612,8 @@
         "website": "Invalid link.",
         "email": "Invalid email.",
         "avatar": "Could not upload the picture.",
-        "generic": "Could not save."
+        "generic": "Could not save.",
+        "socialLink": "One of the channel links is not on its network."
       },
       "country": "Country",
       "about": "Introduction",
@@ -622,7 +632,11 @@
       "langAr": "العربية",
       "langEn": "English",
       "saveContinue": "Save and continue",
-      "phoneCountry": "Country code"
+      "phoneCountry": "Country code",
+      "socialLinks": "Your channels",
+      "socialLinksHint": "TikTok, YouTube, Facebook, LinkedIn, X: a handle or a link. They appear on your page as tappable badges.",
+      "addSocial": "Add a channel",
+      "removeSocial": "Remove channel"
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",

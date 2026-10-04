@@ -17,8 +17,16 @@ test("demo data: a Jordanian agency that serves Saudi Arabia is listed there wit
 
 test("demo data: clients tab groups accounts and work by client", async ({ page }) => {
   await page.goto("/en/a/nakhla.studio?tab=clients");
+  // The agency's own channels are badges in the header: the seeded TikTok and YouTube plus the older Instagram field.
+  const socials = page.getByTestId("profile-socials");
+  await expect(socials.getByTestId("social-tiktok")).toHaveAttribute("href", "https://www.tiktok.com/@nakhla_studio");
+  await expect(socials.getByTestId("social-youtube")).toHaveAttribute("href", "https://www.youtube.com/@nakhla_studio");
+  await expect(socials.getByTestId("social-instagram")).toHaveAttribute("href", /instagram\.com\/nakhla_studio/);
+  await expect(page.getByTestId("share-profile")).toBeVisible();
   const card = page.getByTestId("client-card").first();
   await expect(card).toBeVisible();
+  await expect(card.getByTestId("managed-chip")).toHaveText("Managed account");
+  await expect(card.getByTestId("share-client")).toBeVisible();
   await expect(card.getByTestId("client-link").first()).toHaveAttribute("href", /instagram\.com\/yasmeen\.cafe\.demo/);
   await expect(card.locator('a[href*="/p/"]').first()).toBeVisible();
   await page.goto("/en/a/nakhla.studio?tab=about");
@@ -33,6 +41,13 @@ test("agency adds an introduction, countries served and a client with accounts",
   await page.fill("#about", "We are a small studio for cafés.");
   await page.fill("#strengths", "Fast reels\n- Honest reports\n\n");
   await page.getByRole("button", { name: "All Gulf" }).click();
+  // The agency's own channels: TikTok and YouTube rows; a link on the wrong network is refused.
+  const social = page.getByTestId("social-link-row");
+  await social.nth(0).locator('input[name="socialValue"]').fill(`@${handle}.tok`);
+  await social.nth(1).locator('input[name="socialValue"]').fill("https://instagram.com/not-youtube");
+  await page.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
+  await expect(page.getByTestId("profile-form").getByRole("alert")).toContainText("channel");
+  await social.nth(1).locator('input[name="socialValue"]').fill(`https://www.youtube.com/@${handle}`);
   await page.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
   // Wait for the actual save redirect, not the always-visible demo/live-region status.
   await expect(page).toHaveURL(/\/en\/studio\/packages\?welcome=1$/);
@@ -74,6 +89,16 @@ test("agency adds an introduction, countries served and a client with accounts",
   // The post page names the account, with its logo, and opens it.
   await expect(page.getByTestId("post-client")).toHaveCount(0); // the standalone post
   await page.goto(`/en/a/${handle}`);
+  // Header: the channels as badges opening the live accounts, and Share profile (no share sheet here, so the text and link are copied).
+  const socials = page.getByTestId("profile-socials");
+  await expect(socials.getByTestId("social-tiktok")).toHaveAttribute("href", `https://www.tiktok.com/@${handle}.tok`);
+  await expect(socials.getByTestId("social-youtube")).toHaveAttribute("href", `https://www.youtube.com/@${handle}`);
+  await expect(socials.getByTestId("social-youtube")).toHaveAttribute("target", "_blank");
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByTestId("share-profile").click();
+  await expect(page.getByTestId("share-profile-status")).toHaveText("Link copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(`/en/a/${handle}`);
+  await expect(page.getByTestId("share-profile-whatsapp")).toHaveAttribute("href", /^https:\/\/wa\.me\/\?text=/);
   // Work tab: the account as one tile (its two-post group), then the standalone post.
   const tile = page.getByTestId("account-tile");
   await expect(tile).toHaveCount(1);
@@ -86,6 +111,15 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(account).toContainText("Test Café");
   await expect(account.getByTestId("account-logo")).toBeVisible();
   await expect(account.getByTestId("client-link")).toHaveCount(3);
+  // Proof of work: the "Managed account" chip, badges that name the network and the handle and open the live profiles, and Share client portfolio.
+  await expect(account.getByTestId("managed-chip")).toHaveText("Managed account");
+  const channels = account.getByTestId("account-channels");
+  await expect(channels.getByTestId("client-link").nth(0)).toContainText("Instagram");
+  await expect(channels.getByTestId("client-link").nth(0)).toContainText(`@${ig}`);
+  await expect(channels.getByTestId("client-link").nth(0)).toHaveAttribute("target", "_blank");
+  await account.getByTestId("share-client").click();
+  await expect(account.getByTestId("share-client-status")).toHaveText("Link copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(new RegExp(`^Check out Agency ${handle}'s work and managed channels for Test Café on Sawwiq http://localhost:\\d+/en/a/${handle}/c/[0-9a-f-]{36}$`));
   await expect(account.getByTestId("post-grid").locator("a")).toHaveCount(1);
   await account.getByTestId("post-grid").locator("a").first().click();
   await expect(page.getByTestId("post-client")).toContainText("For Test Café");

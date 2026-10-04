@@ -326,6 +326,8 @@ export const agencies = pgTable(
     email: text("email"),
     website: text("website"),
     instagram: text("instagram"),
+    // The agency's own channels (TikTok, YouTube, Facebook, LinkedIn, X, …): same shape and rules as a client's accounts (lib/core/catalog/social-links.ts).
+    socialLinks: jsonb("social_links").$type<ClientLink[]>().notNull().default([]),
     foundedYear: integer("founded_year"),
     teamSize: text("team_size"),
     isVerified: boolean("is_verified").notNull().default(false),
