@@ -28,6 +28,7 @@ const e2eEnv = {
   BEHANCE_FIXTURES: "tests/fixtures/behance",
   // The bearer API (docs/architecture/mobile-and-api-roadmap.md §8) is off in production; tests/e2e/api-v1.spec.ts needs it on.
   API_V1_ENABLED: "true",
+  API_V1_ENVIRONMENT: "staging",
 };
 
 export default defineConfig({

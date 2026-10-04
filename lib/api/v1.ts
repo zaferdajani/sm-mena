@@ -1,4 +1,5 @@
 import "server-only";
+import { apiV1Allowed } from "@/lib/core/rules/api-v1-environment";
 import type { ZodError } from "zod";
 import { bearerTokenFrom, clientIpFrom, requestContext } from "@/lib/core/rules/request-context";
 import { authorizeAgency } from "@/lib/core/rules/auth/authorize";
@@ -16,7 +17,7 @@ import { upgradeRequired } from "@/lib/core/rules/app-version";
 // beta), identity comes from the Authorization header and never from a cookie, and every answer is either
 // data or the shared error contract.
 
-export const apiV1Enabled = () => process.env.API_V1_ENABLED === "true";
+export const apiV1Enabled = () => apiV1Allowed(process.env);
 
 /** The oldest native app the API still serves (semver); unset accepts every app. Set it when a release breaks old clients. */
 export const apiMinAppVersion = () => process.env.API_MIN_APP_VERSION?.trim() || null;

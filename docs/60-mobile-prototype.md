@@ -39,8 +39,8 @@ Server side, one addition: `API_MIN_APP_VERSION` (unset by default). When set an
 
 Production answers 404 on `/api/v1` until the mobile beta (`API_V1_ENABLED` unset). To try the app:
 
-1. Deploy a staging copy (a Vercel preview of `main`, or `npm run build && npm run start` locally) with `API_V1_ENABLED=true`. Do not set it in production.
-2. `cd mobile && npm install && EXPO_PUBLIC_API_URL=https://<staging-host> npx expo start`, then open the Expo Go app (SDK 57) on the phone or an EAS development build.
+1. Deploy a staging copy (a Vercel preview of `main`, or `npm run build && npm run start` locally) with `API_V1_ENABLED=true` and `API_V1_ENVIRONMENT=staging`. Do not set either in production; production hosting markers veto the API.
+2. `cd mobile && npm ci && EXPO_PUBLIC_API_URL=https://<staging-host> npx expo start --go --clear --lan`, then open the Expo Go app (SDK 57) on the phone or an EAS development build.
 3. Sign in with a provider account that exists on that deployment (a password account without a second factor). Nothing in the app creates accounts.
 
 Note on previews: Vercel preview deployments share the production database variables unless they are scoped to the preview target; a staging deployment for the app must point at a staging database before the switch is turned on there.
@@ -56,3 +56,7 @@ Decision: **no service worker in the registration phase**. The manifest is insta
 ## 6. What closes M3 (owner)
 
 The exit criterion is a physical-device run: one provider completes the slice on an iOS and an Android phone against staging, private media answers 404 without the token (the e2e proves this server-side; the device run proves the app sends the header), and logout-all revokes the device. That needs a phone, Expo Go or an EAS build (an Expo account; no paid vendor is required for Expo Go), and a staging deployment with `API_V1_ENABLED=true`. Record the run (screenshots from both platforms, the staging `/api/version`) under `docs/upgrades/mobile-prototype/`.
+
+## 7. Acceptance package
+
+Use [the staging run sheet](upgrades/mobile-prototype/staging-acceptance-run-sheet.md) and [the unfilled device evidence template](upgrades/mobile-prototype/device-acceptance.template.json). M3 remains open. The requested acceptance uses physical Expo Go on both phones. Draft media intentionally returns 401 anonymously; finished private media returns 404. The run sheet covers fresh drafts for the same provider and cross-device logout-all proof.

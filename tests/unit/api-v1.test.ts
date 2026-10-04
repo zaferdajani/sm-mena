@@ -61,6 +61,17 @@ afterAll(async () => {
 });
 
 describe("switch and identity", () => {
+  it("returns 404 in production even when the API switch is accidentally enabled", async () => {
+    const previous = process.env.VERCEL_ENV;
+    process.env.VERCEL_ENV = "production";
+    try {
+      expect((await call(me, "/api/v1/me")).status).toBe(404);
+      expect((await call(login, "/api/v1/auth/login", { method: "POST", json: {} })).status).toBe(404);
+    } finally {
+      if (previous === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = previous;
+    }
+  });
   it("is an unknown path while API_V1_ENABLED is not 'true'", async () => {
     process.env.API_V1_ENABLED = "false";
     try {

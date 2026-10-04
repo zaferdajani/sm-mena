@@ -1,0 +1,299 @@
+{
+  "milestone": "M3",
+  "status": "not_run",
+  "m3_complete": false,
+  "historical_release_evidence": "../release-evidence.2026-10-03.json",
+  "candidate": {
+    "branch": null,
+    "commit": null,
+    "deployment_id": null,
+    "staging_origin": null,
+    "api_version": null
+  },
+  "staging_preflight": {
+    "isolated_database": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "isolated_storage": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "staging_only_api_switches": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "provider_private": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "ios_me_401": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "android_me_401": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    }
+  },
+  "provider_reference": null,
+  "production_before": {
+    "status": "not_run",
+    "observed_at": null,
+    "actual": null,
+    "evidence": []
+  },
+  "devices": [
+    {
+      "platform": "ios",
+      "physical_device": null,
+      "model": null,
+      "os_version": null,
+      "expo_go_version": null,
+      "sdk_compatible": null,
+      "app_version": null,
+      "provider_reference": null,
+      "slice_a": {
+        "sign_in": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "profile_saved": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "upload_source_and_client": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "photo_picker_and_private_preview": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "saved_draft_resume": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "rights_gate": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "publish_and_open_project": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "web_studio_same_project": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        }
+      },
+      "project_id": null,
+      "privacy": {
+        "draft_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "draft_anonymous_401": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "project_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "project_anonymous_404": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "finished_media_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "finished_media_anonymous_404": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        }
+      }
+    },
+    {
+      "platform": "android",
+      "physical_device": null,
+      "model": null,
+      "os_version": null,
+      "expo_go_version": null,
+      "sdk_compatible": null,
+      "app_version": null,
+      "provider_reference": null,
+      "slice_a": {
+        "sign_in": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "profile_saved": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "upload_source_and_client": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "photo_picker_and_private_preview": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "saved_draft_resume": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "rights_gate": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "publish_and_open_project": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "web_studio_same_project": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        }
+      },
+      "project_id": null,
+      "privacy": {
+        "draft_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "draft_anonymous_401": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "project_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "project_anonymous_404": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "finished_media_owner_200": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        },
+        "finished_media_anonymous_404": {
+          "status": "not_run",
+          "observed_at": null,
+          "actual": null,
+          "evidence": []
+        }
+      }
+    }
+  ],
+  "between_platforms_restart": {
+    "status": "not_run",
+    "observed_at": null,
+    "actual": null,
+    "evidence": []
+  },
+  "logout_all": {
+    "ios_revokes_android": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "android_revokes_ios": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    },
+    "preexisting_api_session_401": {
+      "status": "not_run",
+      "observed_at": null,
+      "actual": null,
+      "evidence": []
+    }
+  },
+  "production_after": {
+    "status": "not_run",
+    "observed_at": null,
+    "actual": null,
+    "evidence": []
+  },
+  "staging_cleanup": {
+    "status": "not_run",
+    "observed_at": null,
+    "actual": null,
+    "evidence": []
+  },
+  "defects": [],
+  "reviewer": null,
+  "reviewed_at": null
+}

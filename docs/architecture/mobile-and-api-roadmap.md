@@ -325,7 +325,7 @@ Recommended slice A, scoped to the upload source (no pdf/Behance/social in v1):
 
 ### 8.1 Slice A as built (M2)
 
-Switch: every route under `/api/v1` is wrapped by `route()` in `lib/api/v1.ts` and answers a plain 404 unless `API_V1_ENABLED` is exactly `"true"` on the server. Identity: the `Authorization: Bearer <token>` header only; a cookie is never read, so a browser session cannot drive the API and an API token cannot drive the browser. Every answer carries `Cache-Control: private, no-store` and `Vary: Authorization`; errors use §4.2 (`{ error: { code, reason?, fields?, retryAfter? } }`).
+Switch: every route under `/api/v1` is wrapped by `route()` in `lib/api/v1.ts` and answers a plain 404 unless `API_V1_ENABLED` is exactly `"true"` on the server and the staging/local gate permits it. M3 hosted builds additionally require `API_V1_ENVIRONMENT=staging`; Vercel production markers always veto it (see docs/60 and the staging acceptance run sheet). Identity: the `Authorization: Bearer <token>` header only; a cookie is never read, so a browser session cannot drive the API and an API token cannot drive the browser. Every answer carries `Cache-Control: private, no-store` and `Vary: Authorization`; errors use §4.2 (`{ error: { code, reason?, fields?, retryAfter? } }`).
 
 | Route | Body / result | Notes |
 |---|---|---|

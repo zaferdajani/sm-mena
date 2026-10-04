@@ -1,0 +1,32 @@
+{
+  "scope": "Repository-side M3 acceptance preparation only; no physical-device run",
+  "base_commit": "17bec445b9442939f2150debcb809a66a090ccf9",
+  "branch": "chore/m3-staging-acceptance",
+  "candidate_commit": "The commit containing this file; record git rev-parse HEAD when deploying staging.",
+  "recovery": {
+    "reason": "Workspace maintenance removed the previous local checkout before push authorization arrived.",
+    "previous_unpushed_commit": "04691de9ceeb6399aef6299f1ff6089f7f75ff6d",
+    "action": "Reconstructed from the conversation on current main; guards and focused tests restored, run sheet reworded, checks rerun. This is a new commit, not recovery of the old git object."
+  },
+  "fresh_checks": {
+    "root_install": "npm ci --ignore-scripts passed",
+    "mobile_install": "npm ci --ignore-scripts passed; optional react-native-worklets peer warning retained",
+    "targeted_tests": "25 passed across api-v1-environment, api-v1 and mobile-client",
+    "root_typecheck": "passed",
+    "mobile_typecheck": "passed",
+    "ios_android_export": "passed; iOS and Android Hermes bundles exported",
+    "changed_code_eslint": "passed",
+    "diff_whitespace": "passed",
+    "template": "valid JSON, not_run, m3_complete=false; iOS and Android slots present"
+  },
+  "historical_check_limitation": "Previous online expo install --check timed out at HTTP proxy; offline check reported up to date with unreliable-validation warning. Not repeated in restoration; operator must run online check.",
+  "not_performed": [
+    "physical iPhone Expo Go acceptance",
+    "physical Android Expo Go acceptance",
+    "staging deployment or configuration changes",
+    "production deployment or configuration changes",
+    "new live production HTTP verification",
+    "full Playwright rerun"
+  ],
+  "m3_complete": false
+}
