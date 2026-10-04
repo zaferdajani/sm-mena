@@ -31,6 +31,7 @@ import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
 import { cleanApp, type AppError } from "@/lib/app-demo";
 import { instagramHandle, normalizeUrl, validateHandle } from "@/lib/text";
+import { cleanLinks } from "@/lib/social-links";
 import { agencyTranslationSchema, clientTranslationSchema, contentLang, packageTranslationSchema, postTranslationSchema, readTranslation } from "@/lib/content-lang";
 
 export type StudioState = { ok?: boolean; error?: string } | undefined;
@@ -135,6 +136,11 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   if (handleCheck === "reserved") return { error: "handleReserved" };
   if (await isHandleTaken(d.handle, agency.id)) return { error: "handleTaken" };
 
+  // The agency's own channels: the same rules as a client's accounts (docs/28), up to 10.
+  const socialValues = formData.getAll("socialValue").map(String);
+  const social = cleanLinks(formData.getAll("socialKind").map((kind, i) => ({ kind: String(kind), value: socialValues[i] ?? "" })).slice(0, 20), 10);
+  if ("error" in social) return { error: "socialLink" };
+
   // Each number joins its own country picker (lib/dial-codes.ts).
   const whatsapp = d.whatsapp ? internationalPhone(String(formData.get("whatsappCountry") ?? ""), d.whatsapp) : null;
   const phone = d.phone ? internationalPhone(String(formData.get("phoneCountry") ?? ""), d.phone) : null;
@@ -179,6 +185,7 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
     email: d.email || null,
     website,
     instagram: d.instagram ? instagramHandle(d.instagram) : null,
+    socialLinks: social.links,
     foundedYear: d.foundedYear === "" ? null : d.foundedYear,
     teamSize: d.teamSize || null,
     contentLang: contentLang(formData.get("contentLang")),

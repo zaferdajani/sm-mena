@@ -1,4 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
+import { Briefcase } from "lucide-react";
+import { ShareActions } from "@/components/share-button";
+import { SITE_URL } from "@/lib/site";
 import { SocialIcon } from "@/components/social-icon";
 import { Link } from "@/i18n/navigation";
 import { COUNTRIES } from "@/lib/countries";
@@ -7,9 +10,24 @@ import type { ClientLink } from "@/lib/db/schema";
 import { isLinkKind, linkHref, linkLabel } from "@/lib/social-links";
 import { localized } from "@/lib/content-lang";
 
-/** The real accounts the agency runs for a client, as chips opening the real profiles. */
-export async function AccountLinks({ links }: { links: ClientLink[] }) {
+/** "Managed account": the agency acts for this client; the accounts below are the client's, run by the agency (docs/28). */
+export async function ManagedChip({ agencyName }: { agencyName: string }) {
+  const t = await getTranslations("Profile");
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-xs font-medium text-brand" data-testid="managed-chip" title={t("managedAccountHint", { agency: agencyName })}>
+      <Briefcase className="size-3.5" aria-hidden />
+      {t("managedAccount")}
+    </span>
+  );
+}
+
+/**
+ * The real accounts the agency runs for a client, as badges opening the live profiles. "lg" (the account page)
+ * names the network next to the handle so a visitor knows where each tap leads.
+ */
+export async function AccountLinks({ links, size = "sm" }: { links: ClientLink[]; size?: "sm" | "lg" }) {
   const tk = await getTranslations("PortfolioClients");
+  const large = size === "lg";
   return (
     <ul className="flex flex-wrap gap-2">
       {links.map((l) => {
@@ -17,19 +35,20 @@ export async function AccountLinks({ links }: { links: ClientLink[] }) {
         const href = linkHref(kind, l.value);
         const body = (
           <>
-            <SocialIcon kind={kind} className="size-5 text-xs" />
-            <span className="sr-only">{tk(`kinds.${kind}`)}: </span>
-            <span dir="ltr">{linkLabel(kind, l.value)}</span>
+            <SocialIcon kind={kind} className={large ? "size-7 text-sm" : "size-5 text-xs"} />
+            {large ? <span className="font-medium">{tk(`kinds.${kind}`)}</span> : <span className="sr-only">{tk(`kinds.${kind}`)}: </span>}
+            <span dir="ltr" className={large ? "text-muted-foreground" : undefined}>{linkLabel(kind, l.value)}</span>
           </>
         );
+        const chip = large ? "flex min-h-11 items-center gap-2 rounded-full border px-3 py-1.5 text-sm" : "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs";
         return (
           <li key={`${l.kind}:${l.value}`}>
             {href ? (
-              <a href={href} target="_blank" rel="nofollow noopener noreferrer ugc" className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs hover:bg-muted" data-testid="client-link">
+              <a href={href} target="_blank" rel="nofollow noopener noreferrer ugc" className={`${chip} hover:bg-muted`} data-testid="client-link">
                 {body}
               </a>
             ) : (
-              <span className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs">{body}</span>
+              <span className={chip}>{body}</span>
             )}
           </li>
         );
@@ -39,7 +58,7 @@ export async function AccountLinks({ links }: { links: ClientLink[] }) {
 }
 
 /** The Clients tab: each account the agency handles, with its logo, the real accounts it runs and the work it did for it. */
-export async function ClientShowcaseList({ clients: rows, lang = "ar", handle }: { clients: ClientShowcase[]; lang?: string; handle: string }) {
+export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, agencyName }: { clients: ClientShowcase[]; lang?: string; handle: string; agencyName?: string }) {
   const t = await getTranslations("Profile");
   const tInd = await getTranslations("Industries");
   const locale = await getLocale();
@@ -65,7 +84,10 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle }:
                 <h2 className="font-semibold" dir="auto">
                   <Link href={`/a/${handle}/c/${c.id}`} data-testid="client-open">{c.name}</Link>
                 </h2>
-                {meta && <p className="text-xs text-muted-foreground">{meta}</p>}
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <ManagedChip agencyName={agencyName ?? handle} />
+                  {meta && <p className="text-xs text-muted-foreground">{meta}</p>}
+                </div>
                 {c.confirmedAt && <p className="text-xs font-medium text-brand" data-testid="client-confirmed">✓ {t("confirmedByClient")}</p>}
               </div>
               <Link href={`/a/${handle}/c/${c.id}`} className="shrink-0 text-xs font-medium text-brand">{t("openAccount")}</Link>
@@ -77,6 +99,14 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle }:
                 <AccountLinks links={c.links} />
               </div>
             )}
+            <ShareActions
+              className="mt-3"
+              url={`${SITE_URL}/${locale}/a/${handle}/c/${c.id}`}
+              title={`${c.name} · ${agencyName ?? handle}`}
+              text={t("shareClientText", { agency: agencyName ?? handle, client: c.name })}
+              label={t("shareClient")}
+              testId="share-client"
+            />
             {c.thumbs.length > 0 && (
               <div className="mt-3">
                 <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("clientWork")} ({c.postCount})</p>

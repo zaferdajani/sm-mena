@@ -4,7 +4,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ChevronLeft } from "lucide-react";
 import { DemoNotice } from "@/components/demo/demo-banner";
 import { FeedList } from "@/components/feed/feed-list";
-import { AccountLinks } from "@/components/profile/client-showcase";
+import { AccountLinks, ManagedChip } from "@/components/profile/client-showcase";
+import { ShareActions } from "@/components/share-button";
+import { SITE_URL } from "@/lib/site";
 import { Link } from "@/i18n/navigation";
 import { localized, localizedAgency } from "@/lib/content-lang";
 import { COUNTRIES } from "@/lib/countries";
@@ -75,16 +77,29 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
           <span className="grid size-20 shrink-0 place-items-center rounded-full border bg-muted text-2xl font-bold text-muted-foreground">{name.slice(0, 1)}</span>
         )}
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-bold" dir="auto">{name}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl font-bold" dir="auto">{name}</h1>
+            <ManagedChip agencyName={agency.name} />
+          </div>
           <p className="text-sm text-muted-foreground">{[meta, t("accountPosts", { count: client.postCount })].filter(Boolean).join(" · ")}</p>
+          <p className="text-xs text-muted-foreground">{t("managedAccountHint", { agency: agency.name })}</p>
           {client.confirmedAt && <p className="mt-1 text-xs font-medium text-brand" data-testid="account-confirmed">✓ {t("confirmedByClient")}</p>}
           {description && <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{description}</p>}
           {client.links.length > 0 && (
-            <div className="mt-3">
-              <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("accountsManaged")}</p>
-              <AccountLinks links={client.links} />
+            <div className="mt-3" data-testid="account-channels">
+              <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("browseLive")}</p>
+              <AccountLinks links={client.links} size="lg" />
             </div>
           )}
+          <ShareActions
+            className="mt-4"
+            variant="primary"
+            url={`${SITE_URL}/${locale}/a/${agency.handle}/c/${client.id}`}
+            title={`${name} · ${agency.name}`}
+            text={t("shareClientText", { agency: agency.name, client: name })}
+            label={t("shareClient")}
+            testId="share-client"
+          />
         </div>
       </header>
       <div className="border-t" />

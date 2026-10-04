@@ -167,7 +167,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
-      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} />}
+      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} agencyName={agency.name} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
