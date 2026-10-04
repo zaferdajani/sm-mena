@@ -1,0 +1,42 @@
+{
+  "feature": "Share the agency page and each managed client account; every channel as a tappable badge (docs/28 §Sharing the proof of work)",
+  "pr": 63,
+  "branch": "feature/share-social-accounts",
+  "validated_head": "ef462c6ad3e40150cee11d4e541f44a99d17bbc0",
+  "ci": {
+    "run": 37192720113,
+    "jobs": [
+      "Lint, typecheck, unit tests",
+      "Full-platform regression (Playwright)",
+      "Registration phase, privacy and mobile journey",
+      "Mobile prototype (Expo) typecheck"
+    ],
+    "conclusion": "success"
+  },
+  "local_proofs": {
+    "unit": "messages, founder-copy, seed, boundaries, api-v1: 68 passed",
+    "e2e_full_config": "portfolio-clients (refused wrong-network link, saved channels, header badges, clipboard fallback, managed chip, account badges, client share text), provider-profile-layout (44 px targets), every spec that submits the profile form: 61 passed",
+    "registration_suite": "42 passed",
+    "live_journey_local_registration_phase": "15/15 OK including profile channels and share, client card managed chip and share, account page live accounts",
+    "screenshots": "ar/en 1440 and ar 390: header, client card, account page; no horizontal overflow"
+  },
+  "merge_sha": "154b3be9f942477dddd1872da07a88da6c511c2c",
+  "deployment": {
+    "id": "dpl_ATcPHWFkS27YDJK3kH8k2W8g6wxh",
+    "state": "READY",
+    "migration": "0036_agency_social_links"
+  },
+  "production": {
+    "api_version_commit": "154b3be9f942477dddd1872da07a88da6c511c2c",
+    "pages": "/ar, /en, /ar/join, /ar/owner → 200",
+    "live_journey_run_37193690728": "header step OK (1 channel badge, Share present); client-card step timed out: production's demo provider lists no client accounts (Clients tab absent); production is never seeded from these sessions",
+    "follow_up": "PR #64 makes the journey report that condition plainly; see live_journey_after_64"
+  },
+  "live_journey_after_64": "run 37194610282 on production: 15/15 OK — profile channels and share (1 badge, Share present), client card and account page recorded as not checkable on this deployment (no demo client accounts; covered by CI), studio measure 80–1120 on 8 routes, hover 4 px, test project deleted",
+  "verified_at": "2026-10-04T10:14:00Z",
+  "follow_up_pr": {
+    "pr": 64,
+    "merge_sha": "ace2f57ea531a9116803e0e5d960b34440e6cc1b",
+    "deployment": "dpl_J2CaViGjDDHyqU6oNDmwS8BoFg3Q"
+  }
+}
