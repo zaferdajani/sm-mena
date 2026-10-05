@@ -4,7 +4,7 @@ The owner wants to go to the best social media agencies in Jordan before launch 
 
 ## What is on the list
 - **Researched list** (`data/prospects-jordan.json`): agencies found in public directories on 1 Oct 2026 (Clutch's social media ranking for Jordan, al5otwa, entasher, and the agencies' own sites). Each entry carries its source. "Add the researched list" on the page, or Maintenance → `seed-prospects`, adds whatever is missing and leaves existing rows alone.
-- **The owner's names**: typed on the page (name, city, website, Instagram, services, note, top priority). The first two, UPT House and Muhannad, came from the owner on 1 Oct 2026; "Muhannad" had no agency or page under that name in the directories searched, so it is on the list with its details to be filled in.
+- **The owner's names**: typed on the page (name, city, website, Instagram, services, note, top priority). The first two, UPT House and Muhannad, came from the owner on 1 Oct 2026; "Muhannad" had no agency or page under that name in the directories searched, so it is on the list with its details to be filled in. Purple Wave (@purplewave.jo) came from the owner on 5 Oct 2026 and is in the researched file as an owner's pick so that "Add the researched list" or `seed-prospects` carries it to every deployment.
 - One row per business however the name is typed (`prospectKey`: case, spaces, punctuation and a leading "the" are ignored).
 
 ## Status
