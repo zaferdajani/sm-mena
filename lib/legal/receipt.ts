@@ -5,6 +5,7 @@ import type { Contract } from "@/lib/db/schema";
 import { formatDate, formatFils } from "@/lib/format";
 import type { Bi } from "./clauses";
 import type { LegalDocument } from "./document-types";
+import { virtualPaymentsAllowed } from "@/lib/core/rules/staging";
 import { HOLDER_LINE, paymentStateOf } from "./payment-holder";
 
 /** A receipt as a document for the PDF renderer (no signature page). Both languages, like the contract. */
@@ -78,7 +79,7 @@ export function receiptDocument(r: Receipt, c: Contract, parties: { agency: stri
     signatures: [],
     fingerprint,
     timeZone: countryOf(c.jurisdiction).timeZones[0],
-    watermark: r.test ? R.watermark[l] : undefined,
+    watermark: r.test ? (virtualPaymentsAllowed() ? "TEST MODE - virtual money" : R.watermark[l]) : undefined,
     labels: { page: R.page[l], evidenceTitle: "", signedAt: "", notSigned: "", fingerprint: "", ipHash: "", evidenceNote: "" },
   };
 }

@@ -5280,5 +5280,41 @@
     "noMatches": "none yet",
     "empty": "No business owners have registered yet.",
     "note": "Addresses are partly hidden. An owner's email and WhatsApp reach a provider only after the owner accepts that provider."
+  },
+  "Staging": {
+    "banner": "TEST MODE - virtual money. Isolated staging copy. This is not sawwiq.org and no real money moves.",
+    "wallet": "Virtual wallet",
+    "signIn": "Sign in",
+    "owners": "Business owners",
+    "admin": "Admin"
+  },
+  "VirtualPay": {
+    "title": "TEST MODE - virtual money",
+    "body": "This checkout is a sandbox. It accepts only the test card numbers below. Nothing is sent to a bank or a payment company.",
+    "balance": "Virtual balance: {amount}",
+    "holder": "Name on card",
+    "number": "Card number",
+    "expiry": "Expiry (MM/YY)",
+    "cvc": "CVC",
+    "pay": "Pay with virtual card",
+    "walletTitle": "Virtual wallet",
+    "walletBody": "Balances and movements on this staging copy. Refunds return here. This is not a bank account.",
+    "emptyBalance": "No virtual balance yet.",
+    "allWallets": "Every staging wallet",
+    "errors": {
+      "declined": "The card was declined. No virtual money moved.",
+      "insufficient": "Not enough virtual money for this payment.",
+      "expired": "This card is expired.",
+      "cvc": "The CVC was declined.",
+      "invalid": "Check the card number, a future expiry (MM/YY), the CVC and the name.",
+      "unknown": "That card number is not a staging test card. No payment was attempted."
+    },
+    "cards": {
+      "success": "succeeds",
+      "declined": "declined",
+      "insufficient": "insufficient funds",
+      "expired": "expired",
+      "cvc": "incorrect CVC"
+    }
   }
 }

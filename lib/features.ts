@@ -1,3 +1,4 @@
+import { isStagingMode } from "@/lib/core/rules/staging";
 import { launchAllowsFeature } from "@/lib/launch-phase";
 // No "server-only": the seed script loads it too (through lib/data/agencies → plans).
 import { eq } from "drizzle-orm";
@@ -56,6 +57,18 @@ export function defaultFeatures(): FeatureMap {
     const [k, v] = pair.split("=").map((x) => x?.trim());
     if (k && isFeatureKey(k) && (FEATURE_STATES as readonly string[]).includes(v ?? "")) out[k] = { state: v as FeatureState, pilots: [] };
   }
+  return applyStagingFeatures(out);
+}
+
+/**
+ * Staging QA opens every switch except the pre-launch teaser, which stays off
+ * so `/` remains the landing page (owner decision, 26 Sep 2026). The teaser
+ * stays reachable at `/soon`. A saved admin setting cannot close a switch here.
+ */
+export function applyStagingFeatures(map: FeatureMap): FeatureMap {
+  if (!isStagingMode()) return map;
+  const out = { ...map };
+  for (const f of FEATURES) out[f.key] = { state: f.key === "prelaunch_home" ? "off" : "on", pilots: out[f.key].pilots };
   return out;
 }
 
@@ -72,7 +85,7 @@ function merge(stored: unknown): FeatureMap {
     if (s.state && (FEATURE_STATES as readonly string[]).includes(s.state)) out[k].state = s.state;
     if (Array.isArray(s.pilots)) out[k].pilots = s.pilots.filter((p): p is string => typeof p === "string").slice(0, 50);
   }
-  return out;
+  return applyStagingFeatures(out);
 }
 
 /** Every feature's current setting (cached for a few seconds per server instance). */

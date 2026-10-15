@@ -5,6 +5,7 @@
 //   node scripts/vercel-admin.mjs deploy   production deploy of main
 //   node scripts/vercel-admin.mjs status   latest deployment + build log tail + domain DNS
 //   node scripts/vercel-admin.mjs logs     recent runtime errors of the production deployment
+//   node scripts/vercel-admin.mjs staging  DNS + branch-domain steps (no production secrets)
 import { randomBytes } from "node:crypto";
 
 const TOKEN = process.env.VERCEL_TOKEN;
@@ -12,7 +13,42 @@ const PROJECT = process.env.VERCEL_PROJECT || "sm-mena";
 const DOMAIN = process.env.SITE_DOMAIN || "sawwiq.org";
 const REPO_ID = process.env.GITHUB_REPOSITORY_ID;
 const API = "https://api.vercel.com";
+const STAGING_BRANCH = "cursor/staging-qa-fafd";
+const STAGING_HOST = "staging.sawwiq.org";
+const STAGING_DB_REF = "klbjfgeoztmvtiolvjbk";
+const PRODUCTION_DB_REF = "dzedhnmxywtteeduwpby";
+
+function printStagingSteps() {
+  console.log(`Staging subdomain for git branch ${STAGING_BRANCH} on Vercel project ${PROJECT}.`);
+  console.log("A path such as sawwiq.org/staging is not used: it would share the production deployment and database.");
+  console.log("");
+  console.log("DNS (Namecheap → sawwiq.org → Advanced DNS). Do not change the @ or www records.");
+  console.log("Type: CNAME");
+  console.log("Name: staging");
+  console.log("Value: cname.vercel-dns.com");
+  console.log("");
+  console.log("Vercel:");
+  console.log(`1. Project ${PROJECT} → Settings → Domains → add ${STAGING_HOST}.`);
+  console.log(`2. Connect that domain to Git branch ${STAGING_BRANCH}. Do not redirect it to ${DOMAIN}.`);
+  console.log("3. Environment Variables scoped to Preview and that Git branch only. Not Production. Not every preview.");
+  console.log(`4. Copy non-secret app config. Do NOT copy production DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, or MFA_ENCRYPTION_KEY.`);
+  console.log(`5. DATABASE_URL = session pooler URL for Supabase project sawwiq-staging (ref ${STAGING_DB_REF}). Copy or reset the password in the Supabase dashboard. Never use project ${PRODUCTION_DB_REF}.`);
+  console.log("6. Generate new MFA_ENCRYPTION_KEY, CRON_SECRET, and PAYMENTS_WEBHOOK_SECRET.");
+  console.log(`7. NEXT_PUBLIC_SITE_URL=https://${STAGING_HOST}`);
+  console.log("8. From .env.staging.example: STAGING_MODE=true, VIRTUAL_PAYMENTS=sandbox, LAUNCH_PHASE=full, MONETIZATION_ENABLED=true, PAYMENTS_PROVIDER=mock, PROTECTED_PAYMENTS_LIVE=false, SEO_INDEXABLE=false, ADMIN_REQUIRE_2FA=false, AUTH_SHOW_CODES=true, AI_PROVIDER=basic, FEATURE_DEFAULTS with prelaunch_home=off.");
+  console.log("9. Storage on the staging Supabase project (bucket media), or STORAGE_PROVIDER=local (ephemeral on Vercel).");
+  console.log("");
+  console.log("Do not set STAGING_MODE until the branch DATABASE_URL override exists. Preview env currently inherits the production DATABASE_URL. The app refuses to boot, and the staging hostname returns 503, while that URL still points at production.");
+}
+
+const action = process.argv[2] ?? "status";
+if (action === "staging") printStagingSteps();
 if (!TOKEN) {
+  if (action === "staging") {
+    console.log("");
+    console.log("No VERCEL_TOKEN in this environment, so the domain was not attached. Add the DNS record and the Vercel domain by hand.");
+    process.exit(0);
+  }
   console.log("::error::Add the VERCEL_TOKEN repository secret (vercel.com → Account Settings → Tokens).");
   process.exit(1);
 }
@@ -200,10 +236,27 @@ async function runtimeLogs(project) {
   }
 }
 
-const action = process.argv[2] ?? "status";
+async function attachStagingDomain(project) {
+  // Domain only. Production env values are never copied onto the branch.
+  const created = await api(`/v10/projects/${project.id}/domains`, {
+    method: "POST",
+    body: JSON.stringify({ name: STAGING_HOST, gitBranch: STAGING_BRANCH }),
+    allowFail: true,
+  });
+  const patched = await api(`/v9/projects/${project.id}/domains/${STAGING_HOST}`, {
+    method: "PATCH",
+    body: JSON.stringify({ gitBranch: STAGING_BRANCH, redirect: null }),
+    allowFail: true,
+  });
+  console.log(`Domain attach ${created.status}, branch update ${patched.status}. Env vars were not copied.`);
+  if (created.status >= 400 && patched.status >= 400) process.exit(1);
+}
+
 const project = await findProject();
 console.log(`Project: ${project.name}`);
-if (action === "setup") {
+if (action === "staging") {
+  await attachStagingDomain(project);
+} else if (action === "setup") {
   console.log("Environment variables:");
   await setEnv(project);
   await setDomains(project);

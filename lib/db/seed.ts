@@ -24,7 +24,9 @@ import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
 import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
+import { assertStagingDatabase, isStagingMode } from "@/lib/core/rules/staging";
 import { DEMO_PROFILES, DEMO_ROLES } from "./demo-profiles";
+import { STAGING_PASSWORD } from "./staging-password";
 import { DEMO_TRANSLATIONS } from "./demo-translations";
 import { ROLE_KEYS } from "../services/catalog";
 import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, users, type DeliverableLine } from "./schema";
@@ -368,6 +370,7 @@ async function syncDemoPassword(log: (...a: unknown[]) => void) {
 }
 
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false, restoreDemo = false } = {}) {
+  assertStagingDatabase();
   const log = quiet ? () => {} : console.log;
   // Reset first: on PGlite it reopens the store, so the handle is taken after it.
   if (doReset) await reset();
@@ -375,8 +378,9 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   // Every built-in service gets its numbered tag (data/service-catalog.json).
   await syncServiceCatalog();
   const production = process.env.NODE_ENV === "production";
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (production ? null : "admin@sawwiq.test");
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (production ? null : "admin-pass-123");
+  const staging = isStagingMode();
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (staging ? "staging-owner@sawwiq.test" : production ? null : "admin@sawwiq.test");
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (staging ? STAGING_PASSWORD : production ? null : "admin-pass-123");
   // The admin is ensured on every run, so secrets added after the first deploy still work.
   if (adminEmail && adminPassword && (!production || adminPassword.length >= 12)) {
     if (!(await getUserByEmail(adminEmail))) {
@@ -402,6 +406,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const [removedFlag] = await db.select().from(appSettings).where(sql`${appSettings.key} = 'demo_removed'`);
   if (removedFlag && !doReset) {
     log("Demo data was removed by an admin; not adding it back. Use --reset to start over.");
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
   const fresh = n === 0;
@@ -410,6 +415,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   // restoreDemo: lib/db/rebuild-demo-media.ts re-creates demo agencies it removed.
   if (!fresh && demoCount === 0 && !restoreDemo) {
     log(`Database already has ${n} agencies and no demo data. Use --reset to start over.`);
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
   const existing = new Set((await db.select({ handle: agencies.handle }).from(agencies)).map((a) => a.handle));
@@ -422,12 +428,14 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     await addDemoTranslations(log);
     await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
 
   // Demo agency accounts must not share a known password on a public deployment.
-  const demoPassword =
-    process.env.SEED_DEMO_PASSWORD ?? (production ? randomBytes(18).toString("base64url") : DEMO_PASSWORD);
+  const demoPassword = isStagingMode()
+    ? STAGING_PASSWORD
+    : process.env.SEED_DEMO_PASSWORD ?? (production ? randomBytes(18).toString("base64url") : DEMO_PASSWORD);
 
   const now = Date.now();
   const r = rng(42);
@@ -608,10 +616,17 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   await addDemoTranslations(log);
   await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
-  if (!production) {
+  if (!production || isStagingMode()) {
     log(`Admin: ${adminEmail} / ${adminPassword}`);
     log(`Demo agency login: ${DEMO_AGENCIES[0].handle.replace(/\./g, "-")}@sawwiq.test / ${demoPassword}`);
   }
+  await seedStagingIfNeeded(log, adminOnly);
+}
+
+async function seedStagingIfNeeded(log: (...a: unknown[]) => void, adminOnly: boolean) {
+  if (adminOnly || !isStagingMode()) return;
+  const { seedStaging } = await import("./seed-staging");
+  await seedStaging(log);
 }
 
 if (process.argv[1] && /seed\.ts$/.test(process.argv[1])) {

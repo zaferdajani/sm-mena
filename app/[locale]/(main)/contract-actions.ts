@@ -268,6 +268,45 @@ export async function clientFundAction(formData: FormData) {
  * records the deposit through the same path a payment partner's verified
  * notification uses, so it is applied once however often it is clicked.
  */
+/** Staging sandbox card checkout. Refuses to run unless the virtual gateway is explicitly enabled off production. */
+export async function clientVirtualPayAction(formData: FormData) {
+  const locale = await getLocale();
+  const { virtualCheckoutEnabled, debitVirtualWallet, recordVirtualDecline, creditVirtualWallet } = await import("@/lib/payments/virtual-wallet");
+  const { evaluateTestCard } = await import("@/lib/payments/virtual-cards");
+  const c = await clientContract(formData);
+  if (!c || c.v.contract.paymentsLive || !virtualCheckoutEnabled()) return redirect({ href: "/", locale });
+  const m = c.v.milestones.find((x) => x.id === formData.get("milestoneId"));
+  if (!m || m.status !== "pending") return redirect({ href: c.base, locale });
+  const back = `${c.base}/fund/${m.id}`;
+  const outcome = evaluateTestCard({
+    number: String(formData.get("card") ?? ""),
+    expiry: String(formData.get("expiry") ?? ""),
+    cvc: String(formData.get("cvc") ?? ""),
+    name: String(formData.get("holder") ?? ""),
+  });
+  const payer = c.v.contract.clientEmail || `contract:${c.v.contract.id}`;
+  if (outcome !== "success") {
+    await recordVirtualDecline(payer, m.amountFils, c.v.contract.currency, `decline:${m.id}:${outcome}`, outcome);
+    refresh();
+    return redirect({ href: `${back}?card=${outcome}`, locale });
+  }
+  const paid = await debitVirtualWallet(payer, m.amountFils, c.v.contract.currency, `dep:${m.id}`, m.title);
+  if (!paid.ok) {
+    await recordVirtualDecline(payer, m.amountFils, c.v.contract.currency, `decline:${m.id}:insufficient`, "insufficient");
+    refresh();
+    return redirect({ href: `${back}?card=insufficient`, locale });
+  }
+  const { applyProviderEvent } = await import("@/lib/data/payments");
+  const applied = await applyProviderEvent("mock", { id: `evt_${crypto.randomUUID()}`, type: "payment.succeeded", paymentRef: `ms_${m.id}`, providerRef: `mock_${m.id.slice(0, 8)}`, amountFils: m.amountFils, currency: c.v.contract.currency });
+  if (applied !== "ok" && applied !== "duplicate") {
+    await creditVirtualWallet(payer, m.amountFils, c.v.contract.currency, `undo:${m.id}`, "deposit was not applied");
+    refresh();
+    return redirect({ href: `${back}?card=declined`, locale });
+  }
+  refresh();
+  return redirect({ href: `${c.base}?funded=1`, locale });
+}
+
 export async function clientMockPayAction(formData: FormData) {
   const locale = await getLocale();
   const c = await clientContract(formData);
