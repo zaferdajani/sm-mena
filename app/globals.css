@@ -285,6 +285,13 @@ html.reel-snap [data-testid="site-footer"] {
 .pioneer-letter__caption { font-size: 9.5pt; color: #4c5b53; }
 .pioneer-letter__foot { margin-block-start: 8mm; font-size: 10pt; }
 .pioneer-letter__honest { color: #6b746f; font-size: 8.5pt; }
+/* The staging banner is sticky at the top of the viewport. Fixed and sticky
+   chrome has to start below it, or the language switch sits under the banner. */
+html:has([data-testid="staging-banner"]) .sw-header,
+html:has([data-testid="staging-banner"]) [data-app-header] {
+  top: var(--staging-banner-h, 0px);
+}
+
 @media print {
   @page { size: A5; margin: 0; }
   .pioneer-letters { background: none; padding: 0; }
