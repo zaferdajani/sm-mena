@@ -15,7 +15,7 @@ export function isSafeKey(key: string): boolean {
 }
 
 /** Keys under these prefixes are never public: no public URL, a private bucket, served only by an authenticated route. */
-const PRIVATE_PREFIXES = ["collab/", "drafts/", "portfolio/"];
+const PRIVATE_PREFIXES = ["collab/", "drafts/", "portfolio/", "support/"];
 export const isPrivateKey = (key: string) => PRIVATE_PREFIXES.some((p) => key.startsWith(p));
 
 function localStorage(): Storage {

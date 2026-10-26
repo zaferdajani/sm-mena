@@ -264,3 +264,24 @@ export function newAvatarKey(agencyId: string) {
 export function newClientLogoKey(agencyId: string) {
   return `portfolio/${agencyId}/clients/${randomUUID()}.webp`;
 }
+
+/**
+ * A screenshot attached to a problem report (docs/61): EXIF orientation applied,
+ * all metadata (including GPS) stripped, at most 1600px on the long side, WebP.
+ * Small images are allowed: a phone crop of one button is still useful.
+ */
+export async function processScreenshot(input: Buffer): Promise<Buffer> {
+  if (input.byteLength > MAX_UPLOAD_BYTES) throw new ImageError("too_large");
+  let meta;
+  try {
+    meta = await sharp(input).metadata();
+  } catch {
+    throw new ImageError("unsupported");
+  }
+  if (!meta.format || !ACCEPTED_FORMATS.has(meta.format)) throw new ImageError("unsupported");
+  return sharp(input, { failOn: "error" }).rotate().resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+}
+
+export function newScreenshotKey() {
+  return `support/${randomUUID()}.webp`;
+}

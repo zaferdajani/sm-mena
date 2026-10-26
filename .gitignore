@@ -57,3 +57,6 @@ next-env.d.ts
 
 # Screenshots and JSON from the live checks (tests/live/*), uploaded as workflow artifacts
 /live-evidence/
+
+# Bug queue export (docs/61), written by lib/db/bug-queue.ts
+/bug-queue.sealed.json

@@ -34,7 +34,7 @@ export async function RegistrationFooter() {
   const t = await getTranslations("Registration");
   return <footer className="registration-footer" data-testid="registration-footer">
     <p>{t("freeNote")}</p>
-    <nav aria-label={t("footerLabel")}><Link href="/contact">{t("contact")}</Link><Link href="/legal">{t("legal")}</Link><Link href="/examples">{t("exampleCta")}</Link></nav>
+    <nav aria-label={t("footerLabel")}><Link href="/contact">{t("contact")}</Link><Link href="/legal">{t("legal")}</Link><Link href="/examples">{t("exampleCta")}</Link><Link href="/support" data-testid="registration-report">{t("report")}</Link></nav>
     <ReleaseStamp />
   </footer>;
 }

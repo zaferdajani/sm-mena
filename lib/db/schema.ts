@@ -82,7 +82,7 @@ export const paymentStatus = pgEnum("payment_status", ["pending", "paid", "faile
 export const paymentKind = pgEnum("payment_kind", ["subscription", "promotion"]);
 export const errorStatus = pgEnum("error_status", ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"]);
 export const supportStatus = pgEnum("support_status", ["new", "planned", "done", "declined"]);
-export const supportKind = pgEnum("support_kind", ["bug", "question", "suggestion"]);
+export const supportKind = pgEnum("support_kind", ["bug", "complaint", "question", "suggestion"]);
 export const contractStatus = pgEnum("contract_status", ["sent", "active", "completed", "cancelled", "disputed"]);
 export const paymentMode = pgEnum("payment_mode", ["protected", "direct"]);
 // split = settled by a dispute decision or a mutual cancellation: part paid out, part refunded.
@@ -1544,6 +1544,13 @@ export const supportRequests = pgTable(
     adminNote: text("admin_note"),
     handledBy: uuid("handled_by").references(() => users.id, { onDelete: "set null" }),
     handledAt: timestamp("handled_at", { withTimezone: true }),
+    // Private storage keys (support/…) of up to 3 screenshots; served to staff only (docs/61).
+    screenshots: jsonb("screenshots").$type<string[]>().notNull().default([]),
+    // Captured with the report so a bug can be reproduced: the screen size and the deployed commit.
+    viewport: text("viewport"),
+    appCommit: text("app_commit"),
+    // The commit that fixed it, when the bug agent or a person closes it as done.
+    resolutionCommit: text("resolution_commit"),
     createdAt: createdAt(),
   },
   (t) => [index("support_status_idx").on(t.status, t.createdAt)],

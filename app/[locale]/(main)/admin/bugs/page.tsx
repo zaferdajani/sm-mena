@@ -3,7 +3,7 @@ import { StatTiles } from "@/components/admin/stat-tiles";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
-import { bugCounts, listErrors, listSiteChecks, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, type SupportStatus } from "@/lib/data/bugs";
+import { bugCounts, listErrors, listSiteChecks, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, supportRef, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
@@ -192,12 +192,30 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
             <div className="flex items-center gap-2">
               <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STATUS_STYLE[r.status])}>{t(`reportStatus.${r.status}`)}</span>
               <span className="font-medium">{tk(`kinds.${r.kind}`)}</span>
+              <span className="font-mono text-xs text-muted-foreground" dir="ltr" data-testid="report-ref">{supportRef(r.id)}</span>
               <span className="ms-auto text-xs text-muted-foreground">{ago(r.createdAt)}</span>
             </div>
             <p className="whitespace-pre-line" dir="auto">{r.message}</p>
+            {r.screenshots.length > 0 && (
+              <ul className="flex flex-wrap gap-2" data-testid="report-shots">
+                {r.screenshots.map((key) => (
+                  <li key={key}>
+                    <a href={`/api/support-media/${key}`} target="_blank" rel="noopener noreferrer" className="block size-24 overflow-hidden rounded-lg border">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- private, staff-only route */}
+                      <img src={`/api/support-media/${key}`} alt={t("screenshot")} className="size-full object-cover" loading="lazy" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="text-xs text-muted-foreground" dir="ltr">
-              {[r.email, r.path, r.locale].filter(Boolean).join(" · ")}
+              {[r.email, r.path, r.locale, r.viewport, r.appCommit?.slice(0, 7)].filter(Boolean).join(" · ")}
             </p>
+            {r.resolutionCommit && (
+              <p className="text-xs text-muted-foreground">
+                {t("fixedIn")} <span className="font-mono" dir="ltr">{r.resolutionCommit.slice(0, 7)}</span>
+              </p>
+            )}
             <form action={updateSupportAction} className="flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={r.id} />
               <input name="note" defaultValue={r.adminNote ?? ""} placeholder={t("note")} className="h-9 min-w-40 flex-1 rounded-md border bg-background px-2 text-xs" dir="auto" />

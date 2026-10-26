@@ -17,7 +17,7 @@ export default async function SupportPage({ params, searchParams }: PageProps<"/
     <div className="mx-auto max-w-lg space-y-4 px-4 py-6">
       <h1 className="text-xl font-bold">{t("title")}</h1>
       <p className="text-sm text-muted-foreground">{t("intro")}</p>
-      <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "question" || kind === "suggestion" ? kind : "bug"} />
+      <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "complaint" || kind === "question" || kind === "suggestion" ? kind : "bug"} />
     </div>
   );
 }
