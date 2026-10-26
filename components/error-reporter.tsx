@@ -7,8 +7,12 @@ import { useEffect } from "react";
 const MAX_PER_SESSION = 25;
 const sent = new Set<string>();
 
+/** Next.js's own navigation signals (redirect(), notFound()) travel as errors; the router has already handled them. */
+export const isNextSignal = (message: string) => /^(Error: )?NEXT_(REDIRECT|NOT_FOUND|HTTP_ERROR_FALLBACK)\b/.test(message);
+
 export function reportClientError(kind: string, message: string, stack?: string | null) {
   if (process.env.NODE_ENV !== "production" || typeof window === "undefined") return;
+  if (isNextSignal(message)) return;
   const key = `${kind}|${message}`;
   if (sent.has(key)) return;
   sent.add(key);

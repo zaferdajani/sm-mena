@@ -112,7 +112,8 @@
     "stepOf": "Step {n} of {total}",
     "next": "Continue",
     "back": "Back",
-    "draftNote": "What you type stays on this device until you finish, so you can leave and come back."
+    "draftNote": "What you type stays on this device until you finish, so you can leave and come back.",
+    "forgot": "Forgot your password?"
   },
   "Cities": {
     "amman": "Amman",
@@ -5293,5 +5294,31 @@
     "noMatches": "none yet",
     "empty": "No business owners have registered yet.",
     "note": "Addresses are partly hidden. An owner's email and WhatsApp reach a provider only after the owner accepts that provider."
+  },
+  "Forgot": {
+    "title": "Forgot your password",
+    "subtitle": "Enter your account's email and we'll send a 6-digit code to set a new password.",
+    "email": "Email",
+    "sendCode": "Send the code",
+    "codeSent": "If {email} has an account, we sent it a code that works for 10 minutes.",
+    "testCode": "Test code:",
+    "code": "Code",
+    "newPassword": "New password",
+    "passwordHint": "At least 8 characters.",
+    "confirm": "Type the password again",
+    "save": "Save and sign in",
+    "codeHelp": "No code? Check your spam folder, or go back and ask for a new one. Business owner accounts sign in with an email code directly.",
+    "back": "Back to sign in",
+    "errors": {
+      "email": "Enter a valid email address.",
+      "unavailable": "Sending codes isn't available right now. Try again later.",
+      "rateLimited": "Too many requests. Wait a little and try again.",
+      "sendFailed": "We couldn't send the code. Try again shortly.",
+      "badCode": "That code isn't right.",
+      "expired": "That code expired. Ask for a new one.",
+      "tooMany": "Too many tries for this code. Ask for a new one.",
+      "short": "The password must be at least 8 characters.",
+      "mismatch": "The two passwords don't match."
+    }
   }
 }
