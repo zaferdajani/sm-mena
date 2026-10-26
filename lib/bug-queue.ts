@@ -7,8 +7,9 @@ import { constants, createCipheriv, createDecipheriv, createPrivateKey, createPu
 import { z } from "zod";
 
 const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-// Phone-like runs: an optional +, then 7 or more digits with spaces, dots, dashes or brackets between them.
-const PHONE = /(?:\+|00)?\d[\d\s().-]{6,}\d/g;
+// Phone-like runs: an optional +, then 7 or more digits with spaces, dots, dashes or brackets between them,
+// not part of a longer word (so ids such as UUIDs stay whole).
+const PHONE = /(?<![\w-])(?:\+|00)?\d[\d\s().-]{6,}\d(?![\w-])/g;
 const ARABIC_DIGITS = /[٠-٩]/g;
 
 /** Removes email addresses and phone numbers before any text reaches the agent (CLAUDE.md: never send contact data to a model). */

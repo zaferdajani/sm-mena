@@ -21,6 +21,8 @@ describe("bug queue", () => {
     expect(redactContact("write to sara@agency.jo or call +962 79 123 4567")).toBe("write to [email] or call [phone]");
     expect(redactContact("رقمي ٠٧٩١٢٣٤٥٦٧")).toBe("رقمي [phone]");
     expect(redactContact("the 3 buttons on step 2 of 5")).toBe("the 3 buttons on step 2 of 5");
+    expect(redactContact("params: 75cdee6a-53d4-4b21-9c3e-e457a8f9738c")).toBe("params: 75cdee6a-53d4-4b21-9c3e-e457a8f9738c");
+    expect(redactContact("اتصل 0791234567.")).toBe("اتصل [phone].");
   });
 
   it("accepts a fix only with its commit", () => {

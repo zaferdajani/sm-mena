@@ -20,6 +20,8 @@ export async function POST(request: Request) {
   if (!rateLimit(`errors:${await clientIp()}`, 30, 10 * 60 * 1000)) return new Response(null, { status: 429 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return new Response(null, { status: 400 });
+  // Older pages still in browsers report Next.js's handled redirect signal; it is not a bug (docs/61).
+  if (/^(Error: )?NEXT_(REDIRECT|NOT_FOUND|HTTP_ERROR_FALLBACK)\b/.test(parsed.data.message)) return new Response(null, { status: 204 });
   await recordError({ source: "client", ...parsed.data, userAgent: ua }).catch(() => {});
   return new Response(null, { status: 204 });
 }
