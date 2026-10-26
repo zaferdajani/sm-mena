@@ -1150,6 +1150,7 @@
     "kind": "What is it about?",
     "kinds": {
       "bug": "Something is broken",
+      "complaint": "A complaint",
       "question": "A question",
       "suggestion": "A suggestion"
     },
@@ -1166,8 +1167,17 @@
     "errors": {
       "required": "Write at least a few words.",
       "invalidEmail": "Enter a valid email address.",
-      "rateLimited": "Too many messages. Try again later."
-    }
+      "rateLimited": "Too many messages. Try again later.",
+      "screenshot": "One of the images could not be read. Send a PNG or JPG screenshot.",
+      "screenshotSize": "The images are too large together. Remove one and try again."
+    },
+    "refLine": "Report number:",
+    "screenshots": "Screenshots (optional, up to 3)",
+    "screenshotsHint": "A screenshot helps us fix the problem faster. Keep passwords and private details out of it.",
+    "addShot": "Add a screenshot",
+    "removeShot": "Remove screenshot",
+    "pageLine": "Page:",
+    "sending": "Sending…"
   },
   "AdminBugs": {
     "tiles": {
@@ -1232,7 +1242,9 @@
       "runOk": "All pages work",
       "runFailed": "{count, plural, one {# page failed} other {# pages failed}}",
       "closed": "closed {count, plural, one {# recovered check} other {# recovered checks}}"
-    }
+    },
+    "screenshot": "Attached screenshot",
+    "fixedIn": "Fixed in:"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -4765,7 +4777,8 @@
       "owners": "A business owner finds the specialty they need."
     },
     "ownerPath": "Have a business and need marketing?",
-    "ownerPathLink": "Register your business"
+    "ownerPathLink": "Register your business",
+    "report": "Report a problem"
   },
   "CreatorSetup": {
     "nav": "Setup guide",

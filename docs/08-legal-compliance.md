@@ -64,7 +64,7 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 |---|---|---|---|
 | Page views (path, source, device type, language, time zone, random per-tab visit id, visitor cookie id) | Traffic statistics | Pseudonymous; no IP, no names | Delete after 13 months |
 | Error reports (message, stack, route, user agent) | Fixing bugs | No (no query strings, no form data) | Until resolved + 6 months |
-| "Report a problem" messages (text, optional email, page, user agent) | Support | Email if given | 12 months after handling |
+| "Report a problem" messages (type, text, up to 3 screenshots, optional email, page, screen size, app version, user agent) | Support; fixing the problem (the bug agent, docs/61) | Email if given | 12 months after handling: the daily retention job deletes the report and its screenshots |
 | Two-factor secrets and backup codes | Account security | Encrypted secret, hashed codes | Until 2FA is turned off or the account is deleted |
 | Payment records (agency name, amount, method, reference) | Accounting | Business data | As required by tax law (typically 7 years) |
 
@@ -206,3 +206,8 @@ actually erased by the account-erasure process. The existing audit trail records
 only the audience and consent version, never contact details. Operational legal
 retention continues independently. No new marketing subscription is introduced;
 registration alone is not consent to unsolicited promotional messages.
+
+## Problem reports and the bug agent (docs/61, 2026-10-26)
+- **What is kept:** the report form adds a type (including "complaint"), up to 3 screenshots, the screen size and the deployed app version to the existing report. Screenshots are re-encoded with all metadata (including location) removed and stored in private storage (`support/`); only staff with `support.manage` can open them, through `/api/support-media`.
+- **The bug agent:** an automated Claude Code session reads new reports and unresolved errors to fix them. Before anything leaves production, emails and phone numbers are removed from the text and the reporter's email is replaced by a yes/no "wants a reply"; the package is encrypted to a key pair made for that one run (the workflow logs and artifacts of this public repository hold ciphertext and counts only). The agent never contacts reporters. Screenshots go to the agent as they were sent, so the form asks people not to include private details.
+- **Retention:** 12 months after a report is handled (done or declined), the daily retention job deletes it with its screenshots. The decrypted queue lives only in the agent's temporary session.
