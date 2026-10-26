@@ -1,3 +1,5 @@
+import { HelpChat } from "@/components/support/help-chat";
+import { helpAiEnabled } from "@/lib/ai/help-assistant";
 import { BriefcaseBusiness, Images, UsersRound, Sparkles, ArrowUpLeft, ArrowLeft, Check } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { BrandLockup } from "@/components/brand-lockup";
@@ -30,12 +32,14 @@ export async function RegistrationHeader({ locale, tools = "full" }: { locale: s
     <a href={account.href} className="registration-login" data-testid="registration-account">{account.label}</a>
   </header>;
 }
-export async function RegistrationFooter() {
+/** `help`: the help chat button; off inside the app shell, which shows its own above the bottom menu. */
+export async function RegistrationFooter({ help = true }: { help?: boolean } = {}) {
   const t = await getTranslations("Registration");
   return <footer className="registration-footer" data-testid="registration-footer">
     <p>{t("freeNote")}</p>
     <nav aria-label={t("footerLabel")}><Link href="/contact">{t("contact")}</Link><Link href="/legal">{t("legal")}</Link><Link href="/examples">{t("exampleCta")}</Link><Link href="/support" data-testid="registration-report">{t("report")}</Link></nav>
     <ReleaseStamp />
+    {help && <HelpChat aiEnabled={helpAiEnabled()} />}
   </footer>;
 }
 

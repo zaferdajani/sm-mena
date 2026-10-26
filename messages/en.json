@@ -5320,5 +5320,109 @@
       "short": "The password must be at least 8 characters.",
       "mismatch": "The two passwords don't match."
     }
+  },
+  "Help": {
+    "open": "Help",
+    "title": "Sawwiq help",
+    "close": "Close",
+    "greeting": "Hello! How can I help?",
+    "choices": {
+      "bug": "Something is broken",
+      "complaint": "I have a complaint",
+      "howto": "How do I…?",
+      "suggestion": "I have a suggestion"
+    },
+    "ask": {
+      "what": "What happened? Describe it in a sentence or two.",
+      "complaint": "Tell us what bothered you.",
+      "suggestion": "What would you like us to add or change?",
+      "steps": "What did you do just before it happened? (You can skip.)",
+      "expected": "What did you expect to happen instead? (You can skip.)",
+      "shot": "A screenshot helps us a lot. Add one, or skip.",
+      "howto": "Type your question, for example: how do I add a project?"
+    },
+    "skip": "Skip",
+    "addShot": "Add a screenshot",
+    "shotAdded": "Screenshot added",
+    "send": "Send",
+    "typeHere": "Write here…",
+    "review": "Here is your report. Send it?",
+    "confirm": "Send the report",
+    "edit": "Change it",
+    "sent": "Sent. Your report number is {ref}. Our fixing agent works through reports every hour; you can follow it here.",
+    "sendFailed": "We couldn't send it. Try again, or use the full form.",
+    "fullForm": "Open the full form",
+    "found": "This may help:",
+    "openPage": "Open the page",
+    "helped": "Did that answer it?",
+    "yes": "Yes, thanks",
+    "no": "No, send my question to the team",
+    "notFound": "I couldn't find an answer to that. Shall I send your question to the team?",
+    "sendQuestion": "Send my question",
+    "thanks": "Glad it helped.",
+    "again": "Anything else?",
+    "limited": "Many messages in a short time. Try again in a few minutes, or use the full form.",
+    "yourReports": "Your reports",
+    "status": {
+      "new": "Received",
+      "planned": "Waiting on a decision",
+      "done": "Fixed",
+      "declined": "Closed"
+    },
+    "ai": "Answers come from Sawwiq's AI assistant and can be wrong. Don't share passwords or payment details.",
+    "kinds": {
+      "bug": "Something broken",
+      "complaint": "Complaint",
+      "question": "Question",
+      "suggestion": "Suggestion"
+    },
+    "draft": {
+      "kind": "Type",
+      "what": "What happened",
+      "steps": "Steps",
+      "expected": "Expected"
+    },
+    "topics": {
+      "addProject": {
+        "title": "Add a project",
+        "answer": "In the Studio, open New post, add the images, the client and what you did, then publish."
+      },
+      "profile": {
+        "title": "Edit your page",
+        "answer": "In the Studio, open Page to change the logo, name, introduction, services, platforms and WhatsApp number, then save."
+      },
+      "packages": {
+        "title": "Packages and prices",
+        "answer": "In the Studio, open Packages to add a package with its price and what it includes."
+      },
+      "clients": {
+        "title": "Your clients",
+        "answer": "In the Studio, open Clients to add the brands you work with and link your projects to them."
+      },
+      "visibility": {
+        "title": "Who can see your page",
+        "answer": "In the Studio, open the visibility page and choose a private preview, anyone with the link, or public publication. Your choice stays as you set it."
+      },
+      "password": {
+        "title": "Forgotten password",
+        "answer": "On Sign in, tap Forgot your password?. We email you a 6-digit code; enter it with a new password."
+      },
+      "ownerSignIn": {
+        "title": "Business owner sign-in",
+        "answer": "Business owners sign in with a code sent to their email, without a password: on Sign in, choose the email code option."
+      },
+      "medal": {
+        "title": "Founding Member medal",
+        "answer": "The medal is for invited agencies: the first 50 invited pages that are complete and have published work. The checklist in your Studio shows what is missing."
+      },
+      "share": {
+        "title": "Share your page",
+        "answer": "Open your page and tap Share: the link is copied or your phone's share sheet opens, with WhatsApp next to it."
+      },
+      "language": {
+        "title": "Change the language",
+        "answer": "Use the language switch in the menu (at the top on phones). Arabic is the default and your choice is remembered."
+      }
+    }
   }
 }

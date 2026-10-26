@@ -11,7 +11,7 @@ export const FOOTER_SERVICES = ["smm_management", "ads_meta", "smm_content", "se
 
 /** Retain crawlable service/trust links, with an explicit quiet footer boundary. */
 export async function SiteFooter() {
-  if (isRegistrationPhase()) return <RegistrationFooter />;
+  if (isRegistrationPhase()) return <RegistrationFooter help={false} />;
   const locale = await getLocale();
   const t = await getTranslations("Footer");
   const th = await getTranslations("Hire");
