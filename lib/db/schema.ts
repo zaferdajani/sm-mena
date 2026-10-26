@@ -1546,6 +1546,8 @@ export const supportRequests = pgTable(
     handledAt: timestamp("handled_at", { withTimezone: true }),
     // Private storage keys (support/…) of up to 3 screenshots; served to staff only (docs/61).
     screenshots: jsonb("screenshots").$type<string[]>().notNull().default([]),
+    // A voice note (recorded or an audio file) and a short screen recording, private like the screenshots (docs/61).
+    attachments: jsonb("attachments").$type<{ key: string; kind: "audio" | "video"; type: string }[]>().notNull().default([]),
     // Captured with the report so a bug can be reproduced: the screen size and the deployed commit.
     viewport: text("viewport"),
     appCommit: text("app_commit"),

@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { ADMIN, login, pngBuffer } from "./helpers";
 
@@ -26,7 +28,11 @@ test("the help chat answers a how-to question and files a bug report with a scre
   await chat.getByTestId("help-submit").click();
   await chat.getByRole("button", { name: "تخطٍّ" }).click();
   await chat.getByTestId("help-shot-input").setInputFiles({ name: "shot.png", mimeType: "image/png", buffer: await pngBuffer("#225588", 390, 844) });
+  await chat.getByTestId("voice-file").setInputFiles({ name: "note.webm", mimeType: "audio/webm", buffer: readFileSync(path.join(process.cwd(), "tests/fixtures/voice-note-ar.webm")) });
+  await expect(chat.getByTestId("voice-note").locator("audio")).toHaveCount(1);
+  await chat.getByTestId("help-attach-continue").click();
   await expect(chat.getByTestId("help-review")).toContainText(what);
+  await expect(chat.getByTestId("help-review")).toContainText("أُضيفت ملاحظة صوتية");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   await chat.getByTestId("help-send").click();
@@ -49,4 +55,5 @@ test("the help chat answers a how-to question and files a bug report with a scre
   await expect(row).toContainText("Steps: فتحت صفحة الاستكشاف");
   await expect(row).toContainText("/ar/explore");
   await expect(row.getByTestId("report-shots").locator("img")).toHaveCount(1);
+  await expect(row.getByTestId("report-audio")).toHaveCount(1);
 });

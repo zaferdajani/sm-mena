@@ -5,7 +5,7 @@ A **Help** button sits in the bottom corner of every page: the app, the front pa
 ## What it does
 
 - **How do I…?** It matches the question against the help topics (`lib/help/topics.ts`, answers in `messages/*.json` → `Help.topics`). Each answer links to its page. If nothing matches, or the answer didn't help, it offers to send the question to the team.
-- **Something is broken / complaint / suggestion.** It asks what happened, what the person did before it happened, and what they expected (each can be skipped), plus an optional screenshot. It then shows the draft. **Nothing is sent until the person taps "Send the report".**
+- **Something is broken / complaint / suggestion.** It asks what happened, what the person did before it happened, and what they expected (each can be skipped, and each can be dictated), then offers a screenshot, a voice note and a screen recording. It then shows the draft. **Nothing is sent until the person taps "Send the report".**
 - **Sending** files the report through the same action as the `/support` form (`submitSupportAction`). The report gets its type, the page, the screen size, the app version and the screenshot, and the person sees the report number. The bug agent picks it up on its next hourly run (docs/61).
 - **Follow-up.** The browser remembers the report numbers it sent (`localStorage`, convenience only). Reopening the chat shows each one's status: received, waiting on a decision, fixed or closed. The server answers only for reports sent from the same browser or account (`reportStatusAction`).
 

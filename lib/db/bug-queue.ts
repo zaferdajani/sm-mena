@@ -29,6 +29,11 @@ async function exportQueue() {
       const body = await storage().get(key).catch(() => null);
       if (body) screenshots.push({ name: `${ref(r.id)}-${screenshots.length + 1}.webp`, base64: body.toString("base64") });
     }
+    const media = [];
+    for (const a of r.attachments) {
+      const body = await storage().get(a.key).catch(() => null);
+      if (body) media.push({ name: `${ref(r.id)}-${a.kind}-${media.length + 1}.${a.key.split(".").pop()}`, kind: a.kind, base64: body.toString("base64") });
+    }
     reports.push({
       id: r.id,
       ref: ref(r.id),
@@ -43,6 +48,7 @@ async function exportQueue() {
       wantsReply: !!r.email,
       createdAt: r.createdAt.toISOString(),
       screenshots,
+      media,
     });
   }
   const errors = await db

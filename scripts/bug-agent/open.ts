@@ -16,12 +16,22 @@ async function main() {
   for (const r of bundle.reports) {
     for (const s of r.screenshots) await sharp(Buffer.from(s.base64, "base64")).png().toFile(png(s.name));
   }
-  const slim = { ...bundle, reports: bundle.reports.map((r) => ({ ...r, screenshots: r.screenshots.map((s) => png(s.name)) })) };
+  mkdirSync(path.join(dir, "media"), { recursive: true });
+  for (const r of bundle.reports) for (const m of r.media ?? []) writeFileSync(path.join(dir, "media", m.name), Buffer.from(m.base64, "base64"));
+  const slim = {
+    ...bundle,
+    reports: bundle.reports.map((r) => ({
+      ...r,
+      screenshots: r.screenshots.map((s) => png(s.name)),
+      media: (r.media ?? []).map((m) => ({ kind: m.kind, file: path.join(dir, "media", m.name) })),
+    })),
+  };
   writeFileSync(path.join(dir, "queue.json"), JSON.stringify(slim, null, 2));
   console.log(`Exported ${bundle.exportedAt}: ${bundle.reports.length} report(s), ${bundle.errors.length} error(s)${bundle.waitingOnOwner ? "; some reports wait on the owner" : ""}.`);
-  for (const r of slim.reports) console.log(`report ${r.ref} [${r.kind}] ${r.path ?? "-"} ${r.viewport ?? ""} shots=${r.screenshots.length}: ${r.message.slice(0, 120).replace(/\s+/g, " ")}`);
+  for (const r of slim.reports) console.log(`report ${r.ref} [${r.kind}] ${r.path ?? "-"} ${r.viewport ?? ""} shots=${r.screenshots.length} media=${r.media.length}: ${r.message.slice(0, 120).replace(/\s+/g, " ")}`);
   for (const e of bundle.errors) console.log(`error ${e.id} [${e.source}/${e.kind}] ×${e.occurrences} ${e.path ?? "-"}: ${e.message.slice(0, 120)}`);
   console.log(`Full queue: ${path.join(dir, "queue.json")}`);
+  console.log(`Next: npx tsx scripts/bug-agent/analyze.ts "${dir}" (transcripts, video frames and one case file per report).`);
 }
 
 main().catch((e) => {

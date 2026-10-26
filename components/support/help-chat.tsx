@@ -2,11 +2,13 @@
 
 import { ImagePlus, LifeBuoy, Send, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { helpChatAction, reportStatusAction, type ReportStatus } from "@/app/[locale]/(main)/help-actions";
 import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
 import { Link } from "@/i18n/navigation";
+import { VoiceButton } from "@/components/match/voice-button";
+import { VideoField, VoiceNoteField } from "@/components/support/media-inputs";
 import { matchTopics, composeReport, type HelpDraft, type HelpKind, type HelpTopic } from "@/lib/help/topics";
 import { compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
 import { cn } from "@/lib/utils";
@@ -39,6 +41,8 @@ const saveRef = (ref: string) => {
 
 export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; aboveNav?: boolean }) {
   const t = useTranslations("Help");
+  const tm = useTranslations("SupportMedia");
+  const locale = useLocale();
   const path = usePathname() ?? "/";
   const [open, setOpen] = useState(false);
   const [ai, setAi] = useState(aiEnabled);
@@ -46,6 +50,9 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
   const [step, setStep] = useState<Step>("menu");
   const [draft, setDraft] = useState<HelpDraft>({ kind: "bug", what: "" });
   const [shot, setShot] = useState<File | null>(null);
+  const [voice, setVoice] = useState<File | null>(null);
+  const [video, setVideo] = useState<File | null>(null);
+  const [videoBusy, setVideoBusy] = useState(false);
   const [text, setText] = useState("");
   const [statuses, setStatuses] = useState<ReportStatus[]>([]);
   const [pending, startTransition] = useTransition();
@@ -71,6 +78,8 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
     setLines([]);
     setDraft({ kind: "bug", what: "" });
     setShot(null);
+    setVoice(null);
+    setVideo(null);
     setStep(ai ? "ai" : "menu");
   };
 
@@ -161,6 +170,8 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
       data.set("from", path);
       data.set("viewport", `${window.innerWidth}x${window.innerHeight}`);
       if (shot) for (const f of await compressForRequest([shot], POST_UPLOAD).catch(() => [shot])) data.append("screenshots", f);
+      if (voice) data.set("voice", voice);
+      if (video) data.set("video", video);
       const result = await submitSupportAction(undefined, data).catch(() => undefined);
       if (!result?.done || !result.ref) return say({ from: "bot", text: t("sendFailed") });
       saveRef(result.ref);
@@ -263,25 +274,39 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
               <button type="button" className={chip} onClick={() => setStep("review")}>{t("sendQuestion")}</button>
             )}
             {step === "shot" && (
-              <div className="flex flex-wrap gap-2">
-                <label className={cn(chip, "flex cursor-pointer items-center gap-1.5")}>
-                  <ImagePlus className="size-4" aria-hidden /> {t("addShot")}
+              <div className="space-y-3 rounded-xl border p-3" data-testid="help-attach">
+                <label className={cn(chip, "flex w-fit cursor-pointer items-center gap-1.5")}>
+                  <ImagePlus className="size-4" aria-hidden /> {shot ? t("shotAdded") : t("addShot")}
                   <input
                     ref={picker}
                     type="file"
                     accept="image/*"
                     className="sr-only"
                     data-testid="help-shot-input"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      setShot(f);
-                      say({ from: "me", text: t("shotAdded") });
-                      setStep("review");
-                    }}
+                    onChange={(e) => setShot(e.target.files?.[0] ?? null)}
                   />
                 </label>
-                <button type="button" className={chip} onClick={() => { say({ from: "me", text: t("skip") }); setStep("review"); }}>{t("skip")}</button>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium">{t("addVoice")}</p>
+                  <VoiceNoteField value={voice} onChange={setVoice} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium">{t("addVideo")}</p>
+                  <VideoField value={video} onChange={setVideo} onBusy={setVideoBusy} />
+                </div>
+                <button
+                  type="button"
+                  className={chip}
+                  disabled={videoBusy}
+                  data-testid="help-attach-continue"
+                  onClick={() => {
+                    const added = [shot && t("shotAdded"), voice && t("voiceAdded"), video && t("videoAdded")].filter(Boolean).join(" · ");
+                    say({ from: "me", text: added || t("skip") });
+                    setStep("review");
+                  }}
+                >
+                  {shot || voice || video ? t("continue") : t("skip")}
+                </button>
               </div>
             )}
             {step === "review" && (
@@ -292,6 +317,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
                   <div><dt className="inline font-semibold">{t("draft.what")}: </dt><dd className="inline" dir="auto">{draft.what}</dd></div>
                   {draft.steps && <div><dt className="inline font-semibold">{t("draft.steps")}: </dt><dd className="inline" dir="auto">{draft.steps}</dd></div>}
                   {draft.expected && <div><dt className="inline font-semibold">{t("draft.expected")}: </dt><dd className="inline" dir="auto">{draft.expected}</dd></div>}
+                  {(shot || voice || video) && <div className="text-muted-foreground">{[shot && t("shotAdded"), voice && t("voiceAdded"), video && t("videoAdded")].filter(Boolean).join(" · ")}</div>}
                 </dl>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" onClick={send} disabled={pending} className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground disabled:opacity-50" data-testid="help-send">
@@ -336,6 +362,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
                 className="max-h-28 min-h-10 flex-1 resize-none rounded-xl border bg-background px-3 py-2 text-sm"
                 data-testid="help-input"
               />
+              <VoiceButton lang={locale === "ar" ? "ar" : "en-US"} value={text} onChange={setText} label={tm("dictate")} stopLabel={tm("dictateStop")} listeningLabel={tm("listening")} />
               {skippable && (
                 <button type="button" className={chip} onClick={() => answer("")}>{t("skip")}</button>
               )}

@@ -23,6 +23,10 @@ describe("bug queue", () => {
     expect(redactContact("the 3 buttons on step 2 of 5")).toBe("the 3 buttons on step 2 of 5");
     expect(redactContact("params: 75cdee6a-53d4-4b21-9c3e-e457a8f9738c")).toBe("params: 75cdee6a-53d4-4b21-9c3e-e457a8f9738c");
     expect(redactContact("اتصل 0791234567.")).toBe("اتصل [phone].");
+    // Read aloud in a voice note, as the speech-to-text writes it.
+    expect(redactContact("لا يحدث شيء، رقمي صفر سبعة تسعة واحد ثنان ثلاثة أربعة خمسة ستة سبعة.")).toBe("لا يحدث شيء، رقمي [phone].");
+    expect(redactContact("call me on zero seven nine one two three four five six")).toBe("call me on [phone]");
+    expect(redactContact("خطوة واحد ثم اثنان ثم ثلاثة")).toBe("خطوة واحد ثم اثنان ثم ثلاثة");
   });
 
   it("accepts a fix only with its commit", () => {
