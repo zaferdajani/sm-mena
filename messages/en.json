@@ -1166,11 +1166,12 @@
     "retry": "Try again",
     "reportLink": "Tell us more",
     "errors": {
-      "required": "Write at least a few words.",
+      "required": "Write a few words or add a voice note.",
       "invalidEmail": "Enter a valid email address.",
       "rateLimited": "Too many messages. Try again later.",
       "screenshot": "One of the images could not be read. Send a PNG or JPG screenshot.",
-      "screenshotSize": "The images are too large together. Remove one and try again."
+      "screenshotSize": "The images are too large together. Remove one and try again.",
+      "media": "The voice note or recording could not be read. Try another file."
     },
     "refLine": "Report number:",
     "screenshots": "Screenshots (optional, up to 3)",
@@ -1245,7 +1246,9 @@
       "closed": "closed {count, plural, one {# recovered check} other {# recovered checks}}"
     },
     "screenshot": "Attached screenshot",
-    "fixedIn": "Fixed in:"
+    "fixedIn": "Fixed in:",
+    "voiceNote": "Voice note",
+    "recording": "Screen recording"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -5338,7 +5341,7 @@
       "suggestion": "What would you like us to add or change?",
       "steps": "What did you do just before it happened? (You can skip.)",
       "expected": "What did you expect to happen instead? (You can skip.)",
-      "shot": "A screenshot helps us a lot. Add one, or skip.",
+      "shot": "Add what helps: a screenshot, a voice note or a screen recording.",
       "howto": "Type your question, for example: how do I add a project?"
     },
     "skip": "Skip",
@@ -5423,6 +5426,32 @@
         "title": "Change the language",
         "answer": "Use the language switch in the menu (at the top on phones). Arabic is the default and your choice is remembered."
       }
-    }
+    },
+    "addVoice": "Voice note",
+    "addVideo": "Screen recording",
+    "continue": "Continue",
+    "attachHint": "Add what helps: a screenshot, a voice note or a screen recording.",
+    "voiceAdded": "Voice note added",
+    "videoAdded": "Screen recording added"
+  },
+  "SupportMedia": {
+    "record": "Record a voice note",
+    "stop": "Stop",
+    "recording": "Recording",
+    "audioFile": "or choose an audio file",
+    "video": "Add a screen recording (up to a minute)",
+    "shrinking": "Preparing the recording… {percent}%",
+    "remove": "Remove",
+    "tooBig": "The audio file is too large. Record a shorter note (up to two minutes).",
+    "micDenied": "We couldn't use the microphone. Allow it in the browser, or choose an audio file.",
+    "notAudio": "Choose an audio file.",
+    "notVideo": "Choose a video file.",
+    "videoFailed": "We couldn't prepare the recording. Try a shorter clip.",
+    "voiceLabel": "Voice note (optional)",
+    "videoLabel": "Screen recording (optional)",
+    "hint": "Speak freely: we turn the audio into text to fix the problem. Don't mention passwords or payment details.",
+    "dictate": "Dictate",
+    "dictateStop": "Stop dictating",
+    "listening": "Listening…"
   }
 }

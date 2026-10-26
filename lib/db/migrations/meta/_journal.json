@@ -267,6 +267,13 @@
       "when": 1792995436694,
       "tag": "0037_support_screenshots",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793030240051,
+      "tag": "0038_support_attachments",
+      "breakpoints": true
     }
   ]
 }

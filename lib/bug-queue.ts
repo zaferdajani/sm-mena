@@ -11,11 +11,17 @@ const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 // not part of a longer word (so ids such as UUIDs stay whole).
 const PHONE = /(?<![\w-])(?:\+|00)?\d[\d\s().-]{6,}\d(?![\w-])/g;
 const ARABIC_DIGITS = /[٠-٩]/g;
+// A phone number read aloud ends up as words in a voice-note transcript: seven or more digit words in a row.
+const DIGIT_WORD = "(?:zero|oh|one|two|three|four|five|six|seven|eight|nine|و?صفر|و?واحد|و?اثنان|و?اثنين|و?ثنان|و?ثلاثة|و?ثلاث|و?أربعة|و?اربعة|و?أربع|و?خمسة|و?خمس|و?ستة|و?ست|و?سبعة|و?سبع|و?ثمانية|و?ثماني|و?تسعة|و?تسع)";
+const SPOKEN_PHONE = new RegExp(`(?<!\\p{L})${DIGIT_WORD}(?:[\\s،,.-]+${DIGIT_WORD}){6,}(?!\\p{L})`, "giu");
 
 /** Removes email addresses and phone numbers before any text reaches the agent (CLAUDE.md: never send contact data to a model). */
 export function redactContact(text: string): string {
   const western = text.replace(ARABIC_DIGITS, (d) => String(d.charCodeAt(0) - 0x0660));
-  return western.replace(EMAIL, "[email]").replace(PHONE, (m) => (m.replace(/\D/g, "").length >= 7 ? "[phone]" : m));
+  return western
+    .replace(EMAIL, "[email]")
+    .replace(PHONE, (m) => (m.replace(/\D/g, "").length >= 7 ? "[phone]" : m))
+    .replace(SPOKEN_PHONE, "[phone]");
 }
 
 export type QueueReport = {
@@ -32,6 +38,8 @@ export type QueueReport = {
   wantsReply: boolean;
   createdAt: string;
   screenshots: { name: string; base64: string }[];
+  /** Voice notes and screen recordings; the agent transcribes them locally (scripts/bug-agent/analyze.ts). */
+  media?: { name: string; kind: "audio" | "video"; base64: string }[];
 };
 export type QueueError = {
   id: number;

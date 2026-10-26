@@ -208,6 +208,13 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
                 ))}
               </ul>
             )}
+            {r.attachments.map((a) =>
+              a.kind === "audio" ? (
+                <audio key={a.key} controls preload="none" src={`/api/support-media/${a.key}`} className="w-full max-w-sm" data-testid="report-audio" aria-label={t("voiceNote")} />
+              ) : (
+                <video key={a.key} controls preload="metadata" playsInline src={`/api/support-media/${a.key}`} className="max-h-72 rounded-lg border" data-testid="report-video" aria-label={t("recording")} />
+              ),
+            )}
             <p className="text-xs text-muted-foreground" dir="ltr">
               {[r.email, r.path, r.locale, r.viewport, r.appCommit?.slice(0, 7)].filter(Boolean).join(" · ")}
             </p>

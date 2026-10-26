@@ -136,6 +136,7 @@ export type SupportInput = {
   userId?: string | null;
   visitorId?: string | null;
   screenshots?: string[];
+  attachments?: { key: string; kind: "audio" | "video"; type: string }[];
   viewport?: string | null;
   appCommit?: string | null;
 };
@@ -154,6 +155,7 @@ export async function submitSupportRequest(input: SupportInput) {
       userId: input.userId ?? null,
       visitorId: input.visitorId ?? null,
       screenshots: (input.screenshots ?? []).slice(0, 3),
+      attachments: (input.attachments ?? []).slice(0, 2),
       viewport: clip(input.viewport, 20),
       appCommit: clip(input.appCommit, 40),
     })
@@ -190,8 +192,8 @@ export async function purgeOldSupport() {
   const rows = await db
     .delete(supportRequests)
     .where(and(inArray(supportRequests.status, ["done", "declined"]), lt(supportRequests.handledAt, cutoff)))
-    .returning({ screenshots: supportRequests.screenshots });
-  const keys = rows.flatMap((r) => r.screenshots);
+    .returning({ screenshots: supportRequests.screenshots, attachments: supportRequests.attachments });
+  const keys = rows.flatMap((r) => [...r.screenshots, ...r.attachments.map((a) => a.key)]);
   if (keys.length) await storage().remove(keys);
   return rows.length;
 }
