@@ -1,3 +1,5 @@
+import { HelpChat } from "@/components/support/help-chat";
+import { helpAiEnabled } from "@/lib/ai/help-assistant";
 import { ScrollScrub } from "./scroll-scrub/scroll-scrub";
 import type { CountryCode } from "@/lib/countries";
 import { scrollScrubScenes, scrollScrubTheme } from "./scenes";
@@ -30,6 +32,7 @@ export function SawwiqPage({ lang, country, chosen, account, paymentsLive = fals
           <CitiesSection country={country} lang={lang} />
         </main>
         <SiteFooter country={country} lang={lang} />
+        <HelpChat aiEnabled={helpAiEnabled()} />
         <div className={rhythm.release}><ReleaseStamp /></div>
       </div>
     </>

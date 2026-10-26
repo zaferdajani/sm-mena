@@ -1,6 +1,6 @@
 # 61 · The bug agent: reports in, fixes out
 
-People report problems in the app: **Report a problem** in the header (the lifebuoy icon), the footer, the Studio help button and every error page all open `/support`. A report has a type (something broken, a complaint, a question, a suggestion), the text, up to 3 screenshots, and an optional email. The page they came from, their screen size and the app version are added automatically. After sending, the person sees a **report number** (8 characters, e.g. `1A2B3C4D`), which is how everyone refers to it.
+People report problems in the app: the **Help** chat button on every page (docs/62), or **Report a problem** in the header (the lifebuoy icon), the footer, the Studio help button and every error page, which open `/support`. A report has a type (something broken, a complaint, a question, a suggestion), the text, up to 3 screenshots, and an optional email. The page they came from, their screen size and the app version are added automatically. After sending, the person sees a **report number** (8 characters, e.g. `1A2B3C4D`), which is how everyone refers to it.
 
 Browser and server errors are recorded on their own (`components/error-reporter.tsx`, `instrumentation.ts`) in the same place. Both lists are in **Admin → Bugs**.
 
@@ -55,7 +55,7 @@ If a run stops halfway, nothing is lost. Items stay **New** and the next run exp
 
 ## Schedule
 
-The agent is a Claude Code Routine on the owner's account. It starts a fresh cloud session on this repository every 3 hours and sends the owner a push notification when a run changed something. Pause, resume or change it under **Routines** in Claude Code. To run it now, use **Run now** on the Routine.
+The agent is a Claude Code Routine on the owner's account. It wakes one dedicated cloud session, "Sawwiq bug agent", every hour (the shortest interval a Routine allows). Each run's summary is in that session. Pause, resume or change it under **Routines** in Claude Code ("Sawwiq bug agent: every hour"); **Run now** starts a pass at once.
 
 ## Handing over to another platform
 

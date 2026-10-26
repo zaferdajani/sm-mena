@@ -1,0 +1,355 @@
+"use client";
+
+import { ImagePlus, LifeBuoy, Send, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { helpChatAction, reportStatusAction, type ReportStatus } from "@/app/[locale]/(main)/help-actions";
+import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
+import { Link } from "@/i18n/navigation";
+import { matchTopics, composeReport, type HelpDraft, type HelpKind, type HelpTopic } from "@/lib/help/topics";
+import { compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
+import { cn } from "@/lib/utils";
+
+// The help chat (docs/62): a button on every page that opens a short chat.
+// Guided mode needs no AI: a few questions, then a report into the same queue
+// as /support, which the bug agent works through (docs/61). With Claude set up
+// (helpAiEnabled), the conversation is free text and Claude drafts the report.
+// Nothing is filed until the person taps Send.
+
+const REFS_KEY = "sw_help_refs";
+const HIDDEN = /\/(support|match|portfolio-setup|admin|pioneer-letters|chats)(\/|$)|\/studio\/(import|inbox|messages)(\/|$)/;
+
+type Line = { from: "bot" | "me"; text: string; topics?: HelpTopic[] };
+type Step = "menu" | "what" | "steps" | "expected" | "shot" | "howto" | "helped" | "notFound" | "review" | "sent" | "ai";
+
+const readRefs = (): string[] => {
+  try {
+    const v = JSON.parse(localStorage.getItem(REFS_KEY) ?? "[]");
+    return Array.isArray(v) ? v.filter((r): r is string => typeof r === "string").slice(0, 10) : [];
+  } catch {
+    return [];
+  }
+};
+const saveRef = (ref: string) => {
+  try {
+    localStorage.setItem(REFS_KEY, JSON.stringify([ref, ...readRefs().filter((r) => r !== ref)].slice(0, 10)));
+  } catch {}
+};
+
+export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; aboveNav?: boolean }) {
+  const t = useTranslations("Help");
+  const path = usePathname() ?? "/";
+  const [open, setOpen] = useState(false);
+  const [ai, setAi] = useState(aiEnabled);
+  const [lines, setLines] = useState<Line[]>([]);
+  const [step, setStep] = useState<Step>("menu");
+  const [draft, setDraft] = useState<HelpDraft>({ kind: "bug", what: "" });
+  const [shot, setShot] = useState<File | null>(null);
+  const [text, setText] = useState("");
+  const [statuses, setStatuses] = useState<ReportStatus[]>([]);
+  const [pending, startTransition] = useTransition();
+  const picker = useRef<HTMLInputElement>(null);
+  const end = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [lines, step]);
+  useEffect(() => {
+    if (!open) return;
+    const refs = readRefs();
+    if (refs.length) reportStatusAction(refs).then(setStatuses).catch(() => {});
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  if (HIDDEN.test(path)) return null;
+
+  const say = (...l: Line[]) => setLines((prev) => [...prev, ...l]);
+  const restart = () => {
+    setLines([]);
+    setDraft({ kind: "bug", what: "" });
+    setShot(null);
+    setStep(ai ? "ai" : "menu");
+  };
+
+  function choose(kind: HelpKind | "howto") {
+    say({ from: "me", text: kind === "howto" ? t("choices.howto") : t(`choices.${kind}`) });
+    if (ai) return askAi(kind === "howto" ? t("choices.howto") : t(`choices.${kind}`));
+    if (kind === "howto") {
+      say({ from: "bot", text: t("ask.howto") });
+      return setStep("howto");
+    }
+    setDraft({ kind, what: "" });
+    say({ from: "bot", text: kind === "complaint" ? t("ask.complaint") : kind === "suggestion" ? t("ask.suggestion") : t("ask.what") });
+    setStep("what");
+  }
+
+  function askAi(message: string) {
+    const history = [...lines, { from: "me" as const, text: message }]
+      .filter((l) => l.text.trim())
+      .slice(-16)
+      .map((l) => ({ role: l.from === "me" ? ("user" as const) : ("assistant" as const), content: l.text.slice(0, 1500) }));
+    // The API wants the conversation to start with the person.
+    while (history.length && history[0].role !== "user") history.shift();
+    startTransition(async () => {
+      const result = await helpChatAction(history, path).catch(() => ({ mode: "guided" as const }));
+      if (result.mode === "limited") return say({ from: "bot", text: t("limited") });
+      if (result.mode === "guided") {
+        setAi(false);
+        say({ from: "bot", text: t("greeting") });
+        return setStep("menu");
+      }
+      if (result.reply.reply) say({ from: "bot", text: result.reply.reply });
+      if (result.reply.draft) {
+        setDraft(result.reply.draft);
+        say({ from: "bot", text: t("ask.shot") });
+        setStep("shot");
+      }
+    });
+  }
+
+  function answer(value: string) {
+    const v = value.trim();
+    if (step === "ai") {
+      if (!v) return;
+      say({ from: "me", text: v });
+      return askAi(v);
+    }
+    if (v) say({ from: "me", text: v });
+    else say({ from: "me", text: t("skip") });
+    if (step === "what") {
+      if (!v) return;
+      setDraft((d) => ({ ...d, what: v }));
+      if (draft.kind === "bug") {
+        say({ from: "bot", text: t("ask.steps") });
+        return setStep("steps");
+      }
+      if (draft.kind === "suggestion") return setStep("review");
+      say({ from: "bot", text: t("ask.shot") });
+      return setStep("shot");
+    }
+    if (step === "steps") {
+      setDraft((d) => ({ ...d, steps: v }));
+      say({ from: "bot", text: t("ask.expected") });
+      return setStep("expected");
+    }
+    if (step === "expected") {
+      setDraft((d) => ({ ...d, expected: v }));
+      say({ from: "bot", text: t("ask.shot") });
+      return setStep("shot");
+    }
+    if (step === "howto") {
+      if (!v) return;
+      const found = matchTopics(v);
+      setDraft({ kind: "question", what: v });
+      if (!found.length) {
+        say({ from: "bot", text: t("notFound") });
+        return setStep("notFound");
+      }
+      say({ from: "bot", text: t("found"), topics: found }, { from: "bot", text: t("helped") });
+      return setStep("helped");
+    }
+  }
+
+  function send() {
+    startTransition(async () => {
+      const data = new FormData();
+      data.set("kind", draft.kind);
+      data.set("message", composeReport(draft));
+      data.set("from", path);
+      data.set("viewport", `${window.innerWidth}x${window.innerHeight}`);
+      if (shot) for (const f of await compressForRequest([shot], POST_UPLOAD).catch(() => [shot])) data.append("screenshots", f);
+      const result = await submitSupportAction(undefined, data).catch(() => undefined);
+      if (!result?.done || !result.ref) return say({ from: "bot", text: t("sendFailed") });
+      saveRef(result.ref);
+      say({ from: "bot", text: t("sent", { ref: result.ref }) });
+      setStatuses((s) => [{ ref: result.ref!, status: "new", handledAt: null }, ...s.filter((x) => x.ref !== result.ref)]);
+      setStep("sent");
+    });
+  }
+
+  const chip = "rounded-full border px-3 py-1.5 text-sm hover:bg-muted disabled:opacity-50";
+  const typing = step === "what" || step === "steps" || step === "expected" || step === "howto" || step === "ai";
+  const skippable = step === "steps" || step === "expected";
+
+  return (
+    <>
+      {!open && (
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(true);
+            if (!lines.length) restart();
+          }}
+          className={cn(
+            "fixed end-4 z-40 flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:opacity-90",
+            aboveNav ? "bottom-[calc(5rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(1rem+env(safe-area-inset-bottom))]",
+          )}
+          data-testid="help-open"
+        >
+          <LifeBuoy className="size-4" aria-hidden /> {t("open")}
+        </button>
+      )}
+      {open && (
+        <section
+          role="dialog"
+          aria-label={t("title")}
+          className={cn(
+            "fixed inset-x-2 z-50 flex max-h-[min(36rem,80dvh)] flex-col overflow-hidden rounded-2xl border bg-background shadow-2xl sm:inset-x-auto sm:end-4 sm:w-96",
+            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+          )}
+          data-testid="help-chat"
+          data-mode={ai ? "ai" : "guided"}
+        >
+          <header className="flex items-center justify-between gap-2 border-b px-4 py-3">
+            <h2 className="flex items-center gap-2 text-sm font-bold">
+              <LifeBuoy className="size-4 text-primary" aria-hidden /> {t("title")}
+            </h2>
+            <button type="button" onClick={() => setOpen(false)} aria-label={t("close")} className="rounded-md p-1 hover:bg-muted" data-testid="help-close">
+              <X className="size-4" />
+            </button>
+          </header>
+          <div className="flex-1 space-y-3 overflow-y-auto p-4 text-sm" aria-live="polite">
+            {statuses.length > 0 && (
+              <div className="rounded-xl bg-muted/60 p-3 text-xs" data-testid="help-statuses">
+                <p className="mb-1 font-semibold">{t("yourReports")}</p>
+                <ul className="space-y-0.5">
+                  {statuses.map((s) => (
+                    <li key={s.ref} className="flex justify-between gap-2">
+                      <span className="font-mono" dir="ltr">{s.ref}</span>
+                      <span data-testid="help-status">{t(`status.${s.status}`)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <p className="max-w-[85%] rounded-2xl rounded-ss-sm bg-muted px-3 py-2">{t("greeting")}</p>
+            {lines.map((l, i) => (
+              <div key={i} className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-3 py-2", l.from === "me" ? "ms-auto rounded-se-sm bg-primary text-primary-foreground" : "rounded-ss-sm bg-muted")} dir="auto">
+                {l.text}
+                {l.topics && (
+                  <ul className="mt-2 space-y-2" data-testid="help-topics">
+                    {l.topics.map((topic) => (
+                      <li key={topic.id} className="rounded-lg bg-background p-2">
+                        <p className="font-semibold">{t(`topics.${topic.id}.title` as "topics.addProject.title")}</p>
+                        <p className="text-muted-foreground">{t(`topics.${topic.id}.answer` as "topics.addProject.answer")}</p>
+                        <Link href={topic.link} className="text-xs font-medium text-primary" onClick={() => setOpen(false)}>
+                          {t("openPage")}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+            {(step === "menu" || (step === "ai" && lines.length === 0)) && (
+              <div className="flex flex-wrap gap-2" data-testid="help-menu">
+                {(["bug", "complaint", "howto", "suggestion"] as const).map((k) => (
+                  <button key={k} type="button" className={chip} onClick={() => choose(k)} disabled={pending}>
+                    {t(`choices.${k}`)}
+                  </button>
+                ))}
+              </div>
+            )}
+            {step === "helped" && (
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className={chip} onClick={() => { say({ from: "me", text: t("yes") }, { from: "bot", text: t("thanks") }); setStep("sent"); }}>{t("yes")}</button>
+                <button type="button" className={chip} onClick={() => { say({ from: "me", text: t("no") }); setStep("review"); }}>{t("no")}</button>
+              </div>
+            )}
+            {step === "notFound" && (
+              <button type="button" className={chip} onClick={() => setStep("review")}>{t("sendQuestion")}</button>
+            )}
+            {step === "shot" && (
+              <div className="flex flex-wrap gap-2">
+                <label className={cn(chip, "flex cursor-pointer items-center gap-1.5")}>
+                  <ImagePlus className="size-4" aria-hidden /> {t("addShot")}
+                  <input
+                    ref={picker}
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    data-testid="help-shot-input"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      setShot(f);
+                      say({ from: "me", text: t("shotAdded") });
+                      setStep("review");
+                    }}
+                  />
+                </label>
+                <button type="button" className={chip} onClick={() => { say({ from: "me", text: t("skip") }); setStep("review"); }}>{t("skip")}</button>
+              </div>
+            )}
+            {step === "review" && (
+              <div className="space-y-2 rounded-xl border p-3" data-testid="help-review">
+                <p className="font-medium">{t("review")}</p>
+                <dl className="space-y-1 text-xs">
+                  <div><dt className="inline font-semibold">{t("draft.kind")}: </dt><dd className="inline">{t(`kinds.${draft.kind}`)}</dd></div>
+                  <div><dt className="inline font-semibold">{t("draft.what")}: </dt><dd className="inline" dir="auto">{draft.what}</dd></div>
+                  {draft.steps && <div><dt className="inline font-semibold">{t("draft.steps")}: </dt><dd className="inline" dir="auto">{draft.steps}</dd></div>}
+                  {draft.expected && <div><dt className="inline font-semibold">{t("draft.expected")}: </dt><dd className="inline" dir="auto">{draft.expected}</dd></div>}
+                </dl>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={send} disabled={pending} className="rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-primary-foreground disabled:opacity-50" data-testid="help-send">
+                    {t("confirm")}
+                  </button>
+                  <button type="button" className={chip} onClick={restart} disabled={pending}>{t("edit")}</button>
+                </div>
+              </div>
+            )}
+            {step === "sent" && (
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className={chip} onClick={restart}>{t("again")}</button>
+              </div>
+            )}
+            {pending && <p className="text-xs text-muted-foreground" aria-hidden>…</p>}
+            <div ref={end} />
+          </div>
+          {typing && (
+            <form
+              className="flex items-end gap-2 border-t p-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                answer(text);
+                setText("");
+              }}
+            >
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    answer(text);
+                    setText("");
+                  }
+                }}
+                rows={1}
+                maxLength={1500}
+                dir="auto"
+                placeholder={t("typeHere")}
+                aria-label={t("typeHere")}
+                className="max-h-28 min-h-10 flex-1 resize-none rounded-xl border bg-background px-3 py-2 text-sm"
+                data-testid="help-input"
+              />
+              {skippable && (
+                <button type="button" className={chip} onClick={() => answer("")}>{t("skip")}</button>
+              )}
+              <button type="submit" disabled={pending} aria-label={t("send")} className="rounded-full bg-primary p-2.5 text-primary-foreground disabled:opacity-50" data-testid="help-submit">
+                <Send className="size-4 rtl:-scale-x-100" />
+              </button>
+            </form>
+          )}
+          <footer className="border-t px-4 py-2 text-[11px] text-muted-foreground">
+            {ai && <p className="mb-1">{t("ai")}</p>}
+            <Link href={`/support?from=${encodeURIComponent(path)}`} className="underline" onClick={() => setOpen(false)}>{t("fullForm")}</Link>
+          </footer>
+        </section>
+      )}
+    </>
+  );
+}
