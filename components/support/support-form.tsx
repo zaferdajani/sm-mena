@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { submitSupportAction, type SupportState } from "@/app/[locale]/(main)/support-actions";
 import { FormError } from "@/components/form-error";
+import { Link } from "@/i18n/navigation";
 import { VoiceButton } from "@/components/match/voice-button";
 import { VideoField, VoiceNoteField } from "@/components/support/media-inputs";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,11 @@ export function SupportForm({ from, kind }: { from: string; kind: SupportFormKin
           <p className="text-muted-foreground">
             {t("refLine")} <span className="font-mono font-semibold text-foreground" dir="ltr" data-testid="support-ref">{state.ref}</span>
           </p>
+        )}
+        {state.token && (
+          <Link href={`/support/t/${state.token}`} className="font-medium text-brand underline" data-testid="support-thread-link">
+            {t("openThread")}
+          </Link>
         )}
       </div>
     );

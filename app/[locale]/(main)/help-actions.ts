@@ -1,12 +1,9 @@
 "use server";
 
-import { and, desc, eq, or } from "drizzle-orm";
 import { z } from "zod";
 import { helpAiEnabled, helpReply, type HelpReply } from "@/lib/ai/help-assistant";
 import { getSessionUser } from "@/lib/auth/session";
-import { supportRef } from "@/lib/data/bugs";
-import { getDb } from "@/lib/db";
-import { supportRequests } from "@/lib/db/schema";
+import { reportsForViewer, type ThreadSummary } from "@/lib/data/support-threads";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { getVisitorId } from "@/lib/visitor";
@@ -33,23 +30,8 @@ export async function helpChatAction(turns: unknown, page: unknown): Promise<Hel
   return reply ? { mode: "ai", reply } : { mode: "guided" };
 }
 
-export type ReportStatus = { ref: string; status: "new" | "planned" | "done" | "declined"; handledAt: string | null };
-
-/** Status of the reports this browser or account sent, by report number. Others' reports are never returned. */
-export async function reportStatusAction(refs: unknown): Promise<ReportStatus[]> {
-  const wanted = z.array(z.string().regex(/^[A-F0-9]{8}$/)).max(10).safeParse(refs);
-  if (!wanted.success || !wanted.data.length) return [];
+/** The reports this browser or account sent, with their private conversation links (docs/63). Nobody else's. */
+export async function myReportsAction(): Promise<ThreadSummary[]> {
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
-  const mine = [visitorId ? eq(supportRequests.visitorId, visitorId) : undefined, user ? eq(supportRequests.userId, user.id) : undefined].filter((c) => c !== undefined);
-  if (!mine.length) return [];
-  const db = await getDb();
-  const rows = await db
-    .select({ id: supportRequests.id, status: supportRequests.status, handledAt: supportRequests.handledAt })
-    .from(supportRequests)
-    .where(and(or(...mine)))
-    .orderBy(desc(supportRequests.createdAt))
-    .limit(50);
-  return rows
-    .filter((r) => wanted.data.includes(supportRef(r.id)))
-    .map((r) => ({ ref: supportRef(r.id), status: r.status, handledAt: r.handledAt?.toISOString() ?? null }));
+  return reportsForViewer(visitorId, user?.id ?? null, 10);
 }

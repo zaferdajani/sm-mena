@@ -3,10 +3,11 @@ import { StatTiles } from "@/components/admin/stat-tiles";
 import { FilterChips } from "@/components/admin/filter-chips";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
+import { messagesFor } from "@/lib/data/support-threads";
 import { bugCounts, listErrors, listSiteChecks, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, supportRef, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
+import { replySupportAction, resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
 
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-destructive/10 text-destructive",
@@ -16,6 +17,7 @@ const STATUS_STYLE: Record<string, string> = {
   cannot_reproduce: "bg-muted text-muted-foreground",
   new: "bg-destructive/10 text-destructive",
   planned: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+  waiting: "bg-sky-500/15 text-sky-700 dark:text-sky-400",
   done: "bg-brand/10 text-brand",
   declined: "bg-muted text-muted-foreground",
 };
@@ -177,6 +179,7 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
   const status = (SUPPORT_STATUSES as readonly string[]).includes(String(raw)) || raw === "all" ? (raw as SupportStatus | "all") : "new";
   const tk = await getTranslations({ locale, namespace: "Support" });
   const rows = await listSupportRequests(status);
+  const threads = await messagesFor(rows.map((r) => r.id));
   return (
     <section className="space-y-3">
       <FilterChips
@@ -223,6 +226,30 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
                 {t("fixedIn")} <span className="font-mono" dir="ltr">{r.resolutionCommit.slice(0, 7)}</span>
               </p>
             )}
+            {(threads.get(r.id) ?? []).length > 0 && (
+              <ol className="space-y-1.5 border-s-2 ps-3 text-xs" data-testid="report-thread" aria-label={t("thread")}>
+                {(threads.get(r.id) ?? []).map((m) => (
+                  <li key={m.id}>
+                    <span className="font-semibold">{m.author === "reporter" ? t("fromReporter") : m.author === "agent" ? t("fromAgent") : t("fromStaff")}: </span>
+                    <span className="whitespace-pre-line" dir="auto">{m.body}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {r.confirmedAt && <p className="text-xs font-medium text-brand">{t("confirmedByReporter")}</p>}
+            <form action={replySupportAction} className="grid gap-2" data-testid="report-reply">
+              <input type="hidden" name="id" value={r.id} />
+              <textarea name="body" rows={2} required minLength={2} maxLength={3000} placeholder={t("replyHint")} aria-label={t("reply")} className="rounded-md border bg-background px-2 py-1.5 text-xs" dir="auto" />
+              <div className="flex flex-wrap items-center gap-2">
+                <select name="status" defaultValue="" className="h-8 rounded-md border bg-background px-2 text-xs" aria-label={t("reply")}>
+                  <option value="">—</option>
+                  {SUPPORT_STATUSES.map((s) => (
+                    <option key={s} value={s}>{t(`reportStatus.${s}`)}</option>
+                  ))}
+                </select>
+                <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">{t("sendReply")}</button>
+              </div>
+            </form>
             <form action={updateSupportAction} className="flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={r.id} />
               <input name="note" defaultValue={r.adminNote ?? ""} placeholder={t("note")} className="h-9 min-w-40 flex-1 rounded-md border bg-background px-2 text-xs" dir="auto" />

@@ -19,17 +19,18 @@ import { supportRef } from "./bugs";
 export type SupportEmailKind = "received" | "planned" | "done";
 const UPDATE_STATUSES = ["planned", "done"] as const;
 
-export function supportEmail(kind: SupportEmailKind, ref: string, locale: string | null) {
+export function supportEmail(kind: SupportEmailKind, ref: string, locale: string | null, token?: string | null) {
   const lang = locale === "en" ? "en" : "ar";
   const t = createTranslator({ locale: lang, messages: lang === "ar" ? ar : en, namespace: "SupportEmail" });
   return {
     subject: t(`${kind}.subject`, { ref }),
-    lines: [...t(`${kind}.body`, { ref }).split("\n"), "", t("footer", { link: `${SITE_URL}/${lang}/support` })],
+    // The footer links to the reporter's conversation (docs/63) when there is one.
+    lines: [...t(`${kind}.body`, { ref }).split("\n"), "", t("footer", { link: token ? `${SITE_URL}/${lang}/support/t/${token}` : `${SITE_URL}/${lang}/support` })],
   };
 }
 
-async function send(kind: SupportEmailKind, row: { id: string; email: string | null; locale: string | null }) {
-  const mail = supportEmail(kind, supportRef(row.id), row.locale);
+async function send(kind: SupportEmailKind, row: { id: string; email: string | null; locale: string | null; token?: string | null }) {
+  const mail = supportEmail(kind, supportRef(row.id), row.locale, row.token);
   await sendPlainEmail(row.email, mail.subject, mail.lines, `support-${kind}`);
 }
 
@@ -40,7 +41,7 @@ export async function notifySupportReceived(id: string) {
     .update(supportRequests)
     .set({ notifiedStatus: "new" })
     .where(and(eq(supportRequests.id, id), isNotNull(supportRequests.email), isNull(supportRequests.notifiedStatus)))
-    .returning({ id: supportRequests.id, email: supportRequests.email, locale: supportRequests.locale });
+    .returning({ id: supportRequests.id, email: supportRequests.email, locale: supportRequests.locale, token: supportRequests.accessToken });
   if (row) await send("received", row);
 }
 
@@ -69,7 +70,7 @@ export async function sendSupportUpdates(limit = 25) {
       .update(supportRequests)
       .set({ notifiedStatus: sql`${supportRequests.status}::text` })
       .where(and(eq(supportRequests.id, id), or(isNull(supportRequests.notifiedStatus), ne(supportRequests.notifiedStatus, sql`${supportRequests.status}::text`))))
-      .returning({ id: supportRequests.id, email: supportRequests.email, locale: supportRequests.locale, status: supportRequests.status });
+      .returning({ id: supportRequests.id, email: supportRequests.email, locale: supportRequests.locale, status: supportRequests.status, token: supportRequests.accessToken });
     if (!row || (row.status !== "planned" && row.status !== "done")) continue;
     await send(row.status, row);
     sent++;

@@ -1179,7 +1179,8 @@
     "addShot": "Add a screenshot",
     "removeShot": "Remove screenshot",
     "pageLine": "Page:",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "openThread": "Open the conversation: we'll reply there"
   },
   "AdminBugs": {
     "tiles": {
@@ -1217,7 +1218,8 @@
       "planned": "Planned",
       "done": "Done",
       "declined": "Declined",
-      "all": "All"
+      "all": "All",
+      "waiting": "Waiting on reporter"
     },
     "firstSeen": "First seen",
     "lastSeen": "Last seen",
@@ -1248,7 +1250,15 @@
     "screenshot": "Attached screenshot",
     "fixedIn": "Fixed in:",
     "voiceNote": "Voice note",
-    "recording": "Screen recording"
+    "recording": "Screen recording",
+    "reply": "Reply to the reporter",
+    "replyHint": "They see it in their conversation and get a link by email",
+    "sendReply": "Send reply",
+    "thread": "Conversation",
+    "fromReporter": "Reporter",
+    "fromAgent": "Agent",
+    "fromStaff": "Team",
+    "confirmedByReporter": "The reporter confirmed the fix works"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -5352,7 +5362,7 @@
     "review": "Here is your report. Send it?",
     "confirm": "Send the report",
     "edit": "Change it",
-    "sent": "Sent. Your report number is {ref}. Our fixing agent works through reports every hour; you can follow it here.",
+    "sent": "Sent. Your report number is {ref}. Support will reply here, and by email if you left one. Follow the conversation from “Your reports” above.",
     "sendFailed": "We couldn't send it. Try again, or use the full form.",
     "fullForm": "Open the full form",
     "found": "This may help:",
@@ -5370,7 +5380,8 @@
       "new": "Received",
       "planned": "Waiting on a decision",
       "done": "Fixed",
-      "declined": "Closed"
+      "declined": "Closed",
+      "waiting": "Waiting for you"
     },
     "ai": "Answers come from Sawwiq's AI assistant and can be wrong. Don't share passwords or payment details.",
     "kinds": {
@@ -5432,7 +5443,8 @@
     "continue": "Continue",
     "attachHint": "Add what helps: a screenshot, a voice note or a screen recording.",
     "voiceAdded": "Voice note added",
-    "videoAdded": "Screen recording added"
+    "videoAdded": "Screen recording added",
+    "newReply": "New reply"
   },
   "SupportMedia": {
     "record": "Record a voice note",
@@ -5468,5 +5480,46 @@
       "body": "Your report {ref} has been handled, and the update is live on Sawwiq now.\nIf the problem is still there, send a new report and mention this number."
     },
     "footer": "This is an automatic message from Sawwiq; no need to reply. To reach us: {link}"
+  },
+  "SupportThread": {
+    "title": "Report {ref}",
+    "intro": "This is your conversation with Sawwiq support about this report. You can reply and add screenshots or a voice note at any time.",
+    "status": {
+      "new": "Received, waiting for review",
+      "planned": "Being worked on",
+      "waiting": "Waiting for your reply",
+      "done": "Fixed: try it and tell us",
+      "declined": "Closed"
+    },
+    "you": "You",
+    "agent": "Sawwiq support (AI agent)",
+    "staff": "Sawwiq team",
+    "original": "Your report",
+    "attachments": "Attachments: {count}",
+    "confirmed": "You confirmed the problem is solved. Thank you!",
+    "reply": "Your reply",
+    "replyHint": "Tell us what happened when you tried again, or answer our question.",
+    "send": "Send reply",
+    "sending": "Sending…",
+    "works": "It works now ✓",
+    "stillBroken": "Still broken",
+    "stillBrokenHint": "Tell us what happens now, and add a screenshot if you can.",
+    "sent": "Your reply was sent. The support agent picks it up on its next round (every hour).",
+    "fixedIn": "Fix: {commit}",
+    "notFound": "We couldn't find this conversation. Check the link in your email.",
+    "myReports": "Your reports",
+    "noReports": "You haven't sent a report from this device or account yet.",
+    "newReply": "New reply",
+    "errors": {
+      "required": "Write a few words or add a voice note.",
+      "rateLimited": "Too many messages. Try again shortly.",
+      "screenshot": "One of the images could not be read.",
+      "media": "The voice note or recording could not be read.",
+      "closed": "This report is closed. Send a new one if needed."
+    },
+    "email": {
+      "subject": "A reply on your report {ref} · Sawwiq",
+      "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
+    }
   }
 }

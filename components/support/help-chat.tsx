@@ -4,7 +4,8 @@ import { ImagePlus, LifeBuoy, Send, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { helpChatAction, reportStatusAction, type ReportStatus } from "@/app/[locale]/(main)/help-actions";
+import { helpChatAction, myReportsAction } from "@/app/[locale]/(main)/help-actions";
+import type { ThreadSummary } from "@/lib/data/support-threads";
 import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
 import { Link } from "@/i18n/navigation";
 import { VoiceButton } from "@/components/match/voice-button";
@@ -19,25 +20,10 @@ import { cn } from "@/lib/utils";
 // (helpAiEnabled), the conversation is free text and Claude drafts the report.
 // Nothing is filed until the person taps Send.
 
-const REFS_KEY = "sw_help_refs";
 const HIDDEN = /\/(support|match|portfolio-setup|admin|pioneer-letters|chats)(\/|$)|\/studio\/(import|inbox|messages)(\/|$)/;
 
 type Line = { from: "bot" | "me"; text: string; topics?: HelpTopic[] };
 type Step = "menu" | "what" | "steps" | "expected" | "shot" | "howto" | "helped" | "notFound" | "review" | "sent" | "ai";
-
-const readRefs = (): string[] => {
-  try {
-    const v = JSON.parse(localStorage.getItem(REFS_KEY) ?? "[]");
-    return Array.isArray(v) ? v.filter((r): r is string => typeof r === "string").slice(0, 10) : [];
-  } catch {
-    return [];
-  }
-};
-const saveRef = (ref: string) => {
-  try {
-    localStorage.setItem(REFS_KEY, JSON.stringify([ref, ...readRefs().filter((r) => r !== ref)].slice(0, 10)));
-  } catch {}
-};
 
 export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; aboveNav?: boolean }) {
   const t = useTranslations("Help");
@@ -54,7 +40,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
   const [video, setVideo] = useState<File | null>(null);
   const [videoBusy, setVideoBusy] = useState(false);
   const [text, setText] = useState("");
-  const [statuses, setStatuses] = useState<ReportStatus[]>([]);
+  const [statuses, setStatuses] = useState<ThreadSummary[]>([]);
   const [pending, startTransition] = useTransition();
   const picker = useRef<HTMLInputElement>(null);
   const end = useRef<HTMLDivElement>(null);
@@ -62,10 +48,12 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
   useEffect(() => {
     end.current?.scrollIntoView({ block: "end" });
   }, [lines, step]);
+  // Their reports and any unread reply (the dot on the Help button), on load and whenever the chat opens.
+  useEffect(() => {
+    myReportsAction().then(setStatuses).catch(() => {});
+  }, [open]);
   useEffect(() => {
     if (!open) return;
-    const refs = readRefs();
-    if (refs.length) reportStatusAction(refs).then(setStatuses).catch(() => {});
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -174,9 +162,8 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
       if (video) data.set("video", video);
       const result = await submitSupportAction(undefined, data).catch(() => undefined);
       if (!result?.done || !result.ref) return say({ from: "bot", text: t("sendFailed") });
-      saveRef(result.ref);
       say({ from: "bot", text: t("sent", { ref: result.ref }) });
-      setStatuses((s) => [{ ref: result.ref!, status: "new", handledAt: null }, ...s.filter((x) => x.ref !== result.ref)]);
+      myReportsAction().then(setStatuses).catch(() => {});
       setStep("sent");
     });
   }
@@ -201,6 +188,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
           data-testid="help-open"
         >
           <LifeBuoy className="size-4" aria-hidden /> {t("open")}
+          {statuses.some((s) => s.unread) && <span className="size-2.5 rounded-full bg-destructive ring-2 ring-primary" aria-label={t("newReply")} data-testid="help-unread" />}
         </button>
       )}
       {open && (
@@ -227,10 +215,15 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
               <div className="rounded-xl bg-muted/60 p-3 text-xs" data-testid="help-statuses">
                 <p className="mb-1 font-semibold">{t("yourReports")}</p>
                 <ul className="space-y-0.5">
-                  {statuses.map((s) => (
-                    <li key={s.ref} className="flex justify-between gap-2">
-                      <span className="font-mono" dir="ltr">{s.ref}</span>
-                      <span data-testid="help-status">{t(`status.${s.status}`)}</span>
+                  {statuses.slice(0, 5).map((s) => (
+                    <li key={s.ref}>
+                      <Link href={`/support/t/${s.token}`} className="flex items-center justify-between gap-2 rounded-md px-1 py-0.5 hover:bg-background" data-testid="help-thread-link" onClick={() => setOpen(false)}>
+                        <span className="flex items-center gap-1.5 font-mono" dir="ltr">
+                          {s.unread && <span className="size-2 rounded-full bg-destructive" aria-hidden />}
+                          {s.ref}
+                        </span>
+                        <span data-testid="help-status">{s.unread ? t("newReply") : t(`status.${s.status}`)}</span>
+                      </Link>
                     </li>
                   ))}
                 </ul>

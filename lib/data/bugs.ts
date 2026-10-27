@@ -1,9 +1,10 @@
 import "server-only";
+import { randomBytes } from "node:crypto";
 import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { errorFingerprint, normalizePath } from "./error-fingerprint";
-import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
+import { errorEvents, siteChecks, supportMessages, supportRequests } from "@/lib/db/schema";
 
 // Automatic error journal (browser and server errors) and user-submitted
 // problem reports, triaged in Admin → Bugs. Modelled on OneClickConvert's bug
@@ -12,7 +13,7 @@ import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
 export type ErrorInput = { source: "client" | "server"; kind: string; message: string; stack?: string | null; path?: string | null; userAgent?: string | null };
 export const ERROR_STATUSES = ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"] as const;
 export type ErrorStatus = (typeof ERROR_STATUSES)[number];
-export const SUPPORT_STATUSES = ["new", "planned", "done", "declined"] as const;
+export const SUPPORT_STATUSES = ["new", "planned", "waiting", "done", "declined"] as const;
 export type SupportStatus = (typeof SUPPORT_STATUSES)[number];
 
 const clip = (s: string | null | undefined, n: number) => (s ? s.slice(0, n) : null);
@@ -157,10 +158,11 @@ export async function submitSupportRequest(input: SupportInput) {
       screenshots: (input.screenshots ?? []).slice(0, 3),
       attachments: (input.attachments ?? []).slice(0, 2),
       viewport: clip(input.viewport, 20),
+      accessToken: randomBytes(24).toString("base64url"),
       appCommit: clip(input.appCommit, 40),
     })
-    .returning({ id: supportRequests.id });
-  return row.id;
+    .returning({ id: supportRequests.id, accessToken: supportRequests.accessToken });
+  return row;
 }
 
 export async function listSupportRequests(status: SupportStatus | "all" = "new") {
@@ -189,11 +191,15 @@ export const supportRef = (id: string) => id.slice(0, 8).toUpperCase();
 export async function purgeOldSupport() {
   const db = await getDb();
   const cutoff = new Date(Date.now() - 365 * 24 * 3600 * 1000);
-  const rows = await db
-    .delete(supportRequests)
-    .where(and(inArray(supportRequests.status, ["done", "declined"]), lt(supportRequests.handledAt, cutoff)))
-    .returning({ screenshots: supportRequests.screenshots, attachments: supportRequests.attachments });
-  const keys = rows.flatMap((r) => [...r.screenshots, ...r.attachments.map((a) => a.key)]);
+  const old = and(inArray(supportRequests.status, ["done", "declined"]), lt(supportRequests.handledAt, cutoff));
+  // Files on replies in the conversation go too (the messages are deleted with the report).
+  const replyFiles = await db
+    .select({ screenshots: supportMessages.screenshots, attachments: supportMessages.attachments })
+    .from(supportMessages)
+    .innerJoin(supportRequests, eq(supportRequests.id, supportMessages.requestId))
+    .where(old);
+  const rows = await db.delete(supportRequests).where(old).returning({ screenshots: supportRequests.screenshots, attachments: supportRequests.attachments });
+  const keys = [...rows, ...replyFiles].flatMap((r) => [...r.screenshots, ...r.attachments.map((a) => a.key)]);
   if (keys.length) await storage().remove(keys);
   return rows.length;
 }

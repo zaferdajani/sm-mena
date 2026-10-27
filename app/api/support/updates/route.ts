@@ -1,4 +1,5 @@
 import { sendSupportUpdates } from "@/lib/data/support-notify";
+import { sendSupportReplies } from "@/lib/data/support-threads";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 
@@ -11,6 +12,8 @@ export const dynamic = "force-dynamic";
 
 export async function POST() {
   if (!rateLimit(`support-updates:${await clientIp()}`, 6, 60 * 60 * 1000)) return new Response("Too many requests", { status: 429 });
+  // Reply links first: a reply email stands in for the status email of the same report (docs/63).
+  const replies = await sendSupportReplies();
   const sent = await sendSupportUpdates();
-  return Response.json({ sent });
+  return Response.json({ sent, replies });
 }

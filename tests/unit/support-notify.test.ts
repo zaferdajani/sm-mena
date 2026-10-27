@@ -25,7 +25,7 @@ afterEach(() => {
 afterAll(() => closeDb());
 
 const report = (email: string | null, locale = "ar") =>
-  submitSupportRequest({ kind: "bug", message: "زر الحفظ لا يعمل في صفحة الأعمال", email, locale });
+  submitSupportRequest({ kind: "bug", message: "زر الحفظ لا يعمل في صفحة الأعمال", email, locale }).then((r) => r.id);
 
 describe("report emails to the person who sent it (docs/61)", () => {
   it("sends one receipt with the report number, never the report text", async () => {
