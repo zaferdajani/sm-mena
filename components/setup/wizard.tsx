@@ -330,7 +330,13 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
     <div className="space-y-4 rounded-2xl border p-4" data-testid="import-panel">
       <div className="space-y-2">
         <h3 className="font-semibold">{t("import.pdf")}</h3>
-        <input type="file" accept="application/pdf" className="block w-full text-sm" onChange={(e) => e.currentTarget.files?.[0] && readPdfFile(e.currentTarget.files[0])} data-testid="setup-pdf" />
+        <input type="file" accept="application/pdf" className="block w-full text-sm" onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            e.currentTarget.value = ""; // so the same PDF can be chosen again after an error
+            if (file) void readPdfFile(file);
+          }}
+          data-testid="setup-pdf"
+        />
         {reading && <p role="status" className="text-sm">{reading}</p>}
         {pdfState && (
           <>

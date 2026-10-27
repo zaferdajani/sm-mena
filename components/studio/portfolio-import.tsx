@@ -232,7 +232,12 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
           {phase === "ocr" && <span className="text-xs text-muted-foreground">{t("ocrHint")}</span>}
           {!busy && <span className="text-sm text-muted-foreground">{t("chooseHint", { pages: IMPORT_LIMITS.pages, mb: MAX_MB })}</span>}
         </button>
-        <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(e) => void choose(e.target.files?.[0] ?? undefined)} data-testid="import-file" />
+        <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(e) => {
+            void choose(e.target.files?.[0] ?? undefined);
+            e.target.value = ""; // so the same PDF can be chosen again after an error
+          }}
+          data-testid="import-file"
+        />
         <ul className="grid gap-1 text-sm text-muted-foreground">
           <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-brand" /> {t("how1")}</li>
           <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-brand" /> {t(aiAvailable ? "how2ai" : "how2")}</li>

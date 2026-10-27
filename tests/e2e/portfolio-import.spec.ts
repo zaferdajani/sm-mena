@@ -56,3 +56,34 @@ test("an agency turns its PDF portfolio into posts and clients", async ({ page }
   await expect(page.locator("main")).toContainText("Rose Cafe");
   await expect(page.locator("main")).toContainText("Petra Motors");
 });
+
+// Report 6E5F4BD2: on iPhone the PDF never loaded. iOS Safari caps the memory
+// all canvases on a page may hold; the reader kept a full-size canvas per page
+// until the end, so a long portfolio crossed the cap and the read failed.
+test("reading a PDF portfolio releases every canvas it drew on", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    const made: HTMLCanvasElement[] = [];
+    (window as unknown as { __canvases: HTMLCanvasElement[] }).__canvases = made;
+    const create = Document.prototype.createElement;
+    Document.prototype.createElement = function (this: Document, tag: string, options?: ElementCreationOptions) {
+      const el = create.call(this, tag, options);
+      if (tag.toLowerCase() === "canvas") made.push(el as HTMLCanvasElement);
+      return el;
+    } as typeof create;
+  });
+  await joinAgency(page, "pdfmem");
+  await page.goto("/ar/studio/import");
+  await page.getByTestId("import-file").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: await portfolioPdf() });
+  await expect(page.getByTestId("import-review")).toBeVisible({ timeout: 60_000 });
+
+  const held = await page.evaluate(() => {
+    const all = (window as unknown as { __canvases: HTMLCanvasElement[] }).__canvases;
+    return { drawn: all.length, pixels: all.filter((c) => !c.isConnected).reduce((n, c) => n + c.width * c.height, 0) };
+  });
+  expect(held.drawn).toBeGreaterThan(4); // the reader did draw the pages
+  // Before the fix a four-page PDF left about 21 million pixels held. A tiny
+  // 1x1 probe canvas of pdf.js's own may remain; no page-sized canvas may.
+  expect(held.pixels).toBeLessThan(10_000);
+});
