@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
+import { analysisPayload } from "@/lib/portfolio-import/payload";
 import type { ReadPage, ReadProgress } from "@/lib/portfolio-import/read-pdf";
 import { IMPORT_LIMITS, type DraftPost, type ImageRef, type ImportPlan } from "@/lib/portfolio-import/types";
 import { cn } from "@/lib/utils";
@@ -102,7 +103,12 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       setPages(read.pages);
       setTruncated(read.totalPages > read.pages.length);
       setPhase("thinking");
-      const res = await analyzePortfolioAction(read.pages.map((p) => ({ index: p.index, text: p.text, image: p.thumb, layout: p.layout, crops: p.crops.length, cropTexts: p.crops.map((c) => c.text) })));
+      const payload = analysisPayload(
+        read.pages.map((p) => ({ index: p.index, text: p.text, image: p.thumb, layout: p.layout, crops: p.crops.length, cropTexts: p.crops.map((c) => c.text) })),
+        aiAvailable,
+      );
+      // A failed request is not an unreadable PDF: say so, and let them try again.
+      const res = await analyzePortfolioAction(payload).catch(() => ({ plan: undefined, error: "generic" as const }));
       if (!res.plan) {
         setPhase("pick");
         return setError(res.error ?? "generic");
