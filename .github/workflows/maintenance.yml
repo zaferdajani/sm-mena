@@ -39,7 +39,7 @@ concurrency:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, box]
     timeout-minutes: 30
     env:
       NODE_ENV: production
