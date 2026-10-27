@@ -17,7 +17,7 @@ on:
 
 jobs:
   journey:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, box]
     timeout-minutes: 15
     env:
       SITE_URL: ${{ inputs.site || 'https://sawwiq.org' }}
