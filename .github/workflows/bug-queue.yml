@@ -38,7 +38,7 @@ permissions:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, box]
     timeout-minutes: 15
     env:
       NODE_ENV: production
