@@ -18,7 +18,7 @@ concurrency:
 jobs:
   roles:
     name: Roles over HTTPS (${{ matrix.phase }})
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, box]
     timeout-minutes: 20
     strategy:
       fail-fast: false
