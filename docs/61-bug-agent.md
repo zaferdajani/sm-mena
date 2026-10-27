@@ -56,6 +56,15 @@ Work from a fresh checkout of `origin/main`. Use the branch the session was give
     {"type":"error","id":42,"status":"fixed","note":"Null avatar on client cards","commit":"abc1234"}]
    ```
    `done` and `fixed` need the commit. Notes are public: no names, emails, phones or quotes from the report.
+
+   **Reply to every report you handled** (docs/63). Reporters read these in their conversation and get a link by email.
+   - Write `$SCRATCH/bugq/replies.json`: `[{"ref":"1A2B3C4D","body":"…","status":"done","commit":"abc1234"}]`.
+   - Write each reply in the language the reporter used, Modern Standard Arabic for Arabic, in two to five short sentences: what you found, what changed, and what to try now ("open Studio → Page and press Save again").
+   - To ask for something you need (which page, which phone, a screenshot), set `"status":"waiting"` and ask one clear question. Their answer reopens the report for the next run.
+   - For something planned or declined, say so plainly and why, without promising dates.
+   - Never include anything personal, and never ask for passwords or payment details.
+   - Seal the replies: `npx tsx scripts/bug-agent/seal-replies.ts "$SCRATCH/bugq" "$SCRATCH/bugq/replies.json"`, and pass the printed line as the workflow's `replies` input in the same `update` run. A reply's `status` and `commit` replace the matching `updates` entry, so do not send both for the same report.
+   - Reports the reporter reopened carry the conversation in their case file. Read what they said after your last reply before you answer again.
 11. **Finish** with a short summary for the owner: fixed (number and one line each), waiting on the owner (number and the decision needed), declined. Delete `$SCRATCH/bugq`.
 
 If a run stops halfway, nothing is lost. Items stay **New** and the next run exports them again. An error marked fixed that happens again reopens by itself (`recordError`).

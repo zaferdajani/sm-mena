@@ -37,6 +37,8 @@ export type QueueReport = {
   reporterRole: string | null;
   wantsReply: boolean;
   createdAt: string;
+  /** The conversation so far (docs/63): the reporter's follow-ups (contact details removed) and earlier replies. */
+  thread?: { author: "reporter" | "agent" | "staff"; body: string; createdAt: string }[];
   screenshots: { name: string; base64: string }[];
   /** Voice notes and screen recordings; the agent transcribes them locally (scripts/bug-agent/analyze.ts). */
   media?: { name: string; kind: "audio" | "video"; base64: string }[];
@@ -54,7 +56,16 @@ export type QueueError = {
   firstSeenAt: string;
   lastSeenAt: string;
 };
-export type QueueBundle = { exportedAt: string; reports: QueueReport[]; errors: QueueError[]; waitingOnOwner: number };
+/** One reply the agent writes to a reporter (docs/63). Travels sealed to the site's reply key, never as plain text on GitHub. */
+export type QueueReply = { ref: string; body: string; status?: "planned" | "waiting" | "done" | "declined"; commit?: string };
+export type QueueBundle = {
+  exportedAt: string;
+  reports: QueueReport[];
+  errors: QueueError[];
+  waitingOnOwner: number;
+  /** Public key (base64 SPKI) the agent seals its replies to; the private half stays in the database. */
+  replyKey?: string;
+};
 
 export type SealedBundle = { v: 1; key: string; iv: string; tag: string; data: string };
 
@@ -67,7 +78,7 @@ export function newRunKeys() {
   };
 }
 
-export function seal(bundle: QueueBundle, publicKeyB64: string): SealedBundle {
+export function seal(bundle: unknown, publicKeyB64: string): SealedBundle {
   const publicKey = createPublicKey({ key: Buffer.from(publicKeyB64, "base64"), format: "der", type: "spki" });
   const aes = randomBytes(32);
   const iv = randomBytes(12);
@@ -77,12 +88,12 @@ export function seal(bundle: QueueBundle, publicKeyB64: string): SealedBundle {
   return { v: 1, key: key.toString("base64"), iv: iv.toString("base64"), tag: cipher.getAuthTag().toString("base64"), data: data.toString("base64") };
 }
 
-export function open(sealed: SealedBundle, privateKeyPem: string): QueueBundle {
+export function open<T = QueueBundle>(sealed: SealedBundle, privateKeyPem: string): T {
   const aes = privateDecrypt({ key: createPrivateKey(privateKeyPem), padding: constants.RSA_PKCS1_OAEP_PADDING, oaepHash: "sha256" }, Buffer.from(sealed.key, "base64"));
   const decipher = createDecipheriv("aes-256-gcm", aes, Buffer.from(sealed.iv, "base64"));
   decipher.setAuthTag(Buffer.from(sealed.tag, "base64"));
   const plain = Buffer.concat([decipher.update(Buffer.from(sealed.data, "base64")), decipher.final()]);
-  return JSON.parse(plain.toString("utf8")) as QueueBundle;
+  return JSON.parse(plain.toString("utf8")) as T;
 }
 
 /** What the agent may write back. Notes travel as public workflow inputs, so they describe the fix, never the reporter. */
@@ -108,3 +119,14 @@ export const queueUpdates = z
   .max(50)
   .refine((list) => list.every((u) => !(u.status === "done" || u.status === "fixed") || !!u.commit), { message: "A fix needs its commit." });
 export type QueueUpdate = z.infer<typeof queueUpdates>[number];
+
+export const queueReplies = z
+  .array(
+    z.object({
+      ref: z.string().regex(/^[A-F0-9]{8}$/),
+      body: z.string().trim().min(2).max(3000),
+      status: z.enum(["planned", "waiting", "done", "declined"]).optional(),
+      commit: z.string().regex(/^[a-f0-9]{7,40}$/).optional(),
+    }),
+  )
+  .max(50);

@@ -100,6 +100,12 @@ function main() {
       r.message,
       "",
     ];
+    // The conversation so far (docs/63): what they said after earlier replies, and what was answered.
+    if (r.thread?.length) {
+      parts.push("## Conversation since the report");
+      for (const m of r.thread) parts.push(`- ${m.createdAt.slice(0, 16)} ${m.author}: ${m.body.replace(/\s+/g, " ")}`);
+      parts.push("");
+    }
     for (const m of r.media) {
       parts.push(`## ${m.kind === "audio" ? "Voice note" : "Screen recording"} (${path.basename(m.file)})`);
       const wav = wavOf.get(m.file);

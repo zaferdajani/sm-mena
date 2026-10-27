@@ -2,7 +2,8 @@
 # production and writes back what it fixed, without any new secret.
 #   export  seals new reports (with screenshots) and unresolved errors to the
 #           agent's one-run public key and uploads them as an artifact
-#   update  applies the agent's statuses, notes and fix commits (JSON list)
+#   update  applies the agent's statuses, notes and fix commits (JSON list) and its
+#           replies to reporters, which arrive sealed (ciphertext only, docs/63)
 # This repository is public: the artifact holds ciphertext only, and the log
 # prints counts only. Notes are public inputs: they describe fixes, not people.
 name: Bug queue
@@ -23,6 +24,10 @@ on:
         description: 'update: JSON list, e.g. [{"type":"report","ref":"1A2B3C4D","status":"done","note":"…","commit":"abc1234"}]'
         required: false
         default: "[]"
+      replies:
+        description: "update: the agent's replies to reporters, sealed to the site's reply key (scripts/bug-agent/seal-replies.ts, docs/63)"
+        required: false
+        default: ""
 
 concurrency:
   group: bug-queue
@@ -41,6 +46,7 @@ jobs:
       # Passed as data, never pasted into the shell command.
       QUEUE_PUBKEY: ${{ inputs.pubkey }}
       QUEUE_UPDATES: ${{ inputs.updates }}
+      QUEUE_REPLIES: ${{ inputs.replies }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
