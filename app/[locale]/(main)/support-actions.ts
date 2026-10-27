@@ -6,6 +6,7 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { getSessionUser } from "@/lib/auth/session";
 import { SUPPORT_KINDS, submitSupportRequest, supportRef } from "@/lib/data/bugs";
+import { notifySupportReceived } from "@/lib/data/support-notify";
 import { ImageError, newScreenshotKey, processScreenshot } from "@/lib/images";
 import { rateLimit } from "@/lib/rate-limit";
 import { releaseInfo } from "@/lib/release";
@@ -104,5 +105,7 @@ export async function submitSupportAction(_: SupportState, formData: FormData): 
     viewport: parsed.data.viewport ?? null,
     appCommit: releaseInfo().commit,
   });
+  // The receipt email is a courtesy; the report is already stored.
+  await notifySupportReceived(id).catch((e) => console.warn("[support] receipt email:", e instanceof Error ? e.message : e));
   return { done: true, ref: supportRef(id) };
 }

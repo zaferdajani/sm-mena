@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireStaff } from "@/lib/auth/guards";
 import { audit } from "@/lib/data/agencies";
 import { ERROR_STATUSES, SUPPORT_STATUSES, resolveStaleErrors, setErrorStatus, setSupportStatus } from "@/lib/data/bugs";
+import { sendSupportUpdates } from "@/lib/data/support-notify";
 
 export async function updateErrorAction(formData: FormData) {
   const admin = await requireStaff("bugs.manage");
@@ -32,5 +33,7 @@ export async function updateSupportAction(formData: FormData) {
   const data = z.object({ id: z.string().uuid(), status: z.enum(SUPPORT_STATUSES), note: z.string().max(2000).optional() }).parse(Object.fromEntries(formData));
   await setSupportStatus(data.id, admin.id, data.status, data.note);
   await audit(admin.id, `support.${data.status}`, "support_request", data.id);
+  // Tells the reporter when their report is planned or done (docs/61).
+  await sendSupportUpdates().catch((e) => console.warn("[support] update email:", e instanceof Error ? e.message : e));
   revalidatePath("/[locale]/admin", "layout");
 }
