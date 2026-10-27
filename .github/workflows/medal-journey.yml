@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   medal:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, box]
     timeout-minutes: 20
     env:
       NODE_ENV: production
