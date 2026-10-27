@@ -1553,6 +1553,8 @@ export const supportRequests = pgTable(
     appCommit: text("app_commit"),
     // The commit that fixed it, when the bug agent or a person closes it as done.
     resolutionCommit: text("resolution_commit"),
+    // The last status the reporter was emailed about ("new" = the receipt), so each email goes once (docs/61).
+    notifiedStatus: text("notified_status"),
     createdAt: createdAt(),
   },
   (t) => [index("support_status_idx").on(t.status, t.createdAt)],

@@ -1158,7 +1158,7 @@
     "message": "Message",
     "messageHint": "What happened, on which page, and what you expected.",
     "email": "Email (optional)",
-    "emailHint": "Only if you'd like a reply.",
+    "emailHint": "We'll email you a receipt, then let you know when it's handled. Your email address, not your phone number.",
     "send": "Send",
     "thanks": "Thank you! Your message reached our team.",
     "crashTitle": "Something went wrong",
@@ -5453,5 +5453,20 @@
     "dictate": "Dictate",
     "dictateStop": "Stop dictating",
     "listening": "Listening…"
+  },
+  "SupportEmail": {
+    "received": {
+      "subject": "We received your report {ref} · Sawwiq",
+      "body": "Thank you for contacting Sawwiq.\nWe received your report, number {ref}, and we're working on it.\nWe'll email you again once it has been handled."
+    },
+    "planned": {
+      "subject": "Your report {ref} is being worked on · Sawwiq",
+      "body": "We've reviewed your report {ref}, and it's now on our list of things we're working on.\nWe'll email you when it's ready."
+    },
+    "done": {
+      "subject": "Your report {ref} has been handled · Sawwiq",
+      "body": "Your report {ref} has been handled, and the update is live on Sawwiq now.\nIf the problem is still there, send a new report and mention this number."
+    },
+    "footer": "This is an automatic message from Sawwiq; no need to reply. To reach us: {link}"
   }
 }
