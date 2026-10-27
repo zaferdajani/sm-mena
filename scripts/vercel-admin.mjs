@@ -210,7 +210,11 @@ async function runtimeLogs(project) {
  * (status code only), and redeploys when something changed.
  */
 async function aiDoctor(project) {
-  const envs = ((await api(`/v10/projects/${project.id}/env`)).body.envs ?? []).filter((e) => (e.target ?? []).includes("production"));
+  const all = (await api(`/v10/projects/${project.id}/env`)).body.envs ?? [];
+  // Every AI-related entry, names and scopes only: duplicates or a wrong target explain a key the site does not see.
+  for (const e of all.filter((x) => /^(ANTHROPIC|AI_|HELP_|OPENAI)/.test(x.key)))
+    console.log(`  entry ${e.key}: type ${e.type}, targets ${(e.target ?? []).join("+") || "-"}${e.gitBranch ? `, branch ${e.gitBranch}` : ""}${e.customEnvironmentIds?.length ? ", custom env" : ""}, updated ${new Date(e.updatedAt ?? e.createdAt ?? 0).toISOString().slice(0, 16)}`);
+  const envs = all.filter((e) => (e.target ?? []).includes("production") && !e.gitBranch);
   const find = (k) => envs.find((e) => e.key === k);
   const valueOf = async (e) => (e ? ((await api(`/v1/projects/${project.id}/env/${e.id}`, { allowFail: true })).body.value ?? null) : null);
   const KNOWN = ["auto", "anthropic", "openai", "mock", "basic", "off"];
