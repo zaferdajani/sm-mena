@@ -184,6 +184,17 @@ export async function setSupportStatus(id: string, adminId: string | null, statu
     .where(and(eq(supportRequests.id, id)));
 }
 
+/**
+ * Where updates about a report go (docs/61, docs/62). "Contact support" (the
+ * /support form) answers by email: the address typed, else the signed-in
+ * account's. A report filed from the help chat is followed in the chat, so it
+ * keeps no address and no email is sent about it.
+ */
+export function replyAddress(channel: string | null | undefined, typed: string | null | undefined, account: string | null | undefined) {
+  if (channel === "chat") return null;
+  return typed || account || null;
+}
+
 /** The short reference shown to the person who sent a report, and used by the agent and Admin → Bugs. */
 export const supportRef = (id: string) => id.slice(0, 8).toUpperCase();
 

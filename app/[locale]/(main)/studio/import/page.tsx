@@ -9,6 +9,9 @@ import { featureGate } from "@/lib/feature-gate";
 import { aiImportAvailable } from "@/lib/portfolio-import/ai";
 import { postFormOptions } from "@/lib/studio-options";
 
+// Reading a portfolio with Claude (analyzePortfolioAction) can take most of a minute.
+export const maxDuration = 60;
+
 /** Studio → Import a PDF portfolio (docs/36-portfolio-import.md). */
 export default async function ImportPortfolioPage({ params }: PageProps<"/[locale]/studio/import">) {
   const { locale } = await params;
