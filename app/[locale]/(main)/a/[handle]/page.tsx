@@ -6,6 +6,7 @@ import { currentCountry } from "@/lib/country-choice";
 import { ClientShowcaseList } from "@/components/profile/client-showcase";
 import { accountTiles, clientShowcase, listClients } from "@/lib/data/portfolio-clients";
 import { AccountTiles } from "@/components/profile/account-tiles";
+import { OwnerWorkPanel } from "@/components/profile/owner-work-panel";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -27,7 +28,7 @@ import { canReviewAfterInquiry, listReviews, ratingSummary, subScores } from "@/
 import { publicFeedbackFor } from "@/lib/data/collab-feedback";
 import { featureOnGlobally } from "@/lib/features";
 import { CollaboratorFeedback } from "@/components/collab/collaborator-feedback";
-import { getFeed } from "@/lib/data/posts";
+import { getFeed, hiddenPostCount } from "@/lib/data/posts";
 import { feedPage } from "@/lib/feed";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
@@ -95,6 +96,9 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const latestReviews = await listReviews(agency.id, { limit: 3 });
   const collaborator = tab === "reviews" && (await featureOnGlobally("collaboration_intelligence")) ? await publicFeedbackFor(agency.id) : null;
   const tiles = tab === "work" ? await accountTiles(agency.id) : [];
+  // The owner sees where their work comes from (and why none shows yet): the Studio.
+  const isOwner = (await getCurrentAgency())?.id === agency.id;
+  const ownerHidden = isOwner && tab === "work" ? await hiddenPostCount(agency.id) : 0;
   const [tSeo, tHire] = await Promise.all([getTranslations("Seo"), getTranslations("Hire")]);
   const rating = ratingSummary(agency);
   const avatarUrl = mediaUrl(agency.avatarKey);
@@ -140,7 +144,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       <ProfileHeader registrationMode={isRegistrationPhase()}
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
         following={following}
-        followersHref={(await getCurrentAgency())?.id === agency.id ? "/studio/followers" : undefined}
+        followersHref={isOwner ? "/studio/followers" : undefined}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />
@@ -161,9 +165,12 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       {posts &&
         (posts.items.length || tiles.length ? (
           <>
+            {isOwner && <OwnerWorkPanel empty={false} hidden={ownerHidden} />}
             <AccountTiles tiles={tiles} handle={agency.handle} lang={agency.contentLang} />
             {posts.items.length > 0 && <FeedList initial={posts} filters={{ agencyId: agency.id, standalone: true }} placement={null} layout="grid" />}
           </>
+        ) : isOwner ? (
+          <OwnerWorkPanel empty hidden={ownerHidden} />
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}

@@ -40,7 +40,13 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   // Until the first post exists, the setup list leads with the Behance import.
   await expect(page.getByTestId("setup-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
 
-  await page.goto("/en/studio/new");
+  // On their own page with no work yet, the owner is sent to the Studio to add a project.
+  await page.goto(`/en/a/${handle}`);
+  const panel = page.getByTestId("owner-work-panel");
+  await expect(panel).toHaveAttribute("data-empty", "true");
+  await expect(page.getByTestId("owner-open-studio")).toHaveAttribute("href", "/en/studio");
+  await page.getByTestId("owner-add-project").click();
+  await expect(page).toHaveURL(/\/en\/studio\/new$/);
   await page.getByTestId("image-input").setInputFiles([
     { name: "one.png", mimeType: "image/png", buffer: await pngBuffer("#be123c", 1200, 1500) },
     { name: "two.png", mimeType: "image/png", buffer: await pngBuffer("#1d4ed8") },
@@ -54,6 +60,7 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
 
   await page.goto(`/en/a/${handle}`);
   await expect(page.getByTestId("post-count")).toHaveText("1");
+  await expect(page.getByTestId("owner-work-panel")).not.toHaveAttribute("data-empty", "true");
 
   await page.goto("/en/studio/posts");
   await page.locator('a[href*="/studio/posts/"]').first().click();
