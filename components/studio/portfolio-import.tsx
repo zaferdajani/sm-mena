@@ -4,6 +4,7 @@ import { Check, FileUp, Loader2, Merge, Plus, Sparkles, Trash2, X } from "lucide
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { analyzePortfolioAction, applyProfileImportAction, importPostAction } from "@/app/[locale]/(main)/studio/import-actions";
+import { reportClientError } from "@/components/error-reporter";
 import { FormError } from "@/components/form-error";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) return setError("notPdf");
     if (file.size > MAX_MB * 1024 * 1024) return setError("tooBig");
     setPhase("reading");
+    // Where a failed read stopped, for the error report (Admin → Bugs, docs/61).
+    let step = "read";
     try {
       // pdf.js and the OCR glue load only once a PDF is chosen (the setup wizard does the same), so the page's first paint stays light.
       const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
@@ -109,6 +112,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       setPages(read.pages);
       setTruncated(read.totalPages > read.pages.length);
       setPhase("thinking");
+      step = "analyse";
       const payload = analysisPayload(
         read.pages.map((p) => ({ index: p.index, text: p.text, image: p.thumb, layout: p.layout, crops: p.crops.length, cropTexts: p.crops.map((c) => c.text) })),
         aiAvailable,
@@ -120,6 +124,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
         return setError(res.error ?? "generic");
       }
       const plan = res.plan;
+      step = "review";
       setMode(plan.mode);
       setDrafts(plan.drafts.map((d, id) => ({ ...d, id, include: true, services: d.services.length ? d.services : agencyServices.slice(0, 1) })));
       setProfile({
@@ -135,6 +140,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       setPhase("review");
     } catch (e) {
       console.error("[portfolio-import]", e);
+      // Caught here, so the page-wide reporter never sees it: send it on (the error only, never the file).
+      reportClientError("js_error", `[portfolio-import:${step}] ${e instanceof Error ? e.message : String(e)}`, e instanceof Error ? e.stack : null);
       setPhase("pick");
       setError("unreadable");
     }

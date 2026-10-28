@@ -89,6 +89,21 @@ test("reading a PDF portfolio releases every canvas it drew on", async ({ page }
   expect(held.pixels).toBeLessThan(10_000);
 });
 
+// Report A13895DE: "couldn't read the file" on an iPhone, and nothing in the
+// error queue, because the import caught the failure. A failed read now
+// reports its error (never the file) so the bug agent can see why.
+test("a PDF that cannot be read says so and reports why", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await joinAgency(page, "pdfbad");
+  await page.goto("/ar/studio/import");
+  const reported = page.waitForRequest((r) => r.url().endsWith("/api/errors") && r.method() === "POST");
+  await page.getByTestId("import-file").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.7\nnot really a pdf\n%%EOF\n") });
+  const body = JSON.parse((await reported).postData() ?? "{}") as { message?: string };
+  expect(body.message).toMatch(/^\[portfolio-import:read\] /);
+  await expect(page.getByRole("alert").filter({ hasText: "تعذّرت قراءة الملف" })).toBeVisible();
+});
+
 /** A full-size portfolio: 40 pages, each a full-page photo with a heading (noise, so the pictures compress as badly as real photos). */
 async function bigPortfolioPdf(pages = 40) {
   const doc = await PDFDocument.create();
