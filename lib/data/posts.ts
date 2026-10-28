@@ -402,6 +402,13 @@ export async function getPost(postId: string, ownerAgencyId?: string, viewer?: V
   return view;
 }
 
+/** How many of an agency's posts are hidden (its owner sees the number on its own page). */
+export async function hiddenPostCount(agencyId: string): Promise<number> {
+  const db = await getDb();
+  const [row] = await db.select({ n: sql<number>`count(*)::int` }).from(posts).where(and(eq(posts.agencyId, agencyId), eq(posts.status, "hidden")));
+  return Number(row?.n ?? 0);
+}
+
 /** All posts of one agency for the studio, including hidden ones. */
 export async function getAgencyPostsForOwner(agencyId: string): Promise<PostView[]> {
   const db = await getDb();

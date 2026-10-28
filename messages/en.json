@@ -374,7 +374,17 @@
     "managedAccount": "Managed account",
     "managedAccountHint": "{agency} runs this account on the client's behalf.",
     "socialChannels": "Channels",
-    "browseLive": "Browse the live accounts"
+    "browseLive": "Browse the live accounts",
+    "owner": {
+      "title": "This is your page as visitors see it",
+      "body": "You add and edit your work in the Studio: every project you add shows here as a post.",
+      "emptyTitle": "Your work doesn't show here yet",
+      "emptyBody": "You haven't added a project yet. Add your projects in the Studio: upload the pictures, name the client and what you did, then publish, and each project shows here.",
+      "hidden": "{count, plural, one {You have one hidden post visitors can't see.} other {You have # hidden posts visitors can't see.}}",
+      "manage": "Show them from the Studio",
+      "add": "Add a project",
+      "studio": "Open Studio"
+    }
   },
   "Explore": {
     "title": "Explore",
@@ -634,8 +644,8 @@
       "langEn": "English",
       "saveContinue": "Save and continue",
       "phoneCountry": "Country code",
-      "socialLinks": "Your channels",
-      "socialLinksHint": "TikTok, YouTube, Facebook, LinkedIn, X: a handle or a link. They appear on your page as tappable badges.",
+      "socialLinks": "Your platforms online",
+      "socialLinksHint": "Add your accounts on Instagram, Behance (a platform for showing design work), TikTok, YouTube, Facebook, LinkedIn and X: the account name or its link. Each shows on your page as a tappable badge with the platform's logo. Leave out the ones you don't use.",
       "addSocial": "Add a channel",
       "removeSocial": "Remove channel"
     },
@@ -2572,6 +2582,7 @@
       "x": "X (Twitter)",
       "snapchat": "Snapchat",
       "linkedin": "LinkedIn",
+      "behance": "Behance",
       "website": "Website",
       "google_maps": "Google Maps",
       "other": "Other link"
@@ -3645,8 +3656,8 @@
       "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
     },
     "shortcut": {
-      "title": "Already on Behance? Start from your portfolio",
-      "body": "Give us your Behance link: your projects become posts, and your bio, logo and services fill in. You review everything before it goes live.",
+      "title": "Have a portfolio on Behance?",
+      "body": "Behance is Adobe's platform where designers show their work. Give us your Behance link: your projects become posts, and your bio, logo and services are filled in for you. You review everything before it goes live. No Behance account? Skip this step.",
       "cta": "Import from Behance",
       "pdf": "Or import a PDF portfolio.",
       "join": "Already have a Behance portfolio? After you create your page, import it in one step."
@@ -5451,7 +5462,8 @@
     "attachHint": "Add what helps: a screenshot, a voice note or a screen recording.",
     "voiceAdded": "Voice note added",
     "videoAdded": "Screen recording added",
-    "newReply": "New reply"
+    "newReply": "New reply",
+    "typing": "Typing…"
   },
   "SupportMedia": {
     "record": "Record a voice note",
@@ -5527,7 +5539,8 @@
     "email": {
       "subject": "A reply on your report {ref} · Sawwiq",
       "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
-    }
+    },
+    "worksSent": "I confirmed it works now ✓"
   },
   "CloseClientAccount": {
     "title": "Close my account",

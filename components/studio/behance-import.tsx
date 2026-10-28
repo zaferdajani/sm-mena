@@ -19,10 +19,10 @@ type Option = { key: string; label: string };
 type Draft = BehanceDraft & { id: number; include: boolean; kept: boolean[]; moreServices?: boolean; status: "pending" | "publishing" | "ok" | "error"; postId?: string; error?: string };
 type Phase = "input" | "loading" | "review" | "publishing" | "done";
 
-export function BehanceImport({ handle, services, platforms, industries, clients, agencyServices, bookmarkletHref, handoff = false }: { handle: string; services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; /** The browser path (lib/behance/handoff.ts). */ bookmarkletHref: string; /** Opened by the bookmarklet (?handoff=1): listen for the Behance tab's page. */ handoff?: boolean }) {
+export function BehanceImport({ handle, services, platforms, industries, clients, agencyServices, bookmarkletHref, handoff = false, savedUrl = "" }: { handle: string; services: Option[]; platforms: Option[]; industries: Option[]; clients: Option[]; agencyServices: string[]; /** The browser path (lib/behance/handoff.ts). */ bookmarkletHref: string; /** Opened by the bookmarklet (?handoff=1): listen for the Behance tab's page. */ handoff?: boolean; /** The Behance link saved on the profile, if any. */ savedUrl?: string }) {
   const t = useTranslations("BehanceImport");
   const locale = useLocale();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(savedUrl);
   const [phase, setPhase] = useState<Phase>("input");
   const [error, setError] = useState<string | null>(null);
   const [portfolio, setPortfolio] = useState<BehancePortfolio | null>(null);

@@ -54,3 +54,36 @@ export function composeReport(d: HelpDraft): string {
     .join("\n\n")
     .slice(0, 4000);
 }
+
+export type RichPart = { text: string } | { href: string; topic: string | null } | { bold: string };
+
+/**
+ * Turns a help reply into display parts (docs/62): an in-site path such as
+ * "(/studio/new)" becomes a tappable link named after its help topic, **bold**
+ * stays bold, and other Markdown marks the model may add (list bullets, headings,
+ * backticks) are dropped. Only paths on this site become links; nothing is HTML.
+ */
+export function richHelpText(text: string): RichPart[] {
+  const clean = text
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*•]\s+/gm, "• ")
+    .replace(/`([^`]*)`/g, "$1");
+  const parts: RichPart[] = [];
+  const re = /\(?(\/(?:[a-z]{2}\/)?[a-z0-9][a-z0-9/_-]*)\)?|\*\*([^*\n]+)\*\*/g;
+  let last = 0;
+  for (const m of clean.matchAll(re)) {
+    const start = m.index ?? 0;
+    // A path must stand alone (after a space, bracket or line start), never inside a word or URL.
+    if (m[1] && start > 0 && !/[\s(«"'،,:]/.test(clean[start - 1]) && clean[start] !== "(") continue;
+    if (start > last) parts.push({ text: clean.slice(last, start) });
+    if (m[2]) parts.push({ bold: m[2] });
+    else {
+      const path = m[1].replace(/^\/(ar|en)(?=\/)/, "").replace(/\/$/, "") || "/";
+      parts.push({ href: path, topic: HELP_TOPICS.find((t) => t.link === path)?.id ?? null });
+    }
+    last = start + m[0].length;
+  }
+  if (last < clean.length) parts.push({ text: clean.slice(last) });
+  // Tidy the space a removed "(…)" leaves before punctuation.
+  return parts.map((p) => ("text" in p ? { text: p.text.replace(/\s+([،,.])/g, "$1") } : p)).filter((p) => !("text" in p) || p.text);
+}

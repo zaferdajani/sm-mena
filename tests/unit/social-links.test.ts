@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 import { cleanLinks, cleanLinkValue, linkHref, linkLabel } from "@/lib/social-links";
 
 describe("social links", () => {
+  it("treats Behance like the other platforms", () => {
+    expect(cleanLinkValue("behance", "@studio.rose")).toBe("studio.rose");
+    expect(linkHref("behance", "studio.rose")).toBe("https://www.behance.net/studio.rose");
+    expect(cleanLinkValue("behance", "behance.net/studio.rose")).toBe("https://behance.net/studio.rose");
+    expect(cleanLinkValue("behance", "https://instagram.com/studio.rose")).toBeNull();
+  });
+
   it("keeps handles without @ and builds the profile address", () => {
     expect(cleanLinkValue("instagram", " @nakhla.cafe ")).toBe("nakhla.cafe");
     expect(linkHref("instagram", "nakhla.cafe")).toBe("https://www.instagram.com/nakhla.cafe");
