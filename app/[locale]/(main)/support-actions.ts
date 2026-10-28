@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { getSessionUser } from "@/lib/auth/session";
-import { SUPPORT_KINDS, submitSupportRequest, supportRef } from "@/lib/data/bugs";
+import { replyAddress, SUPPORT_KINDS, submitSupportRequest, supportRef } from "@/lib/data/bugs";
 import { notifySupportReceived } from "@/lib/data/support-notify";
 import { rateLimit } from "@/lib/rate-limit";
 import { releaseInfo } from "@/lib/release";
@@ -43,10 +43,11 @@ export async function submitSupportAction(_: SupportState, formData: FormData): 
   }
   const user = await getSessionUser();
   const from = parsed.data.from?.startsWith("/") ? parsed.data.from : null;
+  const email = replyAddress(formData.get("channel")?.toString(), parsed.data.email, user?.email);
   const { id, accessToken } = await submitSupportRequest({
     kind: parsed.data.kind,
     message: parsed.data.message || "(voice note or recording only)",
-    email: parsed.data.email || user?.email || null,
+    email,
     path: from,
     locale: await getLocale(),
     userAgent: (await headers()).get("user-agent"),
