@@ -56,6 +56,7 @@ test("added roles survive signup, reload, profile save and removal", async ({ pa
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Create page", exact: true }).click();
   await page.waitForURL(/\/en\/portfolio-setup/);
   await page.goto("/en/studio/profile");

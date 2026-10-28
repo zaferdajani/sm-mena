@@ -46,6 +46,7 @@ export const reportReason = pgEnum("report_reason", [
   "stolen_work",
   "misleading",
   "inappropriate",
+  "underage",
   "other",
 ]);
 export const eventType = pgEnum("event_type", [
@@ -123,6 +124,9 @@ export const users = pgTable("users", {
   // Staff access control: time-boxed access for contractors, instant disable.
   staffExpiresAt: timestamp("staff_expires_at", { withTimezone: true }),
   disabledAt: timestamp("disabled_at", { withTimezone: true }),
+  // When the person confirmed they are 18 or older, or of age where they live if higher (docs/08). Null for
+  // accounts made before the rule, and for staff and referral agents, whom staff create.
+  ageConfirmedAt: timestamp("age_confirmed_at", { withTimezone: true }),
   invitedBy: uuid("invited_by"),
   createdAt: createdAt(),
 });

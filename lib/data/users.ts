@@ -5,7 +5,8 @@ import { users } from "@/lib/db/schema";
 
 export const CONSENT_VERSION = "2026-09";
 
-export async function createUser(email: string, password: string, role: (typeof users.role.enumValues)[number] = "agency") {
+/** `ageConfirmed`: the person confirmed at sign-up that they are 18 or older, or of age where they live if higher (docs/08). */
+export async function createUser(email: string, password: string, role: (typeof users.role.enumValues)[number] = "agency", { ageConfirmed = false } = {}) {
   const db = await getDb();
   const [row] = await db
     .insert(users)
@@ -15,9 +16,16 @@ export async function createUser(email: string, password: string, role: (typeof 
       role,
       consentVersion: CONSENT_VERSION,
       consentAt: new Date(),
+      ageConfirmedAt: ageConfirmed ? new Date() : null,
     })
     .returning();
   return row;
+}
+
+/** Records the 18+ declaration for an account made before the rule (docs/08). */
+export async function confirmAge(userId: string) {
+  const db = await getDb();
+  await db.update(users).set({ ageConfirmedAt: new Date() }).where(eq(users.id, userId));
 }
 
 export async function getUserByEmail(email: string) {

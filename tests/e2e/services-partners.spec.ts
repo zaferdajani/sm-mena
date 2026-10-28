@@ -23,6 +23,7 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.fill("#email", `${handle}@test.jo`);
   await agencyPage.fill("#password", "password-123");
   await agencyPage.check('input[name="consent"]');
+  await agencyPage.check('input[name="adult"]');
   await agencyPage.getByRole("button", { name: "Create page" }).click();
   // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
   await agencyPage.waitForURL(/\/en\/portfolio-setup/);

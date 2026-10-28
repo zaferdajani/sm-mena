@@ -20,6 +20,7 @@ test("sign-up starts the WhatsApp code from the visitor's country, and any count
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Create page" }).click();
   // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
   await page.waitForURL(/\/en\/portfolio-setup/);

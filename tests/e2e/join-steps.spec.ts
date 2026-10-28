@@ -56,6 +56,7 @@ test("steps, validation, a draft that survives navigation, and one final submit"
 
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Create page" }).click();
   await page.waitForURL(/\/en\/portfolio-setup/);
   // The draft is spent once the account exists: a new visit starts clean.

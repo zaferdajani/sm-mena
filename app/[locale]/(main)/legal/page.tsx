@@ -13,7 +13,7 @@ export default async function LegalPage({ params }: PageProps<"/[locale]/legal">
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Legal");
-  const sections = [1, 2, 3, 4, 5] as const;
+  const sections = [1, 2, 3, 4, 5, 6] as const;
   // The pricing section's payment promise follows lib/payments/readiness.ts.
   const live = protectedPaymentsLive();
   return (

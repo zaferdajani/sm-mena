@@ -82,7 +82,8 @@
       "consentRequired": "You need to agree to continue.",
       "invalidEmail": "Enter a valid email address.",
       "invalidPhone": "Enter a valid phone number.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "adultRequired": "Sawwiq accounts are for people aged 18 or older."
     },
     "country": "Country",
     "joinServices": "What do you offer?",
@@ -113,7 +114,8 @@
     "next": "Continue",
     "back": "Back",
     "draftNote": "What you type stays on this device until you finish, so you can leave and come back.",
-    "forgot": "Forgot your password?"
+    "forgot": "Forgot your password?",
+    "adult": "I confirm I am 18 or older (or the legal age where I live, if higher)."
   },
   "Cities": {
     "amman": "Amman",
@@ -472,7 +474,8 @@
       "stolen_work": "Work copied from someone else",
       "misleading": "Misleading results or claims",
       "inappropriate": "Inappropriate content",
-      "other": "Something else"
+      "other": "Something else",
+      "underage": "The person behind this page seems to be under 18"
     }
   },
   "Legal": {
@@ -489,7 +492,9 @@
     "s5t": "Pricing",
     "s5": "Browsing, contacting agencies and asking for quotes are free. On contracts with protected payments, the client pays each milestone to Sawwiq's licensed payment partner, which pays it to the agency when the milestone is accepted. Sawwiq takes 10% of each released payment, deducted from what the agency receives; the client never pays more than the contract amount. Sawwiq never holds client money in its own accounts.",
     "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for.",
-    "s5Test": "Browsing, contacting agencies and asking for quotes are free. Protected payments are in test mode: until Sawwiq's licensed payment partner is connected, no real money is collected or held through Sawwiq, the parties pay each other directly, and Sawwiq charges no fee. We will update these terms and tell users before protected payments go live."
+    "s5Test": "Browsing, contacting agencies and asking for quotes are free. Protected payments are in test mode: until Sawwiq's licensed payment partner is connected, no real money is collected or held through Sawwiq, the parties pay each other directly, and Sawwiq charges no fee. We will update these terms and tell users before protected payments go live.",
+    "s6t": "Who can have an account",
+    "s6": "Accounts are for people aged 18 or older, or the legal age where they live if that is higher, who can enter into contracts. Sawwiq is not meant for children. Everyone confirms their age when they sign up, and identity is checked when payouts begin. If we learn that an account belongs to someone under that age, we suspend it, cancel its open requests and quotes, and delete its personal data within 30 days, keeping only what the law requires. Parents and guardians can write to privacy@sawwiq.org, and anyone can report a page from any of its posts."
   },
   "Studio": {
     "title": "Studio",
@@ -3320,8 +3325,10 @@
       "badCode": "That code isn't right.",
       "expired": "That code expired. Ask for a new one.",
       "tooMany": "Too many tries for this code. Ask for a new one.",
-      "closedAccount": "This account was closed. To reopen it, contact support."
-    }
+      "closedAccount": "This account was closed. To reopen it, contact support.",
+      "adult": "Sawwiq accounts are for people aged 18 or older."
+    },
+    "adult": "I am 18 or older (or the legal age where I live, if higher)."
   },
   "Founding": {
     "memberTitle": "Sawwiq early member · {year}",

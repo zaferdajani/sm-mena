@@ -217,3 +217,20 @@ registration alone is not consent to unsolicited promotional messages.
 - **Help chat (docs/62):** the chat keeps nothing on the server until the person confirms a report; the report is then the same record as above, with the same 12-month retention. The browser keeps the numbers of the reports it sent, only for showing their status. With conversation mode on, what the person types goes to Anthropic (Claude) after emails and phone numbers are removed; the chat says the answers come from an AI assistant. The status lookup returns only reports from the same browser or account.
 - **Voice notes and screen recordings (docs/61):** optional, private storage like the screenshots, staff-only playback, deleted with the report after 12 months. The bug agent transcribes them on its own machine (faster-whisper; no audio goes to any speech service) and removes emails and phone numbers, including numbers spoken as words, from the transcripts before reading them. The form asks people not to mention passwords or payment details. Dictation uses the browser's own speech recognition, as in the matchmaker; Sawwiq receives only the text.
 - **Support conversations (docs/63):** replies and follow-ups on a report are kept with it and deleted with it (12 months after handling), files included. The reporter's private link is a random token that reaches one report only; emails carry the link, never the text. The bug agent's replies reach the database encrypted to a key kept in the database, so the public repository's workflow logs never hold them.
+
+## Minimum age: 18 (2026-10-28)
+Owner decision after the research summarised here (not legal advice; confirm with Jordanian counsel before launch, and local counsel per country before expanding).
+- **Why 18:**
+  - Jordan's age of majority is 18 (Civil Code). A minor's contracts depend on a guardian's approval, and Sawwiq's quotes, e-contracts and protected payments are contracts.
+  - Under PDPL No. 24/2023, consent for someone without legal capacity comes from a parent or guardian, and processing their data requires a Data Protection Officer.
+  - Penalties: a fine of up to JOD 500 a day (capped at 3% of turnover) and suspension, plus JOD 1,000–10,000 per offence (doubled for a repeat).
+  - Saudi Arabia and the UAE are also 18. Egypt and Kuwait are 21, hence "or the legal age where you live, if higher".
+  - Upwork, Fiverr and Khamsat set 18 too.
+- **At sign-up:** joining as an agency or freelancer (`/join`) and business-owner sign-in (`/signin`) each require a separate box: "I confirm I am 18 or older (or the legal age where I live, if higher)". The server refuses without it (`joinSchema.adult`, `requestCodeAction`).
+- **What is stored:** the time of the declaration (`users.age_confirmed_at`). Business-owner accounts from before the rule record it at their next sign-in. Agency accounts from before the rule have none. Staff and referral agents are created by staff, who confirm age outside the app. No date of birth and no ID are collected at sign-up; identity is checked when payouts begin (the payment partner's KYC).
+- **Reporting:** any post can be reported with "The person behind this page seems to be under 18" (`report_reason` `underage`), and parents can write to privacy@sawwiq.org.
+- **On discovery** (staff, manual for now):
+  - Suspend the agency (Admin → Agencies). Cancel its open requests and quotes and tell the other side.
+  - Delete the personal data within 30 days, keeping only what the law requires (audit log, ledger rows).
+  - Do not ask for a guardian's consent after the fact.
+- **Terms:** section 6 of `/legal` ("Who can have an account") says all of this in Arabic and English.

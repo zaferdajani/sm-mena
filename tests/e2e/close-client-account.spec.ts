@@ -28,6 +28,7 @@ test("a business owner closes their account and cannot sign in with it again", a
   await page.goto("/en/signin");
   await page.fill("#email", email);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Send the code" }).click();
   await expect(page.getByText("This account was closed. To reopen it, contact support.")).toBeVisible();
 });

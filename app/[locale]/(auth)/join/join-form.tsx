@@ -44,7 +44,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) 
 const many = (v: string | string[] | undefined) => (Array.isArray(v) ? v : v ? [v] : []);
 
 /** The step a server-side error belongs to, so the person lands on the field to fix. */
-const STEP_OF_ERROR: Record<string, number> = { handleTaken: 0, handleInvalid: 0, handleReserved: 0, emailTaken: 2, invalidEmail: 2, invalidPhone: 2, passwordShort: 2, consentRequired: 2 };
+const STEP_OF_ERROR: Record<string, number> = { handleTaken: 0, handleInvalid: 0, handleReserved: 0, emailTaken: 2, invalidEmail: 2, invalidPhone: 2, passwordShort: 2, consentRequired: 2, adultRequired: 2 };
 
 export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = "", invite = "", popular, roles, aside }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; refCode?: string; /** A collaborator's invitation token (docs/48), accepted once the page exists. */ invite?: string; popular: string[]; roles: { key: string; label: string }[]; /** Notices shown beside the steps (registration phase, Behance import). */ aside?: ReactNode }) {
   const t = useTranslations("Auth");
@@ -247,6 +247,10 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
               {t("consent")}{" "}
               <Link href="/legal" className="text-brand underline">↗</Link>
             </span>
+          </label>
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" name="adult" required className="mt-1 size-4 accent-[var(--primary)]" data-testid="join-adult" />
+            <span>{t("adult")}</span>
           </label>
         </div>
 

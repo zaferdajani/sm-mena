@@ -61,6 +61,7 @@ test("a letter's QR page leads to a numbered seal on the new page", async ({ bro
   await phone.fill("#email", `${handle}@test.jo`);
   await phone.fill("#password", "password-123");
   await phone.check('input[name="consent"]');
+  await phone.check('input[name="adult"]');
   await phone.getByRole("button", { name: /Create page|إنشاء/ }).click();
   await phone.waitForURL(/\/portfolio-setup/);
 
