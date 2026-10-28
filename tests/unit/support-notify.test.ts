@@ -1,6 +1,6 @@
 import "./setup-db";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setSupportStatus, submitSupportRequest, supportRef } from "@/lib/data/bugs";
+import { replyAddress, setSupportStatus, submitSupportRequest, supportRef } from "@/lib/data/bugs";
 import { notifySupportReceived, sendSupportUpdates, supportEmail } from "@/lib/data/support-notify";
 import { closeDb } from "@/lib/db";
 
@@ -77,5 +77,12 @@ describe("report emails to the person who sent it (docs/61)", () => {
     expect(supportEmail("done", "1A2B3C4D", null).subject).toBe("تمت معالجة بلاغك رقم 1A2B3C4D · سوّق");
     expect(supportEmail("received", "1A2B3C4D", "en").lines[0]).toBe("Thank you for contacting Sawwiq.");
     expect(supportEmail("received", "1A2B3C4D", "ar").lines.at(-1)).toContain("/ar/support");
+  });
+
+  it("answers Contact support by email, and keeps a help-chat report email-free", () => {
+    expect(replyAddress(undefined, "sara@agency.jo", "owner@agency.jo")).toBe("sara@agency.jo");
+    expect(replyAddress(undefined, "", "owner@agency.jo")).toBe("owner@agency.jo");
+    expect(replyAddress(undefined, "", null)).toBeNull();
+    expect(replyAddress("chat", "", "owner@agency.jo")).toBeNull();
   });
 });

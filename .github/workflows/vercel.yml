@@ -26,7 +26,7 @@ on:
 
 jobs:
   vercel:
-    runs-on: [self-hosted, linux, box]
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5

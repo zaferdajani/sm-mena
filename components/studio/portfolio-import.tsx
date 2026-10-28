@@ -96,10 +96,16 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     try {
       // pdf.js and the OCR glue load only once a PDF is chosen (the setup wizard does the same), so the page's first paint stays light.
       const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
-      const read = await readPdf(file, (p: ReadProgress) => {
-        setPhase(p.step === "ocr" ? "ocr" : "reading");
-        setProgress({ done: p.done, total: p.total });
-      });
+      // With Claude reading the pages, reading their text on the phone first only costs minutes.
+      const read = await readPdf(
+        file,
+        (p: ReadProgress) => {
+          setPhase(p.step === "ocr" ? "ocr" : "reading");
+          setProgress({ done: p.done, total: p.total });
+        },
+        undefined,
+        { ocrPages: aiAvailable ? 0 : 8 },
+      );
       setPages(read.pages);
       setTruncated(read.totalPages > read.pages.length);
       setPhase("thinking");

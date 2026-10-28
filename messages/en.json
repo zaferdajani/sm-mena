@@ -33,7 +33,7 @@
     "rights": "© {year} Sawwiq. All rights reserved.",
     "legal": "Terms & privacy",
     "forAgencies": "For agencies",
-    "report": "Report a problem",
+    "report": "Contact support",
     "hireTitle": "Hire by service",
     "aboutTitle": "Sawwiq",
     "about": "About us",
@@ -1146,7 +1146,7 @@
     }
   },
   "Support": {
-    "title": "Report a problem or ask us",
+    "title": "Contact support",
     "intro": "Tell us what went wrong or what you need. We read every message.",
     "kind": "What is it about?",
     "kinds": {
@@ -4793,7 +4793,7 @@
     },
     "ownerPath": "Have a business and need marketing?",
     "ownerPathLink": "Register your business",
-    "report": "Report a problem"
+    "report": "Contact support"
   },
   "CreatorSetup": {
     "nav": "Setup guide",

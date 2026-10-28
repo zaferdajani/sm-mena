@@ -316,7 +316,8 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
     setReading(t("import.reading"));
     try {
       const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
-      const { pages } = await readPdf(file, (p) => setReading(t("import.readingProgress", { done: p.done, total: p.total })));
+      // Only the pictures are used here, so no page text is read on the device.
+      const { pages } = await readPdf(file, (p) => setReading(t("import.readingProgress", { done: p.done, total: p.total })), undefined, { ocrPages: 0 });
       const pictures = pages.flatMap((p) => [...p.crops.map((c) => ({ blob: c.full, preview: c.preview })), { blob: p.full, preview: p.preview }]);
       setPdfState({ pictures: pictures.slice(0, 60), picked: [] });
     } catch {

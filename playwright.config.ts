@@ -15,8 +15,9 @@ const e2eEnv = {
   NEXT_PUBLIC_SITE_URL: baseURL,
   // The seeded admin has no authenticator; 2FA itself is covered by its own tests.
   ADMIN_REQUIRE_2FA: "false",
-  // The suite creates many accounts and sign-ins from one address.
-  RATE_LIMIT_MULTIPLIER: "20",
+  // The suite creates many accounts and sign-ins from one address: well over a
+  // hundred sign-ups (5 an hour each) across both projects in one run.
+  RATE_LIMIT_MULTIPLIER: "50",
   MFA_ENCRYPTION_KEY: "e2e-only-mfa-key-not-a-secret",
   // Protected payments are "coming soon" in production until the partner is live;
   // the contract suites exercise them in test mode (tests/e2e/features.spec.ts covers the switches).

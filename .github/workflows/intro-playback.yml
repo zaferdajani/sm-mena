@@ -16,7 +16,7 @@ on:
 
 jobs:
   playback:
-    runs-on: [self-hosted, linux, box]
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       SITE_URL: ${{ inputs.site || 'https://sawwiq.org' }}

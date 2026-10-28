@@ -157,6 +157,8 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
       data.set("kind", draft.kind);
       data.set("message", composeReport(draft));
       data.set("from", path);
+      // A chat report is followed in the chat itself: no emails (docs/62).
+      data.set("channel", "chat");
       data.set("viewport", `${window.innerWidth}x${window.innerHeight}`);
       if (shot) for (const f of await compressForRequest([shot], POST_UPLOAD).catch(() => [shot])) data.append("screenshots", f);
       if (voice) data.set("voice", voice);
