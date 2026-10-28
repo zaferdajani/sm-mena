@@ -12,6 +12,7 @@ async function signInOwner(page: Page, locale: "ar" | "en", email: string) {
   const b = locale === "ar" ? ar : en;
   await page.fill("#email", email);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: b.send }).click();
   const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
   await page.fill("#code", code);
