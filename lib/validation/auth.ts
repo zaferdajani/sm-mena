@@ -15,6 +15,8 @@ export const joinSchema = z.object({
   email: z.string().trim().email(),
   password: z.string().min(8).max(200),
   consent: z.literal("on"),
+  // 18 or older, or of age where they live if higher (docs/08).
+  adult: z.literal("on"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

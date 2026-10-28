@@ -54,6 +54,10 @@ export function SignInForm({ next }: { next: string }) {
           </Link>
         </span>
       </label>
+      <label className="flex items-start gap-2 text-xs text-muted-foreground">
+        <input type="checkbox" name="adult" required className="mt-0.5" data-testid="signin-adult" />
+        <span>{t("adult")}</span>
+      </label>
       <FormError message={err(sent) ?? err(checked)} />
       <SubmitButton className="w-full">{t("sendCode")}</SubmitButton>
     </form>

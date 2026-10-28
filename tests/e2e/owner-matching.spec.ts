@@ -8,6 +8,7 @@ async function signInOwner(page: Page, email: string) {
   await page.goto("/en/owner");
   await page.fill("#email", email);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Send the code" }).click();
   const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
   await page.fill("#code", code);

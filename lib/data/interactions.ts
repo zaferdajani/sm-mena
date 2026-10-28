@@ -145,7 +145,7 @@ export async function createInquiry(input: {
 export async function createReport(input: {
   postId?: string | null;
   agencyId?: string | null;
-  reason: "spam" | "stolen_work" | "misleading" | "inappropriate" | "other";
+  reason: "spam" | "stolen_work" | "misleading" | "inappropriate" | "underage" | "other";
   details: string;
   visitorId: string | null;
 }) {

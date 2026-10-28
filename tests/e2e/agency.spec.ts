@@ -14,6 +14,7 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Create page" }).click();
   // Sign-up opens the short portfolio setup; the full editor keeps its welcome path.
   await expect(page).toHaveURL(/\/en\/portfolio-setup$/);

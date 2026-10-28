@@ -56,6 +56,7 @@ export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = 
   await page.fill("#email", email);
   await page.fill("#password", password);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Create page" }).click();
   // A new provider starts in the first-run portfolio setup (docs/53); tests of the
   // full editor continue there, the setup's own tests stay (stay: true).
@@ -93,6 +94,7 @@ export async function signInClient(page: Page, email = `client-${Date.now()}-${M
   await page.goto(`/en/signin?next=${encodeURIComponent(next)}`);
   await page.fill("#email", email);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Send the code" }).click();
   const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
   await page.fill("#code", code);

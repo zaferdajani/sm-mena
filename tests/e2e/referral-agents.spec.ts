@@ -33,6 +33,7 @@ test("an agent's link credits the sign-up, and the agent sees it on their page",
   await provider.fill("#email", `${handle}@test.jo`);
   await provider.fill("#password", "password-123");
   await provider.check('input[name="consent"]');
+  await provider.check('input[name="adult"]');
   await provider.getByRole("button", { name: /Create page|إنشاء/ }).click();
   await provider.waitForURL(/\/portfolio-setup/);
 

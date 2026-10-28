@@ -8,7 +8,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
-const REASONS = ["spam", "stolen_work", "misleading", "inappropriate", "other"] as const;
+const REASONS = ["spam", "stolen_work", "misleading", "inappropriate", "underage", "other"] as const;
 
 export function ReportDialog({ postId }: { postId: string }) {
   const t = useTranslations("Report");
