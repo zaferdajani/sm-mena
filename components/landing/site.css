@@ -208,54 +208,7 @@
 .sw-switch:hover .sw-switch__knob { transform: translateX(calc(var(--sw-flip) * 18%)); }
 .sw-switch[data-lang="en"]:hover .sw-switch__knob { transform: translateX(calc(var(--sw-flip) * -18%)); }
 
-/* Country picker: flag and name on a pill; the native select lies invisibly on top. */
-.sw-country {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 0;
-  max-width: 14rem;
-  height: 2.5rem;
-  padding-inline: 0.75rem 0.625rem;
-  border: 1px solid var(--sw-line);
-  border-radius: var(--sw-pill);
-  background: var(--sw-paper);
-  color: var(--sw-ink);
-  font-family: var(--sw-font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1;
-  transition: border-color var(--sw-fast) ease, opacity var(--sw-fast) ease;
-}
-.sw-country:hover { border-color: var(--sw-green); }
-.sw-country:has(.sw-country__select:focus-visible) { outline: 2px solid var(--sw-green); outline-offset: 3px; }
-.sw-country[data-pending] { opacity: 0.6; }
-.sw-country__flag { flex: none; font-size: 1.125rem; line-height: 1; }
-.sw-country__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sw-country__chev { flex: none; width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--sw-ink-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.sw-country__select {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  border: 0;
-  opacity: 0;
-  cursor: pointer;
-  /* 16px keeps iOS from zooming in when the picker opens. */
-  font-size: 1rem;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.sw-country__select:disabled { cursor: progress; }
 .sw-header__nav a { white-space: nowrap; }
-/* Laptop widths share the row with the section links: the flag alone. */
-@media (min-width: 961px) and (max-width: 1239px) {
-  .sw-country { gap: 0.3rem; padding-inline: 0.625rem 0.5rem; }
-  .sw-country__name { display: none; }
-}
-
 /* ---------- Scroll journey overrides ---------- */
 .sw .scroll-scrub { font-family: var(--sw-font-display); }
 .sw .scroll-scrub__title { max-width: 16ch; font-size: clamp(2.25rem, 4.2vw, 4rem); font-weight: 600; line-height: 1.22; letter-spacing: 0; }

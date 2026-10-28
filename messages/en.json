@@ -5444,7 +5444,8 @@
     "attachHint": "Add what helps: a screenshot, a voice note or a screen recording.",
     "voiceAdded": "Voice note added",
     "videoAdded": "Screen recording added",
-    "newReply": "New reply"
+    "newReply": "New reply",
+    "typing": "Typing…"
   },
   "SupportMedia": {
     "record": "Record a voice note",
@@ -5520,6 +5521,7 @@
     "email": {
       "subject": "A reply on your report {ref} · Sawwiq",
       "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
-    }
+    },
+    "worksSent": "I confirmed it works now ✓"
   }
 }
