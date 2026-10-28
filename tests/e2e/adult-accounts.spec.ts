@@ -31,12 +31,9 @@ test("sign-up needs the 18+ confirmation, on the page and on the server", async 
   await submit.click();
   await expect(page.getByText("حسابات سوّق لمن بلغوا 18 عاماً أو أكثر.")).toBeVisible();
 
-  // Like any refused sign-up, the password and the consent are asked again.
-  await page.fill("#password", "password-123");
-  await page.check('input[name="consent"]');
-  await adult.check();
-  await submit.click();
-  await page.waitForURL(/\/ar\/portfolio-setup/);
+  // A refused sign-up creates nothing; the happy path, box ticked, is join-steps.spec.ts. (The suite's
+  // agency sign-ups also count against the 100 founding seats teaser.spec.ts expects to be open.)
+  await expect(page).toHaveURL(/\/ar\/join/);
 });
 
 test("business-owner sign-in asks for the 18+ confirmation too", async ({ page }) => {
