@@ -1158,6 +1158,12 @@
   "Support": {
     "title": "Contact support",
     "intro": "Tell us what went wrong or what you need. We read every message.",
+    "choose": "How would you like to reach us?",
+    "chatTitle": "Chat now",
+    "chatBodyAi": "Instant answers from our AI assistant, right here. No email needed.",
+    "chatBody": "A few quick questions, followed up right here in the chat. No email needed.",
+    "emailTitle": "Email support",
+    "emailBody": "Fill in the form below. We email you a receipt, then our reply.",
     "kind": "What is it about?",
     "kinds": {
       "bug": "Something is broken",
@@ -3313,7 +3319,8 @@
       "sendFailed": "We couldn't send the code. Try again shortly.",
       "badCode": "That code isn't right.",
       "expired": "That code expired. Ask for a new one.",
-      "tooMany": "Too many tries for this code. Ask for a new one."
+      "tooMany": "Too many tries for this code. Ask for a new one.",
+      "closedAccount": "This account was closed. To reopen it, contact support."
     }
   },
   "Founding": {
@@ -5373,9 +5380,9 @@
     "review": "Here is your report. Send it?",
     "confirm": "Send the report",
     "edit": "Change it",
-    "sent": "Sent. Your report number is {ref}. Support will reply here, and by email if you left one. Follow the conversation from “Your reports” above.",
+    "sent": "Sent. Your report number is {ref}. Support will reply here in the chat. Follow the conversation from “Your reports” above.",
     "sendFailed": "We couldn't send it. Try again, or use the full form.",
-    "fullForm": "Open the full form",
+    "fullForm": "Prefer a reply by email? Email support",
     "found": "This may help:",
     "openPage": "Open the page",
     "helped": "Did that answer it?",
@@ -5534,5 +5541,17 @@
       "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
     },
     "worksSent": "I confirmed it works now ✓"
+  },
+  "CloseClientAccount": {
+    "title": "Close my account",
+    "body": "You won't be able to sign in with this email again, and what you told us about your business needs is deleted. Providers will no longer be offered to you. To reopen it later, contact support.",
+    "start": "Close my account",
+    "confirmEmail": "Type your email to confirm",
+    "submit": "Close my account",
+    "cancel": "Cancel",
+    "errors": {
+      "confirm": "That isn't the email of this account.",
+      "rateLimited": "Too many tries. Wait a few minutes."
+    }
   }
 }
