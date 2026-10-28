@@ -3,6 +3,7 @@
 import { LocateFixed } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useSyncExternalStore, useTransition } from "react";
+import "./country-picker.css";
 import { countryFromPosition, countryFromTimeZone, isCountryCode, type CountryCode } from "@/lib/countries";
 
 const COOKIE = "sw_country";

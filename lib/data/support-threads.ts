@@ -53,10 +53,13 @@ export async function addReporterMessage(requestId: string, body: string, screen
   await db.update(supportRequests).set({ status: "new", reporterUnread: false, confirmedAt: null, notifiedStatus: "new" }).where(eq(supportRequests.id, requestId));
 }
 
+/** Stored in English for the bug agent; the thread page shows it translated. */
+export const CONFIRMED_NOTE = "(confirmed: it works now)";
+
 /** "It works now": the reporter confirms the fix. */
 export async function confirmFixed(requestId: string) {
   const db = await getDb();
-  await db.insert(supportMessages).values({ requestId, author: "reporter", body: "(confirmed: it works now)" });
+  await db.insert(supportMessages).values({ requestId, author: "reporter", body: CONFIRMED_NOTE });
   // notified_status matches, so no "handled" email follows the reporter's own confirmation.
   await db.update(supportRequests).set({ status: "done", confirmedAt: new Date(), reporterUnread: false, notifiedStatus: "done" }).where(eq(supportRequests.id, requestId));
 }

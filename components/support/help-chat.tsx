@@ -10,6 +10,7 @@ import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
 import { Link } from "@/i18n/navigation";
 import { VoiceButton } from "@/components/match/voice-button";
 import { VideoField, VoiceNoteField } from "@/components/support/media-inputs";
+import { RichReply } from "@/components/support/rich-reply";
 import { matchTopics, composeReport, type HelpDraft, type HelpKind, type HelpTopic } from "@/lib/help/topics";
 import { compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
 import { cn } from "@/lib/utils";
@@ -234,7 +235,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
             <p className="max-w-[85%] rounded-2xl rounded-ss-sm bg-muted px-3 py-2">{t("greeting")}</p>
             {lines.map((l, i) => (
               <div key={i} className={cn("max-w-[85%] whitespace-pre-line rounded-2xl px-3 py-2", l.from === "me" ? "ms-auto rounded-se-sm bg-primary text-primary-foreground" : "rounded-ss-sm bg-muted")} dir="auto">
-                {l.text}
+                {l.from === "bot" ? <RichReply text={l.text} /> : l.text}
                 {l.topics && (
                   <ul className="mt-2 space-y-2" data-testid="help-topics">
                     {l.topics.map((topic) => (
@@ -327,7 +328,14 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
                 <button type="button" className={chip} onClick={restart}>{t("again")}</button>
               </div>
             )}
-            {pending && <p className="text-xs text-muted-foreground" aria-hidden>…</p>}
+            {pending && (
+              <p className="flex w-fit gap-1 rounded-2xl rounded-ss-sm bg-muted px-3 py-3" data-testid="help-typing">
+                <span className="sr-only">{t("typing")}</span>
+                {[0, 150, 300].map((d) => (
+                  <span key={d} aria-hidden className="size-1.5 animate-bounce rounded-full bg-muted-foreground/70" style={{ animationDelay: `${d}ms` }} />
+                ))}
+              </p>
+            )}
             <div ref={end} />
           </div>
           {typing && (

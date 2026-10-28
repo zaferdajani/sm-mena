@@ -29,3 +29,26 @@ describe("help chat topics", () => {
     );
   });
 });
+
+import { richHelpText } from "@/lib/help/topics";
+
+describe("help replies as display parts", () => {
+  it("turns in-site paths into topic links and keeps the words around them", () => {
+    const parts = richHelpText("من الاستوديو افتح «منشور جديد» (/studio/new)، ثم اضغط «نشر».");
+    expect(parts).toEqual([{ text: "من الاستوديو افتح «منشور جديد» " }, { href: "/studio/new", topic: "addProject" }, { text: "، ثم اضغط «نشر»." }]);
+  });
+
+  it("links a path without a topic by its path, strips a locale prefix", () => {
+    expect(richHelpText("See /ar/studio/inbox now")).toContainEqual({ href: "/studio/inbox", topic: null });
+  });
+
+  it("keeps bold, drops list and heading marks, and leaves URLs and dates alone", () => {
+    const parts = richHelpText("## Steps\n- open **Studio**\n- visit https://sawwiq.org/x on 1/2");
+    expect(parts).toContainEqual({ bold: "Studio" });
+    const flat = parts.map((p) => ("text" in p ? p.text : "")).join("");
+    expect(flat).toContain("• open ");
+    expect(flat).toContain("https://sawwiq.org/x");
+    expect(flat).not.toContain("##");
+    expect(parts.some((p) => "href" in p)).toBe(false);
+  });
+});

@@ -4,6 +4,7 @@
 #   deploy  deploy main to production
 #   status  latest deployments, last build log, DNS check
 #   logs    recent runtime errors (visits a few pages while listening)
+#   ai      why the AI assistant is off, fix it, check the key, redeploy
 name: Vercel
 
 on:
@@ -13,7 +14,7 @@ on:
         description: What to do
         required: true
         type: choice
-        options: [status, setup, deploy, logs]
+        options: [status, setup, deploy, logs, ai]
       minutes:
         description: "logs: how many minutes to listen (empty = 25 seconds)"
         required: false

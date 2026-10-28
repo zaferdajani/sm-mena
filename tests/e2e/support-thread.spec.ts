@@ -41,13 +41,19 @@ test("report → support reply → still broken → fixed → the reporter confi
   await expect(page.getByTestId("support-thread")).toHaveAttribute("data-status", "new");
   await expect(page.getByTestId("thread-reporter")).toContainText("آيفون");
 
-  await staffReply(admin, marker, "Fixed for Safari. Please try Save again.", "done");
+  await staffReply(admin, marker, "Fixed for Safari. Open **New post** (/studio/new) and press Save again.", "done");
   await page.reload();
   await expect(page.getByTestId("thread-status")).toContainText("أُصلح");
+  // A page address in a reply is a tappable link named after the page; Markdown marks are not shown.
+  const link = page.getByTestId("thread-staff").last().getByTestId("reply-link");
+  await expect(link).toHaveAttribute("href", "/ar/studio/new");
+  await expect(link).toContainText("إضافة مشروع");
+  await expect(page.getByTestId("thread-staff").last()).not.toContainText("**");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(0);
   await page.getByTestId("thread-works").click();
   await expect(page.getByTestId("thread-confirmed")).toBeVisible();
+  await expect(page.getByTestId("thread-reporter").last()).toContainText("أكّدتُ");
 
   await admin.goto("/en/admin/bugs?tab=reports&status=all");
   await expect(admin.getByTestId("report-list").locator("li", { hasText: marker }).first()).toContainText("The reporter confirmed the fix works");

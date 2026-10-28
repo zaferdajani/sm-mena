@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { RichReply } from "@/components/support/rich-reply";
 import { ThreadReply } from "@/components/support/thread-reply";
 import { supportRef } from "@/lib/data/bugs";
-import { markThreadRead, threadByToken } from "@/lib/data/support-threads";
+import { CONFIRMED_NOTE, markThreadRead, threadByToken } from "@/lib/data/support-threads";
 import { cn } from "@/lib/utils";
 import { confirmThreadAction } from "../../thread-actions";
 
@@ -52,7 +53,7 @@ export default async function ThreadPage({ params }: PageProps<"/[locale]/suppor
         {messages.map((m) => (
           <li key={m.id} className={cn("max-w-[90%] rounded-2xl p-3 text-sm", m.author === "reporter" ? "ms-auto rounded-se-sm bg-primary/10" : "rounded-ss-sm border bg-background")} data-testid={`thread-${m.author}`}>
             <p className="mb-1 text-xs font-semibold">{label[m.author] ?? m.author}</p>
-            <p className="whitespace-pre-line" dir="auto">{m.body}</p>
+            <p className="whitespace-pre-line" dir="auto">{m.author === "reporter" ? (m.body === CONFIRMED_NOTE ? t("worksSent") : m.body) : <RichReply text={m.body} />}</p>
             {files(media(m.screenshots, m.attachments))}
           </li>
         ))}
