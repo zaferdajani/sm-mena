@@ -38,6 +38,8 @@ export async function requestCodeAction(_: SignInState, formData: FormData): Pro
   const existing = await getUserByEmail(email);
   // Referral agents (docs/42) can use codes too; their accounts have no second factor.
   if (existing && existing.role !== "client" && existing.role !== "agent") return { error: "useLogin" };
+  // A closed account stays closed: support can reopen it (docs/08).
+  if (existing?.disabledAt) return { error: "closedAccount" };
   const code = await issueCode(email);
   if (showCodesOnScreen()) return { step: "code", email, shownCode: code };
   if (!(await sendCodeEmail(email, code))) return { error: "sendFailed" };
@@ -53,6 +55,7 @@ export async function verifyCodeAction(_: SignInState, formData: FormData): Prom
   if (result !== "ok") return { step: "code", email, error: result };
   let user = await getUserByEmail(parsed.data.email);
   if (user && user.role !== "client" && user.role !== "agent") return { error: "useLogin" };
+  if (user?.disabledAt) return { error: "closedAccount" };
   // First sign-in creates the account. It has no usable password: codes only.
   if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client");
   await createSession(user.id);

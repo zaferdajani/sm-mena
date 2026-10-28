@@ -126,6 +126,7 @@ It holds no personal data. The partner sees only the shared milestone, its check
 - **Sign-in codes:** stored as keyed hashes only, deleted after 24 hours.
 - **Logs:** addresses are never logged, and the email that carries the code contains nothing else.
 - **Follows, likes and saves:** tied to the account key; staff remove them with the account when its owner asks for deletion (support).
+- **Closing the account (2026-10-28):** a business owner closes it from Saved by typing their email (`closeClientAccount`, `lib/data/close-client-account.ts`). Sign-in is disabled (`users.disabled_at`) and code sign-in refuses the address. The needs profile (`owner_needs`, including its WhatsApp number) and unanswered provider matches are deleted at once; introductions that already happened stay as the record. Follows, likes and saves stay with the closed account, out of sight, so support can reopen it; full deletion stays a support request. Logged as `account.close`. Agencies close theirs from Studio → Security (docs/32).
 
 ## Referral agents (docs/42)
 - **Agents' data:** name, email and phone. Admin enters it when hiring them, for signing in, contact and payouts. It's kept while they work with Sawwiq and for 24 months after (payout records).
