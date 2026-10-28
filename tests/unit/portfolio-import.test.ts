@@ -114,8 +114,11 @@ describe("reading a portfolio with the AI", () => {
       { name: "Nakhla", services: ["smm_management"], country: "jo" },
       "en",
     );
-    const req = created[0] as { tool_choice: { name: string }; messages: { content: { type: string }[] }[] };
-    expect(req.tool_choice.name).toBe("portfolio_plan");
+    const req = created[0] as { model: string; tool_choice: { type: string }; tools: { name: string }[]; messages: { content: { type: string }[] }[] };
+    // Forced tool use is refused by current models while thinking is on; the model is asked, not forced.
+    expect(req.tool_choice.type).toBe("auto");
+    expect(req.tools.map((t) => t.name)).toEqual(["portfolio_plan"]);
+    expect(req.model).toBe("claude-haiku-5-5");
     expect(req.messages[0].content.filter((b) => b.type === "image")).toHaveLength(2);
     expect(plan.mode).toBe("ai");
     expect(plan.drafts).toHaveLength(1); // the duplicate's only page was already used
