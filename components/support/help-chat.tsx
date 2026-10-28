@@ -1,6 +1,6 @@
 "use client";
 
-import { ImagePlus, LifeBuoy, Send, X } from "lucide-react";
+import { ImagePlus, LifeBuoy, Mail, Send, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -10,6 +10,7 @@ import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
 import { Link } from "@/i18n/navigation";
 import { VoiceButton } from "@/components/match/voice-button";
 import { VideoField, VoiceNoteField } from "@/components/support/media-inputs";
+import { HELP_OPEN_EVENT } from "@/lib/help/open-event";
 import { matchTopics, composeReport, type HelpDraft, type HelpKind, type HelpTopic } from "@/lib/help/topics";
 import { compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,9 @@ import { cn } from "@/lib/utils";
 // (helpAiEnabled), the conversation is free text and Claude drafts the report.
 // Nothing is filed until the person taps Send.
 
-const HIDDEN = /\/(support|match|portfolio-setup|admin|pioneer-letters|chats)(\/|$)|\/studio\/(import|inbox|messages)(\/|$)/;
+// /support offers the chat as one of its two choices, so there it opens from the page, without the floating button.
+const BUTTONLESS = /\/support(\/|$)/;
+const HIDDEN = /\/(match|portfolio-setup|admin|pioneer-letters|chats)(\/|$)|\/studio\/(import|inbox|messages)(\/|$)/;
 
 type Line = { from: "bot" | "me"; text: string; topics?: HelpTopic[] };
 type Step = "menu" | "what" | "steps" | "expected" | "shot" | "howto" | "helped" | "notFound" | "review" | "sent" | "ai";
@@ -58,6 +61,16 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Opened from the page (the "Chat now" choice on /support).
+  useEffect(() => {
+    const onOpen = () => {
+      setOpen(true);
+      if (!lines.length) setStep(ai ? "ai" : "menu");
+    };
+    window.addEventListener(HELP_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(HELP_OPEN_EVENT, onOpen);
+  }, [ai, lines.length]);
 
   if (HIDDEN.test(path)) return null;
 
@@ -176,7 +189,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
 
   return (
     <>
-      {!open && (
+      {!open && !BUTTONLESS.test(path) && (
         <button
           type="button"
           onClick={() => {
@@ -368,7 +381,9 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
           )}
           <footer className="border-t px-4 py-2 text-[11px] text-muted-foreground">
             {ai && <p className="mb-1">{t("ai")}</p>}
-            <Link href={`/support?from=${encodeURIComponent(path)}`} className="underline" onClick={() => setOpen(false)}>{t("fullForm")}</Link>
+            <Link href={`/support?from=${encodeURIComponent(path)}#support-form`} className="inline-flex items-center gap-1 font-medium text-primary underline" onClick={() => setOpen(false)} data-testid="help-email-switch">
+              <Mail className="size-3.5" aria-hidden /> {t("fullForm")}
+            </Link>
           </footer>
         </section>
       )}

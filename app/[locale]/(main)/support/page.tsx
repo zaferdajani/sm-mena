@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ContactChoice } from "@/components/support/contact-choice";
 import { SupportForm } from "@/components/support/support-form";
 import { Link } from "@/i18n/navigation";
+import { helpAiEnabled } from "@/lib/ai/help-assistant";
 import { getSessionUser } from "@/lib/auth/session";
 import { reportsForViewer } from "@/lib/data/support-threads";
 import { getVisitorId } from "@/lib/visitor";
@@ -24,6 +26,7 @@ export default async function SupportPage({ params, searchParams }: PageProps<"/
     <div className="mx-auto max-w-lg space-y-4 px-4 py-6">
       <h1 className="text-xl font-bold">{t("title")}</h1>
       <p className="text-sm text-muted-foreground">{t("intro")}</p>
+      <ContactChoice aiEnabled={helpAiEnabled()} />
       {mine.length > 0 && (
         <section className="rounded-xl border p-3" data-testid="my-reports">
           <h2 className="mb-2 text-sm font-semibold">{tt("myReports")}</h2>
@@ -42,7 +45,9 @@ export default async function SupportPage({ params, searchParams }: PageProps<"/
           </ul>
         </section>
       )}
-      <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "complaint" || kind === "question" || kind === "suggestion" ? kind : "bug"} />
+      <div id="support-form" className="scroll-mt-20">
+        <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "complaint" || kind === "question" || kind === "suggestion" ? kind : "bug"} />
+      </div>
     </div>
   );
 }

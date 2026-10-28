@@ -57,3 +57,30 @@ test("the help chat answers a how-to question and files a bug report with a scre
   await expect(row.getByTestId("report-shots").locator("img")).toHaveCount(1);
   await expect(row.getByTestId("report-audio")).toHaveCount(1);
 });
+
+// Owner request: two clear ways in. Contact support offers the chat (no email)
+// or the form (answered by email), and the chat offers the way back to email.
+test("Contact support lets the person choose the chat or email, and switch between them", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ar/support");
+  const choice = page.getByTestId("contact-choice");
+  await expect(choice).toContainText("كيف تفضّل التواصل معنا؟");
+  // No floating Help button here: the chat is one of the page's two choices.
+  await expect(page.getByTestId("help-open")).toHaveCount(0);
+
+  await choice.getByTestId("choose-chat").click();
+  const chat = page.getByTestId("help-chat");
+  await expect(chat).toBeVisible();
+  await expect(chat.getByTestId("help-menu")).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+
+  // From the chat, one tap back to the email form.
+  await chat.getByTestId("help-email-switch").click();
+  await expect(chat).toHaveCount(0);
+  await expect(page).toHaveURL(/\/ar\/support\?from=.*#support-form$/);
+  await expect(page.locator("#support-form")).toBeInViewport();
+
+  await choice.getByTestId("choose-email").click();
+  await expect(page.locator("#support-form textarea").first()).toBeInViewport();
+});
