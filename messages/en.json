@@ -374,7 +374,17 @@
     "managedAccount": "Managed account",
     "managedAccountHint": "{agency} runs this account on the client's behalf.",
     "socialChannels": "Channels",
-    "browseLive": "Browse the live accounts"
+    "browseLive": "Browse the live accounts",
+    "owner": {
+      "title": "This is your page as visitors see it",
+      "body": "You add and edit your work in the Studio: every project you add shows here as a post.",
+      "emptyTitle": "Your work doesn't show here yet",
+      "emptyBody": "You haven't added a project yet. Add your projects in the Studio: upload the pictures, name the client and what you did, then publish, and each project shows here.",
+      "hidden": "{count, plural, one {You have one hidden post visitors can't see.} other {You have # hidden posts visitors can't see.}}",
+      "manage": "Show them from the Studio",
+      "add": "Add a project",
+      "studio": "Open Studio"
+    }
   },
   "Explore": {
     "title": "Explore",
