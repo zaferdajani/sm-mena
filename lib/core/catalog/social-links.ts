@@ -4,7 +4,7 @@
  * typed and build the public address from it.
  */
 
-export const LINK_KINDS = ["instagram", "tiktok", "facebook", "youtube", "x", "snapchat", "linkedin", "website", "google_maps", "other"] as const;
+export const LINK_KINDS = ["instagram", "tiktok", "facebook", "youtube", "x", "snapchat", "linkedin", "behance", "website", "google_maps", "other"] as const;
 export type LinkKind = (typeof LINK_KINDS)[number];
 
 export const isLinkKind = (v: unknown): v is LinkKind => typeof v === "string" && (LINK_KINDS as readonly string[]).includes(v);
@@ -18,6 +18,7 @@ const PROFILE: Partial<Record<LinkKind, (handle: string) => string>> = {
   x: (h) => `https://x.com/${h}`,
   snapchat: (h) => `https://www.snapchat.com/add/${h}`,
   linkedin: (h) => `https://www.linkedin.com/company/${h}`,
+  behance: (h) => `https://www.behance.net/${h}`,
 };
 
 /** Hosts a pasted link may use for each network (anything else is refused for that network). */
@@ -29,6 +30,7 @@ const HOSTS: Partial<Record<LinkKind, string[]>> = {
   x: ["x.com", "twitter.com"],
   snapchat: ["snapchat.com"],
   linkedin: ["linkedin.com"],
+  behance: ["behance.net", "be.net"],
   google_maps: ["google.com", "goo.gl", "maps.app.goo.gl", "g.page"],
 };
 

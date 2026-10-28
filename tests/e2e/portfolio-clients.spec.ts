@@ -41,13 +41,14 @@ test("agency adds an introduction, countries served and a client with accounts",
   await page.fill("#about", "We are a small studio for cafés.");
   await page.fill("#strengths", "Fast reels\n- Honest reports\n\n");
   await page.getByRole("button", { name: "All Gulf" }).click();
-  // The agency's own channels: TikTok and YouTube rows; a link on the wrong network is refused.
+  // The agency's own channels: Behance, TikTok and YouTube rows; a link on the wrong network is refused.
   const social = page.getByTestId("social-link-row");
-  await social.nth(0).locator('input[name="socialValue"]').fill(`@${handle}.tok`);
-  await social.nth(1).locator('input[name="socialValue"]').fill("https://instagram.com/not-youtube");
+  await social.nth(0).locator('input[name="socialValue"]').fill(`behance.net/${handle}`);
+  await social.nth(1).locator('input[name="socialValue"]').fill(`@${handle}.tok`);
+  await social.nth(2).locator('input[name="socialValue"]').fill("https://instagram.com/not-youtube");
   await page.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
   await expect(page.getByTestId("profile-form").getByRole("alert")).toContainText("channel");
-  await social.nth(1).locator('input[name="socialValue"]').fill(`https://www.youtube.com/@${handle}`);
+  await social.nth(2).locator('input[name="socialValue"]').fill(`https://www.youtube.com/@${handle}`);
   await page.getByTestId("profile-form").getByRole("button", { name: "Save" }).click();
   // Wait for the actual save redirect, not the always-visible demo/live-region status.
   await expect(page).toHaveURL(/\/en\/studio\/packages\?welcome=1$/);
@@ -94,6 +95,7 @@ test("agency adds an introduction, countries served and a client with accounts",
   await expect(socials.getByTestId("social-tiktok")).toHaveAttribute("href", `https://www.tiktok.com/@${handle}.tok`);
   await expect(socials.getByTestId("social-youtube")).toHaveAttribute("href", `https://www.youtube.com/@${handle}`);
   await expect(socials.getByTestId("social-youtube")).toHaveAttribute("target", "_blank");
+  await expect(socials.getByTestId("social-behance")).toHaveAttribute("href", `https://behance.net/${handle}`);
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.getByTestId("share-profile").click();
   await expect(page.getByTestId("share-profile-status")).toHaveText("Link copied");

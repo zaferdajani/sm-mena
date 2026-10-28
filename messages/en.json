@@ -634,8 +634,8 @@
       "langEn": "English",
       "saveContinue": "Save and continue",
       "phoneCountry": "Country code",
-      "socialLinks": "Your channels",
-      "socialLinksHint": "TikTok, YouTube, Facebook, LinkedIn, X: a handle or a link. They appear on your page as tappable badges.",
+      "socialLinks": "Your platforms online",
+      "socialLinksHint": "Add your accounts on Instagram, Behance (a platform for showing design work), TikTok, YouTube, Facebook, LinkedIn and X: the account name or its link. Each shows on your page as a tappable badge with the platform's logo. Leave out the ones you don't use.",
       "addSocial": "Add a channel",
       "removeSocial": "Remove channel"
     },
@@ -2566,6 +2566,7 @@
       "x": "X (Twitter)",
       "snapchat": "Snapchat",
       "linkedin": "LinkedIn",
+      "behance": "Behance",
       "website": "Website",
       "google_maps": "Google Maps",
       "other": "Other link"
@@ -3638,8 +3639,8 @@
       "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
     },
     "shortcut": {
-      "title": "Already on Behance? Start from your portfolio",
-      "body": "Give us your Behance link: your projects become posts, and your bio, logo and services fill in. You review everything before it goes live.",
+      "title": "Have a portfolio on Behance?",
+      "body": "Behance is Adobe's platform where designers show their work. Give us your Behance link: your projects become posts, and your bio, logo and services are filled in for you. You review everything before it goes live. No Behance account? Skip this step.",
       "cta": "Import from Behance",
       "pdf": "Or import a PDF portfolio.",
       "join": "Already have a Behance portfolio? After you create your page, import it in one step."

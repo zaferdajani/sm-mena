@@ -19,7 +19,7 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await expect(page).toHaveURL(/\/en\/portfolio-setup$/);
   await page.goto("/en/studio/profile?welcome=1");
   // The Behance import is offered as the quick start, next to the welcome.
-  await expect(page.getByTestId("welcome-behance")).toContainText("Already on Behance?");
+  await expect(page.getByTestId("welcome-behance")).toContainText("Have a portfolio on Behance?");
   await expect(page.getByTestId("welcome-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
   await expect(page.getByTestId("welcome-behance-pdf")).toHaveAttribute("href", "/en/studio/import");
 

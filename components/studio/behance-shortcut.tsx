@@ -1,6 +1,7 @@
-import { ArrowRight, Palette } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { SocialIcon } from "@/components/social-icon";
 import { canUse } from "@/lib/feature-gate";
 import { cn } from "@/lib/utils";
 
@@ -15,15 +16,13 @@ export async function BehanceShortcut({ testId, className, compact = false }: { 
   if (compact) {
     return (
       <Link href="/studio/import/behance" className={cn("inline-flex items-center gap-1.5 font-medium text-brand underline-offset-4 hover:underline", className)} data-testid={testId}>
-        <Palette className="size-4" aria-hidden /> {t("cta")}
+        <SocialIcon kind="behance" className="size-5 rounded" /> {t("cta")}
       </Link>
     );
   }
   return (
     <div className={cn("flex flex-col gap-3 rounded-xl border border-brand-line bg-background p-4 text-sm sm:flex-row sm:items-center", className)} data-testid={testId}>
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand" aria-hidden>
-        <Palette className="size-5" />
-      </span>
+      <SocialIcon kind="behance" className="size-10 rounded-xl text-lg" />
       <span className="min-w-0 flex-1">
         <b className="block">{t("title")}</b>
         <span className="text-muted-foreground">{t("body")}</span>{" "}
