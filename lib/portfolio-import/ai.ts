@@ -89,7 +89,8 @@ export const aiImportAvailable = () => anthropicConfigured();
 
 // Loaded on first use: the importer is rarely hit and the SDK stays out of every other page.
 let client: Anthropic | undefined;
-const getClient = async () => (client ??= new (await import("@anthropic-ai/sdk")).default({ timeout: 120_000 }));
+// Within the import page's 60 s function limit, so a slow answer falls back to the rules instead of failing.
+const getClient = async () => (client ??= new (await import("@anthropic-ai/sdk")).default({ timeout: 50_000, maxRetries: 0 }));
 
 /** Asks Claude to read the portfolio. Throws on any failure (the caller falls back to the rules). */
 export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[]; country: CountryCode }, locale: string): Promise<ImportPlan> {

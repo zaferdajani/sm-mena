@@ -84,7 +84,12 @@ function pageText(items: { str?: string; hasEOL?: boolean }[]) {
     .slice(0, IMPORT_LIMITS.textPerPage);
 }
 
-export async function readPdf(file: File, onProgress: (p: ReadProgress) => void, signal?: AbortSignal): Promise<{ pages: ReadPage[]; totalPages: number }> {
+/**
+ * `ocrPages` caps how many picture-only pages have their text read on the
+ * device (slow on a phone: tens of seconds a page). When Claude reads the
+ * portfolio it reads the page images itself, so the importer passes 0.
+ */
+export async function readPdf(file: File, onProgress: (p: ReadProgress) => void, signal?: AbortSignal, { ocrPages = Infinity }: { ocrPages?: number } = {}): Promise<{ pages: ReadPage[]; totalPages: number }> {
   // The legacy build runs in older browsers too (the modern one needs very recent JavaScript).
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   pdfjs.GlobalWorkerOptions.workerSrc = `${ENGINE}/pdf.worker.min.mjs`;
@@ -133,7 +138,7 @@ export async function readPdf(file: File, onProgress: (p: ReadProgress) => void,
       pages.push(read);
       // Pictures-only pages get their text read off the image; logos their wordmarks.
       const needsText = text.length < IMPORT_LIMITS.ocrMinChars;
-      if (needsText || layout.kind === "logos") {
+      if ((needsText || layout.kind === "logos") && toOcr.length < ocrPages) {
         toOcr.push({ page: read, canvas: needsText ? scaled(canvas, 1200) : null, crops: layout.kind === "logos" ? cropCanvases.slice(0, 12).map((c) => scaled(c, 400)) : [] });
       }
       release(canvas, ...cropCanvases);
