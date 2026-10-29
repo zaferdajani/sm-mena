@@ -1,5 +1,5 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
-import { ADMIN, DEMO_AGENCY, login } from "./helpers";
+import { ADMIN, DEMO_AGENCY, login, nextJoinStep } from "./helpers";
 
 async function visualContract(page: Page, info: TestInfo, label: string, dark: boolean) {
   await expect(page.locator("html")).toHaveAttribute("data-design-system", "brochure-v1");
@@ -112,5 +112,147 @@ test("small-phone invitation and forms wrap rather than clip", async ({ page }, 
         if (box) expect(box.height).toBeGreaterThanOrEqual(44);
       }
     }
+  }
+});
+
+
+test("Swiss registration fields stay contained and phone controls never overlap", async ({ page }) => {
+  for (const locale of ["ar", "en"] as const) {
+    for (const width of [320, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${locale}/join`);
+      // Each viewport is an independent first-run registration journey.
+      // The form intentionally persists drafts, so clear the prior viewport's
+      // draft before navigating through the steps again.
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
+      await page.reload();
+      await expect(page.locator("#name")).toBeVisible();
+      await page.locator("#name").fill("Swiss Layout Test Agency");
+      await page.locator("#handle").fill(`swiss.layout.${locale}.${width}`);
+      await nextJoinStep(page);
+      await nextJoinStep(page);
+      const contact = page.locator('[data-step-panel="2"]');
+      await expect(contact).toBeVisible();
+      await expect(page.getByTestId("phone-whatsapp")).toBeVisible();
+      const geometry = await page.evaluate(() => {
+        const panel = document.querySelector('[data-step-panel="2"]')!;
+        const phone = document.querySelector('[data-testid="phone-whatsapp"]')!;
+        const dial = phone.querySelector("label")!;
+        const select = dial.querySelector("select")!;
+        const input = phone.querySelector("input")!;
+        const panelRect = panel.getBoundingClientRect();
+        const dialRect = dial.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        const selectRect = select.getBoundingClientRect();
+        return {
+          viewport: document.documentElement.clientWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          panelLeft: panelRect.left,
+          panelRight: panelRect.right,
+          dialRight: dialRect.right,
+          inputLeft: inputRect.left,
+          inputRight: inputRect.right,
+          inputWidth: inputRect.width,
+          selectWidth: selectRect.width,
+          dialWidth: dialRect.width,
+        };
+      });
+      expect(geometry.pageWidth, `${locale} ${width}: document overflow`).toBeLessThanOrEqual(geometry.viewport + 1);
+      expect(geometry.inputWidth, `${locale} ${width}: unusable phone field`).toBeGreaterThan(80);
+      expect(geometry.inputLeft, `${locale} ${width}: phone input overlaps country picker`).toBeGreaterThanOrEqual(geometry.dialRight + 3);
+      expect(geometry.inputRight, `${locale} ${width}: phone input escapes panel`).toBeLessThanOrEqual(geometry.panelRight + 1);
+      expect(geometry.selectWidth, `${locale} ${width}: invisible country select escapes its trigger`).toBeLessThanOrEqual(geometry.dialWidth + 1);
+      await expect(page.locator('[data-step-panel="2"] input[name="consent"]')).toBeVisible();
+      await expect(page.locator('[data-step-panel="2"] input[name="adult"]')).toBeVisible();
+    }
+  }
+});
+
+
+test("Swiss v2 Studio and admin share a measured workspace without tab collisions", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const account of [
+    { email: DEMO_AGENCY.email, password: DEMO_AGENCY.password, route: "/ar/studio" },
+    { email: ADMIN.email, password: ADMIN.password, route: "/ar/admin" },
+  ]) {
+    await page.context().clearCookies();
+    await login(page, account.email, account.password);
+    await page.goto(account.route);
+    const frame = page.locator('[data-layout-system="swiss-v2"]');
+    await expect(frame).toBeVisible();
+    const metrics = await frame.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      const nav = node.querySelector(".sw-workspace-nav");
+      const tabs = nav ? [...nav.querySelectorAll("a")] : [];
+      return {
+        width: rect.width,
+        left: rect.left,
+        right: rect.right,
+        viewport: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        tabs: tabs.slice(0, 4).map((tab) => {
+          const box = tab.getBoundingClientRect();
+          return { left: box.left, right: box.right };
+        }),
+      };
+    });
+    expect(metrics.width).toBeLessThanOrEqual(1088 + 1);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1);
+    for (let i = 1; i < metrics.tabs.length; i++) {
+      const prev = metrics.tabs[i - 1];
+      const current = metrics.tabs[i];
+      expect(
+        current.left >= prev.right + 3 || prev.left >= current.right + 3,
+        `Tabs overlap in ${account.route}`,
+      ).toBe(true);
+    }
+  }
+});
+
+test("Swiss v2 workspace remains contained on narrow screens", async ({ page }) => {
+  await login(page, DEMO_AGENCY.email, DEMO_AGENCY.password);
+  for (const width of [320, 390, 768, 1024]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto("/ar/studio");
+    const frame = page.locator('[data-layout-system="swiss-v2"]');
+    await expect(frame).toBeVisible();
+    const widths = await frame.evaluate((node) => ({
+      viewport: document.documentElement.clientWidth,
+      page: document.documentElement.scrollWidth,
+      frame: node.getBoundingClientRect().width,
+    }));
+    expect(widths.frame).toBeLessThanOrEqual(widths.viewport + 1);
+    expect(widths.page).toBeLessThanOrEqual(widths.viewport + 1);
+  }
+});
+
+
+test("Swiss v2 public discovery and provider profile use the same measured grid", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const locale of ["ar", "en"] as const) {
+    await page.goto(`/${locale}/explore?tab=agencies`);
+    const explore = page.getByTestId("explore-page");
+    await expect(explore).toBeVisible();
+    const exploreMeasure = await explore.evaluate((node) => ({
+      width: node.getBoundingClientRect().width,
+      scrollWidth: document.documentElement.scrollWidth,
+      viewport: document.documentElement.clientWidth,
+    }));
+    expect(exploreMeasure.width).toBeLessThanOrEqual(1088 + 1);
+    expect(exploreMeasure.scrollWidth).toBeLessThanOrEqual(exploreMeasure.viewport + 1);
+    await page.goto(`/${locale}/a/${DEMO_AGENCY.handle}`);
+    const profile = page.getByTestId("provider-profile-layout");
+    await expect(profile).toBeVisible();
+    const profileMeasure = await profile.evaluate((node) => ({
+      width: node.getBoundingClientRect().width,
+      scrollWidth: document.documentElement.scrollWidth,
+      viewport: document.documentElement.clientWidth,
+    }));
+    expect(profileMeasure.width).toBeLessThanOrEqual(1088 + 1);
+    expect(profileMeasure.scrollWidth).toBeLessThanOrEqual(profileMeasure.viewport + 1);
+    expect(Math.abs(profileMeasure.width - exploreMeasure.width)).toBeLessThanOrEqual(2);
   }
 });
