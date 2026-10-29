@@ -133,7 +133,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
     <form
       ref={form}
       action={action}
-      className="sw-join-steps"
+      className="sw-join-steps sw-swiss-form"
       data-testid="join-form"
       data-step={step}
       data-ready={restored ? "true" : undefined}
@@ -181,8 +181,8 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
         <p className="sw-join-progress" data-testid="join-progress">{t("stepOf", { n: step + 1, total: STEPS.length })} · <strong>{t(`steps.${STEPS[step]}.title`)}</strong></p>
         <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
 
-        <div data-step-panel="0" hidden={step !== 0} className="grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2 md:items-start">
+        <div data-step-panel="0" hidden={step !== 0} className="sw-join-panel grid gap-4">
+          <div className="sw-join-fields-grid grid gap-4">
             <div className="grid gap-1.5">
               <Label htmlFor="name">{t("agencyName")}</Label>
               <Input id="name" name="name" required maxLength={80} defaultValue={f.name || one(d.name)} autoComplete="organization" />
@@ -207,12 +207,12 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
               <p className="text-xs text-muted-foreground" dir="auto">{t("handleHint", { handle: handle || "your.agency" })}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="sw-join-location-grid grid gap-4">
             <CountryCityField countries={countries} defaultCountry={defaultCountry} defaultCity={f.city || one(d.city) || undefined} countryLabel={t("country")} cityLabel={t("city")} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm" />
           </div>
         </div>
 
-        <div data-step-panel="1" hidden={step !== 1} className="grid gap-4">
+        <div data-step-panel="1" hidden={step !== 1} className="sw-join-panel grid gap-4">
           {/* Agency or freelancer, who's on the team, and what they offer: enough to match them from day one. */}
           <TeamFields kind={one(d.kind) === "freelancer" ? "freelancer" : "agency"} roles={roles} teamRoles={many(d.teamRoles)} seeksRoles={[]} compact />
           <div className="grid gap-1.5">
@@ -222,33 +222,33 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
           </div>
         </div>
 
-        <div data-step-panel="2" hidden={step !== 2} className="grid gap-4">
-          <div className="grid gap-4 md:grid-cols-2 md:items-start">
-            <div className="grid gap-1.5">
+        <div data-step-panel="2" hidden={step !== 2} className="sw-join-panel grid gap-4">
+          <div className="sw-join-contact-grid grid gap-4">
+            <div className="sw-join-field sw-join-phone-field grid gap-1.5">
               <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
               <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || one(d.whatsappCountry) || phoneCountry} defaultValue={f.whatsapp || one(d.whatsapp)} countryLabel={t("phoneCountry")} />
             </div>
-            <div className="grid gap-1.5">
+            <div className="sw-join-field grid gap-1.5">
               <Label htmlFor="ref">{t("refCode")}</Label>
               <Input id="ref" name="ref" dir="ltr" autoCapitalize="none" maxLength={24} defaultValue={f.ref || one(d.ref) || refCode} placeholder={t("refCodePlaceholder")} data-testid="join-ref" />
             </div>
-            <div className="grid gap-1.5">
+            <div className="sw-join-field grid gap-1.5">
               <Label htmlFor="email">{t("email")}</Label>
               <Input id="email" name="email" type="email" autoComplete="email" required dir="ltr" defaultValue={f.email || one(d.email)} />
             </div>
-            <div className="grid gap-1.5">
+            <div className="sw-join-field grid gap-1.5">
               <Label htmlFor="password">{t("password")}</Label>
               <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required dir="ltr" />
             </div>
           </div>
-          <label className="flex items-start gap-2 text-sm">
+          <label className="sw-join-consent flex items-start gap-3 text-sm">
             <input type="checkbox" name="consent" required className="mt-1 size-4 accent-[var(--primary)]" />
             <span>
               {t("consent")}{" "}
               <Link href="/legal" className="text-brand underline">↗</Link>
             </span>
           </label>
-          <label className="flex items-start gap-2 text-sm">
+          <label className="sw-join-consent flex items-start gap-3 text-sm">
             <input type="checkbox" name="adult" required className="mt-1 size-4 accent-[var(--primary)]" data-testid="join-adult" />
             <span>{t("adult")}</span>
           </label>
