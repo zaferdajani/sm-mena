@@ -122,6 +122,7 @@ test("Swiss v2 Studio and admin share a measured workspace without tab collision
     { email: DEMO_AGENCY.email, password: DEMO_AGENCY.password, route: "/ar/studio" },
     { email: ADMIN.email, password: ADMIN.password, route: "/ar/admin" },
   ]) {
+    await page.context().clearCookies();
     await login(page, account.email, account.password);
     await page.goto(account.route);
     const frame = page.locator('[data-layout-system="swiss-v2"]');
