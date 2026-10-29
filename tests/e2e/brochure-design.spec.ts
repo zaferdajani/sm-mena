@@ -1,5 +1,5 @@
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
-import { ADMIN, DEMO_AGENCY, login } from "./helpers";
+import { ADMIN, DEMO_AGENCY, login, nextJoinStep } from "./helpers";
 
 async function visualContract(page: Page, info: TestInfo, label: string, dark: boolean) {
   await expect(page.locator("html")).toHaveAttribute("data-design-system", "brochure-v1");
@@ -121,10 +121,19 @@ test("Swiss registration fields stay contained and phone controls never overlap"
     for (const width of [320, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(`/${locale}/join`);
+      // Each viewport is an independent first-run registration journey.
+      // The form intentionally persists drafts, so clear the prior viewport's
+      // draft before navigating through the steps again.
+      await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+      });
+      await page.reload();
+      await expect(page.locator("#name")).toBeVisible();
       await page.locator("#name").fill("Swiss Layout Test Agency");
-      await page.locator("#handle").fill(`swiss.layout.${locale}`);
-      await page.getByTestId("join-next").click();
-      await page.getByTestId("join-next").click();
+      await page.locator("#handle").fill(`swiss.layout.${locale}.${width}`);
+      await nextJoinStep(page);
+      await nextJoinStep(page);
       const contact = page.locator('[data-step-panel="2"]');
       await expect(contact).toBeVisible();
       await expect(page.getByTestId("phone-whatsapp")).toBeVisible();
