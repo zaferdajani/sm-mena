@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- This Node preload is intentionally CommonJS. */
 // Lets `npm run db:seed` import server modules (contracts, wallets) from plain Node.
 const Module = require("node:module");
 const path = require("node:path");
