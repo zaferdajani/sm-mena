@@ -114,3 +114,60 @@ test("small-phone invitation and forms wrap rather than clip", async ({ page }, 
     }
   }
 });
+
+
+test("Swiss v2 Studio and admin share a measured workspace without tab collisions", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const account of [
+    { email: DEMO_AGENCY.email, password: DEMO_AGENCY.password, route: "/ar/studio" },
+    { email: ADMIN.email, password: ADMIN.password, route: "/ar/admin" },
+  ]) {
+    await login(page, account.email, account.password);
+    await page.goto(account.route);
+    const frame = page.locator('[data-layout-system="swiss-v2"]');
+    await expect(frame).toBeVisible();
+    const metrics = await frame.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      const nav = node.querySelector(".sw-workspace-nav");
+      const tabs = nav ? [...nav.querySelectorAll("a")] : [];
+      return {
+        width: rect.width,
+        left: rect.left,
+        right: rect.right,
+        viewport: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+        tabs: tabs.slice(0, 4).map((tab) => {
+          const box = tab.getBoundingClientRect();
+          return { left: box.left, right: box.right };
+        }),
+      };
+    });
+    expect(metrics.width).toBeLessThanOrEqual(1088 + 1);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.viewport + 1);
+    for (let i = 1; i < metrics.tabs.length; i++) {
+      const prev = metrics.tabs[i - 1];
+      const current = metrics.tabs[i];
+      expect(
+        current.left >= prev.right + 3 || prev.left >= current.right + 3,
+        `Tabs overlap in ${account.route}`,
+      ).toBe(true);
+    }
+  }
+});
+
+test("Swiss v2 workspace remains contained on narrow screens", async ({ page }) => {
+  await login(page, DEMO_AGENCY.email, DEMO_AGENCY.password);
+  for (const width of [320, 390, 768, 1024]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto("/ar/studio");
+    const frame = page.locator('[data-layout-system="swiss-v2"]');
+    await expect(frame).toBeVisible();
+    const widths = await frame.evaluate((node) => ({
+      viewport: document.documentElement.clientWidth,
+      page: document.documentElement.scrollWidth,
+      frame: node.getBoundingClientRect().width,
+    }));
+    expect(widths.frame).toBeLessThanOrEqual(widths.viewport + 1);
+    expect(widths.page).toBeLessThanOrEqual(widths.viewport + 1);
+  }
+});
