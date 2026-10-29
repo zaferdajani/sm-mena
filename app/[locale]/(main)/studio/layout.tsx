@@ -50,7 +50,7 @@ export default async function StudioLayout({ children }: { children: React.React
   ]);
   return (
     <SwissWorkspace>
-      <div className="flex items-center gap-3 pt-6 sm:pt-8">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
         <AgencyAvatar name={agency.name} src={mediaUrl(agency.avatarKey)} size={44} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-bold" dir="auto">{agency.name}</p>
