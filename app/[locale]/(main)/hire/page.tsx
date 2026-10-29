@@ -21,8 +21,8 @@ export default async function HireIndex({ params }: PageProps<"/[locale]/hire">)
   const t = await getTranslations("Hire");
   const { services } = await serviceCounts({ realOnly: true });
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8 px-4 py-6 sm:py-10">
-      <header>
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="hire-index">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-2xl font-bold sm:text-3xl">{t("indexTitle")}</h1>
         <p className="mt-2 text-muted-foreground">{t("indexSubtitle")}</p>
       </header>
