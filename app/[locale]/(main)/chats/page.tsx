@@ -14,7 +14,7 @@ export default async function MyChatsPage({ params }: PageProps<"/[locale]/chats
   const visitorId = await getVisitorId();
   const rows = visitorId ? await listVisitorConversations(visitorId) : [];
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="conversations">
       <h1 className="text-xl font-bold">{t("clientTitle")}</h1>
       <ConversationList rows={rows} side="client" empty={t("noClientConversations")} />
     </div>
