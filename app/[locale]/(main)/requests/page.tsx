@@ -20,13 +20,13 @@ export default async function MyRequestsPage({ params }: PageProps<"/[locale]/re
   const unread = visitorId ? await unreadByRequest(visitorId, rows.map((r) => r.request.id)) : new Map<string, number>();
   return (
     <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="owner-requests">
-      <div className="flex items-center justify-between">
+      <header className="flex min-w-0 flex-wrap items-center justify-between gap-4 rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-xl font-bold">{t("myRequests")}</h1>
         <div className="flex items-center gap-2">
           <Link href="/chats" className={buttonVariants({ size: "sm", variant: "outline" })}>{tchat("clientTitle")}</Link>
           <Link href="/match" className={buttonVariants({ size: "sm" })}>{t("newRequest")}</Link>
         </div>
-      </div>
+      </header>
       {!rows.length && <p className="text-sm text-muted-foreground">{t("noRequests")}</p>}
       <ul className="divide-y rounded-xl border">
         {rows.map(({ request, proposals }) => (
