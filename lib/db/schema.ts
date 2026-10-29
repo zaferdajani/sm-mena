@@ -46,6 +46,7 @@ export const reportReason = pgEnum("report_reason", [
   "stolen_work",
   "misleading",
   "inappropriate",
+  "underage",
   "other",
 ]);
 export const eventType = pgEnum("event_type", [
@@ -81,8 +82,9 @@ export const proposalStatus = pgEnum("proposal_status", ["sent", "shortlisted", 
 export const paymentStatus = pgEnum("payment_status", ["pending", "paid", "failed", "refunded", "cancelled"]);
 export const paymentKind = pgEnum("payment_kind", ["subscription", "promotion"]);
 export const errorStatus = pgEnum("error_status", ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"]);
-export const supportStatus = pgEnum("support_status", ["new", "planned", "done", "declined"]);
-export const supportKind = pgEnum("support_kind", ["bug", "question", "suggestion"]);
+// waiting: the bug agent or staff asked the reporter something (docs/63).
+export const supportStatus = pgEnum("support_status", ["new", "planned", "waiting", "done", "declined"]);
+export const supportKind = pgEnum("support_kind", ["bug", "complaint", "question", "suggestion"]);
 export const contractStatus = pgEnum("contract_status", ["sent", "active", "completed", "cancelled", "disputed"]);
 export const paymentMode = pgEnum("payment_mode", ["protected", "direct"]);
 // split = settled by a dispute decision or a mutual cancellation: part paid out, part refunded.
@@ -122,6 +124,9 @@ export const users = pgTable("users", {
   // Staff access control: time-boxed access for contractors, instant disable.
   staffExpiresAt: timestamp("staff_expires_at", { withTimezone: true }),
   disabledAt: timestamp("disabled_at", { withTimezone: true }),
+  // When the person confirmed they are 18 or older, or of age where they live if higher (docs/08). Null for
+  // accounts made before the rule, and for staff and referral agents, whom staff create.
+  ageConfirmedAt: timestamp("age_confirmed_at", { withTimezone: true }),
   invitedBy: uuid("invited_by"),
   createdAt: createdAt(),
 });
@@ -1544,9 +1549,43 @@ export const supportRequests = pgTable(
     adminNote: text("admin_note"),
     handledBy: uuid("handled_by").references(() => users.id, { onDelete: "set null" }),
     handledAt: timestamp("handled_at", { withTimezone: true }),
+    // Private storage keys (support/…) of up to 3 screenshots; served to staff only (docs/61).
+    screenshots: jsonb("screenshots").$type<string[]>().notNull().default([]),
+    // A voice note (recorded or an audio file) and a short screen recording, private like the screenshots (docs/61).
+    attachments: jsonb("attachments").$type<{ key: string; kind: "audio" | "video"; type: string }[]>().notNull().default([]),
+    // Captured with the report so a bug can be reproduced: the screen size and the deployed commit.
+    viewport: text("viewport"),
+    appCommit: text("app_commit"),
+    // The commit that fixed it, when the bug agent or a person closes it as done.
+    resolutionCommit: text("resolution_commit"),
+    // The reporter's private link to the conversation (/support/t/<token>, docs/63); also in their emails.
+    accessToken: text("access_token").unique(),
+    // A reply the reporter has not opened yet; when they confirmed the fix works.
+    reporterUnread: boolean("reporter_unread").notNull().default(false),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    // The last status the reporter was emailed about ("new" = the receipt), so each email goes once (docs/61).
+    notifiedStatus: text("notified_status"),
     createdAt: createdAt(),
   },
   (t) => [index("support_status_idx").on(t.status, t.createdAt)],
+);
+
+// The conversation on a problem report (docs/63): the reporter's follow-ups and
+// the replies of the bug agent or staff. The first message is the report itself.
+export const supportMessages = pgTable(
+  "support_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    requestId: uuid("request_id").notNull().references(() => supportRequests.id, { onDelete: "cascade" }),
+    author: text("author").notNull(), // reporter | agent | staff
+    body: text("body").notNull(),
+    screenshots: jsonb("screenshots").$type<string[]>().notNull().default([]),
+    attachments: jsonb("attachments").$type<{ key: string; kind: "audio" | "video"; type: string }[]>().notNull().default([]),
+    // Replies are emailed once (a link only, never the text).
+    emailedAt: timestamp("emailed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("support_messages_request_idx").on(t.requestId, t.createdAt)],
 );
 
 // ---------------------------------------------------------------------------

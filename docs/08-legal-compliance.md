@@ -64,7 +64,7 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 |---|---|---|---|
 | Page views (path, source, device type, language, time zone, random per-tab visit id, visitor cookie id) | Traffic statistics | Pseudonymous; no IP, no names | Delete after 13 months |
 | Error reports (message, stack, route, user agent) | Fixing bugs | No (no query strings, no form data) | Until resolved + 6 months |
-| "Report a problem" messages (text, optional email, page, user agent) | Support | Email if given | 12 months after handling |
+| "Report a problem" messages (type, text, up to 3 screenshots, optional email, page, screen size, app version, user agent) | Support; fixing the problem (the bug agent, docs/61) | Email if given | 12 months after handling: the daily retention job deletes the report and its screenshots |
 | Two-factor secrets and backup codes | Account security | Encrypted secret, hashed codes | Until 2FA is turned off or the account is deleted |
 | Payment records (agency name, amount, method, reference) | Accounting | Business data | As required by tax law (typically 7 years) |
 
@@ -126,6 +126,7 @@ It holds no personal data. The partner sees only the shared milestone, its check
 - **Sign-in codes:** stored as keyed hashes only, deleted after 24 hours.
 - **Logs:** addresses are never logged, and the email that carries the code contains nothing else.
 - **Follows, likes and saves:** tied to the account key; staff remove them with the account when its owner asks for deletion (support).
+- **Closing the account (2026-10-28):** a business owner closes it from Saved by typing their email (`closeClientAccount`, `lib/data/close-client-account.ts`). Sign-in is disabled (`users.disabled_at`) and code sign-in refuses the address. The needs profile (`owner_needs`, including its WhatsApp number) and unanswered provider matches are deleted at once; introductions that already happened stay as the record. Follows, likes and saves stay with the closed account, out of sight, so support can reopen it; full deletion stays a support request. Logged as `account.close`. Agencies close theirs from Studio → Security (docs/32).
 
 ## Referral agents (docs/42)
 - **Agents' data:** name, email and phone. Admin enters it when hiring them, for signing in, contact and payouts. It's kept while they work with Sawwiq and for 24 months after (payout records).
@@ -206,3 +207,30 @@ actually erased by the account-erasure process. The existing audit trail records
 only the audience and consent version, never contact details. Operational legal
 retention continues independently. No new marketing subscription is introduced;
 registration alone is not consent to unsolicited promotional messages.
+
+## Problem reports and the bug agent (docs/61, 2026-10-26)
+- **What is kept:** the report form adds a type (including "complaint"), up to 3 screenshots, the screen size and the deployed app version to the existing report. Screenshots are re-encoded with all metadata (including location) removed and stored in private storage (`support/`); only staff with `support.manage` can open them, through `/api/support-media`.
+- **The bug agent:** an automated Claude Code session reads new reports and unresolved errors to fix them. Before anything leaves production, emails and phone numbers are removed from the text and the reporter's email is replaced by a yes/no "wants a reply"; the package is encrypted to a key pair made for that one run (the workflow logs and artifacts of this public repository hold ciphertext and counts only). The agent never contacts reporters. Screenshots go to the agent as they were sent, so the form asks people not to include private details.
+- **Status emails (2026-10-27):** when a report has an address (typed in the form, or the signed-in account's), the site emails a receipt with the report number, then one email when the report is being worked on (planned) and one when it has been handled (done). The emails name the report number only, never the report text; nothing is sent without an address, and a declined report gets no email. The form explains this next to the optional email field. The address is used for nothing else and is deleted with the report.
+- **Retention:** 12 months after a report is handled (done or declined), the daily retention job deletes it with its screenshots. The decrypted queue lives only in the agent's temporary session.
+- **Forgotten password (`/forgot`):** providers and referral agents get a 6-digit code at their account email. It reuses `login_codes`: only a hash is stored, a code works for 10 minutes and five tries, and rows are deleted after 24 hours. The answer never says whether an email has an account. A reset signs the account out everywhere, keeps the second factor, and is audited (`account.password_reset`).
+- **Help chat (docs/62):** the chat keeps nothing on the server until the person confirms a report; the report is then the same record as above, with the same 12-month retention. The browser keeps the numbers of the reports it sent, only for showing their status. With conversation mode on, what the person types goes to Anthropic (Claude) after emails and phone numbers are removed; the chat says the answers come from an AI assistant. The status lookup returns only reports from the same browser or account.
+- **Voice notes and screen recordings (docs/61):** optional, private storage like the screenshots, staff-only playback, deleted with the report after 12 months. The bug agent transcribes them on its own machine (faster-whisper; no audio goes to any speech service) and removes emails and phone numbers, including numbers spoken as words, from the transcripts before reading them. The form asks people not to mention passwords or payment details. Dictation uses the browser's own speech recognition, as in the matchmaker; Sawwiq receives only the text.
+- **Support conversations (docs/63):** replies and follow-ups on a report are kept with it and deleted with it (12 months after handling), files included. The reporter's private link is a random token that reaches one report only; emails carry the link, never the text. The bug agent's replies reach the database encrypted to a key kept in the database, so the public repository's workflow logs never hold them.
+
+## Minimum age: 18 (2026-10-28)
+Owner decision after the research summarised here (not legal advice; confirm with Jordanian counsel before launch, and local counsel per country before expanding).
+- **Why 18:**
+  - Jordan's age of majority is 18 (Civil Code). A minor's contracts depend on a guardian's approval, and Sawwiq's quotes, e-contracts and protected payments are contracts.
+  - Under PDPL No. 24/2023, consent for someone without legal capacity comes from a parent or guardian, and processing their data requires a Data Protection Officer.
+  - Penalties: a fine of up to JOD 500 a day (capped at 3% of turnover) and suspension, plus JOD 1,000–10,000 per offence (doubled for a repeat).
+  - Saudi Arabia and the UAE are also 18. Egypt and Kuwait are 21, hence "or the legal age where you live, if higher".
+  - Upwork, Fiverr and Khamsat set 18 too.
+- **At sign-up:** joining as an agency or freelancer (`/join`) and business-owner sign-in (`/signin`) each require a separate box: "I confirm I am 18 or older (or the legal age where I live, if higher)". The server refuses without it (`joinSchema.adult`, `requestCodeAction`).
+- **What is stored:** the time of the declaration (`users.age_confirmed_at`). Business-owner accounts from before the rule record it at their next sign-in. Agency accounts from before the rule have none. Staff and referral agents are created by staff, who confirm age outside the app. No date of birth and no ID are collected at sign-up; identity is checked when payouts begin (the payment partner's KYC).
+- **Reporting:** any post can be reported with "The person behind this page seems to be under 18" (`report_reason` `underage`), and parents can write to privacy@sawwiq.org.
+- **On discovery** (staff, manual for now):
+  - Suspend the agency (Admin → Agencies). Cancel its open requests and quotes and tell the other side.
+  - Delete the personal data within 30 days, keeping only what the law requires (audit log, ledger rows).
+  - Do not ask for a guardian's consent after the fact.
+- **Terms:** section 6 of `/legal` ("Who can have an account") says all of this in Arabic and English.

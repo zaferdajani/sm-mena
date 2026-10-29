@@ -94,6 +94,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     const path = String(issue.path[0]);
     const error =
       path === "consent" ? "consentRequired" :
+      path === "adult" ? "adultRequired" :
       path === "password" ? "passwordShort" :
       path === "email" ? "invalidEmail" :
       path === "whatsapp" ? "invalidPhone" : "required";
@@ -109,7 +110,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
   const whatsapp = internationalPhone(String(formData.get("whatsappCountry") ?? ""), data.whatsapp);
   if (!/^\+?\d{8,15}$/.test(whatsapp)) return { error: "invalidPhone", fields };
 
-  const user = await createUser(data.email, data.password).catch(() => null);
+  const user = await createUser(data.email, data.password, "agency", { ageConfirmed: true }).catch(() => null);
   if (!user) return { error: "emailTaken", fields };
   try {
     const all = (k: string) => formData.getAll(k).map(String).filter(Boolean);

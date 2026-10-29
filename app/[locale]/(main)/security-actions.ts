@@ -7,6 +7,7 @@ import { requireAgency, requireUser } from "@/lib/auth/guards";
 import { createSession, destroyAllSessions, destroySession } from "@/lib/auth/session";
 import { changeEmailSchema, changePasswordSchema } from "@/lib/account-schema";
 import { changeEmail, changePassword, type AccountError } from "@/lib/data/account";
+import { closeClientAccount } from "@/lib/data/close-client-account";
 import { deactivateAgency } from "@/lib/data/deactivation";
 import { adminMfaRequired, confirmEnrollment, disableMfa, mfaKeyConfigured, regenerateBackupCodes, startEnrollment, verifySecondFactor } from "@/lib/auth/mfa";
 import { verifyPassword } from "@/lib/auth/password";
@@ -79,6 +80,19 @@ export async function deactivateAccountAction(_: DeactivateResult | undefined, f
   await destroySession();
   const locale = await getLocale();
   return redirect({ href: "/login?closed=1", locale });
+}
+
+export type CloseClientResult = { error?: "confirm" | "rateLimited" };
+
+/** Business owner: close my account (docs/08). They sign in with codes, so they confirm by typing their email. */
+export async function closeClientAccountAction(_: CloseClientResult | undefined, formData: FormData): Promise<CloseClientResult> {
+  const user = await requireUser();
+  if (!rateLimit(`deactivate:${user.id}`, 5, 10 * 60 * 1000)) return { error: "rateLimited" };
+  if (String(formData.get("email") ?? "").trim().toLowerCase() !== user.email.toLowerCase()) return { error: "confirm" };
+  if (!(await closeClientAccount(user.id))) return { error: "confirm" };
+  await destroySession();
+  const locale = await getLocale();
+  return redirect({ href: "/signin?closed=1", locale });
 }
 
 export type AccountResult = { error?: AccountError | "invalid" | "short" | "mismatch" | "rateLimited" | "demo"; done?: "email" | "password" };

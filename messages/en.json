@@ -33,7 +33,7 @@
     "rights": "© {year} Sawwiq. All rights reserved.",
     "legal": "Terms & privacy",
     "forAgencies": "For agencies",
-    "report": "Report a problem",
+    "report": "Contact support",
     "hireTitle": "Hire by service",
     "aboutTitle": "Sawwiq",
     "about": "About us",
@@ -82,7 +82,8 @@
       "consentRequired": "You need to agree to continue.",
       "invalidEmail": "Enter a valid email address.",
       "invalidPhone": "Enter a valid phone number.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "adultRequired": "Sawwiq accounts are for people aged 18 or older."
     },
     "country": "Country",
     "joinServices": "What do you offer?",
@@ -112,7 +113,9 @@
     "stepOf": "Step {n} of {total}",
     "next": "Continue",
     "back": "Back",
-    "draftNote": "What you type stays on this device until you finish, so you can leave and come back."
+    "draftNote": "What you type stays on this device until you finish, so you can leave and come back.",
+    "forgot": "Forgot your password?",
+    "adult": "I confirm I am 18 or older (or the legal age where I live, if higher)."
   },
   "Cities": {
     "amman": "Amman",
@@ -373,7 +376,17 @@
     "managedAccount": "Managed account",
     "managedAccountHint": "{agency} runs this account on the client's behalf.",
     "socialChannels": "Channels",
-    "browseLive": "Browse the live accounts"
+    "browseLive": "Browse the live accounts",
+    "owner": {
+      "title": "This is your page as visitors see it",
+      "body": "You add and edit your work in the Studio: every project you add shows here as a post.",
+      "emptyTitle": "Your work doesn't show here yet",
+      "emptyBody": "You haven't added a project yet. Add your projects in the Studio: upload the pictures, name the client and what you did, then publish, and each project shows here.",
+      "hidden": "{count, plural, one {You have one hidden post visitors can't see.} other {You have # hidden posts visitors can't see.}}",
+      "manage": "Show them from the Studio",
+      "add": "Add a project",
+      "studio": "Open Studio"
+    }
   },
   "Explore": {
     "title": "Explore",
@@ -461,7 +474,8 @@
       "stolen_work": "Work copied from someone else",
       "misleading": "Misleading results or claims",
       "inappropriate": "Inappropriate content",
-      "other": "Something else"
+      "other": "Something else",
+      "underage": "The person behind this page seems to be under 18"
     }
   },
   "Legal": {
@@ -478,7 +492,9 @@
     "s5t": "Pricing",
     "s5": "Browsing, contacting agencies and asking for quotes are free. On contracts with protected payments, the client pays each milestone to Sawwiq's licensed payment partner, which pays it to the agency when the milestone is accepted. Sawwiq takes 10% of each released payment, deducted from what the agency receives; the client never pays more than the contract amount. Sawwiq never holds client money in its own accounts.",
     "metaDescription": "Sawwiq's terms and privacy: how we use data, your rights under Jordan's Personal Data Protection Law, and what agencies are responsible for.",
-    "s5Test": "Browsing, contacting agencies and asking for quotes are free. Protected payments are in test mode: until Sawwiq's licensed payment partner is connected, no real money is collected or held through Sawwiq, the parties pay each other directly, and Sawwiq charges no fee. We will update these terms and tell users before protected payments go live."
+    "s5Test": "Browsing, contacting agencies and asking for quotes are free. Protected payments are in test mode: until Sawwiq's licensed payment partner is connected, no real money is collected or held through Sawwiq, the parties pay each other directly, and Sawwiq charges no fee. We will update these terms and tell users before protected payments go live.",
+    "s6t": "Who can have an account",
+    "s6": "Accounts are for people aged 18 or older, or the legal age where they live if that is higher, who can enter into contracts. Sawwiq is not meant for children. Everyone confirms their age when they sign up, and identity is checked when payouts begin. If we learn that an account belongs to someone under that age, we suspend it, cancel its open requests and quotes, and delete its personal data within 30 days, keeping only what the law requires. Parents and guardians can write to privacy@sawwiq.org, and anyone can report a page from any of its posts."
   },
   "Studio": {
     "title": "Studio",
@@ -633,8 +649,8 @@
       "langEn": "English",
       "saveContinue": "Save and continue",
       "phoneCountry": "Country code",
-      "socialLinks": "Your channels",
-      "socialLinksHint": "TikTok, YouTube, Facebook, LinkedIn, X: a handle or a link. They appear on your page as tappable badges.",
+      "socialLinks": "Your platforms online",
+      "socialLinksHint": "Add your accounts on Instagram, Behance (a platform for showing design work), TikTok, YouTube, Facebook, LinkedIn and X: the account name or its link. Each shows on your page as a tappable badge with the platform's logo. Leave out the ones you don't use.",
       "addSocial": "Add a channel",
       "removeSocial": "Remove channel"
     },
@@ -1145,18 +1161,25 @@
     }
   },
   "Support": {
-    "title": "Report a problem or ask us",
+    "title": "Contact support",
     "intro": "Tell us what went wrong or what you need. We read every message.",
+    "choose": "How would you like to reach us?",
+    "chatTitle": "Chat now",
+    "chatBodyAi": "Instant answers from our AI assistant, right here. No email needed.",
+    "chatBody": "A few quick questions, followed up right here in the chat. No email needed.",
+    "emailTitle": "Email support",
+    "emailBody": "Fill in the form below. We email you a receipt, then our reply.",
     "kind": "What is it about?",
     "kinds": {
       "bug": "Something is broken",
+      "complaint": "A complaint",
       "question": "A question",
       "suggestion": "A suggestion"
     },
     "message": "Message",
     "messageHint": "What happened, on which page, and what you expected.",
     "email": "Email (optional)",
-    "emailHint": "Only if you'd like a reply.",
+    "emailHint": "We'll email you a receipt, then let you know when it's handled. Your email address, not your phone number.",
     "send": "Send",
     "thanks": "Thank you! Your message reached our team.",
     "crashTitle": "Something went wrong",
@@ -1164,10 +1187,21 @@
     "retry": "Try again",
     "reportLink": "Tell us more",
     "errors": {
-      "required": "Write at least a few words.",
+      "required": "Write a few words or add a voice note.",
       "invalidEmail": "Enter a valid email address.",
-      "rateLimited": "Too many messages. Try again later."
-    }
+      "rateLimited": "Too many messages. Try again later.",
+      "screenshot": "One of the images could not be read. Send a PNG or JPG screenshot.",
+      "screenshotSize": "The images are too large together. Remove one and try again.",
+      "media": "The voice note or recording could not be read. Try another file."
+    },
+    "refLine": "Report number:",
+    "screenshots": "Screenshots (optional, up to 3)",
+    "screenshotsHint": "A screenshot helps us fix the problem faster. Keep passwords and private details out of it.",
+    "addShot": "Add a screenshot",
+    "removeShot": "Remove screenshot",
+    "pageLine": "Page:",
+    "sending": "Sending…",
+    "openThread": "Open the conversation: we'll reply there"
   },
   "AdminBugs": {
     "tiles": {
@@ -1205,7 +1239,8 @@
       "planned": "Planned",
       "done": "Done",
       "declined": "Declined",
-      "all": "All"
+      "all": "All",
+      "waiting": "Waiting on reporter"
     },
     "firstSeen": "First seen",
     "lastSeen": "Last seen",
@@ -1232,7 +1267,19 @@
       "runOk": "All pages work",
       "runFailed": "{count, plural, one {# page failed} other {# pages failed}}",
       "closed": "closed {count, plural, one {# recovered check} other {# recovered checks}}"
-    }
+    },
+    "screenshot": "Attached screenshot",
+    "fixedIn": "Fixed in:",
+    "voiceNote": "Voice note",
+    "recording": "Screen recording",
+    "reply": "Reply to the reporter",
+    "replyHint": "They see it in their conversation and get a link by email",
+    "sendReply": "Send reply",
+    "thread": "Conversation",
+    "fromReporter": "Reporter",
+    "fromAgent": "Agent",
+    "fromStaff": "Team",
+    "confirmedByReporter": "The reporter confirmed the fix works"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -2540,6 +2587,7 @@
       "x": "X (Twitter)",
       "snapchat": "Snapchat",
       "linkedin": "LinkedIn",
+      "behance": "Behance",
       "website": "Website",
       "google_maps": "Google Maps",
       "other": "Other link"
@@ -3276,8 +3324,11 @@
       "sendFailed": "We couldn't send the code. Try again shortly.",
       "badCode": "That code isn't right.",
       "expired": "That code expired. Ask for a new one.",
-      "tooMany": "Too many tries for this code. Ask for a new one."
-    }
+      "tooMany": "Too many tries for this code. Ask for a new one.",
+      "closedAccount": "This account was closed. To reopen it, contact support.",
+      "adult": "Sawwiq accounts are for people aged 18 or older."
+    },
+    "adult": "I am 18 or older (or the legal age where I live, if higher)."
   },
   "Founding": {
     "memberTitle": "Sawwiq early member · {year}",
@@ -3612,8 +3663,8 @@
       "waiting": "Waiting for your Behance page… If nothing happens, go back to the Behance tab and click the bookmark again."
     },
     "shortcut": {
-      "title": "Already on Behance? Start from your portfolio",
-      "body": "Give us your Behance link: your projects become posts, and your bio, logo and services fill in. You review everything before it goes live.",
+      "title": "Have a portfolio on Behance?",
+      "body": "Behance is Adobe's platform where designers show their work. Give us your Behance link: your projects become posts, and your bio, logo and services are filled in for you. You review everything before it goes live. No Behance account? Skip this step.",
       "cta": "Import from Behance",
       "pdf": "Or import a PDF portfolio.",
       "join": "Already have a Behance portfolio? After you create your page, import it in one step."
@@ -4765,7 +4816,8 @@
       "owners": "A business owner finds the specialty they need."
     },
     "ownerPath": "Have a business and need marketing?",
-    "ownerPathLink": "Register your business"
+    "ownerPathLink": "Register your business",
+    "report": "Contact support"
   },
   "CreatorSetup": {
     "nav": "Setup guide",
@@ -5280,6 +5332,234 @@
     "noMatches": "none yet",
     "empty": "No business owners have registered yet.",
     "note": "Addresses are partly hidden. An owner's email and WhatsApp reach a provider only after the owner accepts that provider."
+  },
+  "Forgot": {
+    "title": "Forgot your password",
+    "subtitle": "Enter your account's email and we'll send a 6-digit code to set a new password.",
+    "email": "Email",
+    "sendCode": "Send the code",
+    "codeSent": "If {email} has an account, we sent it a code that works for 10 minutes.",
+    "testCode": "Test code:",
+    "code": "Code",
+    "newPassword": "New password",
+    "passwordHint": "At least 8 characters.",
+    "confirm": "Type the password again",
+    "save": "Save and sign in",
+    "codeHelp": "No code? Check your spam folder, or go back and ask for a new one. Business owner accounts sign in with an email code directly.",
+    "back": "Back to sign in",
+    "errors": {
+      "email": "Enter a valid email address.",
+      "unavailable": "Sending codes isn't available right now. Try again later.",
+      "rateLimited": "Too many requests. Wait a little and try again.",
+      "sendFailed": "We couldn't send the code. Try again shortly.",
+      "badCode": "That code isn't right.",
+      "expired": "That code expired. Ask for a new one.",
+      "tooMany": "Too many tries for this code. Ask for a new one.",
+      "short": "The password must be at least 8 characters.",
+      "mismatch": "The two passwords don't match."
+    }
+  },
+  "Help": {
+    "open": "Help",
+    "title": "Sawwiq help",
+    "close": "Close",
+    "greeting": "Hello! How can I help?",
+    "choices": {
+      "bug": "Something is broken",
+      "complaint": "I have a complaint",
+      "howto": "How do I…?",
+      "suggestion": "I have a suggestion"
+    },
+    "ask": {
+      "what": "What happened? Describe it in a sentence or two.",
+      "complaint": "Tell us what bothered you.",
+      "suggestion": "What would you like us to add or change?",
+      "steps": "What did you do just before it happened? (You can skip.)",
+      "expected": "What did you expect to happen instead? (You can skip.)",
+      "shot": "Add what helps: a screenshot, a voice note or a screen recording.",
+      "howto": "Type your question, for example: how do I add a project?"
+    },
+    "skip": "Skip",
+    "addShot": "Add a screenshot",
+    "shotAdded": "Screenshot added",
+    "send": "Send",
+    "typeHere": "Write here…",
+    "review": "Here is your report. Send it?",
+    "confirm": "Send the report",
+    "edit": "Change it",
+    "sent": "Sent. Your report number is {ref}. Support will reply here in the chat. Follow the conversation from “Your reports” above.",
+    "sendFailed": "We couldn't send it. Try again, or use the full form.",
+    "fullForm": "Prefer a reply by email? Email support",
+    "found": "This may help:",
+    "openPage": "Open the page",
+    "helped": "Did that answer it?",
+    "yes": "Yes, thanks",
+    "no": "No, send my question to the team",
+    "notFound": "I couldn't find an answer to that. Shall I send your question to the team?",
+    "sendQuestion": "Send my question",
+    "thanks": "Glad it helped.",
+    "again": "Anything else?",
+    "limited": "Many messages in a short time. Try again in a few minutes, or use the full form.",
+    "yourReports": "Your reports",
+    "status": {
+      "new": "Received",
+      "planned": "Waiting on a decision",
+      "done": "Fixed",
+      "declined": "Closed",
+      "waiting": "Waiting for you"
+    },
+    "ai": "Answers come from Sawwiq's AI assistant and can be wrong. Don't share passwords or payment details.",
+    "kinds": {
+      "bug": "Something broken",
+      "complaint": "Complaint",
+      "question": "Question",
+      "suggestion": "Suggestion"
+    },
+    "draft": {
+      "kind": "Type",
+      "what": "What happened",
+      "steps": "Steps",
+      "expected": "Expected"
+    },
+    "topics": {
+      "addProject": {
+        "title": "Add a project",
+        "answer": "In the Studio, open New post, add the images, the client and what you did, then publish."
+      },
+      "profile": {
+        "title": "Edit your page",
+        "answer": "In the Studio, open Page to change the logo, name, introduction, services, platforms and WhatsApp number, then save."
+      },
+      "packages": {
+        "title": "Packages and prices",
+        "answer": "In the Studio, open Packages to add a package with its price and what it includes."
+      },
+      "clients": {
+        "title": "Your clients",
+        "answer": "In the Studio, open Clients to add the brands you work with and link your projects to them."
+      },
+      "visibility": {
+        "title": "Who can see your page",
+        "answer": "In the Studio, open the visibility page and choose a private preview, anyone with the link, or public publication. Your choice stays as you set it."
+      },
+      "password": {
+        "title": "Forgotten password",
+        "answer": "On Sign in, tap Forgot your password?. We email you a 6-digit code; enter it with a new password."
+      },
+      "ownerSignIn": {
+        "title": "Business owner sign-in",
+        "answer": "Business owners sign in with a code sent to their email, without a password: on Sign in, choose the email code option."
+      },
+      "medal": {
+        "title": "Founding Member medal",
+        "answer": "The medal is for invited agencies: the first 50 invited pages that are complete and have published work. The checklist in your Studio shows what is missing."
+      },
+      "share": {
+        "title": "Share your page",
+        "answer": "Open your page and tap Share: the link is copied or your phone's share sheet opens, with WhatsApp next to it."
+      },
+      "language": {
+        "title": "Change the language",
+        "answer": "Use the language switch in the menu (at the top on phones). Arabic is the default and your choice is remembered."
+      }
+    },
+    "addVoice": "Voice note",
+    "addVideo": "Screen recording",
+    "continue": "Continue",
+    "attachHint": "Add what helps: a screenshot, a voice note or a screen recording.",
+    "voiceAdded": "Voice note added",
+    "videoAdded": "Screen recording added",
+    "newReply": "New reply",
+    "typing": "Typing…"
+  },
+  "SupportMedia": {
+    "record": "Record a voice note",
+    "stop": "Stop",
+    "recording": "Recording",
+    "audioFile": "or choose an audio file",
+    "video": "Add a screen recording (up to a minute)",
+    "shrinking": "Preparing the recording… {percent}%",
+    "remove": "Remove",
+    "tooBig": "The audio file is too large. Record a shorter note (up to two minutes).",
+    "micDenied": "We couldn't use the microphone. Allow it in the browser, or choose an audio file.",
+    "notAudio": "Choose an audio file.",
+    "notVideo": "Choose a video file.",
+    "videoFailed": "We couldn't prepare the recording. Try a shorter clip.",
+    "voiceLabel": "Voice note (optional)",
+    "videoLabel": "Screen recording (optional)",
+    "hint": "Speak freely: we turn the audio into text to fix the problem. Don't mention passwords or payment details.",
+    "dictate": "Dictate",
+    "dictateStop": "Stop dictating",
+    "listening": "Listening…"
+  },
+  "SupportEmail": {
+    "received": {
+      "subject": "We received your report {ref} · Sawwiq",
+      "body": "Thank you for contacting Sawwiq.\nWe received your report, number {ref}, and we're working on it.\nWe'll email you again once it has been handled."
+    },
+    "planned": {
+      "subject": "Your report {ref} is being worked on · Sawwiq",
+      "body": "We've reviewed your report {ref}, and it's now on our list of things we're working on.\nWe'll email you when it's ready."
+    },
+    "done": {
+      "subject": "Your report {ref} has been handled · Sawwiq",
+      "body": "Your report {ref} has been handled, and the update is live on Sawwiq now.\nIf the problem is still there, send a new report and mention this number."
+    },
+    "footer": "This is an automatic message from Sawwiq; no need to reply. To reach us: {link}"
+  },
+  "SupportThread": {
+    "title": "Report {ref}",
+    "intro": "This is your conversation with Sawwiq support about this report. You can reply and add screenshots or a voice note at any time.",
+    "status": {
+      "new": "Received, waiting for review",
+      "planned": "Being worked on",
+      "waiting": "Waiting for your reply",
+      "done": "Fixed: try it and tell us",
+      "declined": "Closed"
+    },
+    "you": "You",
+    "agent": "Sawwiq support (AI agent)",
+    "staff": "Sawwiq team",
+    "original": "Your report",
+    "attachments": "Attachments: {count}",
+    "confirmed": "You confirmed the problem is solved. Thank you!",
+    "reply": "Your reply",
+    "replyHint": "Tell us what happened when you tried again, or answer our question.",
+    "send": "Send reply",
+    "sending": "Sending…",
+    "works": "It works now ✓",
+    "stillBroken": "Still broken",
+    "stillBrokenHint": "Tell us what happens now, and add a screenshot if you can.",
+    "sent": "Your reply was sent. The support agent picks it up on its next round (every hour).",
+    "fixedIn": "Fix: {commit}",
+    "notFound": "We couldn't find this conversation. Check the link in your email.",
+    "myReports": "Your reports",
+    "noReports": "You haven't sent a report from this device or account yet.",
+    "newReply": "New reply",
+    "errors": {
+      "required": "Write a few words or add a voice note.",
+      "rateLimited": "Too many messages. Try again shortly.",
+      "screenshot": "One of the images could not be read.",
+      "media": "The voice note or recording could not be read.",
+      "closed": "This report is closed. Send a new one if needed."
+    },
+    "email": {
+      "subject": "A reply on your report {ref} · Sawwiq",
+      "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
+    },
+    "worksSent": "I confirmed it works now ✓"
+  },
+  "CloseClientAccount": {
+    "title": "Close my account",
+    "body": "You won't be able to sign in with this email again, and what you told us about your business needs is deleted. Providers will no longer be offered to you. To reopen it later, contact support.",
+    "start": "Close my account",
+    "confirmEmail": "Type your email to confirm",
+    "submit": "Close my account",
+    "cancel": "Cancel",
+    "errors": {
+      "confirm": "That isn't the email of this account.",
+      "rateLimited": "Too many tries. Wait a few minutes."
+    }
   },
   "Staging": {
     "banner": "TEST MODE - virtual money. Isolated staging copy. This is not sawwiq.org and no real money moves.",

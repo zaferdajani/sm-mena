@@ -8,7 +8,7 @@ import { checkCode, emailCodesAvailable, issueCode, sendCodeEmail, showCodesOnSc
 import { createSession } from "@/lib/auth/session";
 import { mergeDeviceInteractions } from "@/lib/data/interactions";
 import { getOwnerNeed } from "@/lib/data/owner-needs";
-import { createUser, getUserByEmail } from "@/lib/data/users";
+import { confirmAge, createUser, getUserByEmail } from "@/lib/data/users";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -28,6 +28,7 @@ const safeNext = (next: unknown, locale: string) => (typeof next === "string" &&
 export async function requestCodeAction(_: SignInState, formData: FormData): Promise<SignInState> {
   const raw = Object.fromEntries(formData);
   if (raw.consent !== "on") return { error: "consent" };
+  if (raw.adult !== "on") return { error: "adult" };
   const parsed = emailSchema.safeParse(raw);
   if (!parsed.success) return { error: "email" };
   const { email } = parsed.data;
@@ -38,6 +39,8 @@ export async function requestCodeAction(_: SignInState, formData: FormData): Pro
   const existing = await getUserByEmail(email);
   // Referral agents (docs/42) can use codes too; their accounts have no second factor.
   if (existing && existing.role !== "client" && existing.role !== "agent") return { error: "useLogin" };
+  // A closed account stays closed: support can reopen it (docs/08).
+  if (existing?.disabledAt) return { error: "closedAccount" };
   const code = await issueCode(email);
   if (showCodesOnScreen()) return { step: "code", email, shownCode: code };
   if (!(await sendCodeEmail(email, code))) return { error: "sendFailed" };
@@ -53,8 +56,11 @@ export async function verifyCodeAction(_: SignInState, formData: FormData): Prom
   if (result !== "ok") return { step: "code", email, error: result };
   let user = await getUserByEmail(parsed.data.email);
   if (user && user.role !== "client" && user.role !== "agent") return { error: "useLogin" };
+  if (user?.disabledAt) return { error: "closedAccount" };
   // First sign-in creates the account. It has no usable password: codes only.
-  if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client");
+  // The code was asked for with the 18+ box ticked (requestCodeAction); accounts from before the rule record it now.
+  if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client", { ageConfirmed: true });
+  else if (!user.ageConfirmedAt) await confirmAge(user.id);
   await createSession(user.id);
   await mergeDeviceInteractions(await getVisitorId(), user.id);
   const locale = await getLocale();

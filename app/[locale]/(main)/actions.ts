@@ -151,7 +151,7 @@ export async function reportPost(_: ReportState, formData: FormData): Promise<Re
   const parsed = z
     .object({
       postId: uuid,
-      reason: z.enum(["spam", "stolen_work", "misleading", "inappropriate", "other"]),
+      reason: z.enum(["spam", "stolen_work", "misleading", "inappropriate", "underage", "other"]),
       details: z.string().trim().max(1000).optional(),
     })
     .safeParse(Object.fromEntries(formData));

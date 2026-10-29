@@ -9,6 +9,8 @@ import { purgeAssistantUsage } from "@/lib/data/collab-ai-usage";
 import { featureOnGlobally } from "@/lib/features";
 import { purgeSocial } from "@/lib/data/social";
 import { purgeSetupMedia } from "@/lib/data/portfolio-setup";
+import { purgeOldSupport } from "@/lib/data/bugs";
+import { sendSupportUpdates } from "@/lib/data/support-notify";
 
 // The daily job (vercel.json; one cron keeps us within the Hobby plan's limit):
 // retention (docs/08-legal-compliance.md): chat messages after 24 months,
@@ -33,5 +35,9 @@ export async function GET(request: Request) {
   const assistantUsage = await purgeAssistantUsage();
   // Platform connections and setup drafts (docs/53): expired attempts, unpicked items, 30-day metadata, 60-day staged images.
   const [social, setupMedia] = await Promise.all([purgeSocial(), purgeSetupMedia()]);
-  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders, assistantUsage, social, setupMedia });
+  // Problem reports and their screenshots, 12 months after they were handled (docs/61).
+  const support = await purgeOldSupport();
+  // Reporters not yet told that their report is planned or done (normally sent within half an hour; see /api/support/updates).
+  const supportEmails = await sendSupportUpdates();
+  return Response.json({ messages, notifications, milestones, needs, inquiries, holds, reminders, assistantUsage, social, setupMedia, support, supportEmails });
 }

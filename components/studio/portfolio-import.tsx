@@ -4,12 +4,14 @@ import { Check, FileUp, Loader2, Merge, Plus, Sparkles, Trash2, X } from "lucide
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { analyzePortfolioAction, applyProfileImportAction, importPostAction } from "@/app/[locale]/(main)/studio/import-actions";
+import { reportClientError } from "@/components/error-reporter";
 import { FormError } from "@/components/form-error";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { compressForRequest, POST_UPLOAD, REQUEST_LIMIT } from "@/lib/media/image-compress";
+import { analysisPayload } from "@/lib/portfolio-import/payload";
 import type { ReadPage, ReadProgress } from "@/lib/portfolio-import/read-pdf";
 import { IMPORT_LIMITS, type DraftPost, type ImageRef, type ImportPlan } from "@/lib/portfolio-import/types";
 import { cn } from "@/lib/utils";
@@ -92,22 +94,37 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) return setError("notPdf");
     if (file.size > MAX_MB * 1024 * 1024) return setError("tooBig");
     setPhase("reading");
+    // Where a failed read stopped, for the error report (Admin → Bugs, docs/61).
+    let step = "read";
     try {
       // pdf.js and the OCR glue load only once a PDF is chosen (the setup wizard does the same), so the page's first paint stays light.
       const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
-      const read = await readPdf(file, (p: ReadProgress) => {
-        setPhase(p.step === "ocr" ? "ocr" : "reading");
-        setProgress({ done: p.done, total: p.total });
-      });
+      // With Claude reading the pages, reading their text on the phone first only costs minutes.
+      const read = await readPdf(
+        file,
+        (p: ReadProgress) => {
+          setPhase(p.step === "ocr" ? "ocr" : "reading");
+          setProgress({ done: p.done, total: p.total });
+        },
+        undefined,
+        { ocrPages: aiAvailable ? 0 : 8 },
+      );
       setPages(read.pages);
       setTruncated(read.totalPages > read.pages.length);
       setPhase("thinking");
-      const res = await analyzePortfolioAction(read.pages.map((p) => ({ index: p.index, text: p.text, image: p.thumb, layout: p.layout, crops: p.crops.length, cropTexts: p.crops.map((c) => c.text) })));
+      step = "analyse";
+      const payload = analysisPayload(
+        read.pages.map((p) => ({ index: p.index, text: p.text, image: p.thumb, layout: p.layout, crops: p.crops.length, cropTexts: p.crops.map((c) => c.text) })),
+        aiAvailable,
+      );
+      // A failed request is not an unreadable PDF: say so, and let them try again.
+      const res = await analyzePortfolioAction(payload).catch(() => ({ plan: undefined, error: "generic" as const }));
       if (!res.plan) {
         setPhase("pick");
         return setError(res.error ?? "generic");
       }
       const plan = res.plan;
+      step = "review";
       setMode(plan.mode);
       setDrafts(plan.drafts.map((d, id) => ({ ...d, id, include: true, services: d.services.length ? d.services : agencyServices.slice(0, 1) })));
       setProfile({
@@ -123,6 +140,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
       setPhase("review");
     } catch (e) {
       console.error("[portfolio-import]", e);
+      // Caught here, so the page-wide reporter never sees it: send it on (the error only, never the file).
+      reportClientError("js_error", `[portfolio-import:${step}] ${e instanceof Error ? e.message : String(e)}`, e instanceof Error ? e.stack : null);
       setPhase("pick");
       setError("unreadable");
     }
@@ -232,7 +251,12 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
           {phase === "ocr" && <span className="text-xs text-muted-foreground">{t("ocrHint")}</span>}
           {!busy && <span className="text-sm text-muted-foreground">{t("chooseHint", { pages: IMPORT_LIMITS.pages, mb: MAX_MB })}</span>}
         </button>
-        <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(e) => void choose(e.target.files?.[0] ?? undefined)} data-testid="import-file" />
+        <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(e) => {
+            void choose(e.target.files?.[0] ?? undefined);
+            e.target.value = ""; // so the same PDF can be chosen again after an error
+          }}
+          data-testid="import-file"
+        />
         <ul className="grid gap-1 text-sm text-muted-foreground">
           <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-brand" /> {t("how1")}</li>
           <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-brand" /> {t(aiAvailable ? "how2ai" : "how2")}</li>

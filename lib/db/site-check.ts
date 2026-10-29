@@ -76,11 +76,23 @@ async function release(): Promise<ReleaseSeen> {
   }
 }
 
+/** Asks the site to send the report-status emails that are due (app/api/support/updates); best effort. */
+async function sendSupportEmails() {
+  try {
+    const res = await fetch(`${SITE}/api/support/updates`, { method: "POST", signal: AbortSignal.timeout(TIMEOUT_MS) });
+    const body = res.ok ? ((await res.json()) as { sent?: number }) : null;
+    console.log(body ? `Report-status emails sent: ${body.sent ?? 0}` : `Report-status emails: the site answered ${res.status}`);
+  } catch (error) {
+    console.log(`Report-status emails: ${error instanceof Error ? error.message.slice(0, 120) : "request failed"}`);
+  }
+}
+
 async function main() {
   const results: CheckResult[] = [];
   // One at a time: a check must not add load of its own.
   for (const [path, expect] of Object.entries(PAGES)) results.push(await check(path, expect));
   const seen = await release();
+  await sendSupportEmails();
   try {
     const { failed, closed } = await recordSiteCheckRun(results, seen);
     for (const r of results) console.log(`${r.ok ? "OK  " : "FAIL"} ${r.path} ${r.status} ${r.ms} ms${r.finalPath && r.finalPath !== r.path ? ` -> ${r.finalPath}` : ""}${r.problem ? ` — ${r.problem}` : ""}`);

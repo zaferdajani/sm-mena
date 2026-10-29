@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, Camera, ImagePlus, Star, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { AgencyAvatar } from "@/components/agency-avatar";
+import { reportClientError } from "@/components/error-reporter";
 import { ImageCarousel } from "@/components/post/image-carousel";
 import { ServicePicker } from "@/components/service-picker";
 import { ItemBrowser, ProviderList, ResourceChooser, type ConnectionLite, type ProviderState, type ResourceLite } from "@/components/social/connect";
@@ -316,10 +317,13 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
     setReading(t("import.reading"));
     try {
       const { readPdf } = await import("@/lib/portfolio-import/read-pdf");
-      const { pages } = await readPdf(file, (p) => setReading(t("import.readingProgress", { done: p.done, total: p.total })));
+      // Only the pictures are used here, so no page text is read on the device.
+      const { pages } = await readPdf(file, (p) => setReading(t("import.readingProgress", { done: p.done, total: p.total })), undefined, { ocrPages: 0 });
       const pictures = pages.flatMap((p) => [...p.crops.map((c) => ({ blob: c.full, preview: c.preview })), { blob: p.full, preview: p.preview }]);
       setPdfState({ pictures: pictures.slice(0, 60), picked: [] });
-    } catch {
+    } catch (e) {
+      // Caught here, so the page-wide reporter never sees it: send it on (the error only, never the file).
+      reportClientError("js_error", `[setup-pdf] ${e instanceof Error ? e.message : String(e)}`, e instanceof Error ? e.stack : null);
       setError("pdf");
     } finally {
       setReading(null);
@@ -330,7 +334,13 @@ function ImportPanel({ view, run, pending }: { view: SetupView; run: StepProps["
     <div className="space-y-4 rounded-2xl border p-4" data-testid="import-panel">
       <div className="space-y-2">
         <h3 className="font-semibold">{t("import.pdf")}</h3>
-        <input type="file" accept="application/pdf" className="block w-full text-sm" onChange={(e) => e.currentTarget.files?.[0] && readPdfFile(e.currentTarget.files[0])} data-testid="setup-pdf" />
+        <input type="file" accept="application/pdf" className="block w-full text-sm" onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            e.currentTarget.value = ""; // so the same PDF can be chosen again after an error
+            if (file) void readPdfFile(file);
+          }}
+          data-testid="setup-pdf"
+        />
         {reading && <p role="status" className="text-sm">{reading}</p>}
         {pdfState && (
           <>

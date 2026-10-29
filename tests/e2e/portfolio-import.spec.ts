@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import sharp from "sharp";
 import { joinAgency } from "./helpers";
 
 /** A small portfolio: cover, two project pages (the second is pictures only), a clients page. */
@@ -55,4 +56,99 @@ test("an agency turns its PDF portfolio into posts and clients", async ({ page }
   await page.getByRole("link", { name: "See my clients" }).click();
   await expect(page.locator("main")).toContainText("Rose Cafe");
   await expect(page.locator("main")).toContainText("Petra Motors");
+});
+
+// Report 6E5F4BD2: on iPhone the PDF never loaded. iOS Safari caps the memory
+// all canvases on a page may hold; the reader kept a full-size canvas per page
+// until the end, so a long portfolio crossed the cap and the read failed.
+test("reading a PDF portfolio releases every canvas it drew on", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    const made: HTMLCanvasElement[] = [];
+    (window as unknown as { __canvases: HTMLCanvasElement[] }).__canvases = made;
+    const create = Document.prototype.createElement;
+    Document.prototype.createElement = function (this: Document, tag: string, options?: ElementCreationOptions) {
+      const el = create.call(this, tag, options);
+      if (tag.toLowerCase() === "canvas") made.push(el as HTMLCanvasElement);
+      return el;
+    } as typeof create;
+  });
+  await joinAgency(page, "pdfmem");
+  await page.goto("/ar/studio/import");
+  await page.getByTestId("import-file").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: await portfolioPdf() });
+  await expect(page.getByTestId("import-review")).toBeVisible({ timeout: 60_000 });
+
+  const held = await page.evaluate(() => {
+    const all = (window as unknown as { __canvases: HTMLCanvasElement[] }).__canvases;
+    return { drawn: all.length, pixels: all.filter((c) => !c.isConnected).reduce((n, c) => n + c.width * c.height, 0) };
+  });
+  expect(held.drawn).toBeGreaterThan(4); // the reader did draw the pages
+  // Before the fix a four-page PDF left about 21 million pixels held. A tiny
+  // 1x1 probe canvas of pdf.js's own may remain; no page-sized canvas may.
+  expect(held.pixels).toBeLessThan(10_000);
+});
+
+// Report A13895DE: "couldn't read the file" on an iPhone, and nothing in the
+// error queue, because the import caught the failure. A failed read now
+// reports its error (never the file) so the bug agent can see why.
+test("a PDF that cannot be read says so and reports why", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await joinAgency(page, "pdfbad");
+  await page.goto("/ar/studio/import");
+  const reported = page.waitForRequest((r) => r.url().endsWith("/api/errors") && r.method() === "POST");
+  await page.getByTestId("import-file").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.7\nnot really a pdf\n%%EOF\n") });
+  const body = JSON.parse((await reported).postData() ?? "{}") as { message?: string };
+  expect(body.message).toMatch(/^\[portfolio-import:read\] /);
+  await expect(page.getByRole("alert").filter({ hasText: "تعذّرت قراءة الملف" })).toBeVisible();
+});
+
+/** A full-size portfolio: 40 pages, each a full-page photo with a heading (noise, so the pictures compress as badly as real photos). */
+async function bigPortfolioPdf(pages = 40) {
+  const doc = await PDFDocument.create();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  for (let i = 0; i < pages; i++) {
+    const noise = Buffer.alloc(700 * 990 * 3);
+    let seed = 2463534242 + i;
+    for (let b = 0; b < noise.length; b++) {
+      seed ^= seed << 13;
+      seed ^= seed >>> 17;
+      seed ^= seed << 5;
+      noise[b] = seed & 255;
+    }
+    const jpg = await sharp(noise, { raw: { width: 700, height: 990, channels: 3 } }).jpeg({ quality: 70 }).toBuffer();
+    const image = await doc.embedJpg(jpg);
+    const p = doc.addPage([595, 842]);
+    p.drawImage(image, { x: 0, y: 0, width: 595, height: 842 });
+    p.drawText(`Project ${i + 1}: brand launch`, { x: 40, y: 790, size: 20, font });
+  }
+  return Buffer.from(await doc.save());
+}
+
+// Reports 6E5F4BD2 and 206D1DBD: real portfolios (dozens of photo pages) never
+// reached the review. On Vercel a request body over 4.5 MB is refused before
+// the app sees it; every request the import sends must stay under that.
+test("a full-size photo portfolio is read and published with every request under the host limit", async ({ page }) => {
+  test.setTimeout(300_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const posted: number[] = [];
+  page.on("request", (r) => {
+    if (r.method() === "POST") posted.push(r.postDataBuffer()?.length ?? 0);
+  });
+  await joinAgency(page, "pdfbig");
+  await page.goto("/ar/studio/import");
+  await page.getByTestId("import-file").setInputFiles({ name: "portfolio.pdf", mimeType: "application/pdf", buffer: await bigPortfolioPdf() });
+  const review = page.getByTestId("import-review");
+  await expect(review).toBeVisible({ timeout: 240_000 });
+  await expect(review.getByTestId("import-draft").first()).toBeVisible();
+
+  const drafts = review.getByTestId("import-draft");
+  const count = await drafts.count();
+  for (let i = 1; i < count; i++) await drafts.nth(i).getByTestId("draft-include").uncheck();
+  await page.getByTestId("import-publish").click();
+  await expect(page.getByTestId("import-done")).toBeVisible({ timeout: 120_000 });
+
+  console.log(`largest request: ${(Math.max(...posted) / 1e6).toFixed(2)} MB`);
+  expect(Math.max(...posted)).toBeLessThan(4.5 * 1024 * 1024);
 });

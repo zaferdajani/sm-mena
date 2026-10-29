@@ -6,6 +6,8 @@
 //   node scripts/vercel-admin.mjs status   latest deployment + build log tail + domain DNS
 //   node scripts/vercel-admin.mjs logs     recent runtime errors of the production deployment
 //   node scripts/vercel-admin.mjs staging  DNS + branch-domain steps (no production secrets)
+//   node scripts/vercel-admin.mjs ai       why the AI assistant is off, and fix it (AI_PROVIDER, a key
+//                                          pasted with line breaks), check the key with Anthropic, redeploy
 import { randomBytes } from "node:crypto";
 
 const TOKEN = process.env.VERCEL_TOKEN;
@@ -252,6 +254,65 @@ async function attachStagingDomain(project) {
   if (created.status >= 400 && patched.status >= 400) process.exit(1);
 }
 
+/**
+ * The help chat and matchmaker use Claude only when ANTHROPIC_API_KEY is set and
+ * AI_PROVIDER is not basic/off/mock (lib/ai/agent.ts). Reports what production
+ * has (names and known words only, never a key), switches AI_PROVIDER to auto,
+ * removes line breaks pasted into the key, asks Anthropic whether the key works
+ * (status code only), and redeploys when something changed.
+ */
+async function aiDoctor(project) {
+  const all = (await api(`/v10/projects/${project.id}/env`)).body.envs ?? [];
+  // Every AI-related entry, names and scopes only: duplicates or a wrong target explain a key the site does not see.
+  for (const e of all.filter((x) => /^(ANTHROPIC|AI_|HELP_|OPENAI)/.test(x.key)))
+    console.log(`  entry ${e.key}: type ${e.type}, targets ${(e.target ?? []).join("+") || "-"}${e.gitBranch ? `, branch ${e.gitBranch}` : ""}${e.customEnvironmentIds?.length ? ", custom env" : ""}, updated ${new Date(e.updatedAt ?? e.createdAt ?? 0).toISOString().slice(0, 16)}`);
+  const envs = all.filter((e) => (e.target ?? []).includes("production") && !e.gitBranch);
+  const find = (k) => envs.find((e) => e.key === k);
+  const valueOf = async (e) => (e ? ((await api(`/v1/projects/${project.id}/env/${e.id}`, { allowFail: true })).body.value ?? null) : null);
+  const KNOWN = ["auto", "anthropic", "openai", "mock", "basic", "off"];
+  let changed = false;
+
+  const provider = find("AI_PROVIDER");
+  const providerValue = (await valueOf(provider))?.trim().toLowerCase() ?? null;
+  console.log(`AI_PROVIDER: ${provider ? (providerValue === null ? "set (value not readable)" : KNOWN.includes(providerValue) ? providerValue : "set to an unknown word") : "not set (auto)"}`);
+  if (provider && (providerValue === null || ["basic", "off", "mock"].includes(providerValue))) {
+    await api(`/v9/projects/${project.id}/env/${provider.id}`, { method: "PATCH", body: JSON.stringify({ value: "auto" }) });
+    console.log("  → set to auto");
+    changed = true;
+  }
+  const helpAi = find("HELP_AI");
+  if (helpAi && (await valueOf(helpAi))?.trim() === "off") {
+    await api(`/v9/projects/${project.id}/env/${helpAi.id}`, { method: "DELETE" });
+    console.log("HELP_AI: was off → removed");
+    changed = true;
+  }
+
+  const keyEnv = find("ANTHROPIC_API_KEY");
+  let key = await valueOf(keyEnv);
+  if (!keyEnv) console.log("::error::ANTHROPIC_API_KEY is not set for production.");
+  else if (key === null) console.log("ANTHROPIC_API_KEY: set (sensitive, cannot be read back: checked through the site after the redeploy)");
+  else {
+    const clean = key.replace(/\s+/g, "");
+    console.log(`ANTHROPIC_API_KEY: set, ${clean.length} characters, starts ${clean.slice(0, 10)}…${clean !== key ? ", had spaces or line breaks" : ""}`);
+    if (clean !== key) {
+      await api(`/v9/projects/${project.id}/env/${keyEnv.id}`, { method: "PATCH", body: JSON.stringify({ value: clean }) });
+      console.log("  → line breaks removed");
+      key = clean;
+      changed = true;
+    }
+    const res = await fetch("https://api.anthropic.com/v1/models?limit=1", { headers: { "x-api-key": key, "anthropic-version": "2023-06-01" } }).catch(() => null);
+    console.log(`Anthropic accepts the key: ${res?.ok ? "yes" : `no (${res ? res.status : "no answer"})`}`);
+    if (res && !res.ok) console.log("::warning::Anthropic refused the key: create a new one at platform.claude.com/settings/keys and paste it as one line.");
+  }
+
+  if (changed) {
+    if ((await deploy(project)) !== "READY") process.exit(1);
+  } else console.log("Nothing to change; no redeploy.");
+  const health = await fetch(`https://${DOMAIN}/api/health`).then((r) => r.json()).catch(() => null);
+  console.log(`Live site AI: ${health?.ai ?? "unknown"}`);
+}
+
+const action = process.argv[2] ?? "status";
 const project = await findProject();
 console.log(`Project: ${project.name}`);
 if (action === "staging") {
@@ -267,6 +328,8 @@ if (action === "staging") {
   if ((await deploy(project)) !== "READY") process.exit(1);
 } else if (action === "logs") {
   await runtimeLogs(project);
+} else if (action === "ai") {
+  await aiDoctor(project);
 } else {
   await status(project);
 }

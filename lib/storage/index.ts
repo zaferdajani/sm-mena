@@ -9,13 +9,14 @@ export interface Storage {
   remove(keys: string[]): Promise<void>;
   url(key: string): string;
 }
-const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|png|jpg|mp4|webm)$/;
+// Audio extensions are for voice notes on problem reports (support/, private; docs/61).
+const KEY_PATTERN = /^[a-z0-9][a-z0-9/_-]*\.(webp|png|jpg|mp4|webm|m4a|mp3|ogg|wav)$/;
 export function isSafeKey(key: string): boolean {
   return KEY_PATTERN.test(key) && !key.includes("..") && !key.includes("//");
 }
 
 /** Keys under these prefixes are never public: no public URL, a private bucket, served only by an authenticated route. */
-const PRIVATE_PREFIXES = ["collab/", "drafts/", "portfolio/"];
+const PRIVATE_PREFIXES = ["collab/", "drafts/", "portfolio/", "support/"];
 export const isPrivateKey = (key: string) => PRIVATE_PREFIXES.some((p) => key.startsWith(p));
 
 function localStorage(): Storage {

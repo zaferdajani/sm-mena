@@ -8,6 +8,7 @@ test("following, liking and saving ask visitors to sign in, then come back", asy
   await expect(page).toHaveURL(/\/en\/signin\?next=/);
   await page.fill("#email", `owner-${Date.now()}@test.jo`);
   await page.check('input[name="consent"]');
+  await page.check('input[name="adult"]');
   await page.getByRole("button", { name: "Send the code" }).click();
   const code = (await page.getByTestId("signin-shown-code").locator("b").textContent())!.trim();
   await page.fill("#code", code);

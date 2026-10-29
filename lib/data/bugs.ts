@@ -1,8 +1,10 @@
 import "server-only";
+import { randomBytes } from "node:crypto";
 import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
+import { storage } from "@/lib/storage";
 import { errorFingerprint, normalizePath } from "./error-fingerprint";
-import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
+import { errorEvents, siteChecks, supportMessages, supportRequests } from "@/lib/db/schema";
 
 // Automatic error journal (browser and server errors) and user-submitted
 // problem reports, triaged in Admin → Bugs. Modelled on OneClickConvert's bug
@@ -11,7 +13,7 @@ import { errorEvents, siteChecks, supportRequests } from "@/lib/db/schema";
 export type ErrorInput = { source: "client" | "server"; kind: string; message: string; stack?: string | null; path?: string | null; userAgent?: string | null };
 export const ERROR_STATUSES = ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"] as const;
 export type ErrorStatus = (typeof ERROR_STATUSES)[number];
-export const SUPPORT_STATUSES = ["new", "planned", "done", "declined"] as const;
+export const SUPPORT_STATUSES = ["new", "planned", "waiting", "done", "declined"] as const;
 export type SupportStatus = (typeof SUPPORT_STATUSES)[number];
 
 const clip = (s: string | null | undefined, n: number) => (s ? s.slice(0, n) : null);
@@ -123,7 +125,22 @@ export async function listSiteChecks(limit = 12) {
   return db.select().from(siteChecks).orderBy(desc(siteChecks.ranAt)).limit(limit);
 }
 
-export type SupportInput = { kind: "bug" | "question" | "suggestion"; message: string; email?: string | null; path?: string | null; locale?: string | null; userAgent?: string | null; userId?: string | null; visitorId?: string | null };
+export const SUPPORT_KINDS = ["bug", "complaint", "question", "suggestion"] as const;
+export type SupportKind = (typeof SUPPORT_KINDS)[number];
+export type SupportInput = {
+  kind: SupportKind;
+  message: string;
+  email?: string | null;
+  path?: string | null;
+  locale?: string | null;
+  userAgent?: string | null;
+  userId?: string | null;
+  visitorId?: string | null;
+  screenshots?: string[];
+  attachments?: { key: string; kind: "audio" | "video"; type: string }[];
+  viewport?: string | null;
+  appCommit?: string | null;
+};
 
 export async function submitSupportRequest(input: SupportInput) {
   const db = await getDb();
@@ -138,9 +155,14 @@ export async function submitSupportRequest(input: SupportInput) {
       userAgent: clip(input.userAgent, 300),
       userId: input.userId ?? null,
       visitorId: input.visitorId ?? null,
+      screenshots: (input.screenshots ?? []).slice(0, 3),
+      attachments: (input.attachments ?? []).slice(0, 2),
+      viewport: clip(input.viewport, 20),
+      accessToken: randomBytes(24).toString("base64url"),
+      appCommit: clip(input.appCommit, 40),
     })
-    .returning({ id: supportRequests.id });
-  return row.id;
+    .returning({ id: supportRequests.id, accessToken: supportRequests.accessToken });
+  return row;
 }
 
 export async function listSupportRequests(status: SupportStatus | "all" = "new") {
@@ -153,10 +175,42 @@ export async function listSupportRequests(status: SupportStatus | "all" = "new")
     .limit(300);
 }
 
-export async function setSupportStatus(id: string, adminId: string, status: SupportStatus, note?: string) {
+/** `adminId` is null when the bug agent closes a report (docs/61); the audit log says which. */
+export async function setSupportStatus(id: string, adminId: string | null, status: SupportStatus, note?: string, commit?: string) {
   const db = await getDb();
   await db
     .update(supportRequests)
-    .set({ status, adminNote: clip(note, 2000), handledBy: adminId, handledAt: new Date() })
+    .set({ status, adminNote: clip(note, 2000), resolutionCommit: clip(commit, 80) ?? undefined, handledBy: adminId, handledAt: new Date() })
     .where(and(eq(supportRequests.id, id)));
+}
+
+/**
+ * Where updates about a report go (docs/61, docs/62). "Contact support" (the
+ * /support form) answers by email: the address typed, else the signed-in
+ * account's. A report filed from the help chat is followed in the chat, so it
+ * keeps no address and no email is sent about it.
+ */
+export function replyAddress(channel: string | null | undefined, typed: string | null | undefined, account: string | null | undefined) {
+  if (channel === "chat") return null;
+  return typed || account || null;
+}
+
+/** The short reference shown to the person who sent a report, and used by the agent and Admin → Bugs. */
+export const supportRef = (id: string) => id.slice(0, 8).toUpperCase();
+
+/** Retention (docs/08): reports handled more than 12 months ago are deleted with their screenshots. */
+export async function purgeOldSupport() {
+  const db = await getDb();
+  const cutoff = new Date(Date.now() - 365 * 24 * 3600 * 1000);
+  const old = and(inArray(supportRequests.status, ["done", "declined"]), lt(supportRequests.handledAt, cutoff));
+  // Files on replies in the conversation go too (the messages are deleted with the report).
+  const replyFiles = await db
+    .select({ screenshots: supportMessages.screenshots, attachments: supportMessages.attachments })
+    .from(supportMessages)
+    .innerJoin(supportRequests, eq(supportRequests.id, supportMessages.requestId))
+    .where(old);
+  const rows = await db.delete(supportRequests).where(old).returning({ screenshots: supportRequests.screenshots, attachments: supportRequests.attachments });
+  const keys = [...rows, ...replyFiles].flatMap((r) => [...r.screenshots, ...r.attachments.map((a) => a.key)]);
+  if (keys.length) await storage().remove(keys);
+  return rows.length;
 }

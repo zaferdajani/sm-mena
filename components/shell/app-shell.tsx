@@ -17,6 +17,8 @@ import { BottomNav, SideNav, type NavItem } from "./nav-links";
 import { SiteFooter } from "./site-footer";
 import { canUse } from "@/lib/feature-gate";
 import { AppFrame } from "./app-frame";
+import { HelpChat } from "@/components/support/help-chat";
+import { helpAiEnabled } from "@/lib/ai/help-assistant";
 
 /** Side navigation on desktop, top bar and bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -99,6 +101,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
       <nav data-app-nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <BottomNav items={items} />
       </nav>
+      <HelpChat aiEnabled={helpAiEnabled()} aboveNav />
     </AppFrame>
   );
 }

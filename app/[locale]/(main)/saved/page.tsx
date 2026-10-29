@@ -1,6 +1,7 @@
 import { discoverableProfiles } from "@/lib/data/publication";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { CloseClientAccount } from "@/components/account/close-client-account";
 import { AgencyRow } from "@/components/agency-row";
 import { PostGrid } from "@/components/post/post-grid";
 import { Link } from "@/i18n/navigation";
@@ -77,6 +78,11 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
         <h2 className="mb-2 px-4 text-sm font-semibold sm:px-0">{t("posts")}</h2>
         {posts.length ? <PostGrid posts={posts} /> : <p className="px-4 text-sm text-muted-foreground sm:px-0">{t("emptyPosts")}</p>}
       </section>
+      {user?.role === "client" && (
+        <div className="px-4 pb-8 sm:px-0">
+          <CloseClientAccount email={user.email} />
+        </div>
+      )}
     </div>
   );
 }

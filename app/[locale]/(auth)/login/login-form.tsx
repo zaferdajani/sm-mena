@@ -6,6 +6,7 @@ import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "@/i18n/navigation";
 import { login } from "../actions";
 
 export function LoginForm() {
@@ -19,7 +20,12 @@ export function LoginForm() {
         <Input id="email" name="email" type="email" autoComplete="email" required dir="ltr" />
       </div>
       <div className="grid gap-1.5">
-        <Label htmlFor="password">{t("password")}</Label>
+        <div className="flex items-baseline justify-between gap-2">
+          <Label htmlFor="password">{t("password")}</Label>
+          <Link href="/forgot" className="text-xs font-medium text-brand" data-testid="forgot-link">
+            {t("forgot")}
+          </Link>
+        </div>
         <Input id="password" name="password" type="password" autoComplete="current-password" required dir="ltr" />
       </div>
       <SubmitButton className="h-10 w-full">{t("loginButton")}</SubmitButton>

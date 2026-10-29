@@ -13,9 +13,11 @@ describe("auth contracts", () => {
     expect(loginSchema.safeParse({ email: "a@b.co", password: "" }).success).toBe(false);
   });
   it("requires consent, a real city and an 8-character password to join", () => {
-    const ok = { name: "Studio", handle: "Studio", city: "amman", whatsapp: "+962790000000", email: "a@b.co", password: "longenough", consent: "on" };
+    const ok = { name: "Studio", handle: "Studio", city: "amman", whatsapp: "+962790000000", email: "a@b.co", password: "longenough", consent: "on", adult: "on" };
     expect(joinSchema.parse(ok).handle).toBe("studio");
     expect(joinSchema.safeParse({ ...ok, consent: "" }).success).toBe(false);
+    // Accounts are for people of 18 or over (docs/08).
+    expect(joinSchema.safeParse({ ...ok, adult: undefined }).success).toBe(false);
     expect(joinSchema.safeParse({ ...ok, city: "atlantis" }).success).toBe(false);
     expect(joinSchema.safeParse({ ...ok, password: "short" }).success).toBe(false);
     expect(joinSchema.safeParse({ ...ok, whatsapp: "12" }).success).toBe(false);

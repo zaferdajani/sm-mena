@@ -181,10 +181,9 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
         <Field label={t("phone")} htmlFor="phone"><PhoneField id="phone" name="phone" defaultCountry={tel.country} defaultValue={tel.local} countryLabel={t("phoneCountry")} /></Field>
         <Field label={t("email")} htmlFor="email"><Input id="email" name="email" type="email" dir="ltr" defaultValue={agency.email ?? ""} /></Field>
         <Field label={t("website")} htmlFor="website"><Input id="website" name="website" dir="ltr" defaultValue={agency.website ?? ""} /></Field>
-        <Field label={t("instagram")} htmlFor="instagram"><Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={agency.instagram ?? ""} /></Field>
       </fieldset>
 
-      <SocialRows initial={agency.socialLinks ?? []} />
+      <SocialRows initial={agency.socialLinks ?? []} instagram={agency.instagram ?? ""} />
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="mb-2 text-sm font-medium">{t("details")}</legend>
@@ -204,19 +203,25 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
 }
 
 // The agency's own channels besides Instagram (docs/28): a handle or a link per row, checked like a client's accounts.
-const SOCIAL_KINDS: LinkKind[] = ["tiktok", "youtube", "facebook", "linkedin", "x", "snapchat", "other"];
-const SOCIAL_STARTER: LinkKind[] = ["tiktok", "youtube", "facebook"];
+const SOCIAL_KINDS: LinkKind[] = ["behance", "tiktok", "youtube", "facebook", "linkedin", "x", "snapchat", "other"];
+const SOCIAL_STARTER: LinkKind[] = ["behance", "tiktok", "youtube"];
 let socialSeq = 0;
 const socialRow = (kind: string, value = "") => ({ id: ++socialSeq, kind, value });
 
-function SocialRows({ initial }: { initial: { kind: string; value: string }[] }) {
+function SocialRows({ initial, instagram }: { initial: { kind: string; value: string }[]; instagram: string }) {
   const t = useTranslations("Studio.profileForm");
   const tk = useTranslations("PortfolioClients");
   const [rows, setRows] = useState(() => (initial.length ? initial.map((l) => socialRow(l.kind, l.value)) : SOCIAL_STARTER.map((k) => socialRow(k))));
   return (
-    <fieldset className="grid gap-2" data-testid="social-rows">
-      <legend className="mb-1 text-sm font-medium">{t("socialLinks")}</legend>
-      <p className="-mt-1 text-xs text-muted-foreground">{t("socialLinksHint")}</p>
+    <fieldset className="grid gap-2 rounded-xl border p-3 sm:p-4" data-testid="social-rows">
+      <legend className="px-1 text-sm font-medium">{t("socialLinks")}</legend>
+      <p className="text-xs text-muted-foreground">{t("socialLinksHint")}</p>
+      <div className="flex items-center gap-2">
+        <SocialIcon kind="instagram" className="size-8" />
+        <label htmlFor="instagram" className="w-32 shrink-0 text-sm">{tk("kinds.instagram")}</label>
+        <Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={instagram} className="min-w-0 flex-1" />
+        <span className="size-7 shrink-0" aria-hidden />
+      </div>
       {rows.map((r) => {
         const kind = (SOCIAL_KINDS as string[]).includes(r.kind) ? (r.kind as LinkKind) : "other";
         return (

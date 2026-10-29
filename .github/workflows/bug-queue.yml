@@ -1,0 +1,70 @@
+# Bug queue (docs/61): how the bug agent reads problem reports and errors from
+# production and writes back what it fixed, without any new secret.
+#   export  seals new reports (with screenshots) and unresolved errors to the
+#           agent's one-run public key and uploads them as an artifact
+#   update  applies the agent's statuses, notes and fix commits (JSON list) and its
+#           replies to reporters, which arrive sealed (ciphertext only, docs/63)
+# This repository is public: the artifact holds ciphertext only, and the log
+# prints counts only. Notes are public inputs: they describe fixes, not people.
+name: Bug queue
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "export or update"
+        required: true
+        type: choice
+        options: [export, update]
+      pubkey:
+        description: "export: the agent's one-run public key (base64 SPKI)"
+        required: false
+        default: ""
+      updates:
+        description: 'update: JSON list, e.g. [{"type":"report","ref":"1A2B3C4D","status":"done","note":"…","commit":"abc1234"}]'
+        required: false
+        default: "[]"
+      replies:
+        description: "update: the agent's replies to reporters, sealed to the site's reply key (scripts/bug-agent/seal-replies.ts, docs/63)"
+        required: false
+        default: ""
+
+concurrency:
+  group: bug-queue
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_ENV: production
+      QUEUE_ACTION: ${{ inputs.action }}
+      # Passed as data, never pasted into the shell command.
+      QUEUE_PUBKEY: ${{ inputs.pubkey }}
+      QUEUE_UPDATES: ${{ inputs.updates }}
+      QUEUE_REPLIES: ${{ inputs.replies }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      STORAGE_PROVIDER: supabase
+    steps:
+      - name: Check the secrets are there
+        run: '[ -n "$DATABASE_URL" ] && [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] || { echo "::error::Add DATABASE_URL, SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY secrets."; exit 1; }'
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --include=dev
+      - run: npx tsx lib/db/bug-queue.ts
+      - if: inputs.action == 'export'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bug-queue
+          path: bug-queue.sealed.json
+          retention-days: 1
+          if-no-files-found: error
