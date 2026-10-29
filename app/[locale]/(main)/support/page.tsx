@@ -23,12 +23,16 @@ export default async function SupportPage({ params, searchParams }: PageProps<"/
   const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
   const mine = await reportsForViewer(visitorId, user?.id ?? null, 10);
   return (
-    <div className="mx-auto max-w-lg space-y-4 px-4 py-6">
-      <h1 className="text-xl font-bold">{t("title")}</h1>
-      <p className="text-sm text-muted-foreground">{t("intro")}</p>
-      <ContactChoice aiEnabled={helpAiEnabled()} />
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="support-workspace">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
+        <h1 className="text-xl font-bold">{t("title")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("intro")}</p>
+      </header>
+      <div className="grid min-w-0 gap-6 lg:grid-cols-2">
+        <div className="min-w-0 space-y-6">
+          <ContactChoice aiEnabled={helpAiEnabled()} />
       {mine.length > 0 && (
-        <section className="rounded-xl border p-3" data-testid="my-reports">
+        <section className="min-w-0 rounded-xl border bg-card p-5 sm:p-6" data-testid="my-reports">
           <h2 className="mb-2 text-sm font-semibold">{tt("myReports")}</h2>
           <ul className="divide-y text-sm">
             {mine.map((r) => (
@@ -45,8 +49,10 @@ export default async function SupportPage({ params, searchParams }: PageProps<"/
           </ul>
         </section>
       )}
-      <div id="support-form" className="scroll-mt-20">
-        <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "complaint" || kind === "question" || kind === "suggestion" ? kind : "bug"} />
+        </div>
+        <section id="support-form" className="min-w-0 scroll-mt-20 rounded-xl border bg-card p-5 sm:p-6">
+          <SupportForm from={typeof from === "string" ? from : ""} kind={kind === "complaint" || kind === "question" || kind === "suggestion" ? kind : "bug"} />
+        </section>
       </div>
     </div>
   );
