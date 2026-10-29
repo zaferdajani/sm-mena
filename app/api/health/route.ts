@@ -3,22 +3,21 @@ import { aiStatus } from "@/lib/ai/agent";
 import { getDb } from "@/lib/db";
 import { googleConfigured } from "@/lib/google";
 import { monetizationEnabled } from "@/lib/monetization/plans";
+import { storageHealth } from "@/lib/storage/health";
 
 export const dynamic = "force-dynamic";
 
 // Health check for uptime monitors. Reports configuration flags only, never
-// secrets. Storage without its keys fails every page that shows a photo, so it
-// makes the check fail too.
+// secrets. Storage that cannot keep photos (lib/storage/health.ts) fails the check too.
 export async function GET() {
   try {
     const db = await getDb();
     await db.execute(sql`select 1`);
-    const supabase = process.env.STORAGE_PROVIDER === "supabase";
-    const storageReady = !supabase || Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const { ready: storageReady, label: storage } = storageHealth();
     return Response.json({
       ok: storageReady,
       database: process.env.DATABASE_URL ? "postgres" : "pglite",
-      storage: supabase ? (storageReady ? "supabase" : "supabase (keys missing)") : "local",
+      storage,
       ai: aiStatus(),
       google: googleConfigured(),
       monetization: monetizationEnabled(),

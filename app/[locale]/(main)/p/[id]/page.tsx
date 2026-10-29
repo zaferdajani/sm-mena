@@ -1,6 +1,7 @@
 import { publicationFor } from "@/lib/data/publication";
 import { profileIndexable } from "@/lib/launch-phase";
 import { DemoNotice } from "@/components/demo/demo-banner";
+import { Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -9,7 +10,9 @@ import { EmbedPlayer } from "@/components/post/embed-player";
 import { PostCard } from "@/components/post/post-card";
 import { PostGrid } from "@/components/post/post-grid";
 import { ReportDialog } from "@/components/post/report-dialog";
+import { DeletePostButton } from "@/components/studio/delete-post-button";
 import { Link } from "@/i18n/navigation";
+import { getCurrentAgency } from "@/lib/auth/session";
 import { recordView } from "@/lib/data/interactions";
 import { getFeed, getPost } from "@/lib/data/posts";
 import { localized, localizedPost } from "@/lib/content-lang";
@@ -59,6 +62,9 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const others = more.items.filter((p) => p.id !== post.id).slice(0, 6);
   const clientName = post.client ? localized({ name: post.client.name }, { name: post.client.nameTranslation ?? undefined }, post.contentLang, locale).name : undefined;
   const tp = await getTranslations("Profile");
+  const tc = await getTranslations("Common");
+  // The owner edits or deletes the project right here instead of reporting it.
+  const isOwner = (await getCurrentAgency())?.id === post.agency.id;
 
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
@@ -98,7 +104,17 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
         ) : (
           <span />
         )}
-        <ReportDialog postId={post.id} />
+        {isOwner ? (
+          <div className="flex shrink-0 items-center gap-2" data-testid="post-owner-actions">
+            <Link href={`/studio/posts/${post.id}`} className="inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium hover:bg-muted" data-testid="edit-post">
+              <Pencil className="size-4" aria-hidden />
+              {tc("edit")}
+            </Link>
+            <DeletePostButton postId={post.id} />
+          </div>
+        ) : (
+          <ReportDialog postId={post.id} />
+        )}
       </div>
       {others.length > 0 && (
         <section className="mt-4 border-t pt-4">

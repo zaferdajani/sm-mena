@@ -385,6 +385,7 @@
       "hidden": "{count, plural, one {You have one hidden post visitors can't see.} other {You have # hidden posts visitors can't see.}}",
       "manage": "Show them from the Studio",
       "add": "Add a project",
+      "edit": "Edit or delete projects",
       "studio": "Open Studio"
     }
   },
