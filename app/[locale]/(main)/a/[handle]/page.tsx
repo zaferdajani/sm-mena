@@ -124,7 +124,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   ];
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="w-full min-w-0">
       {agency.isDemo && (
         <div className="px-4 pt-4">
           <DemoNotice kind="agency" />
