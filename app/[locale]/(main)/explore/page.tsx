@@ -70,8 +70,8 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const resultLabel = t("results", { count }) + (posts?.nextCursor ? "+" : "");
   const query = Object.fromEntries(Object.entries(sp).filter(([k, v]) => k !== "tab" && typeof v === "string")) as Record<string, string>;
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 px-3 py-5 sm:px-6 sm:py-7" data-testid="explore-page">
-      <header className="space-y-4 rounded-2xl border bg-card p-4 sm:p-5">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-testid="explore-page">
+      <header className="space-y-4 rounded-xl border bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h1 className="font-heading text-2xl font-bold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground" data-testid="explore-result-count">{resultLabel}</p>
@@ -99,7 +99,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
         {agencies && (agencies.length ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="explore-agency-grid">
             {agencies.map((a) => (
-              <div key={a.id} className="min-w-0 rounded-2xl border bg-card p-2 shadow-sm" data-testid="explore-agency-card">
+              <div key={a.id} className="min-w-0 rounded-xl border bg-card p-3 shadow-none" data-testid="explore-agency-card">
                 <AgencyRow agency={a} viewCountry={country} />
               </div>
             ))}

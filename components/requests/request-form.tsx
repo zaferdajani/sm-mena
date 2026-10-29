@@ -60,7 +60,7 @@ export function RequestForm({
   }
 
   return (
-    <form action={action} className="grid gap-4" data-testid="request-form">
+    <form action={action} className="sw-request-form grid min-w-0 gap-6" data-testid="request-form">
       <FormError message={state?.error ? t(`errors.${state.error}`) : undefined} />
       <input type="hidden" name="source" value={source} />
       {!platforms && defaults.platforms?.map((p) => <input key={p} type="hidden" name="platforms" value={p} />)}
@@ -82,7 +82,7 @@ export function RequestForm({
       <Field label={t("brands")} htmlFor="req-brands">
         <Input id="req-brands" name="brands" maxLength={300} placeholder={t("brandsPlaceholder")} dir="auto" />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="sw-request-field-grid grid gap-4">
         <Field label={t("city")} htmlFor="req-city">
           <select id="req-city" name="city" defaultValue={defaults.city ?? ""} className={select}>
             <option value="">{t("anyCity")}</option>
@@ -105,7 +105,7 @@ export function RequestForm({
       <Field label={t("description")} htmlFor="req-desc">
         <Textarea id="req-desc" name="description" rows={4} minLength={10} maxLength={3000} required defaultValue={defaults.description} placeholder={t("descriptionPlaceholder")} />
       </Field>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="sw-request-field-grid grid gap-4">
         <Field label={t("name")} htmlFor="req-name">
           <Input id="req-name" name="name" required maxLength={80} autoComplete="name" />
         </Field>
