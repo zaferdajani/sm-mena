@@ -114,3 +114,50 @@ test("small-phone invitation and forms wrap rather than clip", async ({ page }, 
     }
   }
 });
+
+
+test("Swiss registration fields stay contained and phone controls never overlap", async ({ page }) => {
+  for (const locale of ["ar", "en"] as const) {
+    for (const width of [320, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${locale}/join`);
+      await page.locator("#name").fill("Swiss Layout Test Agency");
+      await page.locator("#handle").fill(`swiss.layout.${locale}`);
+      await page.getByTestId("join-next").click();
+      await page.getByTestId("join-next").click();
+      const contact = page.locator('[data-step-panel="2"]');
+      await expect(contact).toBeVisible();
+      await expect(page.getByTestId("phone-whatsapp")).toBeVisible();
+      const geometry = await page.evaluate(() => {
+        const panel = document.querySelector('[data-step-panel="2"]')!;
+        const phone = document.querySelector('[data-testid="phone-whatsapp"]')!;
+        const dial = phone.querySelector("label")!;
+        const select = dial.querySelector("select")!;
+        const input = phone.querySelector("input")!;
+        const panelRect = panel.getBoundingClientRect();
+        const dialRect = dial.getBoundingClientRect();
+        const inputRect = input.getBoundingClientRect();
+        const selectRect = select.getBoundingClientRect();
+        return {
+          viewport: document.documentElement.clientWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          panelLeft: panelRect.left,
+          panelRight: panelRect.right,
+          dialRight: dialRect.right,
+          inputLeft: inputRect.left,
+          inputRight: inputRect.right,
+          inputWidth: inputRect.width,
+          selectWidth: selectRect.width,
+          dialWidth: dialRect.width,
+        };
+      });
+      expect(geometry.pageWidth, `${locale} ${width}: document overflow`).toBeLessThanOrEqual(geometry.viewport + 1);
+      expect(geometry.inputWidth, `${locale} ${width}: unusable phone field`).toBeGreaterThan(80);
+      expect(geometry.inputLeft, `${locale} ${width}: phone input overlaps country picker`).toBeGreaterThanOrEqual(geometry.dialRight + 3);
+      expect(geometry.inputRight, `${locale} ${width}: phone input escapes panel`).toBeLessThanOrEqual(geometry.panelRight + 1);
+      expect(geometry.selectWidth, `${locale} ${width}: invisible country select escapes its trigger`).toBeLessThanOrEqual(geometry.dialWidth + 1);
+      await expect(page.locator('[data-step-panel="2"] input[name="consent"]')).toBeVisible();
+      await expect(page.locator('[data-step-panel="2"] input[name="adult"]')).toBeVisible();
+    }
+  }
+});
