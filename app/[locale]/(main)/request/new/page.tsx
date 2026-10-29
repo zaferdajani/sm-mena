@@ -28,9 +28,11 @@ export default async function NewRequestPage({ params, searchParams }: PageProps
   const t = await getTranslations("Requests");
   const options = await serviceAndCityOptions();
   return (
-    <div className="mx-auto max-w-xl space-y-4 px-4 py-6">
-      <h1 className="text-xl font-bold">{t("formTitle")}</h1>
-      <p className="text-sm text-muted-foreground">{t("formSubtitle")}</p>
+    <div className="sw-swiss-request mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="business-request">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
+        <h1 className="text-2xl font-bold">{t("formTitle")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("formSubtitle")}</p>
+      </header>
       {(await demoMode()) && (
         <p className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100" data-testid="demo-request-note">
           {(await getTranslations("Demo"))("requestNote")}
