@@ -114,3 +114,31 @@ test("small-phone invitation and forms wrap rather than clip", async ({ page }, 
     }
   }
 });
+
+
+test("Swiss v2 public discovery and provider profile use the same measured grid", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const locale of ["ar", "en"] as const) {
+    await page.goto(`/${locale}/explore?tab=agencies`);
+    const explore = page.getByTestId("explore-page");
+    await expect(explore).toBeVisible();
+    const exploreMeasure = await explore.evaluate((node) => ({
+      width: node.getBoundingClientRect().width,
+      scrollWidth: document.documentElement.scrollWidth,
+      viewport: document.documentElement.clientWidth,
+    }));
+    expect(exploreMeasure.width).toBeLessThanOrEqual(1088 + 1);
+    expect(exploreMeasure.scrollWidth).toBeLessThanOrEqual(exploreMeasure.viewport + 1);
+    await page.goto(`/${locale}/a/${DEMO_AGENCY.handle}`);
+    const profile = page.getByTestId("provider-profile-layout");
+    await expect(profile).toBeVisible();
+    const profileMeasure = await profile.evaluate((node) => ({
+      width: node.getBoundingClientRect().width,
+      scrollWidth: document.documentElement.scrollWidth,
+      viewport: document.documentElement.clientWidth,
+    }));
+    expect(profileMeasure.width).toBeLessThanOrEqual(1088 + 1);
+    expect(profileMeasure.scrollWidth).toBeLessThanOrEqual(profileMeasure.viewport + 1);
+    expect(Math.abs(profileMeasure.width - exploreMeasure.width)).toBeLessThanOrEqual(2);
+  }
+});
