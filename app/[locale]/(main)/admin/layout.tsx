@@ -50,7 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ];
   return (
     <SwissWorkspace>
-      <div className="flex items-center justify-between px-4 pt-4 sm:pt-8">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-lg font-bold">{t("title")}</h1>
           <p className="text-xs text-muted-foreground">
@@ -67,7 +67,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="mt-3">
         <StudioNav items={nav.filter((i) => can(user.role, i.perm)).map(({ href, label, badge }) => ({ href, label, badge }))} />
       </div>
-      <div className="sw-workspace-body px-4 py-5">{children}</div>
+      <div className="sw-workspace-body py-5">{children}</div>
     </SwissWorkspace>
   );
 }
