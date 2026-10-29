@@ -188,3 +188,117 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
 .sw-choice-chip:has(> input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-deep, var(--brand)); font-weight: 600; }
 .sw-choice-chip:has(> input:checked) > span::before { background: var(--brand); border-color: var(--brand); }
 .sw-choice-chip:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+
+/* Swiss UI v2: one measured workspace for Studio and administration.
+   Geometry is intentionally scoped; route-level forms and data are untouched. */
+.sw-swiss-workspace {
+  --sw-page-gap: clamp(1.25rem, 2vw, 1.5rem);
+  --sw-control-height: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sw-page-gap);
+  min-inline-size: 0;
+  inline-size: 100%;
+  max-inline-size: 68rem;
+  padding-block: 1.5rem 2.5rem;
+}
+.sw-swiss-workspace > :where(* + *) {
+  margin-block-start: 0;
+}
+.sw-swiss-workspace > div:first-child {
+  inline-size: 100%;
+  min-inline-size: 0;
+  margin: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--gold);
+  border-radius: .875rem;
+  box-shadow: none;
+}
+.sw-swiss-workspace .sw-workspace-body {
+  min-inline-size: 0;
+  inline-size: 100%;
+  margin-block-start: 0;
+  padding-block: 0 1.5rem;
+}
+.sw-swiss-workspace .sw-workspace-body > :where(* + *) {
+  margin-block-start: var(--sw-page-gap);
+}
+.sw-swiss-workspace .sw-workspace-body > :where(div, section, form, article) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.sw-swiss-workspace .sw-workspace-nav {
+  display: flex;
+  align-items: stretch;
+  gap: .5rem;
+  padding: .5rem;
+  min-inline-size: 0;
+  margin: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: .875rem;
+  box-shadow: none;
+}
+.sw-swiss-workspace .sw-workspace-nav > a {
+  flex: 0 0 auto;
+  min-block-size: 2.75rem;
+  padding: .625rem 1rem;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: .625rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-weight: 550;
+  line-height: 1.5;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.sw-swiss-workspace .sw-workspace-nav > a:hover:not([aria-current="page"]) {
+  color: var(--foreground);
+  background: var(--brand-soft);
+  border-color: var(--border);
+}
+.sw-swiss-workspace .sw-workspace-nav > a[aria-current="page"] {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+.sw-swiss-workspace .sw-workspace-nav > a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.sw-swiss-workspace :where(input:not([type="checkbox"]), select, textarea) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.sw-swiss-workspace :where(button, input:not([type="checkbox"]), select) {
+  min-block-size: var(--sw-control-height);
+}
+.sw-swiss-workspace :where(section, article, fieldset) {
+  min-inline-size: 0;
+}
+.sw-app:has(.sw-swiss-workspace) .registration-footer {
+  max-inline-size: 68rem;
+  inline-size: calc(100% - 2rem);
+  margin-inline: auto;
+  margin-block-start: 1.5rem;
+  padding-inline: clamp(1rem, 2vw, 1.5rem);
+  border-block-start: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .sw-swiss-workspace {
+    padding-block: 1rem 1.5rem;
+  }
+  .sw-swiss-workspace .sw-workspace-nav {
+    gap: .375rem;
+  }
+  .sw-swiss-workspace .sw-workspace-nav > a {
+    padding-inline: .75rem;
+  }
+  .sw-app:has(.sw-swiss-workspace) .registration-footer {
+    padding-block-end: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+}
