@@ -1,4 +1,4 @@
-import { LayoutDashboard, Plus } from "lucide-react";
+import { LayoutDashboard, Pencil, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,8 @@ export async function OwnerWorkPanel({ empty, hidden }: { empty: boolean; hidden
       )}
       <div className={cn("mt-3 flex flex-wrap gap-2", empty && "justify-center")}>
         <Link href="/studio/new" className={primary} data-testid="owner-add-project"><Plus className="size-4" aria-hidden />{t("add")}</Link>
+        {/* Owners look for edit and delete on their own page (staging feedback, 2026-10-29): one tap to them. */}
+        {!empty && <Link href="/studio/posts" className={secondary} data-testid="owner-edit-projects"><Pencil className="size-4" aria-hidden />{t("edit")}</Link>}
         <Link href="/studio" className={secondary} data-testid="owner-open-studio"><LayoutDashboard className="size-4" aria-hidden />{t("studio")}</Link>
       </div>
     </section>
