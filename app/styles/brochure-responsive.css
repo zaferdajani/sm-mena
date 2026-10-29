@@ -33,3 +33,49 @@
 @media (min-width: 800px) {
   .sw-workspace [data-testid="admin-agencies"] > li { grid-template-columns: minmax(0, 1fr) minmax(0, auto); }
 }
+
+
+/* Swiss v2 owner surfaces: one 68rem page measure, semantic panels, and
+   predictable vertical rhythm across requests, notifications and saved work. */
+[data-design-surface="owner-requests"] > header,
+[data-design-surface="notifications"] > header,
+[data-design-surface="conversations"] > header,
+[data-design-surface="saved-items"] > header {
+  min-inline-size: 0;
+  border-radius: .875rem;
+  box-shadow: none;
+}
+[data-design-surface="owner-requests"] > ul,
+[data-design-surface="saved-items"] > section {
+  min-inline-size: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: .875rem;
+  background: var(--card);
+}
+[data-design-surface="owner-requests"] > ul > li > a {
+  min-block-size: 4rem;
+  padding: 1rem;
+  gap: 1rem;
+}
+[data-design-surface="saved-items"] > section > h2 {
+  margin-block-end: 1rem;
+  padding-inline: 0;
+  font-size: 1.125rem;
+}
+[data-design-surface="saved-items"] > section > div,
+[data-design-surface="saved-items"] > section > p {
+  padding-inline: 0;
+}
+[data-design-surface="owner-requests"] :where(a, button),
+[data-design-surface="saved-items"] :where(a, button) {
+  max-inline-size: 100%;
+}
+[data-design-surface="owner-requests"] > header > div {
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  [data-design-surface="owner-requests"] > header > div {
+    inline-size: 100%;
+  }
+}
