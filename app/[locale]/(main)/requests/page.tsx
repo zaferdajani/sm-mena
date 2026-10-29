@@ -19,7 +19,7 @@ export default async function MyRequestsPage({ params }: PageProps<"/[locale]/re
   const tchat = await getTranslations("Chat");
   const unread = visitorId ? await unreadByRequest(visitorId, rows.map((r) => r.request.id)) : new Map<string, number>();
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="owner-requests">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{t("myRequests")}</h1>
         <div className="flex items-center gap-2">
