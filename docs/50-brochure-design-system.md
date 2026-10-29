@@ -70,3 +70,52 @@ confirm `/api/version` reports `brochure-2026-09-27-v1` and the exact merge SHA,
 then inspect public ar/en landing, `/soon`, profiles, country/language/theme
 controls in a real browser at phone and desktop sizes. Preserve the screenshots
 and report what was actually inspected. Do not call a preview production.
+
+
+## Swiss International Typographic System — v2 migration (2026-10-29)
+
+The founder requested a platform-wide shift from inconsistent floating forms/cards to a
+disciplined Swiss-inspired layout. **This is a progressive design-system migration, not a
+claim that every page is already converted.** Preserve the official green palette,
+Noto Sans Arabic, RTL/LTR support, brand lockup, content and business behavior.
+
+### Shared visual rules
+
+- One app content measure: `--sw-swiss-measure: 68rem` inside the sidebar-aware
+  main content area; avoid independent `max-w-xl/2xl/3xl` wrappers at page root.
+- Use a predictable 8px-derived spacing scale (8, 16, 24, 32px); use responsive
+  16–24px section gutters rather than arbitrary vertical gaps.
+- Forms have an explicit containing card and a semantic rail/panel/aside layout.
+  All controls have >= 44px touch height and never overlap; hidden native
+  country selectors remain fully inside their visible trigger.
+- Use 1-column field grids until the **available panel** width (not viewport width)
+  supports two usable columns. Prefer a full-width phone field and aligned
+  email/password rows. Test with long Arabic labels and native select overlays.
+- Swiss styling means strong type hierarchy, purposeful whitespace, fine dividers,
+  restrained corners and almost no decorative shadows. It does not mean removing
+  Sawwiq green, reducing Arabic legibility or forcing all cards to the same height.
+- Each screen has one page container and clearly grouped sections; no arbitrary
+  nested max-widths, escaped full-bleed content or sidebar/footer collisions.
+- Test 320, 390, 768, 1024, 1440px, both locales, both themes, keyboard navigation,
+  visible focus, native mobile selects and field error states.
+
+### Rollout sequence
+
+1. **Registration /join** — this PR: eliminate compressed desktop inputs, fix
+   phone-country picker overlay, group consent, and apply container-aware grids.
+2. **Studio** — unify all tab roots, header, navigation, sections, tables and
+   footer within the existing 68rem measure; use Publication as an acceptance
+   reference but update its surface styling to the new shared tokens.
+3. **Provider profiles / Explore / requests** — shared cards, typography,
+   action placement, filters, loading/error/empty states and mobile hierarchy.
+4. **Admin and remaining public/legal flows** — apply the same geometry while
+   preserving dense operational tables and explicit permissions.
+5. **Cross-platform visual QA** — visual diffs and interaction checks across
+   Arabic/English, light/dark and mobile/desktop; ship each tranche only after
+   CI and canonical production verification.
+
+The registration work must not be treated as full platform completion. Never
+change database schema, auth semantics, consent requirements, founder benefits,
+launch phase, matching, commissions or deployment settings to achieve a visual
+redesign. Each tranche should be reviewed and merged independently to avoid
+reverting parallel feature work.
