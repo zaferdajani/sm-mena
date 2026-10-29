@@ -16,11 +16,11 @@ export default async function VisitorNotificationsPage({ params }: PageProps<"/[
   // Seen now; this view still shows which ones were new.
   if (visitorId && rows.some((n) => !n.readAt)) await markNotificationsRead({ visitorId });
   return (
-    <div className="mx-auto max-w-2xl space-y-4 px-4 py-6">
-      <div>
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="notifications">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-xl font-bold">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("visitorIntro")}</p>
-      </div>
+      </header>
       <NotificationList rows={rows} empty={t("empty")} />
     </div>
   );
