@@ -39,7 +39,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
 
   return (
     <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="saved-items">
-      <div className="px-4 sm:px-0">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-xl font-bold">{t("title")}</h1>
         {user ? (
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground" data-testid="saved-account">
@@ -61,7 +61,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
           </div>
         )}
         <Link href="/requests" className="mt-2 inline-block text-sm font-medium text-brand">{tr("myRequests")} →</Link>
-      </div>
+      </header>
       <section>
         <h2 className="mb-2 px-4 text-sm font-semibold sm:px-0">{t("agencies")}</h2>
         {followed.length ? (
