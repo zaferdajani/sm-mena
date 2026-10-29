@@ -38,7 +38,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8 px-0 pt-4 sm:px-4 sm:pt-8">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="saved-items">
       <div className="px-4 sm:px-0">
         <h1 className="text-xl font-bold">{t("title")}</h1>
         {user ? (
