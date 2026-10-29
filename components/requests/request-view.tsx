@@ -28,7 +28,7 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
   const open = request.status === "open" && request.expiresAt > new Date();
   const fmtDate = new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { day: "numeric", month: "long" });
   return (
-    <div className="mx-auto max-w-2xl space-y-5 px-4 py-6">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="request-detail">
       <header className="space-y-2">
         <h1 className="text-xl font-bold">{t("pageTitle")}</h1>
         <p className="flex flex-wrap items-center gap-2 text-sm">
