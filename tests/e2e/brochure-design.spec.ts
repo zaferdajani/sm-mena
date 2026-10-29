@@ -117,18 +117,15 @@ test("small-phone invitation and forms wrap rather than clip", async ({ page }, 
 
 
 test("Swiss registration fields stay contained and phone controls never overlap", async ({ page }) => {
+  // Each viewport is an independent first-run journey. Clear the join draft
+  // BEFORE hydration on every navigation: clearing storage and then reloading
+  // is ineffective because JoinForm's pagehide handler saves it again.
+  await page.addInitScript(() => sessionStorage.removeItem("sw:join-draft:v1"));
   for (const locale of ["ar", "en"] as const) {
     for (const width of [320, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(`/${locale}/join`);
-      // Each viewport is an independent first-run registration journey.
-      // The form intentionally persists drafts, so clear the prior viewport's
-      // draft before navigating through the steps again.
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
-      await page.reload();
+      await expect(page.getByTestId("join-form")).toHaveAttribute("data-ready", "true");
       await expect(page.locator("#name")).toBeVisible();
       await page.locator("#name").fill("Swiss Layout Test Agency");
       await page.locator("#handle").fill(`swiss.layout.${locale}.${width}`);
