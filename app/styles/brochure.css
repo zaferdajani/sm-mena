@@ -188,3 +188,212 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
 .sw-choice-chip:has(> input:checked) { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-deep, var(--brand)); font-weight: 600; }
 .sw-choice-chip:has(> input:checked) > span::before { background: var(--brand); border-color: var(--brand); }
 .sw-choice-chip:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+
+/* Sawwiq Swiss UI v1: disciplined grid and predictable field geometry.
+   Scoped to the new registration form; other app workflows are preserved. */
+:root {
+  --sw-swiss-measure: 68rem;
+  --sw-swiss-space-1: .5rem;
+  --sw-swiss-space-2: 1rem;
+  --sw-swiss-space-3: 1.5rem;
+  --sw-swiss-space-4: 2rem;
+  --sw-swiss-control-height: 3.125rem;
+}
+.sw-auth:has(.sw-swiss-form) {
+  justify-content: flex-start;
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+}
+.sw-auth-card:has(.sw-swiss-form) {
+  inline-size: min(100%, 72rem);
+  max-inline-size: 72rem;
+  padding: clamp(1.25rem, 3vw, 3rem);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: none;
+}
+.sw-auth-card:has(.sw-swiss-form) > h1 {
+  max-inline-size: 34ch;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.45;
+  font-weight: 800;
+}
+.sw-swiss-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "rail" "panels" "aside";
+  gap: clamp(1.25rem, 2.4vw, 2rem);
+  align-items: start;
+  margin-block-start: 1.75rem;
+  min-inline-size: 0;
+}
+.sw-swiss-form .sw-join-rail,
+.sw-swiss-form .sw-join-panels,
+.sw-swiss-form .sw-join-aside {
+  min-inline-size: 0;
+}
+.sw-swiss-form .sw-join-panels {
+  container: sw-join-panel / inline-size;
+  gap: var(--sw-swiss-space-3);
+}
+.sw-swiss-form .sw-join-panel {
+  min-inline-size: 0;
+  gap: var(--sw-swiss-space-3);
+}
+.sw-swiss-form .sw-join-panel[hidden] {
+  display: none !important;
+}
+.sw-swiss-form .sw-join-fields-grid,
+.sw-swiss-form .sw-join-location-grid,
+.sw-swiss-form .sw-join-contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sw-swiss-space-3);
+  min-inline-size: 0;
+}
+.sw-swiss-form .sw-join-field {
+  min-inline-size: 0;
+  gap: .55rem;
+}
+.sw-swiss-form .sw-join-field > label {
+  display: block;
+  font-weight: 650;
+  font-size: .925rem;
+  line-height: 1.55;
+  overflow-wrap: normal;
+}
+.sw-swiss-form :where(input:not([type="checkbox"]), select:not([multiple])) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  min-block-size: var(--sw-swiss-control-height);
+  border-radius: .625rem;
+  font-size: 1rem;
+}
+.sw-swiss-form .sw-join-phone-field {
+  grid-column: 1 / -1;
+}
+.sw-swiss-form [data-testid^="phone-"] {
+  display: flex;
+  align-items: stretch;
+  gap: .75rem;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+.sw-swiss-form [data-testid^="phone-"] > label {
+  position: relative;
+  flex: 0 0 auto;
+  inline-size: 8rem;
+  min-block-size: var(--sw-swiss-control-height);
+  border: 1px solid var(--input);
+  border-radius: .625rem;
+  background: var(--card);
+  white-space: nowrap;
+  padding-inline: .65rem;
+}
+.sw-swiss-form [data-testid^="phone-"] > input {
+  flex: 1 1 0%;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+.sw-auth .sw-swiss-form [data-testid^="phone-"] > label > select {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  background-image: none;
+  opacity: 0;
+  appearance: none;
+  cursor: pointer;
+}
+.sw-swiss-form [data-testid^="phone-"] > label:focus-within {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.sw-swiss-form .sw-join-consent {
+  min-inline-size: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: .625rem;
+  background: color-mix(in srgb, var(--card) 88%, var(--brand-soft));
+  line-height: 1.75;
+  align-items: flex-start;
+}
+.sw-swiss-form .sw-join-consent > input[type="checkbox"] {
+  flex: 0 0 auto;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin-block-start: .35rem;
+}
+.sw-swiss-form .sw-join-consent > span {
+  min-inline-size: 0;
+  overflow-wrap: break-word;
+}
+.sw-swiss-form .sw-join-actions {
+  padding-block-start: var(--sw-swiss-space-3);
+  border-block-start: 1px solid var(--border);
+  margin-block-start: var(--sw-swiss-space-1);
+  justify-content: flex-start;
+}
+.sw-swiss-form .sw-join-actions :where(button) {
+  min-block-size: var(--sw-swiss-control-height);
+  border-radius: .625rem;
+}
+.sw-swiss-form .sw-join-rail-steps {
+  gap: .375rem;
+}
+.sw-swiss-form .sw-join-rail-step {
+  min-inline-size: 0;
+  border-radius: .625rem;
+  padding: .875rem .75rem;
+}
+.sw-swiss-form .sw-join-rail-step[data-state="current"] {
+  background: var(--brand-soft);
+}
+@container sw-join-panel (min-width: 42rem) {
+  .sw-swiss-form .sw-join-fields-grid,
+  .sw-swiss-form .sw-join-location-grid,
+  .sw-swiss-form .sw-join-contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sw-swiss-form .sw-join-contact-grid > :nth-child(2) {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1024px) {
+  .sw-swiss-form {
+    grid-template-columns: minmax(13rem, 15rem) minmax(0, 1fr);
+    grid-template-areas: "rail panels" "aside panels";
+    column-gap: clamp(2rem, 3vw, 3.5rem);
+  }
+  .sw-swiss-form .sw-join-rail {
+    padding-inline-end: 1.25rem;
+    border-inline-end: 1px solid var(--border);
+  }
+  .sw-swiss-form .sw-join-rail-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sw-swiss-form .sw-join-rail-step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: start;
+  }
+  .sw-swiss-form .sw-join-rail-text > span {
+    display: block;
+  }
+}
+@media (max-width: 480px) {
+  .sw-auth-card:has(.sw-swiss-form) {
+    padding: 1.25rem;
+  }
+  .sw-swiss-form [data-testid^="phone-"] > label {
+    inline-size: 7.5rem;
+  }
+  .sw-swiss-form .sw-join-consent {
+    padding: .75rem;
+  }
+}
