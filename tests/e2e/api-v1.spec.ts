@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { joinAgency, pngBuffer } from "./helpers";
+import { ADMIN, joinAgency, login, pngBuffer } from "./helpers";
 
 // The bearer API, slice A (docs/architecture/mobile-and-api-roadmap.md §8), end to end against the e2e server
 // (API_V1_ENABLED is on in playwright.config.ts): sign-in → upload → reload → publish → owner-only media with a
@@ -112,4 +112,73 @@ test("a provider completes the setup flow over the API and only its token can re
 test("the API answers 404 to every path when the server switch is off", async ({ request }) => {
   // The switch is on for this server; the unit contract test covers the off state. Here: unknown paths stay 404.
   expect((await request.get("/api/v1/nothing")).status()).toBe(404);
+});
+
+// The native beta (docs/64): the studio's notifications over the API, and crash reports from the app filed in
+// Admin → Bugs without the emails or phone numbers a message might carry.
+test("the app reads and clears notifications, and its crash reports reach Admin → Bugs without contact details", async ({ page, request }) => {
+  test.setTimeout(120_000);
+  const account = await joinAgency(page, "apinotif", { stay: true });
+  expect((await request.get("/api/v1/notifications")).status()).toBe(401);
+  const { token } = await (await request.post("/api/v1/auth/login", { data: { email: account.email, password: account.password } })).json();
+  const auth = { Authorization: `Bearer ${token}` };
+  const list = await request.get("/api/v1/notifications", { headers: auth });
+  expect(list.status()).toBe(200);
+  const body = await list.json();
+  expect(typeof body.unread).toBe("number");
+  expect(Array.isArray(body.items)).toBe(true);
+  const read = await request.post("/api/v1/notifications/read", { headers: auth, data: {} });
+  expect(read.status()).toBe(200);
+  expect((await read.json()).unread).toBe(0);
+  expect((await request.post("/api/v1/notifications/read", { headers: auth, data: { ids: ["x"] } })).status()).toBe(400);
+
+  const marker = `native crash ${Date.now().toString(36)}`;
+  expect((await request.post("/api/v1/errors", { data: { kind: "js_error" } })).status()).toBe(400);
+  const crash = await request.post("/api/v1/errors", {
+    headers: { "x-sawwiq-app": "sawwiq-ios/0.1.0" },
+    data: { kind: "js_error", message: `${marker} for someone@example.com on +962791234567`, stack: "at Screen (someone@example.com)", path: "/studio" },
+  });
+  expect(crash.status()).toBe(204);
+  await login(page, ADMIN.email, ADMIN.password);
+  await page.goto("/en/admin/bugs");
+  const row = page.getByTestId("error-list").locator("li", { hasText: marker });
+  await expect(row).toBeVisible();
+  await expect(row).toContainText("[email]");
+  await expect(row).not.toContainText("someone@example.com");
+  await expect(row).not.toContainText("791234567");
+});
+
+// Sign-up from the app (docs/64, "One app, two sites"): the web's rules over the API, and the new account works at once.
+test("the app creates a provider account with the web's rules and signs in to it", async ({ request }) => {
+  const options = await request.get("/api/v1/auth/signup");
+  expect(options.status()).toBe(200);
+  const offered = await options.json();
+  expect(offered.consentVersion).toBeTruthy();
+  const jordan = offered.countries.find((c: { code: string }) => c.code === "jo");
+  expect(jordan.dial).toBe("962");
+  expect(jordan.cities.map((c: { key: string }) => c.key)).toContain("amman");
+
+  const tag = Date.now().toString(36);
+  const body = { name: `App Studio ${tag}`, handle: `app.${tag}`, city: "amman", whatsapp: "0791234567", whatsappCountry: "JO", email: `app-${tag}@test.jo`, password: "password-123", consent: true, adult: true };
+  // Consent and age are required, exactly as on the web form.
+  expect((await request.post("/api/v1/auth/signup", { data: { ...body, consent: false } })).status()).toBe(400);
+  expect((await request.post("/api/v1/auth/signup", { data: { ...body, adult: undefined } })).status()).toBe(400);
+  const badPhone = await request.post("/api/v1/auth/signup", { data: { ...body, whatsapp: "12-ab" } });
+  expect(badPhone.status()).toBe(400);
+
+  const created = await request.post("/api/v1/auth/signup", { data: body });
+  expect(created.status()).toBe(201);
+  const { token } = await created.json();
+  const me = await (await request.get("/api/v1/me", { headers: { Authorization: `Bearer ${token}` } })).json();
+  expect(me.user.email).toBe(body.email);
+  expect(me.agency.handle).toBe(body.handle);
+
+  const again = await request.post("/api/v1/auth/signup", { data: body });
+  expect(again.status()).toBe(409);
+  expect((await again.json()).error.reason).toBe("handleTaken");
+  const sameEmail = await request.post("/api/v1/auth/signup", { data: { ...body, handle: `app.other.${tag}` } });
+  expect(sameEmail.status()).toBe(409);
+  expect((await sameEmail.json()).error.reason).toBe("emailTaken");
+  // The same password signs in with the normal login.
+  expect((await request.post("/api/v1/auth/login", { data: { email: body.email, password: body.password } })).status()).toBe(201);
 });

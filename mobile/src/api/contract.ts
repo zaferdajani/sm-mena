@@ -63,6 +63,24 @@ export type Agency = {
 export type User = { id: string; email?: string; role: string; mfaEnabled: boolean };
 export type Me = { user: User; agency: Agency | null; setup: Setup | null };
 export type Login = { token: string; expiresAt: string; user: User };
+/** GET /api/v1/auth/signup: what the sign-up form offers. */
+export type SignupOptions = {
+  consentVersion: string;
+  countries: { code: string; ar: string; en: string; flag: string; dial: string; cities: { key: string; ar: string; en: string }[] }[];
+};
+/** POST /api/v1/auth/signup: the web sign-up's fields; consent and age are confirmed by the person in the form. */
+export type SignupBody = {
+  name: string;
+  handle: string;
+  city: string;
+  whatsapp: string;
+  whatsappCountry?: string;
+  email: string;
+  password: string;
+  kind?: "agency" | "freelancer";
+  consent: true;
+  adult: true;
+};
 export type ProjectImage = { url: string; width?: number; height?: number };
 export type Project = {
   id: string;
@@ -87,3 +105,16 @@ export function missingForPublish(view: Pick<Setup, "data" | "media">): PublishB
   if (!view.media.length) return "noMedia";
   return null;
 }
+
+/** GET /api/v1/notifications: the studio's latest items, newest first (lib/data/notifications.ts). */
+export type NotificationItem = {
+  id: number;
+  kind: string;
+  href: string;
+  params: Record<string, string | number>;
+  conversationId: string | null;
+  requestId: string | null;
+  read: boolean;
+  createdAt: string;
+};
+export type NotificationList = { unread: number; items: NotificationItem[] };

@@ -3,9 +3,12 @@ name: Sawwiq phone builds (iPhone unsigned .ipa + Android APK)
 # Manual only: GitHub → Actions → "Sawwiq phone builds" → Run workflow. Never runs on a push (macOS minutes cost
 # 10x; the TeamManager budget was emptied that way).
 #
-# Builds the Expo app in mobile/ with the staging API address baked in (EXPO_PUBLIC_API_URL). The address must be
-# a non-production deployment of this web app with API_V1_ENABLED=true and its own database. Localhost and the
-# production domain are refused. Results land on fixed GitHub Releases:
+# Builds the Expo app in mobile/ with two addresses baked in (docs/64, "One app, two sites"): the real site,
+# https://sawwiq.org (EXPO_PUBLIC_PRODUCTION_URL, fixed), and the staging site from api_url (EXPO_PUBLIC_STAGING_URL).
+# Sign-in tries the real site first; sign-up always creates a real account. The staging address must be
+# a non-production deployment of this web app with API_V1_ENABLED=true and its own database: normally the canonical
+# staging site, https://staging.sawwiq.org (docs/27-vercel.md). Localhost and the production hosts (sawwiq.org,
+# www.sawwiq.org and the production Vercel aliases) are refused. Results land on fixed GitHub Releases:
 #   iphone-latest  → Sawwiq-iPhone.ipa  (unsigned; install with Sideloadly + a free Apple ID)
 #   android-latest → Sawwiq-debug.apk  (debug-signed; install directly on Android)
 
@@ -13,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       api_url:
-        description: "Staging API base URL, e.g. https://sawwiq-staging.example.app (not localhost, not sawwiq.org)"
+        description: "Staging API base URL, normally https://staging.sawwiq.org (never localhost or the production site)"
         required: true
         type: string
       iphone:
@@ -44,9 +47,12 @@ jobs:
             https://*) ;;
             *) echo "::error::api_url must start with https://"; exit 1 ;;
           esac
-          case "$API_URL" in
-            *localhost*|*127.0.0.1*|*\[::1\]*) echo "::error::api_url must not be localhost"; exit 1 ;;
-            *sawwiq.org*) echo "::error::api_url must be a staging deployment, not the production domain"; exit 1 ;;
+          # Compare the host itself, so staging.sawwiq.org is accepted and only the production hosts are refused.
+          host="${API_URL#https://}"; host="${host%%/*}"; host="${host##*@}"; host="${host%%:*}"; host="$(printf '%s' "$host" | tr 'A-Z' 'a-z')"; host="${host%.}"
+          case "$host" in
+            localhost|127.0.0.1|\[*) echo "::error::api_url must not be localhost"; exit 1 ;;
+            sawwiq.org|www.sawwiq.org|sm-mena.vercel.app|sm-mena-zaferdajani.vercel.app|sm-mena-git-main-zaferdajani.vercel.app)
+              echo "::error::api_url must be a staging deployment, not the production site"; exit 1 ;;
           esac
           echo "API address accepted: $API_URL"
 
@@ -78,13 +84,15 @@ jobs:
       - name: Generate the native Android project
         working-directory: mobile
         env:
-          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_STAGING_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_PRODUCTION_URL: https://sawwiq.org
         run: npx expo prebuild --platform android --no-install --clean
 
       - name: Build the debug APK
         working-directory: mobile/android
         env:
-          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_STAGING_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_PRODUCTION_URL: https://sawwiq.org
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Rename the APK
@@ -105,7 +113,7 @@ jobs:
           files: Sawwiq-debug.apk
           body: |
             Android test build of Sawwiq, built from `${{ github.sha }}` (run ${{ github.run_id }}).
-            API address: ${{ inputs.api_url }}
+            Sites: https://sawwiq.org (real, tried first) and ${{ inputs.api_url }} (staging)
             Install: download Sawwiq-debug.apk on the phone and allow installs from this source.
 
   iphone:
@@ -136,7 +144,8 @@ jobs:
       - name: Generate the native iOS project
         working-directory: mobile
         env:
-          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_STAGING_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_PRODUCTION_URL: https://sawwiq.org
         run: npx expo prebuild --platform ios --no-install --clean
 
       - name: Install CocoaPods dependencies
@@ -159,7 +168,8 @@ jobs:
       - name: Archive for a real iPhone, unsigned (Release bundles the JavaScript)
         working-directory: mobile/ios
         env:
-          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_STAGING_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_PRODUCTION_URL: https://sawwiq.org
         run: |
           set +e
           xcodebuild archive \
@@ -206,7 +216,7 @@ jobs:
           files: Sawwiq-iPhone.ipa
           body: |
             iPhone test build of Sawwiq, unsigned, built from `${{ github.sha }}` (run ${{ github.run_id }}).
-            API address: ${{ inputs.api_url }}
+            Sites: https://sawwiq.org (real, tried first) and ${{ inputs.api_url }} (staging)
             **Install:** on a Windows or Mac computer, open Sideloadly, plug in the iPhone,
             drag `Sawwiq-iPhone.ipa` in, sign in with your Apple ID, Start.
             On the iPhone: Settings → Privacy & Security → Developer Mode → On (restart), then
