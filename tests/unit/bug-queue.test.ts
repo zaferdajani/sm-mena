@@ -15,7 +15,8 @@ describe("bug queue", () => {
     expect(sealed.data).not.toContain("الحفظ");
     expect(open(sealed, keys.privateKey)).toEqual(bundle);
     expect(() => open(sealed, newRunKeys().privateKey)).toThrow();
-  });
+    // Two 4096-bit RSA key pairs: the prime search alone can take several seconds on a busy CI runner.
+  }, 60_000);
 
   it("removes emails and phone numbers, in Arabic digits too", () => {
     expect(redactContact("write to sara@agency.jo or call +962 79 123 4567")).toBe("write to [email] or call [phone]");
