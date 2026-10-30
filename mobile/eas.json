@@ -1,0 +1,19 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": { "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-STAGING-HOST" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": { "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-STAGING-HOST" }
+    },
+    "production": {
+      "env": { "EXPO_PUBLIC_API_URL": "https://sawwiq.org" }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
