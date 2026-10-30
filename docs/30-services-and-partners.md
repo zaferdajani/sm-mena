@@ -12,7 +12,7 @@ The catalog is rebuilt with `python3 scripts/gen-service-catalog.py`. Built-in t
 
 **Picking services** (sign-up, Studio → Profile): type part of a name in Arabic or English and pick a suggestion (`components/service-picker.tsx`; letter variants and diacritics are ignored). Choosing a detailed service also adds its core parent, so hire pages, Explore filters and the matcher still find the agency.
 
-**A service that isn't in the list**: "Add “…” as a new service". It is saved as a **pending** tag with the text as typed and shows in the agency's studio as waiting for review, but not on its public page. The same text typed by another agency joins the same proposal; text that matches a tag's name or alias exactly becomes that tag.
+**A service that isn't in the list**: "Add “…” as a new service". It is saved as a **pending** tag with the text as typed. It shows in the agency's studio as waiting for review and on its public page as the agency's service marked **Awaiting approval** (header chips and About; never linked, never used for search or matching until approved). Each new proposal emails the owner and admins (`lib/services/proposal-notify.ts`; the proposed text only, never who typed it) and waits in Admin → Services, where approving it makes it a service everyone can pick. The same text typed by another agency joins the same proposal; text that matches a tag's name or alias exactly becomes that tag.
 
 **Admin → Services** (permission `agencies.moderate`, with a badge for waiting items) lists each proposal and the agencies that used it:
 - **Approve**: Arabic and English names, group, closest main service, roles and other spellings. It becomes a tag (`key` from the English name) and moves onto every agency that typed it.
