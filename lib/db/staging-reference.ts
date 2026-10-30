@@ -3,7 +3,8 @@
 // and project notes, posts with pictures and a video, reviews, a service waiting
 // for approval), and redraws demo pictures whose files are missing from storage.
 // Runs from seedStaging and on every staging build (lib/db/staging-refresh.ts).
-// Refuses production. Idempotent: an account that already has clients is left as is.
+// Refuses production. Idempotent: an account that already has the reference clients is left as is; clients and texts
+// people added themselves are kept.
 import { and, eq, inArray, sql } from "drizzle-orm";
 import sharp from "sharp";
 import { COUNTRIES, type Country } from "@/lib/countries";
@@ -16,6 +17,7 @@ import { agencies, portfolioClients, postImages, posts, reviews } from "@/lib/db
 import { newAvatarKey, newClientLogoKey, processAvatar, processImage } from "@/lib/images";
 import { resolveServices } from "@/lib/services/tags";
 import { embedFromUrl } from "@/lib/social/embed";
+import { isServiceKey } from "@/lib/taxonomy";
 import { storage } from "@/lib/storage";
 import { demoAvatar, demoImage, type DemoKind } from "./demo-images";
 
@@ -124,25 +126,32 @@ const neighbours = (code: string) => COUNTRIES.map((c) => c.code).filter((c) => 
 async function fillAgency(handle: string, country: Country, freelancer: boolean, log: (...a: unknown[]) => void) {
   const db = await getDb();
   const [agency] = await db.select().from(agencies).where(eq(agencies.handle, handle));
-  if (!agency || (await listClients(agency.id)).length) return false;
+  if (!agency) return false;
+  // Filled once: the reference clients are the marker. Clients and edits people added themselves are kept.
+  const refNames = new Set([...AGENCY_CLIENTS, ...FREELANCER_CLIENTS].map((c) => c.name));
+  if ((await listClients(agency.id)).some((c) => refNames.has(c.name))) return false;
   const code = country.code;
+  const seeded = (text: string) => !text || text.startsWith("Demo ");
 
-  const avatarKey = newAvatarKey(agency.id);
-  await storage().put(avatarKey, await processAvatar(await demoAvatar(freelancer ? "SC" : "SA", code.charCodeAt(0) * 7 + (freelancer ? 3 : 1))), "image/webp");
+  let avatarKey = agency.avatarKey;
+  if (!avatarKey) {
+    avatarKey = newAvatarKey(agency.id);
+    await storage().put(avatarKey, await processAvatar(await demoAvatar(freelancer ? "SC" : "SA", code.charCodeAt(0) * 7 + (freelancer ? 3 : 1))), "image/webp");
+  }
   await db
     .update(agencies)
     .set({
       avatarKey,
-      bio: freelancer
+      bio: !seeded(agency.bio) ? agency.bio : freelancer
         ? `مصوّر وصانع محتوى تجريبي في ${country.ar}: تصوير طعام ومنتجات وريلز قصيرة.`
         : `وكالة تسويق تجريبية في ${country.ar}: إدارة حسابات ومحتوى وإعلانات للمخابز والمقاهي والعيادات.`,
-      about: freelancer
+      about: agency.about ? agency.about : freelancer
         ? `حساب مرجعي في بيئة الاختبار يوضّح شكل ملف مستقل مكتمل. أصوّر الطعام والمنتجات في موقع العميل، وأسلّم الصور معدّلة خلال 48 ساعة، وأصنع ريلز قصيرة جاهزة للنشر. أعمل مع المخابز والمقاهي والمتاجر في ${country.ar}.`
         : `حساب مرجعي في بيئة الاختبار يوضّح شكل ملف وكالة مكتمل: عملاء بشعاراتهم وحساباتهم، ومشاريع بصورها وفيديوهاتها، وباقات بأسعارها، وتقييمات. فريقنا يخطط المحتوى شهرياً، ويصوّر في موقع العميل، ويدير الإعلانات، ويرسل تقريراً شهرياً بالأرقام. نعمل في ${country.ar} والدول المجاورة.`,
-      strengths: freelancer
+      strengths: agency.strengths.length ? agency.strengths : freelancer
         ? ["تصوير طعام في الموقع", "تسليم خلال 48 ساعة", "ريلز قصيرة جاهزة للنشر"]
         : ["ريلز ترفع الطلبات", "إعلانات محلية حول الفروع", "إدارة يومية للتعليقات والرسائل", "تقرير شهري بالأرقام"],
-      services: freelancer ? ["creative", "photography", "video_production", "social_media", "smm_content"] : ["social_media", "smm_management", "smm_content", "paid_media", "ads_meta", "ads_google", "creative", "photography"],
+      services: [...new Set([...agency.services, ...(freelancer ? ["photography", "video_production", "smm_content"] : ["smm_management", "smm_content", "ads_meta", "ads_google", "photography"])])].filter(isServiceKey),
       platforms: freelancer ? ["instagram", "tiktok"] : ["instagram", "tiktok", "facebook", "google"],
       industries: freelancer ? ["restaurant_cafe", "retail_shop"] : ["restaurant_cafe", "clinic_health", "retail_shop"],
       servesCountries: freelancer ? [] : neighbours(code),
@@ -213,7 +222,7 @@ async function fillAgency(handle: string, country: Country, freelancer: boolean,
     ["Omar (demo)", "Quiet Corner Café", "Great content and clear monthly reports. Our new branch got busy fast.", 5],
     ["د. رنا (تجريبي)", "عيادة ابتسامة", "التزموا بضوابط الإعلان الطبي وخفّضوا تكلفة الحجز.", 4],
   ] as const;
-  await db.insert(reviews).values(
+  const added = await db.insert(reviews).values(
     rows.map(([name, business, body, rating], k) => ({
       agencyId: agency.id,
       source: "invite" as const,
@@ -233,13 +242,13 @@ async function fillAgency(handle: string, country: Country, freelancer: boolean,
       consentVersion: "2026-09",
       createdAt: new Date(now - (k + 1) * 9 * 24 * 3600 * 1000),
     })),
-  );
-  const sum = rows.reduce((s, r) => s + r[3], 0);
-  await db.update(agencies).set({ ratingSum: sql`${agencies.ratingSum} + ${sum}`, ratingCount: sql`${agencies.ratingCount} + ${rows.length}` }).where(eq(agencies.id, agency.id));
+  ).onConflictDoNothing().returning({ rating: reviews.rating });
+  const sum = added.reduce((s, r) => s + r.rating, 0);
+  if (added.length) await db.update(agencies).set({ ratingSum: sql`${agencies.ratingSum} + ${sum}`, ratingCount: sql`${agencies.ratingCount} + ${added.length}` }).where(eq(agencies.id, agency.id));
 
   // A service the account typed itself: shown on the profile as awaiting approval, and waiting in Admin → Services.
   const proposed = await resolveServices(agency.id, [], [freelancer ? "تصوير جوي بالدرون" : "إدارة حجوزات المطاعم عبر واتساب"]);
-  if (proposed.pending.length) await db.update(agencies).set({ pendingServices: proposed.pending }).where(eq(agencies.id, agency.id));
+  if (proposed.pending.length) await db.update(agencies).set({ pendingServices: [...new Set([...agency.pendingServices, ...proposed.pending])] }).where(eq(agencies.id, agency.id));
 
   log(`  filled @${handle}: ${packages.length} packages, ${postCount} posts, ${(freelancer ? FREELANCER_CLIENTS : AGENCY_CLIENTS).length} clients`);
   return true;
@@ -303,6 +312,10 @@ async function repairDemoMedia(log: (...a: unknown[]) => void) {
 export async function fillReferenceAccounts(log: (...a: unknown[]) => void = console.log) {
   if (!isStagingMode()) return;
   assertStagingDatabase();
+  // First fills (before this fix) stored category names as services; keep only real service keys.
+  const db = await getDb();
+  const staged = await db.select({ id: agencies.id, services: agencies.services }).from(agencies).where(sql`${agencies.handle} like 'staging.%'`);
+  for (const a of staged) if (!a.services.every(isServiceKey)) await db.update(agencies).set({ services: a.services.filter(isServiceKey) }).where(eq(agencies.id, a.id));
   for (const country of COUNTRIES) {
     await fillAgency(`staging.agency.${country.code}`, country, false, log);
     await fillAgency(`staging.free.${country.code}`, country, true, log);

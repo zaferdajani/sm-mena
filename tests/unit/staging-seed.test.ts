@@ -1,13 +1,14 @@
 import "./setup-db";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { verifyPassword } from "@/lib/auth/password";
+import { isServiceKey } from "@/lib/taxonomy";
 import { COUNTRIES } from "@/lib/countries";
 import { createAgency } from "@/lib/data/agencies";
 import { createUser, getUserByEmail } from "@/lib/data/users";
 import { closeDb, getDb } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { listClients } from "@/lib/data/portfolio-clients";
-import { agencies, contracts, packages, posts, reviews, users } from "@/lib/db/schema";
+import { listClients, saveClient } from "@/lib/data/portfolio-clients";
+import { agencies, contracts, packages, portfolioClients, posts, reviews, users } from "@/lib/db/schema";
 import { STAGING_PASSWORD, seedStaging } from "@/lib/db/seed-staging";
 
 afterAll(() => closeDb());
@@ -78,6 +79,7 @@ describe("staging seed", () => {
       expect(a.strengths.length).toBeGreaterThan(2);
       expect(a.avatarKey).toBeTruthy();
       expect(a.pendingServices).toHaveLength(1);
+      expect(a.services.every(isServiceKey)).toBe(true);
       const clients = await listClients(a.id);
       expect(clients).toHaveLength(clientCount);
       expect(clients.every((c) => c.logoKey && c.links.length && c.description.length > 80)).toBe(true);
@@ -87,5 +89,12 @@ describe("staging seed", () => {
       expect(await db.select().from(packages).where(eq(packages.agencyId, a.id))).toHaveLength(packageCount);
       expect(await db.select().from(reviews).where(eq(reviews.agencyId, a.id))).toHaveLength(3);
     }
+
+    // An account where someone already added a client of their own still gets the reference clients, and keeps theirs.
+    const [own] = await db.select().from(agencies).where(eq(agencies.handle, "staging.free.ae"));
+    await db.delete(portfolioClients).where(eq(portfolioClients.agencyId, own.id));
+    await saveClient(own.id, null, { name: "The Ramp", links: [] });
+    await seedStaging(() => {});
+    expect((await listClients(own.id)).map((c) => c.name).sort()).toEqual(["The Ramp", "متجر ليلك للأزياء (تجريبي)", "مخبز السنابل (تجريبي)"].sort());
   }, 300_000);
 });
