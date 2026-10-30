@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, joinAgency, login, uniqueHandle, nextJoinStep } from "./helpers";
+import { ADMIN, joinAgency, login, uniqueHandle } from "./helpers";
 
 // Services as tags (with admin review of new ones) and agencies finding partners (docs/30).
 
@@ -10,15 +10,6 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   await agencyPage.goto("/en/join");
   await agencyPage.fill("#name", `Agency ${handle}`);
   await agencyPage.fill("#handle", handle);
-  await nextJoinStep(agencyPage);
-  // Who's on the team: no videographer, so partners are offered for it.
-  await agencyPage.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
-  await agencyPage.getByTestId("service-search").fill("reels");
-  await agencyPage.getByTestId("service-suggestion").first().click();
-  await agencyPage.getByTestId("service-search").fill(service);
-  await agencyPage.getByTestId("service-add-new").click();
-  await expect(agencyPage.getByTestId("new-service")).toContainText(service);
-  await nextJoinStep(agencyPage);
   await agencyPage.fill("#whatsapp", "0791112233");
   await agencyPage.fill("#email", `${handle}@test.jo`);
   await agencyPage.fill("#password", "password-123");
@@ -28,6 +19,16 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
   await agencyPage.waitForURL(/\/en\/portfolio-setup/);
   await agencyPage.goto("/en/studio/profile?welcome=1");
+  // Who's on the team: no videographer, so partners are offered for it. Services are tags, new ones wait for review.
+  await agencyPage.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
+  await agencyPage.getByTestId("service-search").fill("reels");
+  await agencyPage.getByTestId("service-suggestion").first().click();
+  await agencyPage.getByTestId("service-search").fill(service);
+  await agencyPage.getByTestId("service-add-new").click();
+  await expect(agencyPage.getByTestId("new-service")).toContainText(service);
+  await agencyPage.getByTestId("profile-form").locator('button[type="submit"]').click();
+  await expect(agencyPage).toHaveURL(/\/en\/studio\/packages\?welcome=1/);
+  await agencyPage.goto("/en/studio/profile");
   // Waiting for review in the studio, not on the public page yet.
   await expect(agencyPage.getByTestId("service-picker")).toContainText(service);
   await agencyPage.goto(`/en/a/${handle}?tab=about`);

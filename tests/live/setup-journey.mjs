@@ -57,25 +57,11 @@ try {
     await wizard.waitFor({ timeout: 30_000 });
   }
   await shot(page, "1-setup-open");
-  let stepAttr = await wizard.getAttribute("data-step");
-  step("setup opens", Boolean(stepAttr), `step ${stepAttr}`);
-  if (stepAttr === "1") await page.getByTestId("setup-profile-skip").click();
-  // A draft an earlier run left behind resumes where it stopped: walk back to the source step.
-  for (let n = Number(stepAttr); n > 2; n--) {
-    await page.getByTestId("setup-back").click();
-    await page.locator(`[data-testid="setup-wizard"][data-step="${n - 1}"]`).waitFor({ timeout: 30_000 });
-  }
-  await page.getByTestId("setup-source").waitFor();
-  await page.getByTestId("source-social").click();
-  const blockers = await page.locator('[data-testid^="provider-blocker-"]').count();
+  // One screen (docs/65): photos, name, services, client and the publish box together.
+  await page.getByTestId("setup-project").waitFor({ timeout: 30_000 });
+  step("setup opens", true, "one screen");
   const connects = await page.locator('[data-testid^="connect-"]').count();
-  step("providers honest", blockers === 5 && connects === 0, `${blockers} blockers, ${connects} connect buttons`);
-  await shot(page, "2-source-providers");
-  await page.getByTestId("source-upload").click();
-  await page.getByTestId("setup-client").waitFor();
-  await page.getByTestId("client-mode-private").check();
-  await page.getByTestId("setup-client-next").click();
-  await page.getByTestId("setup-project").waitFor();
+  step("no dead-end connect buttons", connects === 0, `${connects} connect buttons`);
   // Images left by an earlier run are removed so the check below counts this run's only image.
   for (let left = await page.getByTestId("setup-media").locator("li").count(); left > 0; left--) {
     await page.getByTestId("setup-media").locator("li").first().getByRole("button", { name: "احذف" }).click();
@@ -89,22 +75,18 @@ try {
   const anonStatus = (await anon.request.get(`${site}${mediaSrc}`)).status();
   await anon.close();
   step("staged image hidden from others", anonStatus === 404, `HTTP ${anonStatus}`);
-  // Resume: a reload keeps the step and the staged image (text is saved on
-  // Continue, so it is typed after the reload).
+  // Resume: a reload keeps the staged image (text is saved on Finish later or publish, so it is typed after).
   await page.reload();
   await page.getByTestId("setup-wizard").waitFor();
-  const after = await page.getByTestId("setup-wizard").getAttribute("data-step");
   await page.getByTestId("setup-media").locator("li").first().waitFor({ timeout: 30_000 }).catch(() => undefined);
   const kept = await page.getByTestId("setup-media").locator("li").count();
-  step("resume after reload", after === "4" && kept === 1, `step ${after}, ${kept} image`);
+  step("resume after reload", kept === 1, `${kept} image`);
   await page.getByTestId("setup-project-title").fill("فحص الإعداد المباشر");
   await page.getByTestId("setup-project-contribution").fill("مشروع فحص مؤقت، يُحذف بعد الفحص.");
   await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
+  await page.getByTestId("client-mode-private").check({ force: true });
   await shot(page, "3-project");
-  await page.getByTestId("setup-project-next").click();
-  await page.getByTestId("setup-preview").waitFor();
   const visibility = await page.getByTestId("setup-visibility").getAttribute("data-visibility");
-  await shot(page, "4-preview");
   await page.getByTestId("setup-rights").check();
   await page.getByTestId("setup-publish").click();
   await page.getByTestId("setup-finished").waitFor({ timeout: 60_000 });

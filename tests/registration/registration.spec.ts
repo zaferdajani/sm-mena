@@ -111,6 +111,7 @@ test("new account owns a private profile; upload, preview, link-sharing and revo
     await page.goto("/en/studio/new");
     await page.getByTestId("image-input").setInputFiles({ name: "portfolio.png", mimeType: "image/png", buffer: await pngBuffer("#106b4c", 800, 800) });
     await page.fill("#caption", "Private registration portfolio specimen");
+    await page.locator('input[name="services"][value="photography"]').check({ force: true }); // nothing is pre-ticked (docs/65)
     await page.getByTestId("publish-button").click();
     await expect(page).toHaveURL(/\/en\/p\//, { timeout: 45_000 });
     const postUrl = page.url();
@@ -162,25 +163,25 @@ test("320px Arabic pages and example tabs do not overflow", async ({ page }, inf
 test("the first-run setup saves the first project to a private page during registration", async ({ page, browser }, info) => {
   test.setTimeout(150_000);
   const { handle } = await joinAgency(page, "regwiz", { stay: true });
-  await expect(page.getByTestId("setup-wizard")).toHaveAttribute("data-step", "1");
-  await page.getByTestId("setup-profile-skip").click();
-  await page.getByTestId("source-upload").click();
-  await page.getByTestId("client-mode-private").check();
-  await page.getByTestId("setup-client-next").click();
+  await expect(page.getByTestId("setup-wizard")).toBeVisible();
   await page.getByTestId("setup-image-input").setInputFiles({ name: "a.png", mimeType: "image/png", buffer: await pngBuffer("#7a1f4d") });
   await expect(page.getByTestId("setup-media").locator("li")).toHaveCount(1, { timeout: 30_000 });
   await page.getByTestId("setup-project-title").fill("Private launch");
   await page.getByTestId("setup-project-contribution").fill("I shot everything.");
   await page.locator('[data-testid^="setup-service-"]').first().check({ force: true });
-  await page.getByTestId("setup-project-next").click();
-  // A registration account is private: the last step saves, it does not publish.
+  await page.getByTestId("client-mode-private").check({ force: true });
+  // A registration account is private by default: with no other choice, the button saves, it does not publish.
   await expect(page.getByTestId("setup-visibility")).toHaveAttribute("data-visibility", "private");
-  await expect(page.getByTestId("setup-publish")).toHaveText("Save my portfolio");
-  await capture(page, info, "registration-setup-preview-private");
+  await expect(page.getByTestId("setup-publish")).toHaveText("Save my work (page stays private)");
+  await capture(page, info, "registration-setup-private");
   await page.getByTestId("setup-rights").check();
   await page.getByTestId("setup-publish").click();
-  await expect(page.getByTestId("setup-finished")).toContainText("Your first project is saved");
-  await expect(page.getByTestId("setup-choose-audience")).toHaveAttribute("href", "/en/studio/publication");
+  const finished = page.getByTestId("setup-finished");
+  await expect(finished).toHaveAttribute("data-visibility", "private");
+  await expect(finished).toContainText("Your work is saved");
+  // Publishing is offered right here, with the same acknowledgement as Studio → Publication.
+  await expect(page.getByTestId("setup-publish-later")).toBeVisible();
+  await expect(page.getByTestId("setup-publish-now")).toBeDisabled();
   await capture(page, info, "registration-setup-saved");
   // Nobody else can see the page or the project.
   const anon = await browser.newContext();

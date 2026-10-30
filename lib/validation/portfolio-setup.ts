@@ -37,10 +37,24 @@ export const setupClientSchema = z.object({
 export const setupProjectSchema = z.object({
   version: setupVersionSchema,
   title: z.string().trim().min(2).max(120),
-  contribution: z.string().trim().min(2).max(600),
+  // "Your part" is optional (docs/65): the cover, a name and one service are the publish gate.
+  contribution: z.string().trim().max(600),
   services: z.array(z.string().max(60)).min(1).max(6),
   behanceImages: z.array(z.string().url().max(1000)).max(MAX_IMAGES_PER_POST).optional(),
 });
+
+/** The one-screen setup (docs/65): the project, who it was for, the rights box and who may see the page. */
+export const setupFinishSchema = setupProjectSchema.extend({
+  client: z.object({
+    mode: z.enum(["existing", "new", "personal", "private"]),
+    clientId: z.string().uuid().optional(),
+    name: z.string().trim().max(80).optional(),
+  }),
+  rights: z.boolean(),
+  visibility: z.enum(["private", "unlisted", "public"]),
+  acknowledge: z.boolean(),
+});
+export type SetupFinishInput = z.infer<typeof setupFinishSchema>;
 
 export type SetupProfileInput = z.infer<typeof setupProfileSchema>;
 export type SetupBehanceInput = z.infer<typeof setupBehanceSchema>;

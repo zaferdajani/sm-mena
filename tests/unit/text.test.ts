@@ -4,6 +4,7 @@ import {
   normalizeForSearch,
   normalizePhone,
   normalizeUrl,
+  suggestHandle,
   validateHandle,
   whatsappLink,
 } from "@/lib/text";
@@ -29,6 +30,18 @@ describe("validateHandle", () => {
     expect(validateHandle("a..b")).toBe("invalid");
     expect(validateHandle("has space")).toBe("invalid");
     expect(validateHandle("admin")).toBe("reserved");
+  });
+});
+
+describe("suggestHandle", () => {
+  it("builds a page link from a Latin name and gives nothing for an Arabic one", () => {
+    expect(suggestHandle("Nakhla Studio")).toBe("nakhla.studio");
+    expect(suggestHandle("  Café  Nour & Co. ")).toBe("cafe.nour.co");
+    expect(suggestHandle("استوديو النخلة")).toBe("");
+    expect(suggestHandle("ab")).toBe("");
+    expect(suggestHandle("admin")).toBe("");
+    expect(suggestHandle("a".repeat(40))).toHaveLength(30);
+    expect(suggestHandle("zafer.dajani@gmail.com".split("@")[0])).toBe("zafer.dajani");
   });
 });
 

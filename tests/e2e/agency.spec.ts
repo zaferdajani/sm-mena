@@ -4,8 +4,6 @@ import { pngBuffer, uniqueHandle, nextJoinStep } from "./helpers";
 test("an agency joins, completes its page, publishes and deletes a post", async ({ page }) => {
   const handle = uniqueHandle();
   await page.goto("/en/join");
-  // Before signing up, a provider learns that a Behance portfolio carries over.
-  await expect(page.getByTestId("join-behance")).toContainText("Behance");
   await page.fill("#name", "E2E Agency");
   await page.fill("#handle", handle);
   await nextJoinStep(page);
@@ -36,10 +34,10 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   await expect(page.getByTestId("packages-welcome")).toContainText("Page saved.");
   await expect(page.getByTestId("packages-behance")).toHaveAttribute("href", "/en/studio/import/behance");
   await page.goto("/en/studio");
-  await expect(page.getByTestId("setup-profile")).toHaveAttribute("data-done", "true");
-  await expect(page.getByTestId("setup-packages")).toHaveAttribute("data-done", "false");
-  // Until the first post exists, the setup list leads with the Behance import.
-  await expect(page.getByTestId("setup-behance-link")).toHaveAttribute("href", "/en/studio/import/behance");
+  // Honest progress (docs/65): services are done, the first work is the next step, nothing is ticked by default.
+  await expect(page.getByTestId("page-step-services")).toHaveAttribute("data-done", "true");
+  await expect(page.getByTestId("page-step-work")).toHaveAttribute("data-done", "false");
+  await expect(page.getByTestId("page-strength")).toHaveAttribute("data-next", "work");
 
   // On their own page with no work yet, the owner is sent to the Studio to add a project.
   await page.goto(`/en/a/${handle}`);
@@ -54,6 +52,8 @@ test("an agency joins, completes its page, publishes and deletes a post", async 
   ]);
   await page.fill("#caption", "E2E campaign for a local café");
   await page.fill("#result", "+60% reach");
+  // Nothing is pre-ticked (docs/65): the agency's own service is one tap away.
+  await page.locator('input[name="services"][value="ads_tiktok"]').check({ force: true });
   await page.getByTestId("publish-button").click();
   await expect(page).toHaveURL(/\/en\/p\//, { timeout: 30_000 });
   await expect(page.getByTestId("post-card")).toContainText("E2E campaign");

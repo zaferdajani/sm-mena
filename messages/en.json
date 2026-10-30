@@ -115,7 +115,12 @@
     "back": "Back",
     "draftNote": "What you type stays on this device until you finish, so you can leave and come back.",
     "forgot": "Forgot your password?",
-    "adult": "I confirm I am 18 or older (or the legal age where I live, if higher)."
+    "adult": "I confirm I am 18 or older (or the legal age where I live, if higher).",
+    "freelancerName": "Your name or brand",
+    "handleAuto": "Your page link. We suggested it from your name; you can change it.",
+    "passwordHint": "At least 8 characters.",
+    "refCodeOpen": "Did a Sawwiq agent introduce you? Add their code",
+    "consentLink": "Read the terms"
   },
   "Cities": {
     "amman": "Amman",
@@ -704,6 +709,15 @@
       "empty": "Nobody follows your page yet. Share it with clients you already work with; a page with real work gets followed first.",
       "followedAt": "followed {when}",
       "privacy": "Addresses are shown partly hidden: followers are clients who chose to see your work, not a contact list. Write to them through Sawwiq when they send a request or message."
+    },
+    "nav": {
+      "home": "Home",
+      "work": "My work",
+      "page": "My page",
+      "account": "Account",
+      "more": "More",
+      "addWork": "Add work",
+      "import": "Import work"
     }
   },
   "Admin": {
@@ -4755,7 +4769,8 @@
       "publishNote": "Adding work saves it to your page under your chosen visibility. A private page stays private; adding a project never enrolls it in the public directory.",
       "ownersSoFar": "{count, plural, =0 {No business owners have registered yet.} one {# business owner has registered so far} other {# business owners have registered so far}}",
       "ownersInCountry": "{count, plural, =0 {none in {country} yet} one {# in {country}} other {# in {country}}}",
-      "ownersNote": "They are matched to providers by city and services when pages open."
+      "ownersNote": "They are matched to providers by city and services when pages open.",
+      "importLink": "Import from Behance or a PDF"
     },
     "publication": {
       "title": "Profile and portfolio visibility",
@@ -4953,7 +4968,7 @@
       "tooMany": "A project can have up to 10 images.",
       "noServices": "Choose at least one service.",
       "noMedia": "Add at least one image. One is enough.",
-      "noProject": "Add a project name and one sentence about your part.",
+      "noProject": "Give the project a name.",
       "rights": "Please confirm you have the right to show this work.",
       "item": "That item isn't available any more. Choose another or upload images.",
       "duplicate": "This item is already one of your projects.",
@@ -4963,7 +4978,8 @@
       "generic": "Something went wrong. Your draft is saved; please try again.",
       "avatar": "That picture couldn't be used. Try a JPEG, PNG or WebP image.",
       "limit": "Your plan's project limit is reached.",
-      "unavailable": "This option isn't available right now. You can upload your images instead."
+      "unavailable": "This option isn't available right now. You can upload your images instead.",
+      "acknowledge": "Tick the box to confirm who can see your page."
     },
     "profile": {
       "title": "Let's set up your portfolio.",
@@ -5089,6 +5105,80 @@
       "caption": "Description",
       "open": "Open this project",
       "openExamples": "See all example pages"
+    },
+    "work": {
+      "title": "Show your work",
+      "body": "One project is enough to start. Photos first, then a name and what the work shows.",
+      "media": "Photos of the work",
+      "addPhotos": "Choose photos",
+      "addPhotosHint": "From your phone, Drive or WhatsApp. Up to 10; the first one is the cover.",
+      "mediaHint": "Screenshots of posts count. Images stay private until you publish.",
+      "orPdf": "Or a PDF portfolio",
+      "orBehance": "Or a Behance link",
+      "bulkImport": "Many projects at once? Use the import tool.",
+      "connect": "Connect a social account",
+      "services": "What did you do on this project?",
+      "servicesHint": "One is enough. It is saved as a service on your page too; you can add more later.",
+      "contribution": "Your part, in a sentence (optional)",
+      "clientTitle": "Who was it for? (optional)",
+      "clientHint": "The name shows on your page. Leave it empty to keep the client private.",
+      "clientMode": {
+        "existing": "One of my clients",
+        "new": "A client or brand",
+        "personal": "Personal work",
+        "private": "Confidential client"
+      }
+    },
+    "publishBox": {
+      "title": "Who can see your page?",
+      "publish": "Publish my page",
+      "savePrivate": "Save my work (page stays private)",
+      "result": {
+        "private": "Your work is saved to your page. Only you can open the page until you change this.",
+        "unlisted": "Anyone with the link can open your page and this project. It stays out of search.",
+        "public": "Anyone can open your page. When Sawwiq opens to business owners, it can appear in search and be suggested to them."
+      }
+    },
+    "visibility": {
+      "current": "now",
+      "private": {
+        "title": "Private",
+        "hint": "Only you. You can change this any time."
+      },
+      "unlisted": {
+        "title": "Anyone with the link",
+        "hint": "Share the link yourself; not in search or listings."
+      },
+      "public": {
+        "title": "Public",
+        "hint": "Open to everyone, and in search when Sawwiq opens to business owners."
+      }
+    },
+    "live": {
+      "title": {
+        "public": "Your page is live",
+        "unlisted": "Your page opens with its link",
+        "private": "Your work is saved; your page is private"
+      },
+      "body": {
+        "public": "Share the link: clients contact you directly on WhatsApp, with no commission.",
+        "unlisted": "Only people you send the link to can open it.",
+        "private": "Nobody else can open it yet. Publish it when you are ready."
+      },
+      "whatsapp": "Share on WhatsApp",
+      "whatsappText": "See our work on Sawwiq: {url}",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "direct": "Put the link in your Instagram bio and WhatsApp status: your own audience becomes your clients.",
+      "view": "See my page",
+      "more": "Add another work",
+      "stronger": "Make your page stronger",
+      "strongerItems": {
+        "logo": "Add your logo or photo",
+        "intro": "Write a two-line introduction",
+        "price": "Add a package or a starting price",
+        "moreWork": "Add two more projects: pages with 3 look real"
+      }
     }
   },
   "Social": {
@@ -5560,6 +5650,30 @@
     "errors": {
       "confirm": "That isn't the email of this account.",
       "rateLimited": "Too many tries. Wait a few minutes."
+    }
+  },
+  "PageStrength": {
+    "title": "Your page",
+    "status": {
+      "private": "Private",
+      "unlisted": "Link only",
+      "public": "Public"
+    },
+    "notReady": "A few steps and the matchmaker can recommend you.",
+    "ready": "Match-ready: business owners can be matched with you.",
+    "strong": "Strong page. Keep adding work.",
+    "all": "All steps ({done} of {total})",
+    "steps": {
+      "work": "Add your first work",
+      "services": "Choose the services you offer",
+      "whatsapp": "Add your WhatsApp number",
+      "city": "Choose your city",
+      "publish": "Publish your page",
+      "intro": "Write a short introduction",
+      "logo": "Add your logo or photo",
+      "platforms": "Choose the platforms you work on",
+      "price": "Add a package or a starting price",
+      "moreWork": "Add two more projects"
     }
   }
 }

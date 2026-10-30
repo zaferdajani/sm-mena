@@ -13,11 +13,12 @@ import { postFormOptions } from "@/lib/studio-options";
 import { canUse } from "@/lib/feature-gate";
 import { mediaUrl } from "@/lib/storage";
 import { FOOTER_SERVICES } from "@/components/shell/site-footer";
+import { SITE_URL } from "@/lib/site";
 
-// First-run portfolio setup (docs/53): five short steps with real input, saved
+// First-run portfolio setup (docs/65): one screen with real input, saved
 // privately on the server and resumable. Nothing is public until the owner
-// publishes on the last step. Outside the Studio layout on purpose: no
-// unrelated tools while setting up; language, help and account stay reachable.
+// publishes. Outside the Studio layout on purpose: no unrelated tools while
+// setting up; language, help and account stay reachable.
 export default async function PortfolioSetupPage({ params, searchParams }: PageProps<"/[locale]/portfolio-setup">) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -32,6 +33,11 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];
   const staged = view.data.socialItemId ? await getItemForAgency(agency.id, view.data.socialItemId) : null;
   const options = await postFormOptions(agency.services, agency.id);
+  // Services are asked here for the first time (docs/65): the common ones come first, the rest one tap away.
+  const popular = new Set<string>(FOOTER_SERVICES);
+  const services = options.services.primary.length
+    ? options.services
+    : { primary: options.services.other.filter((o) => popular.has(o.key)), other: options.services.other.filter((o) => !popular.has(o.key)) };
   const t = await getTranslations("Setup");
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-5">
@@ -47,8 +53,8 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
           services: agency.services,
           contentLang: agency.contentLang === "en" ? "en" : "ar",
         }}
-        serviceOptions={options.services}
-        popularServices={[...FOOTER_SERVICES]}
+        serviceOptions={services}
+        siteUrl={SITE_URL}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}
         importsOn={imports}
         providers={providerStates()}

@@ -22,7 +22,7 @@ import { normalizeForSearch } from "@/lib/text";
 export const SETUP_STEPS = 5;
 const MEDIA_KEEP_DAYS = 60;
 
-export type SetupError = "stale" | "invalid" | "client" | "media" | "tooMany" | "noServices" | "noMedia" | "noProject" | "rights" | "item" | "duplicate" | "behance" | "done" | "generic";
+export type SetupError = "stale" | "invalid" | "client" | "media" | "tooMany" | "noServices" | "noMedia" | "noProject" | "rights" | "acknowledge" | "item" | "duplicate" | "behance" | "done" | "generic";
 
 export type SetupMediaView = { id: string; url: string; width: number; height: number };
 export type SetupView = {
@@ -255,7 +255,7 @@ export type PublishInput = { agencyId: string; userId: string; version: number; 
 /** Everything the project needs before it can be previewed or published. */
 export function missingForPublish(view: SetupView): SetupError | null {
   const p = view.data.project;
-  if (!p || p.title.trim().length < 2 || p.contribution.trim().length < 2) return "noProject";
+  if (!p || p.title.trim().length < 2) return "noProject";
   if (!p.services.length) return "noServices";
   const hasMedia = view.media.length > 0 || (view.data.source === "behance" && (view.data.behance?.images.length ?? 0) > 0);
   if (!hasMedia) return "noMedia";
