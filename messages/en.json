@@ -392,7 +392,10 @@
       "add": "Add a project",
       "edit": "Edit or delete projects",
       "studio": "Open Studio"
-    }
+    },
+    "servicePending": "Awaiting approval",
+    "servicePendingHint": "Added by the agency. Sawwiq's team is reviewing it before it joins the list of services.",
+    "aboutProject": "About this project"
   },
   "Explore": {
     "title": "Explore",
@@ -564,6 +567,8 @@
       "noIndustry": "Not set",
       "result": "Result (optional)",
       "resultPlaceholder": "Example: +180% reach in 30 days",
+      "video": "Video link (optional)",
+      "videoHint": "A YouTube, TikTok, Instagram or Facebook link. The video plays on the post with the platform's own player.",
       "publish": "Publish",
       "publishing": "Publishing…",
       "saveChanges": "Save changes",
@@ -579,7 +584,8 @@
         "generic": "Could not save. Please try again.",
         "appName": "Give the app a name (2 characters or more).",
         "appTryUrl": "The \"Try the app\" link must be an app-mall embed link (https://pcn.store/embed/…/).",
-        "appUrl": "Check the app's store or web link."
+        "appUrl": "Check the app's store or web link.",
+        "badVideo": "This video link isn't supported. Paste a YouTube, TikTok, Instagram or Facebook post link."
       },
       "app": {
         "title": "This post shows an app (optional)",
@@ -2575,8 +2581,8 @@
     "name": "Business name",
     "industry": "Industry",
     "country": "Country",
-    "description": "What you did for them",
-    "descriptionPlaceholder": "Monthly content, reels and Meta ads since 2024",
+    "description": "About this project",
+    "descriptionPlaceholder": "What you did for this client, the problem you solved and the result. Example: monthly content, reels and Meta ads since 2024; orders through Instagram doubled in six months.",
     "accounts": "Accounts you run for this client",
     "accountHint": "Type the account name (@name) or paste the link.",
     "accountPlaceholder": "@name or link",
@@ -5675,5 +5681,9 @@
       "price": "Add a package or a starting price",
       "moreWork": "Add two more projects"
     }
+  },
+  "ServiceProposalEmail": {
+    "subject": "New service awaiting approval: {service}",
+    "body": "A provider added a service that is not in the list yet: \"{service}\". It shows on their profile as awaiting approval. Review it (approve, merge or reject) in Admin → Services:"
   }
 }

@@ -32,6 +32,7 @@ import { getFeed, hiddenPostCount } from "@/lib/data/posts";
 import { feedPage } from "@/lib/feed";
 import { formatJod } from "@/lib/format";
 import { serviceLabel } from "@/lib/labels";
+import { pendingTexts } from "@/lib/services/tags";
 import { isCrawlerRequest } from "@/lib/request";
 import { pageMeta } from "@/lib/seo";
 import { mediaUrl } from "@/lib/storage";
@@ -103,6 +104,8 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const rating = ratingSummary(agency);
   const avatarUrl = mediaUrl(agency.avatarKey);
   const primary = agency.services[0];
+  // Services the agency added itself, waiting for an admin (docs/30): shown as theirs, never in search or links.
+  const pendingServices = (await pendingTexts(agency.pendingServices)).map((p) => p.text).filter(Boolean);
 
   // Visiting from a country the agency serves: say so; otherwise list where it works.
   const note = await servesNote(agency, viewCountry !== agency.country && agency.servesCountries.includes(viewCountry) ? viewCountry : null);
@@ -115,7 +118,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
     [t("city"), `${tCity(agency.city)}${sep}${countryName(agency.country)}`],
     ...(agency.servesCountries.length ? [[t("serves"), agency.servesCountries.map(countryName).join(sep)] as [string, string]] : []),
     [t("startingPrice"), agency.startingPriceJod ? formatJod(agency.startingPriceJod, locale, currencyOf(agency.country)) : t("notSet")],
-    [t("services"), agency.services.map((s) => serviceLabel(s, locale)).join("، ") || t("notSet")],
+    [t("services"), [...agency.services.map((s) => serviceLabel(s, locale)), ...pendingServices].join("، ") || t("notSet")],
     [t("platforms"), agency.platforms.map((p) => tPlat(p)).join("، ") || t("notSet")],
     [t("industries"), agency.industries.map((i) => tInd(i)).join("، ") || t("notSet")],
     [t("team"), agency.teamSize ? tTeam(agency.teamSize) : t("notSet")],
@@ -142,7 +145,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader registrationMode={isRegistrationPhase()}
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
+        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingServices, ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
         following={following}
         followersHref={isOwner ? "/studio/followers" : undefined}
         servesNote={note}
