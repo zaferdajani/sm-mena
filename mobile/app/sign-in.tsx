@@ -1,4 +1,4 @@
-import { Redirect } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { messageFor } from "../src/errors";
 import { useLang } from "../src/i18n";
@@ -7,6 +7,7 @@ import { Body, Button, Field, Notice, Screen, Title } from "../src/ui";
 
 export default function SignIn() {
   const { t } = useLang();
+  const router = useRouter();
   const { status, signIn } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,6 +34,7 @@ export default function SignIn() {
       <Field label={t("password")} value={password} onChangeText={setPassword} secureTextEntry autoComplete="current-password" textContentType="password" testID="password" />
       {error ? <Notice tone="error">{error}</Notice> : null}
       <Button title={busy ? t("signingIn") : t("signIn")} onPress={submit} busy={busy} disabled={!email || !password} testID="sign-in" />
+      <Button kind="secondary" title={t("createAccount")} onPress={() => router.push("/sign-up")} testID="to-sign-up" />
     </Screen>
   );
 }

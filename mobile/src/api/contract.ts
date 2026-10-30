@@ -63,6 +63,24 @@ export type Agency = {
 export type User = { id: string; email?: string; role: string; mfaEnabled: boolean };
 export type Me = { user: User; agency: Agency | null; setup: Setup | null };
 export type Login = { token: string; expiresAt: string; user: User };
+/** GET /api/v1/auth/signup: what the sign-up form offers. */
+export type SignupOptions = {
+  consentVersion: string;
+  countries: { code: string; ar: string; en: string; flag: string; dial: string; cities: { key: string; ar: string; en: string }[] }[];
+};
+/** POST /api/v1/auth/signup: the web sign-up's fields; consent and age are confirmed by the person in the form. */
+export type SignupBody = {
+  name: string;
+  handle: string;
+  city: string;
+  whatsapp: string;
+  whatsappCountry?: string;
+  email: string;
+  password: string;
+  kind?: "agency" | "freelancer";
+  consent: true;
+  adult: true;
+};
 export type ProjectImage = { url: string; width?: number; height?: number };
 export type Project = {
   id: string;

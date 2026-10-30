@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_URL, APP_VERSION } from "../../src/config";
+import { APP_VERSION, SERVERS } from "../../src/config";
 import { messageFor } from "../../src/errors";
 import { useLang, type Lang } from "../../src/i18n";
 import { useSession } from "../../src/session";
@@ -7,7 +7,7 @@ import { Body, Button, Card, Chip, Label, Notice, Row, Screen } from "../../src/
 
 export default function Settings() {
   const { t, lang, setLang } = useLang();
-  const { signOut, signOutAll, me } = useSession();
+  const { signOut, signOutAll, me, site } = useSession();
   const [busy, setBusy] = useState<"out" | "all" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pick = (code: Lang) => setLang(code);
@@ -39,7 +39,8 @@ export default function Settings() {
         <Body muted>{t("signOutAllHint")}</Body>
         {error ? <Notice tone="error">{error}</Notice> : null}
       </Card>
-      <Body muted>{t("about", { version: APP_VERSION, api: API_URL })}</Body>
+      <Body muted>{t(site === "staging" ? "siteStaging" : "siteProduction")}</Body>
+      <Body muted>{t("about", { version: APP_VERSION, api: SERVERS[site] })}</Body>
     </Screen>
   );
 }
