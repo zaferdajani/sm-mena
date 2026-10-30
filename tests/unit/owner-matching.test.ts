@@ -3,6 +3,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { matchOwner, providerGroups, scoreProvider, type ProviderFacts } from "@/lib/core/rules/matching/owners";
 import { createAgency } from "@/lib/data/agencies";
 import { listNotifications } from "@/lib/data/notifications";
+import { setPublication } from "@/lib/data/publication";
 import { computeOwnerMatches, listOwnerMatches, respondToOwnerMatch, sendOwnerMatchEmails, visibleToOwner } from "@/lib/data/owner-matching";
 import { saveOwnerNeed } from "@/lib/data/owner-needs";
 import { createUser } from "@/lib/data/users";
@@ -49,9 +50,14 @@ describe("owner matching store", () => {
     const demoUser = await createUser(`demo-match-${stamp}@test.jo`, "x".repeat(24), "agency");
     await createAgency(demoUser.id, { name: `Demo ${stamp}`, handle: `demo${stamp}`, city: "amman", bio: "demo", services: ["smm_management"], platforms: [], industries: [], languages: ["ar"] } as never, { isDemo: true } as never);
 
+    const privateUser = await createUser(`private-match-${stamp}@test.jo`, "x".repeat(24), "agency");
+    const privateAgency = await createAgency(privateUser.id, { name: `Private ${stamp}`, handle: `private${stamp}`, city: "amman", bio: "social media for cafés", services: ["smm_management"], platforms: ["instagram"], industries: ["restaurant_cafe"], languages: ["ar"], whatsapp: "0790000002" } as never, { postCount: 1 } as never);
+    expect(await setPublication(privateUser.id, privateAgency.id, "private")).toBe(true);
+
     const dry = await computeOwnerMatches({ dryRun: true });
     const mine = dry.perOwner.find((p) => p.ownerUserId === ownerUser.id)!;
     expect(mine.matches.map((m) => m.agencyId)).toContain(agency.id);
+    expect(mine.matches.map((m) => m.agencyId)).not.toContain(privateAgency.id); // private pages are never suggested
     expect((await listOwnerMatches(ownerUser.id)).length).toBe(0); // a dry run stores nothing
 
     const computed = await computeOwnerMatches();
