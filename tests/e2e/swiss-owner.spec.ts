@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { joinAgency } from "./helpers";
 
 test("owner communication pages share one contained Swiss page measure", async ({ page }) => {
   for (const locale of ["ar", "en"] as const) {
@@ -22,6 +23,25 @@ test("owner communication pages share one contained Swiss page measure", async (
         expect(measure.page, `${locale} ${width} ${path}`).toBeLessThanOrEqual(measure.viewport + 1);
         await expect(root.locator("header")).toBeVisible();
       }
+    }
+  }
+});
+
+// The platform links on Studio → Page: at phone widths the address field drops to its own
+// line instead of being squeezed beside the platform picker (it was 26 px wide at 320 px).
+test("Studio platform links stay typeable on small phones", async ({ page }) => {
+  await joinAgency(page, "swissplat");
+  for (const locale of ["ar", "en"] as const) {
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/${locale}/studio/profile`);
+      const rows = page.getByTestId("social-rows");
+      await expect(rows).toBeVisible();
+      const widths = await rows.locator('input[name="instagram"], input[name="socialValue"]').evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+      expect(widths.length).toBeGreaterThan(1);
+      for (const w of widths) expect(w, `${locale} ${width}`).toBeGreaterThanOrEqual(Math.min(200, width - 120));
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `${locale} ${width} overflow`).toBeLessThanOrEqual(1);
     }
   }
 });

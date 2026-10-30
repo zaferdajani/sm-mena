@@ -216,21 +216,22 @@ function SocialRows({ initial, instagram }: { initial: { kind: string; value: st
     <fieldset className="grid gap-2 rounded-xl border p-3 sm:p-4" data-testid="social-rows">
       <legend className="px-1 text-sm font-medium">{t("socialLinks")}</legend>
       <p className="text-xs text-muted-foreground">{t("socialLinksHint")}</p>
-      <div className="flex items-center gap-2">
+      {/* On a phone the address takes its own full-width line under the platform; from sm up it sits on the same row. */}
+      <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
         <SocialIcon kind="instagram" className="size-8" />
-        <label htmlFor="instagram" className="w-32 shrink-0 text-sm">{tk("kinds.instagram")}</label>
-        <Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={instagram} className="min-w-0 flex-1" />
-        <span className="size-7 shrink-0" aria-hidden />
+        <label htmlFor="instagram" className="flex-1 text-sm sm:w-32 sm:flex-none sm:shrink-0">{tk("kinds.instagram")}</label>
+        <Input id="instagram" name="instagram" dir="ltr" placeholder="@" defaultValue={instagram} className="order-last min-w-0 basis-full sm:order-none sm:basis-auto sm:flex-1" />
+        <span className="hidden size-7 shrink-0 sm:block" aria-hidden />
       </div>
       {rows.map((r) => {
         const kind = (SOCIAL_KINDS as string[]).includes(r.kind) ? (r.kind as LinkKind) : "other";
         return (
-          <div key={r.id} className="flex items-center gap-2" data-testid="social-link-row">
+          <div key={r.id} className="flex flex-wrap items-center gap-2 sm:flex-nowrap" data-testid="social-link-row">
             <SocialIcon kind={kind} className="size-8" />
-            <select name="socialKind" aria-label={t("socialLinks")} value={r.kind} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, kind: e.target.value } : x)))} className="h-9 w-32 shrink-0 rounded-lg border border-input bg-transparent px-2 text-sm">
+            <select name="socialKind" aria-label={t("socialLinks")} value={r.kind} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, kind: e.target.value } : x)))} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm sm:w-32 sm:flex-none sm:shrink-0">
               {SOCIAL_KINDS.map((k) => <option key={k} value={k}>{tk(`kinds.${k}`)}</option>)}
             </select>
-            <Input name="socialValue" dir="ltr" aria-label={tk(`kinds.${kind}`)} placeholder={r.value ? linkLabel(kind, r.value) : "@"} value={r.value} maxLength={300} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, value: e.target.value } : x)))} className="min-w-0 flex-1" />
+            <Input name="socialValue" dir="ltr" aria-label={tk(`kinds.${kind}`)} placeholder={r.value ? linkLabel(kind, r.value) : "@"} value={r.value} maxLength={300} onChange={(e) => setRows((rs) => rs.map((x) => (x.id === r.id ? { ...x, value: e.target.value } : x)))} className="order-last min-w-0 basis-full sm:order-none sm:basis-auto sm:flex-1" />
             <button type="button" aria-label={t("removeSocial")} onClick={() => setRows((rs) => (rs.length > 1 ? rs.filter((x) => x.id !== r.id) : [socialRow("tiktok")]))} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted">
               <X className="size-4" />
             </button>

@@ -40,6 +40,7 @@ The product is an Instagram-style showcase for agencies plus an AI matchmaker wi
 3. New strings exist in both message files.
 4. Any new personal-data field has a consent/retention note in `docs/08-legal-compliance.md`.
 5. Conventional Commit message. Work lands on `main` directly: once the checks above pass, merge `origin/main` into your branch, push the branch, then push it to `main` (`git push origin HEAD:main`); Vercel deploys `main`. Do not open pull requests unless the owner asks for one; the owner does not want to click merge. Fetch `origin/main` right before pushing: several sessions push to it. Owner decision (26 Sep 2026): the front page is the landing page; the pre-launch teaser stays at `/soon` (`prelaunch_home` off) and is not to be made the front page again.
+6. Every update goes to both sites, always: production (`main`, sawwiq.org) and staging (`cursor/staging-qa-fafd`, staging.sawwiq.org, docs/27-vercel.md). Merge the same commits into `cursor/staging-qa-fafd` too (never reset or force-push it), and for anything users see, land it and check it on staging first. Staging-only changes (virtual payments, staging seed, test banner, its own database and storage) never go to `main`. Before you finish, `git diff origin/main origin/cursor/staging-qa-fafd` must show only those staging-only files; nothing on `main` may be missing from staging.
 
 ## Style
 - TypeScript strict. Zod for all input validation; share schemas between client and server.
