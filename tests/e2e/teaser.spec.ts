@@ -21,16 +21,7 @@ test("the teaser has an English version", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Before the clients arrive");
 });
 
-test("a new provider gets a founding seat and a share card in the studio", async ({ page }) => {
-  await joinAgency(page, "seat");
-  await page.goto("/ar/studio");
-  const card = page.getByTestId("founding-panel");
-  await expect(card).toBeVisible();
-  await expect(card).toHaveAttribute("data-member", "true");
-  // Every approved benefit renders (a missing message key would break the page).
-  await expect(card.locator("li")).toHaveCount(7);
-  await expect(card).toContainText("7%");
-});
+// The founding seat itself is checked in founding-seat.spec.ts, which runs before every other suite.
 
 test("the teaser carries the moving hero, the vault and an account link", async ({ page }) => {
   await page.goto("/ar/soon");
