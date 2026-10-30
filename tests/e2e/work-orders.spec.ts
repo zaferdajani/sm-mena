@@ -15,8 +15,6 @@ async function joinFreelancer(page: Page, prefix: string) {
   await page.fill("#handle", handle);
   await nextJoinStep(page);
   await page.getByTestId("kind-freelancer").check();
-  await page.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
-  await nextJoinStep(page);
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
@@ -25,7 +23,11 @@ async function joinFreelancer(page: Page, prefix: string) {
   await page.getByRole("button", { name: "Create page" }).click();
   // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
   await page.waitForURL(/\/en\/portfolio-setup/);
+  // What the freelancer does is chosen in the page editor now (docs/65), not at sign-up.
   await page.goto("/en/studio/profile?welcome=1");
+  await page.locator('label:has(input[name="teamRoles"][value="photographer"])').click();
+  await page.getByTestId("profile-form").locator('button[type="submit"]').click();
+  await page.waitForURL(/\/en\/studio\/packages\?welcome=1/);
   return { handle, email: `${handle}@test.jo`, password: "password-123" };
 }
 

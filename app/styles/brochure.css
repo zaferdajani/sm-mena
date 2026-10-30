@@ -519,3 +519,14 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
     padding-block-end: calc(1.5rem + env(safe-area-inset-bottom));
   }
 }
+
+/* Sign-up on one screen (docs/65): one column that fits a phone, the page link shown as a link, errors
+   under their field. */
+.sw-auth-card:has(.sw-join-one) { max-inline-size: 40rem; }
+.sw-join-one { display: grid; gap: 1.25rem; margin-block-start: 1rem; min-inline-size: 0; }
+.sw-join-kind { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.sw-join-kind-option { display: flex; align-items: center; justify-content: center; gap: .5rem; min-block-size: 3rem; padding: .5rem .75rem; border: 1px solid var(--border); border-radius: .625rem; background: var(--card); font-weight: 650; cursor: pointer; }
+.sw-join-kind-option:has(:checked) { border-color: var(--brand); background: var(--brand-soft); }
+.sw-join-kind-option > input { accent-color: var(--primary); }
+.sw-field-error { margin: 0; font-size: .85rem; line-height: 1.6; color: var(--destructive); }
+.sw-swiss-form [aria-invalid="true"] { border-color: var(--destructive); }

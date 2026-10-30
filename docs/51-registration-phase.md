@@ -67,6 +67,9 @@ the publication screen explains this limitation rather than promising erasure.
   content. No fake members, reviews, earnings, interactions or registrations.
 - New Studio focuses on introduction/services, work/package and publication;
   keeping a profile private is a valid completed choice, not a conversion defect.
+  Since docs/65 the audience choice is also offered on the one-screen first-run
+  setup, with the same acknowledgement, consent version and audit row; the
+  current audience is preselected and a change is never made without the tick.
 - Existing account history remains reachable through an archive section.
 - Pioneer eligibility is the EXISTING program, not automatic entitlement for all
   registrations. The cohort, proof requirements and economics are unchanged.

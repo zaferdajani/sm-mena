@@ -2,7 +2,7 @@ import { RegistrationStudioShell } from "@/components/registration/studio-shell"
 import { SwissWorkspace } from "@/components/layout/swiss-workspace";
 import { MedalPanel } from "@/components/pioneer/medal-panel";
 import { isRegistrationPhase, isLaunchPilot } from "@/lib/launch-phase";
-import { ExternalLink, LogOut } from "lucide-react";
+import { ExternalLink, LogOut, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
@@ -58,6 +58,7 @@ export default async function StudioLayout({ children }: { children: React.React
             {t("viewPage")} <ExternalLink className="size-3" />
           </Link>
         </div>
+        <Link href={agency.postCount ? "/studio/new" : "/portfolio-setup"} className="sw-invitation-cta inline-flex items-center gap-1.5" data-testid="studio-add-work"><Plus className="size-4" aria-hidden />{t("nav.addWork")}</Link>
         <form action={logout}>
           <button type="submit" className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted">
             <LogOut className="size-4 rtl:-scale-x-100" />
@@ -68,29 +69,34 @@ export default async function StudioLayout({ children }: { children: React.React
       <div className="mt-3">
         <StudioNav
           items={[
-            { href: "/studio", label: t("overview") },
-            { href: "/studio/setup", label: tg("nav") },
-            { href: "/studio/connections", label: tg("connectionsNav") },
-            // Setting up comes first: the page, then the packages (easy to miss further along on a phone).
-            { href: "/studio/profile", label: t("profile") },
+            { href: "/studio", label: t("nav.home") },
+            { href: "/studio/posts", label: t("nav.work") },
+            { href: "/studio/profile", label: t("nav.page") },
+            { href: "/studio/security", label: t("nav.account") },
+            // Sections with news earn a tab of their own for as long as the news lasts (docs/65).
+            ...(newOpportunities ? [{ href: "/studio/opportunities", label: to("tab"), badge: newOpportunities }] : []),
+            ...(unreadChats ? [{ href: "/studio/messages", label: tchat("tab"), badge: unreadChats }] : []),
+            ...(unread ? [{ href: "/studio/inbox", label: t("inbox"), badge: unread }] : []),
+          ]}
+          more={[
             { href: "/studio/packages", label: tp("studio.tab") },
-            { href: "/studio/new", label: t("newPost") },
-            { href: "/studio/posts", label: t("posts") },
-            { href: "/studio/followers", label: t("followers") },
             { href: "/studio/clients", label: t("clients") },
-            // Collaboration V2 (docs/48) sits beside the legacy partners page; old links keep working.
+            { href: "/studio/import", label: t("nav.import") },
+            { href: "/studio/followers", label: t("followers") },
+            ...(newOpportunities ? [] : [{ href: "/studio/opportunities", label: to("tab") }]),
+            ...(unreadChats ? [] : [{ href: "/studio/messages", label: tchat("tab") }]),
+            ...(unread ? [] : [{ href: "/studio/inbox", label: t("inbox") }]),
+            { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
             ...(collabGate !== "off" ? [{ href: "/studio/collab", label: tcol("tab"), badge: openInquiries + pendingOrders }] : []),
             ...(partnersGate !== "off" ? [{ href: "/studio/partners", label: tpart("tab"), badge: partnerRequests }] : []),
-            { href: "/studio/opportunities", label: to("tab"), badge: newOpportunities },
-            { href: "/studio/messages", label: tchat("tab"), badge: unreadChats },
-            { href: "/studio/notifications", label: tn("tab"), badge: unreadNotes },
-            { href: "/studio/inbox", label: t("inbox"), badge: unread },
             { href: "/studio/reviews", label: tr("studio.tab") },
             { href: "/studio/contracts", label: t("contracts") },
             { href: "/studio/ndas", label: tl("ndaStudio.tab") },
+            { href: "/studio/connections", label: tg("connectionsNav") },
+            { href: "/studio/setup", label: tg("nav") },
             { href: "/studio/billing", label: t("billing") },
-            { href: "/studio/security", label: t("security") },
           ]}
+          moreLabel={t("nav.more")}
         />
       </div>
       <div className="sw-workspace-body py-6">

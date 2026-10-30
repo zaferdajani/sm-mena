@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { z } from "zod";
-import { setupBehanceSchema, setupClientSchema, setupProfileSchema, setupProjectSchema, setupSourceSchema, setupVersionSchema, uuidSchema } from "@/lib/validation/portfolio-setup";
+import { setupBehanceSchema, setupClientSchema, setupFinishSchema, setupProfileSchema, setupProjectSchema, setupSourceSchema, setupVersionSchema, uuidSchema } from "@/lib/validation/portfolio-setup";
 import { requireAgency } from "@/lib/auth/guards";
 import {
   addClientOnce,
@@ -23,6 +23,8 @@ import {
   type SetupView,
 } from "@/lib/data/portfolio-setup";
 import { getItemForAgency, stageItem } from "@/lib/data/social";
+import { publicationFor, setPublication } from "@/lib/data/publication";
+import { PROFILE_VISIBILITIES, type ProfileVisibility } from "@/lib/launch-phase";
 import { contentLang } from "@/lib/content-lang";
 import { assertBehanceUrl } from "@/lib/behance/fetch";
 import { canUse } from "@/lib/feature-gate";
@@ -36,7 +38,7 @@ import { isServiceKey } from "@/lib/taxonomy";
 // agency, checks ownership of every id it is given, and saves only on the
 // draft version the browser last saw.
 
-export type SetupResult = { view?: SetupView; media?: SetupMediaView[]; error?: SetupError | "avatar" | "limit" | "unavailable"; postId?: string };
+export type SetupResult = { view?: SetupView; media?: SetupMediaView[]; error?: SetupError | "avatar" | "limit" | "unavailable"; postId?: string; visibility?: ProfileVisibility };
 
 const version = setupVersionSchema;
 const uuid = uuidSchema;
@@ -222,6 +224,87 @@ export async function publishSetupAction(v: number, rights: boolean): Promise<Se
   if ("error" in result) return { error: result.error };
   revalidatePath("/[locale]", "layout");
   return { postId: result.postId, view: (await getSetup(agency.id)) ?? undefined };
+}
+
+/**
+ * The one-screen setup (docs/65): the project text and who it was for are saved, the project is published
+ * to the page (once), the project's services join the agency's own, and the audience is set when the owner
+ * chose one, with the same consent version and audit row as Studio → Publication.
+ */
+export async function finishSetupAction(input: unknown): Promise<SetupResult> {
+  const { user, agency } = await requireAgency();
+  const parsed = setupFinishSchema.safeParse(input);
+  if (!parsed.success) {
+    const path = parsed.error.issues[0]?.path[0];
+    return { error: path === "services" ? "noServices" : path === "title" ? "noProject" : "invalid" };
+  }
+  const p = parsed.data;
+  if (!p.rights) return { error: "rights" };
+  const services = [...new Set(p.services)].filter(isServiceKey);
+  if (!services.length) return { error: "noServices" };
+  const current = await getSetup(agency.id);
+  if (!current) return { error: "invalid" };
+  if (current.postId) return { postId: current.postId, view: current };
+  if (current.version !== p.version) return { error: "stale" };
+  const publication = await publicationFor(agency.id);
+  const changing = p.visibility !== publication.visibility;
+  if (changing && !p.acknowledge) return { error: "acknowledge" };
+  if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
+
+  // Who it was for: a blank client name means the client stays private, never an empty client.
+  let version = current.version;
+  let client: { mode: "existing" | "personal" | "private"; clientId?: string };
+  if (p.client.mode === "existing") {
+    const owned = p.client.clientId ? await ownedClientId(agency.id, p.client.clientId) : null;
+    if (!owned) return { error: "client" };
+    client = { mode: "existing", clientId: owned };
+  } else if (p.client.mode === "new" && p.client.name?.trim()) {
+    if (!rateLimit(`setup-client:${agency.id}`, 20, 60 * 60 * 1000)) return { error: "invalid" };
+    const added = await addClientOnce(agency.id, p.client.name, { version });
+    if ("error" in added) return { error: added.error };
+    client = { mode: "existing", clientId: added.id };
+    version = (await getSetup(agency.id))?.version ?? version;
+  } else client = { mode: p.client.mode === "personal" ? "personal" : "private" };
+
+  const behance = current.data.behance && p.behanceImages ? { ...current.data.behance, images: current.data.behance.images.filter((u) => p.behanceImages!.includes(u)) } : current.data.behance;
+  const saved = await writeSetup(agency.id, version, { data: { project: { title: p.title, contribution: p.contribution, services }, client, ...(behance ? { behance } : {}), ...(current.data.source ? {} : { source: behance ? "behance" : "upload" }) } });
+  if ("error" in saved) return { error: saved.error };
+
+  const label = (await getTranslations({ locale: contentLang(agency.contentLang), namespace: "Setup" }))("client.personalLabel");
+  const published = await publishSetup({ agencyId: agency.id, userId: user.id, version: saved.version, rights: true, personalLabel: label });
+  if ("error" in published) return { error: published.error };
+
+  // Services are asked once: what this project shows becomes part of what the page offers.
+  const union = [...new Set([...agency.services, ...services])].slice(0, 30);
+  if (union.length !== agency.services.length) await patchProfile(agency, { services: union }).catch(() => null);
+
+  let visibility = publication.visibility;
+  if (changing && (await setPublication(user.id, agency.id, p.visibility))) visibility = p.visibility;
+  revalidatePath("/[locale]", "layout");
+  return { postId: published.postId, view: (await getSetup(agency.id)) ?? undefined, visibility };
+}
+
+/** "Finish later" from the one screen: the text and the client choice are kept with the draft; nothing is published. */
+export async function pauseWithDraftAction(v: number, input: unknown): Promise<SetupResult> {
+  const { agency } = await requireAgency();
+  const parsed = setupProjectSchema.extend({ title: z.string().max(120), services: z.array(z.string().max(60)).max(6), version: z.number().optional() })
+    .safeParse({ ...(input && typeof input === "object" ? input : {}), version: v });
+  if (!parsed.success) return { error: "invalid" };
+  const value = parsed.data;
+  const current = await getSetup(agency.id);
+  if (!current || current.status === "finished") return { error: "done" };
+  const project = { title: value.title, contribution: value.contribution, services: [...new Set(value.services)].filter(isServiceKey) };
+  return done(await writeSetup(agency.id, version.parse(v), { status: "paused", data: { project } }));
+}
+
+/** From the success screen: open the page later (the same choice, consent version and audit as Studio → Publication). */
+export async function setVisibilityAction(visibility: string, acknowledge: boolean): Promise<SetupResult> {
+  const { user, agency } = await requireAgency();
+  const parsed = z.enum(PROFILE_VISIBILITIES).safeParse(visibility);
+  if (!parsed.success || !acknowledge) return { error: "acknowledge" };
+  if (!(await setPublication(user.id, agency.id, parsed.data))) return { error: "generic" };
+  revalidatePath("/[locale]", "layout");
+  return { visibility: parsed.data, view: (await getSetup(agency.id)) ?? undefined };
 }
 
 /** "Add another project": a fresh draft through the same steps (starting at the source). */

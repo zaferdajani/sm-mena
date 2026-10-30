@@ -1,6 +1,6 @@
 import { StudioRegistration } from "@/components/registration/studio-registration";
 import { isRegistrationPhase, isLaunchPilot } from "@/lib/launch-phase";
-import { CheckCircle2, Circle, ExternalLink, Plus } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ClicksChart } from "@/components/studio/clicks-chart";
 import { ShareCard } from "@/components/studio/share-card";
@@ -13,7 +13,8 @@ import { mediaUrl } from "@/lib/storage";
 import { seatOf } from "@/lib/data/teaser";
 import { founderEligibility, foundingStatus } from "@/lib/founding";
 import { FoundingPanel } from "@/components/studio/founding-panel";
-import { BehanceShortcut } from "@/components/studio/behance-shortcut";
+import { PageStrengthCard } from "@/components/studio/page-strength-card";
+import { publicationFor } from "@/lib/data/publication";
 import { entitlementsFor } from "@/lib/monetization/entitlements";
 
 export default async function StudioOverview({ params, searchParams }: PageProps<"/[locale]/studio">) {
@@ -25,13 +26,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
   const t = await getTranslations("Studio");
   const ent = entitlementsFor(agency);
   const days = Math.min(30, ent.insightsDays);
-  const [insights, top, packages, seat] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id), seatOf(agency)]);
-  // Setup steps focus on a useful provider page; registration order is not a product benefit.
-  const steps = [
-    { key: "profile", href: "/studio/profile", done: Boolean(agency.bio.trim() && agency.services.length) },
-    { key: "packages", href: "/studio/packages", done: packages.length > 0 },
-    { key: "post", href: "/studio/new", done: agency.postCount > 0 },
-  ] as const;
+  const [insights, top, packages, seat, publication] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id), seatOf(agency), publicationFor(agency.id)]);
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
 
   const tiles = [
@@ -56,24 +51,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
         </p>
       )}
       {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} eligible={founderEligibility({ ...agency, packageCount: packages.length }).eligible} />}
-      {steps.some((x) => !x.done) && (
-        <section className="rounded-xl border border-brand-line bg-brand-soft p-4" data-testid="setup-steps">
-          <h2 className="font-semibold">{t("setup.title")}</h2>
-          {/* New providers usually have a portfolio already: offer the Behance import before the manual steps (docs/47). */}
-          {agency.postCount === 0 && <BehanceShortcut testId="setup-behance" className="mt-3" />}
-          <ol className="mt-3 grid gap-2">
-            {steps.map((x) => (
-              <li key={x.key}>
-                <Link href={x.href} className="flex items-center gap-2 rounded-lg bg-background p-3 text-sm hover:bg-muted" data-testid={`setup-${x.key}`} data-done={x.done}>
-                  {x.done ? <CheckCircle2 className="size-5 shrink-0 text-brand" aria-label={t("setup.done")} /> : <Circle className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
-                  <span className={x.done ? "text-muted-foreground line-through" : "font-medium"}>{t(`setup.${x.key}`)}</span>
-                  {x.key === "post" && !x.done && <Plus className="ms-auto size-4 text-brand" aria-hidden />}
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
+      <PageStrengthCard agency={agency} visibility={publication.visibility} packageCount={packages.length} />
       <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: null, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>

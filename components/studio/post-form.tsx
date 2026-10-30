@@ -127,7 +127,8 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
         <Textarea id="caption" name="caption" rows={4} maxLength={2200} defaultValue={initial?.caption} placeholder={t("captionPlaceholder")} />
       </Field>
       <Field label={t("services")}>
-        <ChipGroup name="services" options={[...services.primary, ...services.other]} defaultValues={initial?.services ?? (services.primary.length ? [services.primary[0].key] : [])} />
+        {/* Nothing is pre-ticked: a wrong first service would tag the work with something it does not show (docs/65). */}
+        <ChipGroup name="services" options={[...services.primary, ...services.other]} defaultValues={initial?.services ?? []} />
       </Field>
       <Field label={t("platforms")}>
         <ChipGroup name="platforms" options={platforms} defaultValues={initial?.platforms} />

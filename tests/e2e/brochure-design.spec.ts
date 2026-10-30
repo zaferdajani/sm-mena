@@ -87,9 +87,9 @@ test("country flag, invitation copy, language and theme remain usable", async ({
   await visualContract(page, info, "sa-country-language-theme", true);
   await page.getByTestId("teaser-cta").first().click();
   await expect(page).toHaveURL(/\/en\/join$/);
-  // Sign-up opens on its first step (name and link); contact details come on the third.
+  // Sign-up is one screen (docs/65): name, link and contact details together.
   await expect(page.locator("#name")).toBeVisible();
-  await expect(page.getByTestId("join-step-contact")).toBeVisible();
+  await expect(page.locator("#email")).toBeVisible();
 });
 
 test("admin uses the same design without changing permissions", async ({ page }, info) => {

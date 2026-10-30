@@ -11,6 +11,8 @@ import { suggestLocale } from "@/lib/i18n/suggest";
 
 type OfferText = { text: string; switch: string; dismiss: string };
 
+const FOCUSED = /^\/(join|portfolio-setup|studio|login|signin|owner)(\/|$)/;
+
 const readCookie = (name: string) => document.cookie.split("; ").find((c) => c.startsWith(`${name}=`))?.split("=")[1] ?? null;
 const writeCookie = (name: string, value: string) => {
   document.cookie = `${name}=${value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
@@ -40,8 +42,9 @@ export function LanguageOffer({ texts }: { texts: Record<string, OfferText> }) {
   }, [locale]);
 
   const offer = suggestion ? texts[suggestion] : null;
-  // The front page (landing) has its own language switch in its header.
-  if (!suggestion || !offer || pathname === "/") return null;
+  // The front page (landing) has its own language switch in its header. Sign-up, first-run setup and the
+  // Studio are focused flows: the bar is never shown over a form someone is filling in (docs/65).
+  if (!suggestion || !offer || pathname === "/" || FOCUSED.test(pathname)) return null;
   const dir = isRtl(suggestion) ? "rtl" : "ltr";
 
   const accept = () => {

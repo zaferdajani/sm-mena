@@ -37,6 +37,26 @@ export function validateHandle(handle: string): "ok" | "invalid" | "reserved" {
   return "ok";
 }
 
+/**
+ * A page link suggested from what the person typed (docs/65): "Nakhla Studio" → "nakhla.studio". Only Latin
+ * letters and digits can be part of a handle, so an Arabic name gives "" and the caller falls back to the
+ * email's local part. Never guaranteed free: the server still checks.
+ */
+export function suggestHandle(source: string): string {
+  const value = source
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9._\s-]/g, "")
+    .trim()
+    .replace(/[\s-]+/g, ".")
+    .replace(/[._]{2,}/g, ".")
+    .replace(/^[._]+|[._]+$/g, "")
+    .slice(0, 30)
+    .replace(/[._]+$/g, "");
+  return validateHandle(value) === "ok" ? value : "";
+}
+
 /** Keeps digits and a leading +, and converts a local Jordanian 07 number to +9627. */
 export function normalizePhone(input: string): string {
   const cleaned = input.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[^\d+]/g, "");
