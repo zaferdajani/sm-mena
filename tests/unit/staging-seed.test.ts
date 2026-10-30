@@ -1,6 +1,7 @@
 import "./setup-db";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { verifyPassword } from "@/lib/auth/password";
+import { isServiceKey } from "@/lib/taxonomy";
 import { COUNTRIES } from "@/lib/countries";
 import { createAgency } from "@/lib/data/agencies";
 import { createUser, getUserByEmail } from "@/lib/data/users";
@@ -78,6 +79,7 @@ describe("staging seed", () => {
       expect(a.strengths.length).toBeGreaterThan(2);
       expect(a.avatarKey).toBeTruthy();
       expect(a.pendingServices).toHaveLength(1);
+      expect(a.services.every(isServiceKey)).toBe(true);
       const clients = await listClients(a.id);
       expect(clients).toHaveLength(clientCount);
       expect(clients.every((c) => c.logoKey && c.links.length && c.description.length > 80)).toBe(true);

@@ -17,6 +17,7 @@ import { agencies, portfolioClients, postImages, posts, reviews } from "@/lib/db
 import { newAvatarKey, newClientLogoKey, processAvatar, processImage } from "@/lib/images";
 import { resolveServices } from "@/lib/services/tags";
 import { embedFromUrl } from "@/lib/social/embed";
+import { isServiceKey } from "@/lib/taxonomy";
 import { storage } from "@/lib/storage";
 import { demoAvatar, demoImage, type DemoKind } from "./demo-images";
 
@@ -150,7 +151,7 @@ async function fillAgency(handle: string, country: Country, freelancer: boolean,
       strengths: agency.strengths.length ? agency.strengths : freelancer
         ? ["تصوير طعام في الموقع", "تسليم خلال 48 ساعة", "ريلز قصيرة جاهزة للنشر"]
         : ["ريلز ترفع الطلبات", "إعلانات محلية حول الفروع", "إدارة يومية للتعليقات والرسائل", "تقرير شهري بالأرقام"],
-      services: [...new Set([...agency.services, ...(freelancer ? ["creative", "photography", "video_production", "social_media", "smm_content"] : ["social_media", "smm_management", "smm_content", "paid_media", "ads_meta", "ads_google", "creative", "photography"])])],
+      services: [...new Set([...agency.services, ...(freelancer ? ["photography", "video_production", "smm_content"] : ["smm_management", "smm_content", "ads_meta", "ads_google", "photography"])])].filter(isServiceKey),
       platforms: freelancer ? ["instagram", "tiktok"] : ["instagram", "tiktok", "facebook", "google"],
       industries: freelancer ? ["restaurant_cafe", "retail_shop"] : ["restaurant_cafe", "clinic_health", "retail_shop"],
       servesCountries: freelancer ? [] : neighbours(code),
@@ -311,6 +312,10 @@ async function repairDemoMedia(log: (...a: unknown[]) => void) {
 export async function fillReferenceAccounts(log: (...a: unknown[]) => void = console.log) {
   if (!isStagingMode()) return;
   assertStagingDatabase();
+  // First fills (before this fix) stored category names as services; keep only real service keys.
+  const db = await getDb();
+  const staged = await db.select({ id: agencies.id, services: agencies.services }).from(agencies).where(sql`${agencies.handle} like 'staging.%'`);
+  for (const a of staged) if (!a.services.every(isServiceKey)) await db.update(agencies).set({ services: a.services.filter(isServiceKey) }).where(eq(agencies.id, a.id));
   for (const country of COUNTRIES) {
     await fillAgency(`staging.agency.${country.code}`, country, false, log);
     await fillAgency(`staging.free.${country.code}`, country, true, log);
