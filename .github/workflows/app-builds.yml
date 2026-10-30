@@ -148,7 +148,10 @@ jobs:
         working-directory: mobile/ios
         run: |
           WS=$(ls -d *.xcworkspace | head -n1)
-          SCHEME=$(xcodebuild -workspace "$WS" -list -json | python3 -c 'import json,sys; print(json.load(sys.stdin)["workspace"]["schemes"][0])')
+          # The workspace also lists every CocoaPods scheme, so the first one is usually a library, not the app.
+          # Expo names the app's scheme after its project: Sawwiq.xcworkspace -> scheme "Sawwiq".
+          NAME="${WS%.xcworkspace}"
+          SCHEME=$(xcodebuild -workspace "$WS" -list -json | NAME="$NAME" python3 -c 'import json,os,sys; s=json.load(sys.stdin)["workspace"]["schemes"]; n=os.environ["NAME"]; print(n if n in s else next(x for x in s if not x.startswith("Pods") and x.lower()==n.lower()))')
           echo "workspace=$WS" >> "$GITHUB_OUTPUT"
           echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
           echo "Using $WS / $SCHEME"
@@ -180,7 +183,7 @@ jobs:
       - name: Package as .ipa
         run: |
           APP=$(find "$RUNNER_TEMP/App.xcarchive/Products/Applications" -maxdepth 1 -name '*.app' | head -n1)
-          test -d "$APP" || { echo "::error::No .app in the archive"; exit 1; }
+          test -d "$APP" || { echo "::error::No .app in the archive: $(find "$RUNNER_TEMP/App.xcarchive" -maxdepth 4 | head -n 20 | tr '\n' ' ')"; exit 1; }
           test -f "$APP/main.jsbundle" || test -n "$(find "$APP" -name 'main.jsbundle' -print -quit)" || { echo "::error::The JavaScript bundle is not inside the app"; exit 1; }
           mkdir -p "$RUNNER_TEMP/ipa/Payload"
           cp -R "$APP" "$RUNNER_TEMP/ipa/Payload/"
