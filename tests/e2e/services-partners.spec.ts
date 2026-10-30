@@ -28,10 +28,13 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
   // Sign-up opens the first-run setup (docs/53); this test continues in the full profile editor.
   await agencyPage.waitForURL(/\/en\/portfolio-setup/);
   await agencyPage.goto("/en/studio/profile?welcome=1");
-  // Waiting for review in the studio, not on the public page yet.
+  // Waiting for review: in the studio, and on the public page as the agency's service marked "Awaiting approval" (no link).
   await expect(agencyPage.getByTestId("service-picker")).toContainText(service);
   await agencyPage.goto(`/en/a/${handle}?tab=about`);
-  await expect(agencyPage.locator("dl").last()).not.toContainText(service);
+  await expect(agencyPage.locator("dl").last()).toContainText(service);
+  const pendingChip = agencyPage.getByTestId("profile-service-pending").filter({ hasText: service });
+  await expect(pendingChip).toContainText("Awaiting approval");
+  await expect(agencyPage.getByTestId("profile-services").locator("a").filter({ hasText: service })).toHaveCount(0);
 
   const adminPage = await (await browser.newContext()).newPage();
   await login(adminPage, ADMIN.email, ADMIN.password);
@@ -44,6 +47,9 @@ test("an agency types a new service; an admin approves it and it becomes a tag o
 
   await agencyPage.goto(`/en/a/${handle}?tab=about`);
   await expect(agencyPage.locator("dl").last()).toContainText(service);
+  // Approved: a normal service chip for everyone, no longer pending.
+  await expect(agencyPage.getByTestId("profile-services").locator("a").filter({ hasText: service })).toHaveCount(1);
+  await expect(agencyPage.getByTestId("profile-service-pending")).toHaveCount(0);
   await agencyPage.goto("/ar/studio/profile");
   await agencyPage.getByTestId("service-search").fill("هولوغرام");
   // Already on the agency, so it's no longer suggested; the tag shows as picked.

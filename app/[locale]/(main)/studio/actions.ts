@@ -30,6 +30,8 @@ import { SITE_URL } from "@/lib/site";
 import { storage } from "@/lib/storage";
 import { isServiceKey } from "@/lib/taxonomy";
 import { cleanApp, type AppError } from "@/lib/app-demo";
+import type { PostEmbed } from "@/lib/db/schema";
+import { embedFromUrl } from "@/lib/social/embed";
 import { instagramHandle, normalizeUrl, validateHandle } from "@/lib/text";
 import { cleanLinks } from "@/lib/social-links";
 import { agencyTranslationSchema, clientTranslationSchema, contentLang, packageTranslationSchema, postTranslationSchema, readTranslation } from "@/lib/content-lang";
@@ -61,14 +63,27 @@ function postFields(formData: FormData) {
     }),
     // Caption and result in the agency's other language (optional, lib/content-lang.ts).
     translation: readTranslation(formData, postTranslationSchema) ?? {},
+    // A video link shown with the platform's own player; absent from the form for imported work, which keeps its own.
+    video: formData.has("video_url") ? String(formData.get("video_url") ?? "").trim().slice(0, 500) : undefined,
   };
+}
+
+/** The post's video player from the pasted link: undefined keeps the current one, "" removes it, a bad link is an error. */
+function videoEmbed(video: string | undefined): { embed?: PostEmbed | null } | { error: "badVideo" } {
+  if (video === undefined) return {};
+  if (!video) return { embed: null };
+  const embed = embedFromUrl(video);
+  return embed ? { embed } : { error: "badVideo" };
 }
 
 /** The app section's error, if the agency typed one; otherwise the fields with a clean app. */
 function appError(fields: ReturnType<typeof postFields>): { error: AppError } | null {
   return fields.app && "error" in fields.app ? { error: fields.app.error } : null;
 }
-const withApp = (fields: ReturnType<typeof postFields>) => ({ ...fields, app: fields.app && "error" in fields.app ? null : fields.app });
+function withApp(fields: ReturnType<typeof postFields>, video: { embed?: PostEmbed | null }) {
+  const { video: _typed, ...rest } = fields; // eslint-disable-line @typescript-eslint/no-unused-vars -- the link is replaced by its player
+  return { ...rest, ...video, app: rest.app && "error" in rest.app ? null : rest.app };
+}
 
 /** Keeps a post's client only when it is one of the agency's own clients. */
 async function ownClient<T extends { clientId: string | null }>(agencyId: string, fields: T): Promise<T> {
@@ -85,7 +100,9 @@ export async function createPostAction(_: StudioState, formData: FormData): Prom
   if (!raw.services.length) return { error: "noServices" };
   const badApp = appError(raw);
   if (badApp) return badApp;
-  const fields = withApp(raw);
+  const video = videoEmbed(raw.video);
+  if ("error" in video) return video;
+  const fields = withApp(raw, video);
   if (!canCreatePost(entitlementsFor(agency), agency.postCount)) return { error: "limit" };
 
   let postId: string;
@@ -109,7 +126,9 @@ export async function updatePostAction(_: StudioState, formData: FormData): Prom
   if (!raw.services.length) return { error: "noServices" };
   const badApp = appError(raw);
   if (badApp) return badApp;
-  const updated = await updatePost(postId.data, agency.id, withApp(raw));
+  const video = videoEmbed(raw.video);
+  if ("error" in video) return video;
+  const updated = await updatePost(postId.data, agency.id, withApp(raw, video));
   if (!updated) return { error: "generic" };
   revalidatePath("/[locale]", "layout");
   return { ok: true };

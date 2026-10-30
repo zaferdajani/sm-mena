@@ -80,6 +80,10 @@
   transition: border-color .15s ease, background .15s ease;
 }
 .service:hover { border-color: var(--primary); background: var(--accent); }
+/* A service the provider added that waits for an admin's approval (docs/30). */
+.servicePending { gap: .35rem; border-style: dashed; }
+.servicePending:hover { border-color: var(--border); background: var(--background); }
+.servicePending small { font-size: .7rem; color: var(--muted-foreground); }
 .stats { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-block-start: 1.25rem; padding-block-start: 1rem; border-block-start: 1px solid var(--border); }
 .stats > div { display: flex; align-items: baseline; gap: .4rem; }
 .stats dt { order: 2; font-size: .875rem; color: var(--muted-foreground); }
