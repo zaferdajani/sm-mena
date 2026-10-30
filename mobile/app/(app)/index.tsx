@@ -42,6 +42,7 @@ export default function Home() {
         {setup?.postId ? <Button kind="secondary" title={t("openProject")} onPress={() => router.push({ pathname: "/(app)/project/[id]", params: { id: setup.postId! } })} testID="open-project" /> : null}
         <Button title={setup && setup.status !== "finished" ? t("continueSetup") : t("startSetup")} onPress={() => router.push("/(app)/setup")} testID="continue-setup" />
       </Card>
+      <Button kind="secondary" title={t("notifications")} onPress={() => router.push("/(app)/notifications")} testID="open-notifications" />
       <Button kind="secondary" title={t("profile")} onPress={() => router.push("/(app)/profile")} />
       <Button kind="secondary" title={t("settings")} onPress={() => router.push("/(app)/settings")} />
       <Button kind="secondary" title={t("refresh")} onPress={refresh} busy={busy} />

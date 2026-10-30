@@ -4,8 +4,9 @@ name: Sawwiq phone builds (iPhone unsigned .ipa + Android APK)
 # 10x; the TeamManager budget was emptied that way).
 #
 # Builds the Expo app in mobile/ with the staging API address baked in (EXPO_PUBLIC_API_URL). The address must be
-# a non-production deployment of this web app with API_V1_ENABLED=true and its own database. Localhost and the
-# production domain are refused. Results land on fixed GitHub Releases:
+# a non-production deployment of this web app with API_V1_ENABLED=true and its own database: normally the canonical
+# staging site, https://staging.sawwiq.org (docs/27-vercel.md). Localhost and the production hosts (sawwiq.org,
+# www.sawwiq.org and the production Vercel aliases) are refused. Results land on fixed GitHub Releases:
 #   iphone-latest  → Sawwiq-iPhone.ipa  (unsigned; install with Sideloadly + a free Apple ID)
 #   android-latest → Sawwiq-debug.apk  (debug-signed; install directly on Android)
 
@@ -13,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       api_url:
-        description: "Staging API base URL, e.g. https://sawwiq-staging.example.app (not localhost, not sawwiq.org)"
+        description: "Staging API base URL, normally https://staging.sawwiq.org (never localhost or the production site)"
         required: true
         type: string
       iphone:
@@ -44,9 +45,12 @@ jobs:
             https://*) ;;
             *) echo "::error::api_url must start with https://"; exit 1 ;;
           esac
-          case "$API_URL" in
-            *localhost*|*127.0.0.1*|*\[::1\]*) echo "::error::api_url must not be localhost"; exit 1 ;;
-            *sawwiq.org*) echo "::error::api_url must be a staging deployment, not the production domain"; exit 1 ;;
+          # Compare the host itself, so staging.sawwiq.org is accepted and only the production hosts are refused.
+          host="${API_URL#https://}"; host="${host%%/*}"; host="${host##*@}"; host="${host%%:*}"; host="$(printf '%s' "$host" | tr 'A-Z' 'a-z')"; host="${host%.}"
+          case "$host" in
+            localhost|127.0.0.1|\[*) echo "::error::api_url must not be localhost"; exit 1 ;;
+            sawwiq.org|www.sawwiq.org|sm-mena.vercel.app|sm-mena-zaferdajani.vercel.app|sm-mena-git-main-zaferdajani.vercel.app)
+              echo "::error::api_url must be a staging deployment, not the production site"; exit 1 ;;
           esac
           echo "API address accepted: $API_URL"
 
