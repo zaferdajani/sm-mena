@@ -2,7 +2,7 @@
 // the Authorization header from a token store (Keychain/Keystore on a device, memory in tests), the error
 // contract (every failure becomes an ApiFailure with the server's code), and the two global answers —
 // `unauthenticated` clears the device session, `upgrade_required` stops the app until it is updated.
-import type { ApiErrorBody, ApiErrorCode, Login, Me, ProjectAnswer, Setup } from "./contract";
+import type { ApiErrorBody, ApiErrorCode, Login, Me, NotificationList, ProjectAnswer, Setup } from "./contract";
 import { API_ERROR_CODES } from "./contract";
 
 export type TokenStore = {
@@ -145,6 +145,17 @@ export function createClient(options: ClientOptions) {
     publish: (version: number, rights: boolean) => request<{ postId: string; setup: Setup }>("POST", "/api/v1/portfolio/publish", { json: { version, rights } }),
   };
 
+  const notifications = {
+    list: () => request<NotificationList>("GET", "/api/v1/notifications"),
+    markRead: (ids?: number[]) => request<{ unread: number }>("POST", "/api/v1/notifications/read", { json: ids ? { ids } : {} }),
+  };
+
+  /** Crash reports go out without a session (a crash can happen before sign-in); failures are swallowed by the caller. */
+  const errors = {
+    report: (report: { kind: "js_error" | "unhandled_rejection" | "render_error"; message: string; stack?: string | null; path?: string | null }) =>
+      request<void>("POST", "/api/v1/errors", { json: report, auth: false, raw: true }),
+  };
+
   const projects = {
     get: (id: string) => request<ProjectAnswer>("GET", `/api/v1/projects/${id}`),
   };
@@ -161,7 +172,7 @@ export function createClient(options: ClientOptions) {
     return session ? { authorization: `Bearer ${session.token}`, "x-sawwiq-app": appHeader } : { "x-sawwiq-app": appHeader };
   }
 
-  return { auth, setup, projects, absolute, imageBytes, imageHeaders, appHeader };
+  return { auth, setup, projects, notifications, errors, absolute, imageBytes, imageHeaders, appHeader };
 }
 
 export type ApiClient = ReturnType<typeof createClient>;
