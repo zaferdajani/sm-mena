@@ -23,7 +23,7 @@ Manual only (`workflow_dispatch`). Inputs: `api_url` (required), `iphone`, `andr
   signing off. Release embeds the JavaScript bundle, so no Metro server and no Expo Go are needed. The `.ipa` is
   packaged from `Payload/*.app` and published to the fixed release `iphone-latest`.
 - The Android job runs on Linux: `expo prebuild` (Android) and `assembleDebug`; the APK goes to `android-latest`.
-- `api_url` must be `https://…`, not localhost, and not the production domain. The job stops otherwise.
+- `api_url` must be `https://…`, not localhost, and not a production host (`sawwiq.org`, `www.sawwiq.org`, the production Vercel aliases). The job stops otherwise. Use `https://staging.sawwiq.org`: the canonical staging site, with its own database and the API switched on.
 - Install the iPhone file from a Windows PC with Sideloadly and a free Apple ID (cable, Developer Mode on, trust the
   Apple ID under VPN & Device Management). It expires after 7 days. Push notifications do not work under a free Apple ID.
 
