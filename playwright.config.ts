@@ -56,8 +56,10 @@ export default defineConfig({
   },
   projects: [
     // Tests that flip a global feature switch run alone, after everything else (see tests/e2e/switches.spec.ts).
-    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions: { executablePath } }, testIgnore: /switches\.spec\.ts/, teardown: "switches" },
-    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testIgnore: /switches\.spec\.ts/, teardown: "switches" },
+    // The Founding 100 is the first 100 real providers; the suite creates more than that, so the seat check runs first.
+    { name: "founding", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testMatch: /founding-seat\.spec\.ts/ },
+    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions: { executablePath } }, testIgnore: /(switches|founding-seat)\.spec\.ts/, dependencies: ["founding"], teardown: "switches" },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testIgnore: /(switches|founding-seat)\.spec\.ts/, dependencies: ["founding"], teardown: "switches" },
     // A teardown project runs in its own phase once the mobile and desktop projects have finished, whatever their result,
     // so a switch is never on "soon" or "off" while another worker loads a page that depends on it.
     { name: "switches", use: { ...devices["Desktop Chrome"], launchOptions: { executablePath } }, testMatch: /switches\.spec\.ts/, workers: 1, fullyParallel: false },

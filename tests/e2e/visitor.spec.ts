@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page, type Request } from "@playwright/test";
 import { signInClient } from "./helpers";
 
 test("following, liking and saving ask visitors to sign in, then come back", async ({ page }) => {
@@ -18,25 +18,37 @@ test("following, liking and saving ask visitors to sign in, then come back", asy
   await expect(page.getByTestId("follow-button")).toHaveAttribute("aria-pressed", "true");
 });
 
+/** Clicks a button that saves through a server action and waits until that request has been sent and answered. */
+async function clickAndPersist(page: Page, button: Locator) {
+  let sent = 0;
+  const inFlight = new Set<Request>();
+  const onRequest = (r: Request) => { if (r.method() === "POST" && r.headers()["next-action"]) { sent++; inFlight.add(r); } };
+  const onDone = (r: Request) => { inFlight.delete(r); };
+  page.on("request", onRequest); page.on("requestfinished", onDone); page.on("requestfailed", onDone);
+  await button.click();
+  await expect.poll(() => sent > 0 && inFlight.size === 0, { timeout: 15_000 }).toBe(true);
+  page.off("request", onRequest); page.off("requestfinished", onDone); page.off("requestfailed", onDone);
+}
+
 test("a signed-in business owner's likes, saves and follows stay with the account", async ({ page }) => {
+  // The buttons update at once (optimistic); the test moves on only once the server has
+  // answered, since a full page load right after a click cancels a request still in flight.
   await signInClient(page);
   await page.goto("/ar/a/zaytoon.brand");
   await page.getByTestId("post-grid").locator("a").first().click();
   await expect(page).toHaveURL(/\/ar\/p\//);
   const like = page.getByTestId("like-button");
-  await like.click();
+  await clickAndPersist(page, like);
   await expect(like).toHaveAttribute("aria-pressed", "true");
-  await page.waitForTimeout(500);
   await page.reload();
   await expect(page.getByTestId("like-button")).toHaveAttribute("aria-pressed", "true");
 
   await page.goto("/en/a/aqaba.waves");
-  await page.getByTestId("follow-button").click();
+  await clickAndPersist(page, page.getByTestId("follow-button"));
   await expect(page.getByTestId("follow-button")).toHaveAttribute("aria-pressed", "true");
   await page.getByTestId("post-grid").locator("a").first().click();
-  await page.getByTestId("save-button").click();
+  await clickAndPersist(page, page.getByTestId("save-button"));
   await expect(page.getByTestId("save-button")).toHaveAttribute("aria-pressed", "true");
-  await page.waitForTimeout(500);
   await page.goto("/en/saved");
   await expect(page.getByTestId("saved-account")).toBeVisible();
   await expect(page.getByTestId("agency-row").filter({ hasText: "@aqaba.waves" })).toBeVisible();
