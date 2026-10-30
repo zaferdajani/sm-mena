@@ -17,6 +17,12 @@ export function messageFor(error: unknown, t: (key: keyof Strings, vars?: Record
         return t("errStale");
       case "invalid":
       case "conflict":
+        // Sign-up answers name the field (lib/data/provider-signup.ts).
+        if (error.reason === "handleTaken") return t("errHandleTaken");
+        if (error.reason === "emailTaken") return t("errEmailTaken");
+        if (error.reason === "handleInvalid") return t("errHandleInvalid");
+        if (error.reason === "handleReserved") return t("errHandleReserved");
+        if (error.reason === "invalidPhone") return t("errInvalidPhone");
         return t("errInvalid");
       case "unavailable":
         return t("errUnavailable");
