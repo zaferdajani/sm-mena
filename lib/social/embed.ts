@@ -19,6 +19,48 @@ export function embedFor(provider: SocialProviderId, itemId: string, permalink: 
   return null;
 }
 
+/**
+ * A video link an agency pastes on a post (YouTube, TikTok, Instagram or Facebook): the official player for it,
+ * or null when the link is not one of those. Only https links on the platforms' own hosts are read.
+ */
+export function embedFromUrl(raw: string): PostEmbed | null {
+  let url: URL;
+  try {
+    url = new URL(raw.trim());
+  } catch {
+    return null;
+  }
+  if (url.protocol !== "https:") return null;
+  const host = url.hostname.replace(/^(www\.|m\.)/, "");
+  const parts = url.pathname.split("/").filter(Boolean);
+  if (host === "youtube.com" || host === "youtube-nocookie.com" || host === "youtu.be") {
+    const id = host === "youtu.be" ? parts[0] : parts[0] === "watch" ? url.searchParams.get("v") : ["shorts", "embed", "live"].includes(parts[0]) ? parts[1] : null;
+    return id ? embedFor("youtube", id, "") : null;
+  }
+  if (host === "tiktok.com") {
+    const at = parts.indexOf("video");
+    const id = at >= 0 ? parts[at + 1] : parts[0] === "embed" ? parts.at(-1) : null;
+    return id ? embedFor("tiktok", id, "") : null;
+  }
+  if (host === "instagram.com" && ["p", "reel", "tv"].includes(parts[0]) && parts[1]) {
+    return embedFor("instagram", parts[1], `https://www.instagram.com/${parts[0]}/${parts[1]}/`);
+  }
+  if (host === "facebook.com" && parts.length) {
+    return embedFor("facebook", parts.at(-1) ?? "", `https://www.facebook.com${url.pathname}${url.pathname.startsWith("/watch") ? url.search : ""}`);
+  }
+  return null;
+}
+
+/** The link an agency would paste for an embed (to show it back in the editor). */
+export function embedLink(embed: PostEmbed | null | undefined): string {
+  if (!embed) return "";
+  if (embed.provider === "youtube") return `https://www.youtube.com/watch?v=${embed.itemId}`;
+  if (embed.provider === "tiktok") return `https://www.tiktok.com/embed/v2/${embed.itemId}`;
+  if (embed.provider === "instagram") return embed.url.replace(/embed\/$/, "");
+  const href = /href=([^&]+)/.exec(embed.url)?.[1];
+  return href ? decodeURIComponent(href) : "";
+}
+
 /** An embed read back from the database is shown only if it still has one of the exact official shapes. */
 export function safeEmbed(embed: PostEmbed | null | undefined): PostEmbed | null {
   if (!embed) return null;

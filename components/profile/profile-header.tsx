@@ -41,6 +41,8 @@ export type ProfileData = {
   postCount: number;
   followerCount: number;
   services: string[];
+  /** Services the provider typed that wait for an admin's approval (docs/30): shown, marked as pending, never linked. */
+  pendingServices?: string[];
   startingPriceJod: number | null;
   whatsapp: string | null;
   phone: string | null;
@@ -110,10 +112,16 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
         </div>
         {servesNote && <p className={styles.serves} data-testid="serves-note">{servesNote}</p>}
         {agency.bio && <p className={styles.bio} dir="auto">{agency.bio}</p>}
-        {agency.services.length > 0 && (
+        {(agency.services.length > 0 || (agency.pendingServices?.length ?? 0) > 0) && (
           <div className={styles.services} data-testid="profile-services">
             {agency.services.map((s) => (
               readOnly ? <span key={s} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></span> : <Link key={s} href={`/hire/${s}`} className={styles.service}><bdi dir="auto">{serviceLabel(s, locale)}</bdi></Link>
+            ))}
+            {agency.pendingServices?.map((s) => (
+              <span key={`pending:${s}`} className={cn(styles.service, styles.servicePending)} title={t("servicePendingHint")} data-testid="profile-service-pending">
+                <bdi dir="auto">{s}</bdi>
+                <small>{t("servicePending")}</small>
+              </span>
             ))}
           </div>
         )}
