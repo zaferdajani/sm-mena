@@ -562,6 +562,8 @@
       "noIndustry": "Not set",
       "result": "Result (optional)",
       "resultPlaceholder": "Example: +180% reach in 30 days",
+      "video": "Video link (optional)",
+      "videoHint": "A YouTube, TikTok, Instagram or Facebook link. The video plays on the post with the platform's own player.",
       "publish": "Publish",
       "publishing": "Publishing…",
       "saveChanges": "Save changes",
@@ -597,9 +599,7 @@
         "tryHint": "From the app mall (pcn.store): deploy the app, publish it, create an embed key that allows https://sawwiq.org, and paste the embed link. Only app-mall links are accepted; the app runs in its sandbox, your code never leaves it.",
         "store": "Store page (App Store / Google Play)",
         "web": "Web address of the app"
-      },
-      "video": "Video link (optional)",
-      "videoHint": "A YouTube, TikTok, Instagram or Facebook link. The video plays on the post with the platform's own player."
+      }
     },
     "profileForm": {
       "avatar": "Profile picture or logo",
@@ -5568,6 +5568,10 @@
       "rateLimited": "Too many tries. Wait a few minutes."
     }
   },
+  "ServiceProposalEmail": {
+    "subject": "New service awaiting approval: {service}",
+    "body": "A provider added a service that is not in the list yet: \"{service}\". It shows on their profile as awaiting approval. Review it (approve, merge or reject) in Admin → Services:"
+  },
   "Staging": {
     "banner": "TEST MODE - virtual money. Isolated staging copy. This is not sawwiq.org and no real money moves.",
     "wallet": "Virtual wallet",
@@ -5603,9 +5607,5 @@
       "expired": "expired",
       "cvc": "incorrect CVC"
     }
-  },
-  "ServiceProposalEmail": {
-    "subject": "New service awaiting approval: {service}",
-    "body": "A provider added a service that is not in the list yet: \"{service}\". It shows on their profile as awaiting approval. Review it (approve, merge or reject) in Admin → Services:"
   }
 }

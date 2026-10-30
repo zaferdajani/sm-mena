@@ -5,7 +5,9 @@ import { COUNTRIES } from "@/lib/countries";
 import { createAgency } from "@/lib/data/agencies";
 import { createUser, getUserByEmail } from "@/lib/data/users";
 import { closeDb, getDb } from "@/lib/db";
-import { contracts, users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { listClients } from "@/lib/data/portfolio-clients";
+import { agencies, contracts, packages, posts, reviews, users } from "@/lib/db/schema";
 import { STAGING_PASSWORD, seedStaging } from "@/lib/db/seed-staging";
 
 afterAll(() => closeDb());
@@ -67,5 +69,23 @@ describe("staging seed", () => {
     expect(byTitle["Staging disputed · manama.social"]).toBe("disputed");
     expect(byTitle["Staging cancelled · muscat.media"]).toBe("cancelled");
     expect(byTitle["Staging direct · nile.digital"]).toBe("active");
-  }, 180_000);
+
+    // Reference profiles: the staging agency and freelancer are filled in, once.
+    await seedStaging(() => {});
+    for (const [handle, clientCount, packageCount] of [["staging.agency.jo", 3, 3], ["staging.free.jo", 2, 2]] as const) {
+      const [a] = await db.select().from(agencies).where(eq(agencies.handle, handle));
+      expect(a.about.length).toBeGreaterThan(50);
+      expect(a.strengths.length).toBeGreaterThan(2);
+      expect(a.avatarKey).toBeTruthy();
+      expect(a.pendingServices).toHaveLength(1);
+      const clients = await listClients(a.id);
+      expect(clients).toHaveLength(clientCount);
+      expect(clients.every((c) => c.logoKey && c.links.length && c.description.length > 80)).toBe(true);
+      const work = await db.select().from(posts).where(eq(posts.agencyId, a.id));
+      expect(work.every((p) => p.clientId)).toBe(true);
+      expect(work.filter((p) => p.embed?.provider === "youtube")).toHaveLength(1);
+      expect(await db.select().from(packages).where(eq(packages.agencyId, a.id))).toHaveLength(packageCount);
+      expect(await db.select().from(reviews).where(eq(reviews.agencyId, a.id))).toHaveLength(3);
+    }
+  }, 300_000);
 });
