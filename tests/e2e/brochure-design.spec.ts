@@ -127,6 +127,13 @@ test("Swiss registration fields stay contained and phone controls never overlap"
       await page.goto(`/${locale}/join`);
       await expect(page.getByTestId("join-form")).toHaveAttribute("data-ready", "true");
       await expect(page.locator("#name")).toBeVisible();
+      // Side by side, the name and username inputs line up and share one height
+      // (the username's hint once stretched the name field taller and lower).
+      const pair = await page.evaluate(() => ["#name", "#handle"].map((s) => document.querySelector(s)!.getBoundingClientRect()).map((r) => ({ top: r.top, left: r.left, height: r.height })));
+      if (Math.abs(pair[0].left - pair[1].left) > 1) {
+        expect(Math.abs(pair[0].top - pair[1].top), `${locale} ${width}: name and username tops`).toBeLessThanOrEqual(1);
+        expect(Math.abs(pair[0].height - pair[1].height), `${locale} ${width}: name and username heights`).toBeLessThanOrEqual(1);
+      }
       await page.locator("#name").fill("Swiss Layout Test Agency");
       await page.locator("#handle").fill(`swiss.layout.${locale}.${width}`);
       await nextJoinStep(page);
