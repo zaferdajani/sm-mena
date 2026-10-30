@@ -234,3 +234,9 @@ Owner decision after the research summarised here (not legal advice; confirm wit
   - Delete the personal data within 30 days, keeping only what the law requires (audit log, ledger rows).
   - Do not ask for a guardian's consent after the fact.
 - **Terms:** section 6 of `/legal` ("Who can have an account") says all of this in Arabic and English.
+
+
+## Native app crash reports and notifications (docs/64)
+
+- Crash reports from the phone (`POST /api/v1/errors`) keep the error message, stack, the path `/mobile`, and the app version and platform. No account, e-mail or IP address is stored beyond the existing rate limiter's memory. Retention follows the error journal.
+- The phone's notifications read the existing notifications table: same content and 90-day retention as the web.

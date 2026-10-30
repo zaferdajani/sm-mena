@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createClient, type ApiClient } from "./api/client";
+import { installCrashReporter } from "./crash-reporter";
 import type { Me } from "./api/contract";
 import { API_URL, APP_PLATFORM, APP_VERSION } from "./config";
 import { secureTokenStore } from "./secure-store";
@@ -66,6 +67,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       throw error;
     }
   }, [client]);
+
+  // Uncaught errors reach the server's journal from the first render on.
+  useEffect(() => installCrashReporter(client), [client]);
 
   useEffect(() => {
     reload().catch(() => undefined);

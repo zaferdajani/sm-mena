@@ -87,3 +87,16 @@ export function missingForPublish(view: Pick<Setup, "data" | "media">): PublishB
   if (!view.media.length) return "noMedia";
   return null;
 }
+
+/** GET /api/v1/notifications: the studio's latest items, newest first (lib/data/notifications.ts). */
+export type NotificationItem = {
+  id: number;
+  kind: string;
+  href: string;
+  params: Record<string, string | number>;
+  conversationId: string | null;
+  requestId: string | null;
+  read: boolean;
+  createdAt: string;
+};
+export type NotificationList = { unread: number; items: NotificationItem[] };
