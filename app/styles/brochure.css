@@ -251,6 +251,13 @@ html[dir="rtl"] :where(.sw-app, .sw-auth, .registration-site) select:not([multip
   gap: var(--sw-swiss-space-3);
   min-inline-size: 0;
 }
+/* Side by side, a field with a hint makes its row taller: the other field's label and
+   input stay at the top at their own height instead of stretching to fill the row. */
+.sw-swiss-form .sw-join-fields-grid > *,
+.sw-swiss-form .sw-join-location-grid > *,
+.sw-swiss-form .sw-join-contact-grid > * {
+  align-content: start;
+}
 .sw-swiss-form .sw-join-field {
   min-inline-size: 0;
   gap: .55rem;
