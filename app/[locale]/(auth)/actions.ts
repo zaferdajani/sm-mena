@@ -1,8 +1,5 @@
 "use server";
 
-import { JOIN_ROLES } from "@/lib/services/catalog";
-import { normalizeRoleSelection } from "@/lib/services/role-input";
-import { resolveServices } from "@/lib/services/tags";
 import { getLocale } from "next-intl/server";
 import { joinSchema, loginSchema } from "@/lib/validation/auth";
 import { redirect } from "@/i18n/navigation";
@@ -11,18 +8,15 @@ import { verifySecondFactor } from "@/lib/auth/mfa";
 import { isStaffRole } from "@/lib/auth/permissions";
 import { completeMfaSession, createSession, destroySession, getPendingMfaUser } from "@/lib/auth/session";
 import { audit } from "@/lib/data/agencies";
-import { createAgency, getAgencyByOwner, isHandleTaken } from "@/lib/data/agencies";
-import { assignFoundingSeats } from "@/lib/data/teaser";
+import { getAgencyByOwner } from "@/lib/data/agencies";
+import { registerProvider } from "@/lib/data/provider-signup";
 import { claimPioneerFromCookie } from "@/lib/data/pioneers";
 import { mergeDeviceInteractions } from "@/lib/data/interactions";
-import { attributeReferral } from "@/lib/data/referrals";
 import { getVisitorId } from "@/lib/visitor";
-import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
+import { getUserByEmail } from "@/lib/data/users";
 import { isRateLimited, rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 
-import { validateHandle } from "@/lib/text";
-import { internationalPhone } from "@/lib/dial-codes";
 
 export type FormState = { error?: string; fields?: Record<string, string> } | undefined;
 
@@ -101,46 +95,21 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     return { error, fields };
   }
   const data = parsed.data;
-  const handleCheck = validateHandle(data.handle);
-  if (handleCheck === "invalid") return { error: "handleInvalid", fields };
-  if (handleCheck === "reserved") return { error: "handleReserved", fields };
-  if (await isHandleTaken(data.handle)) return { error: "handleTaken", fields };
-  if (await getUserByEmail(data.email)) return { error: "emailTaken", fields };
-  // The number as typed plus the country picked beside it (lib/dial-codes.ts).
-  const whatsapp = internationalPhone(String(formData.get("whatsappCountry") ?? ""), data.whatsapp);
-  if (!/^\+?\d{8,15}$/.test(whatsapp)) return { error: "invalidPhone", fields };
-
-  const user = await createUser(data.email, data.password, "agency", { ageConfirmed: true }).catch(() => null);
-  if (!user) return { error: "emailTaken", fields };
-  try {
-    const all = (k: string) => formData.getAll(k).map(String).filter(Boolean);
-    const picked = await resolveServices(null, all("services"), all("newServices"));
-    const kind = formData.get("kind") === "freelancer" ? "freelancer" : "agency";
-    const teamRoles = normalizeRoleSelection(all("teamRoles"));
-    const created = await createAgency(user.id, {
-      handle: data.handle,
-      name: data.name,
-      city: data.city,
-      whatsapp,
-      phone: whatsapp,
-      services: picked.services,
-      pendingServices: picked.pending,
-      kind,
-      teamRoles,
-      // An agency is offered partners for the key roles it doesn't have in house (it can change this in the studio).
-      seeksRoles: kind === "agency" ? JOIN_ROLES.filter((r) => !teamRoles.includes(r)) : [],
-    });
-    // The marketing agent whose link or code brought them (docs/42).
-    await attributeReferral(created.id, formData.get("ref"), data.email).catch(() => false);
-    // A Pioneer letter's code left by its landing page (docs/57): the seal is given once, here.
-    await claimPioneerFromCookie(created.id, user.id).catch(() => null);
-  } catch {
-    // e.g. the handle was taken a moment ago; do not leave an orphan account
-    await deleteUser(user.id);
-    return { error: "handleTaken", fields };
-  }
-  // Their founding seat number (docs/39), shown in the studio.
-  await assignFoundingSeats();
+  const all = (k: string) => formData.getAll(k).map(String).filter(Boolean);
+  // The same rules as the app's POST /api/v1/auth/signup (lib/data/provider-signup.ts).
+  const created = await registerProvider({
+    ...data,
+    whatsappCountry: String(formData.get("whatsappCountry") ?? ""),
+    kind: formData.get("kind") === "freelancer" ? "freelancer" : "agency",
+    services: all("services"),
+    newServices: all("newServices"),
+    teamRoles: all("teamRoles"),
+    ref: String(formData.get("ref") ?? ""),
+  });
+  if ("error" in created) return { error: created.error, fields };
+  const user = { id: created.userId };
+  // A Pioneer letter's code left by its landing page (docs/57): the seal is given once, here.
+  await claimPioneerFromCookie(created.agencyId, user.id).catch(() => null);
   await createSession(user.id);
   const locale = await getLocale();
   // Came through a collaborator's invitation link (docs/48): accept it now, with the fresh account.

@@ -5,6 +5,8 @@ import type { TokenStore } from "./api/client";
 const TOKEN = "sawwiq.session.token";
 const EXPIRES = "sawwiq.session.expiresAt";
 const LANG = "sawwiq.language";
+// Which site the signed-in account lives on: "production" (sawwiq.org) or "staging" (src/api/accounts.ts).
+const SITE = "sawwiq.session.site";
 
 export const secureTokenStore: TokenStore = {
   async get() {
@@ -24,4 +26,13 @@ export const secureTokenStore: TokenStore = {
 export const languageStore = {
   get: () => SecureStore.getItemAsync(LANG),
   set: (code: string) => SecureStore.setItemAsync(LANG, code),
+};
+
+export const siteStore = {
+  async get(): Promise<"production" | "staging" | null> {
+    const v = await SecureStore.getItemAsync(SITE);
+    return v === "production" || v === "staging" ? v : null;
+  },
+  set: (site: "production" | "staging") => SecureStore.setItemAsync(SITE, site),
+  clear: () => SecureStore.deleteItemAsync(SITE),
 };
