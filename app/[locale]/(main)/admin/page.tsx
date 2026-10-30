@@ -80,11 +80,11 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
       {showSystem && (
         <section className="rounded-xl border p-4">
           <h2 className="font-semibold">{t("health.title")}</h2>
-          <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+          <dl className="mt-2 grid grid-cols-[minmax(0,1fr)] gap-x-6 gap-y-1 text-sm sm:grid-cols-[repeat(2,minmax(0,1fr))]">
             {health.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b py-1 last:border-0">
                 <dt className="text-muted-foreground">{t(`health.${k}` as "health.ai")}</dt>
-                <dd className="truncate font-medium" dir="ltr">{v}</dd>
+                <dd className="min-w-0 truncate font-medium" dir="ltr">{v}</dd>
               </div>
             ))}
           </dl>
