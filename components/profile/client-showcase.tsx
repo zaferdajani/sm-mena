@@ -70,19 +70,21 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
         const country = COUNTRIES.find((x) => x.code === c.country);
         const meta = [c.industry ? tInd(c.industry) : null, country ? `${country.flag} ${locale === "ar" ? country.ar : country.en}` : null].filter(Boolean).join(" · ");
         return (
-          <article key={c.id} className="rounded-xl border p-4" data-testid="client-card">
+          // The whole card opens the client's page (a stretched link on the name); the account links, share buttons and
+          // thumbnails sit above it and keep their own targets.
+          <article key={c.id} className="relative cursor-pointer rounded-xl border p-4 transition-colors hover:bg-muted/40" data-testid="client-card">
             <div className="flex items-start gap-3">
-              <Link href={`/a/${handle}/c/${c.id}`} className="shrink-0">
+              <div className="shrink-0">
                 {c.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={c.logoUrl} alt="" className="size-12 rounded-full border bg-white object-cover" />
                 ) : (
                   <span className="grid size-12 place-items-center rounded-full border bg-muted text-lg font-bold text-muted-foreground">{c.name.slice(0, 1)}</span>
                 )}
-              </Link>
+              </div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-semibold" dir="auto">
-                  <Link href={`/a/${handle}/c/${c.id}`} data-testid="client-open">{c.name}</Link>
+                  <Link href={`/a/${handle}/c/${c.id}`} data-testid="client-open" className="after:absolute after:inset-0 after:rounded-xl after:content-['']">{c.name}</Link>
                 </h2>
                 <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                   <ManagedChip agencyName={agencyName ?? handle} />
@@ -90,17 +92,17 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
                 </div>
                 {c.confirmedAt && <p className="text-xs font-medium text-brand" data-testid="client-confirmed">✓ {t("confirmedByClient")}</p>}
               </div>
-              <Link href={`/a/${handle}/c/${c.id}`} className="shrink-0 text-xs font-medium text-brand">{t("openAccount")}</Link>
+              <span className="shrink-0 text-xs font-medium text-brand" aria-hidden>{t("openAccount")}</span>
             </div>
-            {c.description && <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{c.description}</p>}
+            {c.description && <p className="mt-2 line-clamp-4 whitespace-pre-line text-sm" dir="auto">{c.description}</p>}
             {c.links.length > 0 && (
-              <div className="mt-3">
+              <div className="relative z-10 mt-3 w-fit max-w-full">
                 <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("accountsManaged")}</p>
                 <AccountLinks links={c.links} />
               </div>
             )}
             <ShareActions
-              className="mt-3"
+              className="relative z-10 mt-3 w-fit"
               url={`${SITE_URL}/${locale}/a/${handle}/c/${c.id}`}
               title={`${c.name} · ${agencyName ?? handle}`}
               text={t("shareClientText", { agency: agencyName ?? handle, client: c.name })}
@@ -110,7 +112,7 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
             {c.thumbs.length > 0 && (
               <div className="mt-3">
                 <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("clientWork")} ({c.postCount})</p>
-                <div className="grid grid-cols-3 gap-1 sm:grid-cols-6">
+                <div className="relative z-10 grid grid-cols-3 gap-1 sm:grid-cols-6">
                   {c.thumbs.map((th) => (
                     <Link key={th.postId} href={`/p/${th.postId}`} className="block aspect-square overflow-hidden rounded-md" style={{ background: th.color }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}

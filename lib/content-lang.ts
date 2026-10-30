@@ -34,7 +34,9 @@ const lines = (maxItems: number, maxLen: number) =>
 
 export const agencyTranslationSchema = z.object({ name: text(80), bio: text(500), about: text(1500), strengths: lines(6, 80) });
 export const postTranslationSchema = z.object({ caption: text(2200), result: text(80) });
-export const clientTranslationSchema = z.object({ name: text(80), description: text(500) });
+/** The note on a client: what the agency did for them, the problem it solved, the result (docs/28). */
+export const CLIENT_NOTE_MAX = 2000;
+export const clientTranslationSchema = z.object({ name: text(80), description: text(CLIENT_NOTE_MAX) });
 export const packageTranslationSchema = z.object({ title: text(80), description: text(300), deliverables: lines(12, 200) });
 
 /** Drops empty values, so a blank field keeps falling back to the main text. */

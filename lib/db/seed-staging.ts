@@ -155,6 +155,10 @@ export async function seedStaging(log: (...a: unknown[]) => void = console.log) 
     await db.insert(appSettings).values({ key: FLAG, value: true }).onConflictDoNothing();
   }
 
+  // Complete reference profiles for the staging agencies and freelancers (clients, projects, packages, reviews).
+  const { fillReferenceAccounts } = await import("./staging-reference");
+  await fillReferenceAccounts(log);
+
   log("Staging QA accounts (same password for every role):");
   log(`  password: ${STAGING_PASSWORD}`);
   log("  owner: staging-owner@sawwiq.test  (or the existing owner, if one was already promoted)");

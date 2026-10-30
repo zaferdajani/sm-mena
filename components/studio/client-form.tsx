@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LINK_KINDS, linkLabel, type LinkKind } from "@/lib/social-links";
 import { Field } from "./chips";
-import type { ClientTranslation, ContentLang } from "@/lib/content-lang";
+import { CLIENT_NOTE_MAX, type ClientTranslation, type ContentLang } from "@/lib/content-lang";
 import { OtherLanguage } from "./other-language";
 
 type Option = { key: string; label: string };
@@ -108,7 +108,7 @@ export function ClientForm({ initial, industries, countries, defaultCountry, con
         </select>
       </Field>
       <Field label={t("description")} htmlFor={`desc-${initial?.id ?? "new"}`}>
-        <Textarea id={`desc-${initial?.id ?? "new"}`} name="description" rows={2} maxLength={500} defaultValue={initial?.description} placeholder={t("descriptionPlaceholder")} />
+        <Textarea id={`desc-${initial?.id ?? "new"}`} name="description" rows={5} maxLength={CLIENT_NOTE_MAX} defaultValue={initial?.description} placeholder={t("descriptionPlaceholder")} />
       </Field>
       <OtherLanguage main={contentLang} filled={Boolean(initial?.translation?.name || initial?.translation?.description)}>
         {(attrs, label) => (
@@ -117,7 +117,7 @@ export function ClientForm({ initial, industries, countries, defaultCountry, con
               <Input id={`tr-name-${initial?.id ?? "new"}`} name="tr_name" maxLength={80} defaultValue={initial?.translation?.name ?? ""} {...attrs} />
             </Field>
             <Field label={label(t("description"))} htmlFor={`tr-desc-${initial?.id ?? "new"}`}>
-              <Textarea id={`tr-desc-${initial?.id ?? "new"}`} name="tr_description" rows={2} maxLength={500} defaultValue={initial?.translation?.description ?? ""} {...attrs} />
+              <Textarea id={`tr-desc-${initial?.id ?? "new"}`} name="tr_description" rows={5} maxLength={CLIENT_NOTE_MAX} defaultValue={initial?.translation?.description ?? ""} {...attrs} />
             </Field>
           </>
         )}

@@ -3,6 +3,7 @@ import { and, asc, count, desc, eq, inArray, isNotNull, sql } from "drizzle-orm"
 import { isCountryCode } from "@/lib/countries";
 import { getDb, type DB } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency, type ClientTranslation, type PortfolioClient } from "@/lib/db/schema";
+import { CLIENT_NOTE_MAX } from "@/lib/content-lang";
 import { INDUSTRIES } from "@/lib/labels";
 import { cleanLinks, type CleanLink } from "@/lib/social-links";
 import { mediaUrl } from "@/lib/storage";
@@ -37,7 +38,7 @@ function clean(raw: ClientInput): ClientError | { values: { name: string; indust
       name,
       industry: raw.industry && (INDUSTRIES as readonly string[]).includes(raw.industry) ? raw.industry : null,
       country: isCountryCode(raw.country ?? undefined) ? raw.country! : null,
-      description: (raw.description ?? "").trim().slice(0, 500),
+      description: (raw.description ?? "").trim().slice(0, CLIENT_NOTE_MAX),
       links: links.links,
       translation: raw.translation ?? {},
     },

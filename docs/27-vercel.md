@@ -83,6 +83,8 @@ Then add environment variables scoped to **Preview** and that Git branch only (n
 
 Leave `STAGING_MODE` unset until the branch `DATABASE_URL` override exists. Preview env currently inherits the production database URL. `node scripts/vercel-admin.mjs staging` prints this checklist. It does not copy production secrets. Without `VERCEL_TOKEN` it cannot attach the domain.
 
+**Reference accounts.** Every staging build runs `npm run db:staging-refresh` after the migrations (staging-only `vercel.json`). In staging mode only, and never against the live database, it creates any missing staging test account and fills `staging.agency.*` and `staging.free.*` once as complete reference profiles (`lib/db/staging-reference.ts`): introduction, strengths, packages, clients with logos, Instagram/TikTok links and an "About this project" note, posts with pictures and a sample video, reviews, and one service awaiting approval. It also redraws demo pictures whose files are missing from staging storage. It never prints the staging password and never fails the build. Production builds run without it.
+
 ## Database connections on Vercel
 
 Each Vercel function instance opens its own small connection pool. Supabase's session pooler (port 5432, the `DATABASE_URL` secret) only allows a handful of clients on the free plan, so the site runs out of connections under load. When `VERCEL` is set, `lib/db/index.ts` sends the site's queries to the transaction pooler instead: same host and credentials, port 6543, built for serverless. Migrations (`npm run db:migrate`, run in the Vercel build) and the Maintenance workflow keep using the session pooler URL as given. Nothing to change in the secrets.

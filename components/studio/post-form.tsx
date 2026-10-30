@@ -25,7 +25,7 @@ export type PostFormProps = {
   clients: Option[];
   /** The agency's main language; the optional translation is in the other one. */
   contentLang: ContentLang;
-  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation; app?: PostApp | null };
+  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation; app?: PostApp | null; video?: string; importedVideo?: boolean };
 };
 
 export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial }: PostFormProps) {
@@ -145,6 +145,12 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
           <Input id="result" name="result" maxLength={80} defaultValue={initial?.result ?? ""} placeholder={t("resultPlaceholder")} />
         </Field>
       </div>
+      {/* A video of this work, played with the platform's own player (lib/social/embed.ts); imported work keeps its own. */}
+      {!initial?.importedVideo && (
+        <Field label={t("video")} hint={t("videoHint")} htmlFor="video_url">
+          <Input id="video_url" name="video_url" maxLength={500} defaultValue={initial?.video ?? ""} placeholder="https://www.youtube.com/watch?v=…" dir="ltr" inputMode="url" data-testid="post-video" />
+        </Field>
+      )}
       <OtherLanguage main={contentLang} filled={Boolean(initial?.translation?.caption || initial?.translation?.result)}>
         {(attrs, label) => (
           <>

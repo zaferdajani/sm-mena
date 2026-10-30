@@ -22,7 +22,7 @@ Studio → **Clients** lists the businesses the agency works for. For each clien
 
 Links are checked (`lib/social-links.ts`): a handle becomes the network's profile address; a pasted link must be on that network's domain (an Instagram row can't hold another site); websites must be http(s). Up to 20 accounts per client and 60 clients per agency.
 
-When publishing or editing a post, the agency can pick **Client (optional)**. On the agency's page, a **Clients** tab (shown once it has clients) groups everything by client: the accounts as tappable chips opening the real profiles (`rel="nofollow noopener ugc"`), the description, and thumbnails of the work tagged with that client. A tagged post shows "For {client}" under it.
+When publishing or editing a post, the agency can pick **Client (optional)**. On the agency's page, a **Clients** tab (shown once it has clients) groups everything by client: the accounts as tappable chips opening the real profiles (`rel="nofollow noopener ugc"`), the description, and thumbnails of the work tagged with that client. A tap anywhere on a client card opens the client's page (a stretched link; the account chips, share buttons and thumbnails keep their own targets). A tagged post shows "For {client}" under it.
 
 Data: table `portfolio_clients` (links as JSON), `posts.client_id` (set to null if the client is deleted; the posts stay). Migration `0009_portfolio_clients.sql`.
 
@@ -38,7 +38,7 @@ What visitors see:
 - **Posts.** A post filed under an account carries the account's logo and name ("For {account}") linking to its page, in the feed and on the post page.
 
 The agency side:
-- Studio → Clients: each account has a **logo** (any picture; stored square like an agency avatar, `portfolio_clients.logo_key`, migration `0014_client_logos.sql`), besides its links and description.
+- Studio → Clients: each account has a **logo** (any picture; stored square like an agency avatar, `portfolio_clients.logo_key`, migration `0014_client_logos.sql`), besides its links and description. The description is the agency's note **About this project** (up to 2,000 characters: what it did, the problem it solved, the result), shown as its own section on the client's page.
 - New post / edit post: **Account (client)** files the post under an account.
 - PDF import (docs/36): logos cut out of the PDF become accounts, and each draft names the account it belongs to; the guide at the top of the review says what is still unsorted.
 
@@ -63,3 +63,8 @@ The Behind-the-Page movement (marketing/05) needs proof, not claims:
 - **Managed accounts.** Every client card and the account page carry a "Managed account" / «حساب مُدار» chip (the agency acts for the client; the hint names the agency). The account page lists the client's accounts as larger badges that name the network and the handle, under "Browse the live accounts", so a visitor can judge the work on the real profiles.
 - **Share client portfolio.** On each client card and on the account page: "Share client portfolio" / «مشاركة حساب العميل» with the text "Check out {agency}'s work and managed channels for {client} on Sawwiq" / «شاهد أعمال {agency} وحسابات {client} المُدارة على سوّق» and the account page's link; share sheet, clipboard fallback and WhatsApp as above.
 - Component: `components/share-button.tsx` (`ShareActions`). Tests: `tests/e2e/portfolio-clients.spec.ts`.
+
+
+## Videos on posts
+
+A post can carry a **video link** (YouTube, TikTok, Instagram or Facebook). `embedFromUrl` (`lib/social/embed.ts`) turns it into the platform's official player, the same `posts.embed` shape as imported work (docs/53); any other link is refused. Work imported from a connected platform keeps its own player and does not show the field. Video posts carry a play mark in grids.

@@ -29,6 +29,10 @@ test("demo data: clients tab groups accounts and work by client", async ({ page 
   await expect(card.getByTestId("share-client")).toBeVisible();
   await expect(card.getByTestId("client-link").first()).toHaveAttribute("href", /instagram\.com\/yasmeen\.cafe\.demo/);
   await expect(card.locator('a[href*="/p/"]').first()).toBeVisible();
+  // A tap anywhere on the card (here, its corner) opens the client's page with the project note.
+  await card.click({ position: { x: 8, y: 8 } });
+  await expect(page).toHaveURL(/\/en\/a\/nakhla\.studio\/c\/[0-9a-f-]{36}$/);
+  await expect(page.getByTestId("account-note")).toContainText("About this project");
   await page.goto("/en/a/nakhla.studio?tab=about");
   await expect(page.getByTestId("agency-about")).toBeVisible();
   await expect(page.getByTestId("agency-strengths").locator("li")).toHaveCount(4);
