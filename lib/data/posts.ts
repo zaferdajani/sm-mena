@@ -25,6 +25,8 @@ export type PostInput = {
   sourceUrl?: string | null;
   /** A work sample from a connected platform (docs/53): its provider, stable item id and official player. */
   source?: { provider: string; itemId: string; embed: PostEmbed | null } | null;
+  /** A video the agency linked by hand (lib/social/embed.ts `embedFromUrl`); undefined leaves it as it is. */
+  embed?: PostEmbed | null;
 };
 
 export type FeedFilters = {
@@ -152,7 +154,7 @@ export async function createPostFromProcessed(
           sourceUrl: input.sourceUrl ?? null,
           sourceProvider: input.source?.provider ?? null,
           sourceItemId: input.source?.itemId ?? null,
-          embed: input.source?.embed ?? null,
+          embed: input.source?.embed ?? input.embed ?? null,
           translation: input.translation ?? {},
           searchText: postSearchText(input, agency),
           ...(createdAt ? { createdAt } : {}),

@@ -93,6 +93,9 @@ export async function resolveServices(agencyId: string | null, keys: string[], t
       .values({ key: `pending_${crypto.randomUUID().slice(0, 12)}`, nameAr: text, nameEn: text, status: "pending", proposedText: text, proposedByAgencyId: agencyId, searchText: norm })
       .returning({ id: serviceTags.id });
     pending.add(row.id);
+    // The request to the admins (email is a courtesy, the Admin → Services queue is the record).
+    // Loaded lazily: the email adapter is server-only, and the seed scripts import this file.
+    await import("./proposal-notify").then((m) => m.notifyServiceProposal(text)).catch(() => undefined);
   }
   return { services: withParents([...picked]), pending: [...pending] };
 }

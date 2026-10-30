@@ -84,7 +84,6 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
           <p className="text-sm text-muted-foreground">{[meta, t("accountPosts", { count: client.postCount })].filter(Boolean).join(" · ")}</p>
           <p className="text-xs text-muted-foreground">{t("managedAccountHint", { agency: agency.name })}</p>
           {client.confirmedAt && <p className="mt-1 text-xs font-medium text-brand" data-testid="account-confirmed">✓ {t("confirmedByClient")}</p>}
-          {description && <p className="mt-2 whitespace-pre-line text-sm" dir="auto">{description}</p>}
           {client.links.length > 0 && (
             <div className="mt-3" data-testid="account-channels">
               <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("browseLive")}</p>
@@ -102,6 +101,13 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
           />
         </div>
       </header>
+      {/* The agency's note on this project: what it did, the problem it solved, the result (docs/28). */}
+      {description && (
+        <section className="mx-4 mb-4 rounded-xl border bg-muted/30 p-4" data-testid="account-note">
+          <h2 className="mb-1.5 text-sm font-semibold">{t("aboutProject")}</h2>
+          <p className="whitespace-pre-line text-sm leading-relaxed" dir="auto">{description}</p>
+        </section>
+      )}
       <div className="border-t" />
       {posts.items.length ? (
         <FeedList initial={posts} filters={{ agencyId: agency.id, clientId: client.id }} placement={null} layout="grid" />
