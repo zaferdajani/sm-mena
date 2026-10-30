@@ -2,10 +2,21 @@
 // from the same lifted schemas the web actions parse with, so a native client meets exactly the web's rules.
 import { z } from "zod";
 import { MAX_IMAGES_PER_POST } from "@/lib/core/catalog/media-limits";
-import { loginSchema } from "./auth";
+import { joinSchema, loginSchema } from "./auth";
 import { setupClientSchema, setupProjectSchema, setupVersionSchema, uuidSchema } from "./portfolio-setup";
 
 export const apiLoginSchema = loginSchema;
+
+/**
+ * POST /api/v1/auth/signup: the web sign-up's fields (joinSchema), with the two confirmations as booleans the app
+ * sends after the person ticks them. The app's sign-up always creates a provider account on the site it calls.
+ */
+export const apiSignupSchema = joinSchema.omit({ consent: true, adult: true }).extend({
+  whatsappCountry: z.string().trim().max(3).optional(),
+  kind: z.enum(["agency", "freelancer"]).optional(),
+  consent: z.literal(true),
+  adult: z.literal(true),
+});
 
 /** PATCH /api/v1/profile: only the fields given change; `version` is the setup draft version the client last saw. */
 export const apiProfilePatchSchema = z.object({

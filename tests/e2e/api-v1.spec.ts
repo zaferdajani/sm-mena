@@ -147,3 +147,38 @@ test("the app reads and clears notifications, and its crash reports reach Admin 
   await expect(row).not.toContainText("someone@example.com");
   await expect(row).not.toContainText("791234567");
 });
+
+// Sign-up from the app (docs/64, "One app, two sites"): the web's rules over the API, and the new account works at once.
+test("the app creates a provider account with the web's rules and signs in to it", async ({ request }) => {
+  const options = await request.get("/api/v1/auth/signup");
+  expect(options.status()).toBe(200);
+  const offered = await options.json();
+  expect(offered.consentVersion).toBeTruthy();
+  const jordan = offered.countries.find((c: { code: string }) => c.code === "jo");
+  expect(jordan.dial).toBe("962");
+  expect(jordan.cities.map((c: { key: string }) => c.key)).toContain("amman");
+
+  const tag = Date.now().toString(36);
+  const body = { name: `App Studio ${tag}`, handle: `app.${tag}`, city: "amman", whatsapp: "0791234567", whatsappCountry: "JO", email: `app-${tag}@test.jo`, password: "password-123", consent: true, adult: true };
+  // Consent and age are required, exactly as on the web form.
+  expect((await request.post("/api/v1/auth/signup", { data: { ...body, consent: false } })).status()).toBe(400);
+  expect((await request.post("/api/v1/auth/signup", { data: { ...body, adult: undefined } })).status()).toBe(400);
+  const badPhone = await request.post("/api/v1/auth/signup", { data: { ...body, whatsapp: "12-ab" } });
+  expect(badPhone.status()).toBe(400);
+
+  const created = await request.post("/api/v1/auth/signup", { data: body });
+  expect(created.status()).toBe(201);
+  const { token } = await created.json();
+  const me = await (await request.get("/api/v1/me", { headers: { Authorization: `Bearer ${token}` } })).json();
+  expect(me.user.email).toBe(body.email);
+  expect(me.agency.handle).toBe(body.handle);
+
+  const again = await request.post("/api/v1/auth/signup", { data: body });
+  expect(again.status()).toBe(409);
+  expect((await again.json()).error.reason).toBe("handleTaken");
+  const sameEmail = await request.post("/api/v1/auth/signup", { data: { ...body, handle: `app.other.${tag}` } });
+  expect(sameEmail.status()).toBe(409);
+  expect((await sameEmail.json()).error.reason).toBe("emailTaken");
+  // The same password signs in with the normal login.
+  expect((await request.post("/api/v1/auth/login", { data: { email: body.email, password: body.password } })).status()).toBe(201);
+});

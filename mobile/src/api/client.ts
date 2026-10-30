@@ -2,7 +2,7 @@
 // the Authorization header from a token store (Keychain/Keystore on a device, memory in tests), the error
 // contract (every failure becomes an ApiFailure with the server's code), and the two global answers —
 // `unauthenticated` clears the device session, `upgrade_required` stops the app until it is updated.
-import type { ApiErrorBody, ApiErrorCode, Login, Me, NotificationList, ProjectAnswer, Setup } from "./contract";
+import type { ApiErrorBody, ApiErrorCode, Login, Me, NotificationList, ProjectAnswer, Setup, SignupBody, SignupOptions } from "./contract";
 import { API_ERROR_CODES } from "./contract";
 
 export type TokenStore = {
@@ -14,7 +14,7 @@ export type TokenStore = {
 export type UploadPart = Blob | { uri: string; name: string; type: string };
 
 export type ClientOptions = {
-  /** The web host that serves /api/v1 (a staging deployment with API_V1_ENABLED=true; never production until the beta). */
+  /** The web host that serves /api/v1: the real site or the staging site (src/config.ts SERVERS). */
   baseUrl: string;
   store: TokenStore;
   /** Sent as X-Sawwiq-App: <client>/<version> (<platform>) so the server can refuse clients that are too old. */
@@ -85,6 +85,14 @@ export function createClient(options: ClientOptions) {
   const auth = {
     async login(email: string, password: string): Promise<Login> {
       const login = await request<Login>("POST", "/api/v1/auth/login", { json: { email, password }, auth: false });
+      await options.store.set({ token: login.token, expiresAt: login.expiresAt });
+      return login;
+    },
+    /** What the sign-up form offers (countries, cities, consent version). */
+    signupOptions: () => request<SignupOptions>("GET", "/api/v1/auth/signup", { auth: false }),
+    /** Creates a provider account on this site and signs the device in to it. */
+    async signup(body: SignupBody): Promise<Login> {
+      const login = await request<Login>("POST", "/api/v1/auth/signup", { json: body, auth: false });
       await options.store.set({ token: login.token, expiresAt: login.expiresAt });
       return login;
     },

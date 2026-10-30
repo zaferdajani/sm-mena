@@ -62,3 +62,14 @@ notifications table (90 days). A new consent note and migration are required bef
 TestFlight and the Google Play internal track need developer accounts (Apple's paid program; Google's one-time fee). The
 `eas.json` profiles are set up for store builds; a store build needs an Expo account and the signing steps in Expo's docs.
 Blocked until the accounts exist.
+
+## One app, two sites (owner decision, 30 Oct 2026)
+
+One build talks to the real site (`https://sawwiq.org`, `EXPO_PUBLIC_PRODUCTION_URL`) and to the staging site (`api_url`, normally `https://staging.sawwiq.org`, `EXPO_PUBLIC_STAGING_URL`). The rule lives in `mobile/src/api/accounts.ts` and is unit-tested (`tests/unit/mobile-accounts.test.ts`):
+
+- **Sign in.** The real site is asked first. If it accepts, the person is in the real Sawwiq. Only if it answers "wrong email or password" (or 404, while its API switch is off) is the staging site asked; if that accepts, the app stays on staging and shows a **Test mode** strip on every screen. Any other answer from the real site (offline, server error, too many tries, staff, two-step) is shown as it is and the staging site is never tried, so a real person cannot land on the test site because the real site had a problem. Both refuse → "wrong email or password".
+- **Sign up** in the app always creates a real account on the real site (`POST /api/v1/auth/signup`, the same rules as `/join` through `lib/data/provider-signup.ts`: consent and age confirmed, unique handle and email, valid WhatsApp). Test accounts are made on the staging website.
+- The app remembers which site the account is on (`sawwiq.session.site` in the Keychain/Keystore) and sends every request there. Settings shows the site.
+- The same email on both sites: the real account wins in the app; reach the test account on the staging website.
+- A mistyped real password is also tried on the staging site, which is ours, over HTTPS, and never stores or logs passwords.
+- **Going live** is one switch: `API_V1_ENABLED=true` on Production in Vercel. Until then sawwiq.org answers 404 on `/api/v1`, the app signs staging accounts in, and the sign-up screen says account creation opens soon and links to the website.
