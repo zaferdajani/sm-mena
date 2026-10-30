@@ -99,6 +99,14 @@ test("admin uses the same design without changing permissions", async ({ page },
     await expect(page.locator('[data-design-surface="workspace"]')).toBeVisible();
     await visualContract(page, info, route.replaceAll("/", "-"), false);
   }
+  // Admin home on a 320 px phone: the system-health list once pushed the page 8-13 px wide.
+  await page.setViewportSize({ width: 320, height: 900 });
+  for (const route of ["/en/admin", "/ar/admin"]) {
+    await page.goto(route);
+    await expect(page.locator('[data-design-surface="workspace"]')).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, `${route} at 320 px`).toBeLessThanOrEqual(1);
+  }
 });
 
 test("small-phone invitation and forms wrap rather than clip", async ({ page }, info) => {
