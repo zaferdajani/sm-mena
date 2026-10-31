@@ -36,7 +36,7 @@ export function PageBasics({ teamSizes, teamSize, startingPriceJod }: { teamSize
           <span className="block text-xs text-muted-foreground">{t("minProjectHint")}</span>
         </label>
       </div>
-      <SubmitButton className="min-h-11 w-full sm:w-auto" data-testid="basics-save">{t("save")}</SubmitButton>
+      <SubmitButton className="min-h-11 w-full sm:w-auto" testId="basics-save">{t("save")}</SubmitButton>
     </form>
   );
 }

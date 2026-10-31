@@ -61,7 +61,7 @@ export function FirstServiceCard({ services }: { services: Option[] }) {
         ))}
       </fieldset>
       <p className="text-xs text-muted-foreground">{t("why")}</p>
-      <SubmitButton className="min-h-11 w-full sm:w-auto" data-testid="first-service-save">{t("save")}</SubmitButton>
+      <SubmitButton className="min-h-11 w-full sm:w-auto" testId="first-service-save">{t("save")}</SubmitButton>
     </form>
   );
 }
