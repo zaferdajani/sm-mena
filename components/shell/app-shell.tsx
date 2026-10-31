@@ -36,8 +36,6 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   // account under "My projects"; "Join" (the provider sign-up) is only for everyone else.
   const ownerTab: NavItem | null = user?.role === "client" || (!user && postedProject) ? { href: "/requests", label: t("myProjects"), icon: "projects" } : null;
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
-  // Inside the app the logo and the "Home" tab lead to the same place (the landing page stays the front page at /).
-  const homeHref = reg ? "/" : "/feed";
   const countryOptions = COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }));
   const picker = (
     <CountryPicker current={country} chosen={chosen !== null} options={countryOptions}
@@ -66,7 +64,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     <AppFrame>
       <InterfaceBackground />
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
-        <Link href={homeHref} className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
+        <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} />
         </Link>
         <nav aria-label={t("menu")}>
@@ -86,7 +84,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
       <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
-        <Link href={homeHref} className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
+        <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} compact />
         </Link>
         <div className="sw-app-tools flex min-w-0 items-center gap-1">

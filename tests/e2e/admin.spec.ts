@@ -10,8 +10,9 @@ test("admin sees platform stats and monetization readiness", async ({ page }) =>
   await expect(page.getByText("Revenue switch-on readiness")).toBeVisible();
 });
 
-test("admin verifies an agency and the badge appears publicly", async ({ page }, info) => {
-  const handle = info.project.name === "mobile" ? "madaba.pixels" : "zarqa.digital";
+test("admin verifies an agency and the badge appears publicly", async ({ page, browser }) => {
+  // A real provider: demo agencies never show the verified badge.
+  const { handle } = await joinAgency(await (await browser.newContext()).newPage(), "verify");
   await login(page, ADMIN.email, ADMIN.password);
   await page.goto(`/en/admin/agencies?q=${handle}`);
   const row = page.getByTestId("admin-agencies").locator("li", { hasText: `@${handle}` });
