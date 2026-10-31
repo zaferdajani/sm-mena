@@ -11,7 +11,7 @@ export async function ExampleProfile({ locale, kind, tab }: { locale: string; ki
   const [t, country] = await Promise.all([getTranslations("Registration"), currentCountry()]);
   const data: ProfileData = {
     id: "00000000-0000-0000-0000-000000000000", handle: `example.${kind}`, name: t(`examples.${kind}.name`), bio: t(`examples.${kind}.bio`),
-    country, city: countryOf(country).cities[0].key, kind, avatarUrl: "/brand/mark-192.png", isVerified: false, isDemo: true,
+    country, city: countryOf(country).cities[0].key, kind, avatarUrl: "/brand/mark-192.png", isVerified: false, isDemo: true, acceptingProjects: true,
     postCount: 0, followerCount: 0, services: kind === "agency" ? ["smm_management", "brand_identity", "ads_meta"] : ["photography", "video_production"],
     startingPriceJod: null, whatsapp: null, phone: null, email: null, website: null, instagram: null, ratingAverage: null, ratingCount: 0, googleRating: null, googleRatingCount: null, googleMapsUrl: null,
   };

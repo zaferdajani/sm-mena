@@ -33,6 +33,8 @@ export type ProfileData = {
   avatarUrl: string | null;
   isVerified: boolean;
   isDemo: boolean;
+  /** "Open to new projects" (docs/65); undefined on static examples. */
+  acceptingProjects?: boolean;
   memberNo?: number | null;
   /** Dated founding-cohort recognition, never a quality rank. */
   founding?: boolean;
@@ -68,6 +70,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
   const tpart = useTranslations("Partners");
   const tr = useTranslations("Reviews");
   const tk = useTranslations("PortfolioClients");
+  const tAvail = useTranslations("Availability");
   const locale = useLocale();
   const [followers, setFollowers] = useState(agency.followerCount);
   const hasContactLinks = Boolean(agency.phone || agency.email || agency.website);
@@ -92,6 +95,11 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
               )}
               {agency.kind === "freelancer" && <span className={styles.badge} data-testid="freelancer-badge">{tpart("kinds.freelancer")}</span>}
               {agency.isDemo && <span className={styles.badge}>{tc("demo")}</span>}
+              {agency.acceptingProjects !== undefined && (
+                <span className={cn(styles.badge, agency.acceptingProjects ? styles.openBadge : styles.closedBadge)} data-testid="availability-badge" data-state={agency.acceptingProjects ? "open" : "closed"}>
+                  {agency.acceptingProjects ? tAvail("badgeOn") : tAvail("badgeOff")}
+                </span>
+              )}
               {agency.founding && !agency.pioneerNumber && <span className={styles.badge} data-testid="founding-badge" title={t("foundingTitle")}>{t("foundingBadge", { year: 2026 })}</span>}
               {agency.pioneerNumber ? (
                 <span className={cn(styles.badge, styles.founderBadge)} data-testid="pioneer-badge" title={t("pioneerTitle")}>

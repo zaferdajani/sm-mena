@@ -15,10 +15,23 @@ export type PageFacts = {
   platforms: string[];
   startingPriceJod: number | null;
   packageCount: number;
+  /** "Open to new projects" and when the owner last said so (null: never touched since sign-up). */
+  acceptingProjects: boolean;
+  acceptingUpdatedAt: Date | null;
+  createdAt: Date;
 };
 
+/** After this long without the owner confirming, the Studio asks "still open to new projects?". */
+export const AVAILABILITY_STALE_DAYS = 60;
+
+export function availabilityStale(facts: Pick<PageFacts, "acceptingProjects" | "acceptingUpdatedAt" | "createdAt">, now = new Date()): boolean {
+  if (!facts.acceptingProjects) return false;
+  const since = facts.acceptingUpdatedAt ?? facts.createdAt;
+  return now.getTime() - since.getTime() > AVAILABILITY_STALE_DAYS * 86_400_000;
+}
+
 /** The one next thing to do, in the order a new page needs it. */
-export type PageStep = "work" | "services" | "whatsapp" | "city" | "publish" | "intro" | "logo" | "platforms" | "price" | "moreWork";
+export type PageStep = "work" | "services" | "whatsapp" | "city" | "publish" | "available" | "intro" | "logo" | "platforms" | "price" | "moreWork";
 
 export type PageStrength = {
   /** Public, reachable and with at least one tagged project: the matchmaker can recommend it. */
@@ -38,6 +51,7 @@ const READY_STEPS: { key: PageStep; done: (f: PageFacts) => boolean }[] = [
   { key: "whatsapp", done: (f) => Boolean(f.whatsapp?.trim()) },
   { key: "city", done: (f) => Boolean(f.city?.trim()) },
   { key: "publish", done: (f) => f.visibility === "public" },
+  { key: "available", done: (f) => f.acceptingProjects },
 ];
 
 const STRONG_STEPS: { key: PageStep; done: (f: PageFacts) => boolean }[] = [

@@ -82,6 +82,18 @@ test("a new provider shows one project and publishes the page from the same scre
   await expect(visitor.getByText("Menu launch").first()).toBeVisible();
   await expect(visitor.getByText("Café Nour").first()).toBeVisible();
   await pub.close();
+  // The live screen carries the two trust controls (docs/65): "open to new projects" and a review request.
+  await expect(page.getByTestId("availability-toggle")).toHaveAttribute("data-state", "open");
+  await expect(page.getByTestId("setup-review-invite")).toBeVisible();
+  await page.getByTestId("availability-switch").uncheck({ force: true });
+  await expect(page.getByTestId("availability-toggle")).toHaveAttribute("data-state", "closed");
+  const paused = await page.context().browser()!.newContext();
+  const reader = await paused.newPage();
+  await reader.goto(`${new URL(page.url()).origin}/en/a/${handle}`);
+  await expect(reader.getByTestId("availability-badge")).toHaveAttribute("data-state", "closed");
+  await paused.close();
+  await page.getByTestId("availability-switch").check({ force: true });
+  await expect(page.getByTestId("availability-toggle")).toHaveAttribute("data-state", "open");
   await page.goto("/en/studio/clients");
   await expect(page.getByText("Café Nour")).toHaveCount(1);
   // The project's service became the page's service: asked once.

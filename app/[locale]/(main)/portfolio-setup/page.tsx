@@ -28,7 +28,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
   const view = (await getSetup(agency.id)) ?? (await openSetup(agency.id, user.id));
   // A letter's page earns its Founding Member medal the moment it is complete (docs/57).
   await awardMedalIfComplete(agency.id).catch(() => null);
-  const [clients, connections, imports, examples, publication] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), setupExamples(), publicationFor(agency.id)]);
+  const [clients, connections, imports, examples, publication, reviewsOn] = await Promise.all([listClients(agency.id), listConnections(agency.id), canUse("portfolio_import"), setupExamples(), publicationFor(agency.id), canUse("reviews")]);
   const grant = one(q.grant);
   const pending = /^[0-9a-f-]{36}$/.test(grant) ? await pendingResources(agency.id, grant) : [];
   const staged = view.data.socialItemId ? await getItemForAgency(agency.id, view.data.socialItemId) : null;
@@ -55,6 +55,8 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         }}
         serviceOptions={services}
         siteUrl={SITE_URL}
+        acceptingProjects={agency.acceptingProjects}
+        reviewsOn={reviewsOn}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}
         importsOn={imports}
         providers={providerStates()}
