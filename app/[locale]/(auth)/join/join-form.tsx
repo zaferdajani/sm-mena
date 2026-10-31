@@ -72,6 +72,8 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
   const [problem, setProblem] = useState<{ field: Field; error: string } | null>(null);
   const [kind, setKind] = useState<"agency" | "freelancer">("agency");
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
+  // Letters the link can't hold (Arabic, spaces) were typed: say so instead of silently dropping them.
+  const [dropped, setDropped] = useState(false);
   // Once the person edits the link themselves, the name stops rewriting it.
   const handleEdited = useRef(Boolean(state?.fields?.handle));
   const [refOpen, setRefOpen] = useState(Boolean(refCode || state?.fields?.ref));
@@ -135,6 +137,8 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
   const onName = (value: string) => {
     if (handleEdited.current) return;
     const next = suggestHandle(value);
+    // An Arabic name suggests nothing: keep the link already suggested from the email.
+    if (!next && handle) return;
     setHandle(next);
     const input = form.current?.elements.namedItem("handle") as HTMLInputElement | null;
     if (input) input.value = next;
@@ -203,13 +207,16 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
               defaultValue={f.handle || d.handle}
               onChange={(e) => {
                 const clean = e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, "");
+                setDropped(clean !== e.target.value.toLowerCase());
                 if (clean !== e.target.value) e.target.value = clean;
-                handleEdited.current = true;
+                // Only a usable link counts as the person's own choice; an empty field still takes the email's suggestion.
+                handleEdited.current = clean.length > 0;
                 setHandle(clean);
               }}
               {...invalid("handle")}
             />
-          <p className="text-xs text-muted-foreground" dir="auto">{t("handleHint", { handle: handle || "your.agency" })} {t("handleAuto")}</p>
+          {dropped && <p className="text-xs font-medium text-amber-700 dark:text-amber-400" role="status" data-testid="handle-english-only">{t("handleEnglishOnly")}</p>}
+          <p className="text-xs text-muted-foreground" dir="auto">{t("handleHint", { handle: handle || (kind === "freelancer" ? "your.name" : "your.agency") })} {handle ? t("handleAuto") : t("handleFromEmail")}</p>
           {errorLine("handle")}
         </div>
         <div className="sw-join-location-grid grid gap-4">

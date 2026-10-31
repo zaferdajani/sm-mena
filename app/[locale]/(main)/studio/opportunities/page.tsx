@@ -70,7 +70,7 @@ export default async function OpportunitiesPage({ params }: PageProps<"/[locale]
                   </div>
                   <div className="flex items-center gap-1.5">
                     <MapPin className="size-3.5 shrink-0" />
-                    <span>{r.city ? `${tCity(r.city)}, ${tCountry(r.country)}` : `${t("anyCity")}, ${tCountry(r.country)}`}</span>
+                    <span>{[r.city ? tCity(r.city) : t("anyCity"), tCountry(r.country)].join(locale === "ar" ? "، " : ", ")}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CalendarClock className="size-3.5 shrink-0" />

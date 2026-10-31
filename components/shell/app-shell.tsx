@@ -19,6 +19,8 @@ import { canUse } from "@/lib/feature-gate";
 import { AppFrame } from "./app-frame";
 import { HelpChat } from "@/components/support/help-chat";
 import { helpAiEnabled } from "@/lib/ai/help-assistant";
+import { hasVisitorRequests } from "@/lib/data/requests";
+import { getVisitorId } from "@/lib/visitor";
 
 /** Side navigation on desktop, top bar and bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -29,17 +31,22 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
   const locale = await getLocale();
-  const [country, chosen, matchOpen] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker")]);
+  const [country, chosen, matchOpen, postedProject] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker"), getVisitorId().then(hasVisitorRequests)]);
+  // A business owner (signed in, or a device that posted a project) gets their projects, chats, contracts and
+  // account under "My projects"; "Join" (the provider sign-up) is only for everyone else.
+  const ownerTab: NavItem | null = user?.role === "client" || (!user && postedProject) ? { href: "/requests", label: t("myProjects"), icon: "projects" } : null;
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
+  const countryOptions = COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }));
   const picker = (
-    <CountryPicker current={country} chosen={chosen !== null}
-      options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))}
-      label={th("country")} locateLabel={th("useLocation")} />
+    <CountryPicker current={country} chosen={chosen !== null} options={countryOptions}
+      label={th("country")} locateLabel={th("useLocation")} locateFailedLabel={th("locationFailed")} />
   );
+  // The phone header is crowded: the flag alone, the full name on the list itself.
+  const phonePicker = <CountryPicker current={country} chosen={chosen !== null} options={countryOptions} label={th("country")} locateLabel={th("useLocation")} variant="compact" />;
   const items: NavItem[] = reg ? [
     { href: "/", label: rt("navHome"), icon: "home" },
     { href: "/examples", label: rt("navExamples"), icon: "explore" },
-    isStaffRole(user?.role) ? { href: "/admin", label: t("admin"), icon: "admin" } : user?.role === "agent" ? { href: "/agent", label: t("agent"), icon: "studio" } : user && user.role !== "client" ? { href: "/studio", label: t("studio"), icon: "studio" } : { href: "/start", label: t("join"), icon: "join" },
+    isStaffRole(user?.role) ? { href: "/admin", label: t("admin"), icon: "admin" } : user?.role === "agent" ? { href: "/agent", label: t("agent"), icon: "studio" } : user && user.role !== "client" ? { href: "/studio", label: t("studio"), icon: "studio" } : ownerTab ?? { href: "/start", label: t("join"), icon: "join" },
   ] : [
     { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
@@ -51,7 +58,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         ? { href: "/agent", label: t("agent"), icon: "studio" }
         : user && user.role !== "client"
           ? { href: "/studio", label: t("studio"), icon: "studio" }
-          : { href: "/start", label: t("join"), icon: "join" },
+          : ownerTab ?? { href: "/start", label: t("join"), icon: "join" },
   ];
   return (
     <AppFrame>
@@ -63,7 +70,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <nav aria-label={t("menu")}>
           <SideNav items={[
             ...items.slice(0, 3), ...(!reg ? [{ href: "/hire", label: t("hire"), icon: "hire" } as NavItem] : []), ...items.slice(3),
-            ...(user ? [] : [{ href: "/login", label: t("login"), icon: "login" } as NavItem]),
+            ...(user ? [] : [{ href: "/signin", label: t("login"), icon: "login" } as NavItem]),
           ]} />
           <HeaderBell variant="row" />
         </nav>
@@ -81,13 +88,13 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <BrandLockup label={th("brand")} compact />
         </Link>
         <div className="sw-app-tools flex min-w-0 items-center gap-1">
-          {picker}<HeaderBell />
+          {phonePicker}<HeaderBell />
           {user ? (
             <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted"><LifeBuoy className="size-5" /></Link>
           ) : (
             <>
               <Link href="/start" className="shrink-0 rounded-full border-2 border-brand px-3 py-1 text-sm font-semibold text-brand hover:bg-brand-soft" data-testid="header-join">{t("joinShort")}</Link>
-              <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
+              <Link href="/signin" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
             </>
           )}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />

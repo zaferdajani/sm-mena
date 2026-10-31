@@ -1,7 +1,8 @@
 "use client";
 
 import { Construction, FlaskConical, Handshake, Plus, ShieldCheck, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { currencyLabel } from "@/lib/countries";
 import { useActionState, useMemo, useState } from "react";
 import { createContractAction } from "@/app/[locale]/(main)/contract-actions";
 import { FormError } from "@/components/form-error";
@@ -55,6 +56,7 @@ export function ContractBuilder({
   agencyName,
   platforms,
   feePercent,
+  founderFee,
   currency,
   countryName,
   paymentsLive,
@@ -65,6 +67,8 @@ export function ContractBuilder({
   agencyName: string;
   platforms: { key: string; label: string }[];
   feePercent: number;
+  /** A founding member's own rates (docs/45), shown beside the standard fee so the two never seem to contradict. */
+  founderFee?: { first: number; rate: number } | null;
   currency: string;
   countryName: string;
   /** Whether protected payments are live (lib/payments/readiness.ts); new contracts record it. */
@@ -77,6 +81,8 @@ export function ContractBuilder({
   const tl = useTranslations("Agreements");
   const td = useTranslations("Deliverables");
   const tr = useTranslations("Contracts.readiness");
+  // Shown as people read it (د.أ in Arabic); the contract itself stores the currency code.
+  const money = currencyLabel(currency, useLocale());
   const [state, action] = useActionState(createContractAction, undefined);
   const today = iso(new Date());
   const months = Math.max(1, initial.months ?? 1);
@@ -237,7 +243,7 @@ export function ContractBuilder({
       <Step n={5} title={t("s5")} hint={t("s5hint")}>
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid gap-1.5">
-            <Label htmlFor="c-total">{tl("totalPrice", { currency })}</Label>
+            <Label htmlFor="c-total">{tl("totalPrice", { currency: money })}</Label>
             <Input id="c-total" type="number" min={0} step="0.001" value={totalJod} onChange={(e) => setTotalJod(e.target.value)} className="w-36" dir="ltr" />
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-sm">
@@ -294,7 +300,7 @@ export function ContractBuilder({
           >
             <Plus className="size-4" /> {t("addMilestone")}
           </button>
-          <p className="font-semibold tabular-nums" data-testid="contract-total">{t("total", { amount: `${sum.toLocaleString("en", { maximumFractionDigits: 3 })} ${currency}` })}</p>
+          <p className="font-semibold tabular-nums" data-testid="contract-total">{t("total", { amount: `${sum.toLocaleString("en", { maximumFractionDigits: 3 })} ${money}` })}</p>
         </div>
       </Step>
 
@@ -379,6 +385,7 @@ export function ContractBuilder({
           </span>
           <span className="block text-sm text-muted-foreground">{tr(paymentsLive ? "liveBody" : "testBody")}</span>
           <span className="block text-xs text-muted-foreground">{tr(paymentsLive ? "builderFeeLive" : "builderFeeTest", { fee: feePercent })}</span>
+          {founderFee && <span className="block text-xs font-medium text-brand" data-testid="builder-founder-fee">{tr("builderFeeFounder", { first: founderFee.first, rate: founderFee.rate, fee: feePercent })}</span>}
         </div>
         )}
         <div className="grid gap-1.5">

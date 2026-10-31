@@ -3,6 +3,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NotificationList } from "@/components/notifications/notification-list";
 import { listNotifications, markNotificationsRead } from "@/lib/data/notifications";
 import { getVisitorId } from "@/lib/visitor";
+import { Link } from "@/i18n/navigation";
+import { buttonVariants } from "@/components/ui/button";
+import { getSessionUser } from "@/lib/auth/session";
 
 export const metadata: Metadata = { robots: { index: false } };
 
@@ -11,7 +14,7 @@ export default async function VisitorNotificationsPage({ params }: PageProps<"/[
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Notifications");
-  const visitorId = await getVisitorId();
+  const [visitorId, user] = await Promise.all([getVisitorId(), getSessionUser()]);
   const rows = visitorId ? await listNotifications({ visitorId }) : [];
   // Seen now; this view still shows which ones were new.
   if (visitorId && rows.some((n) => !n.readAt)) await markNotificationsRead({ visitorId });
@@ -22,6 +25,13 @@ export default async function VisitorNotificationsPage({ params }: PageProps<"/[
         <p className="text-sm text-muted-foreground">{t("visitorIntro")}</p>
       </header>
       <NotificationList rows={rows} empty={t("empty")} />
+      {!rows.length && (
+        // Nothing yet: say what will arrive here, and the two ways to start.
+        <div className="flex flex-wrap gap-2" data-testid="notifications-next">
+          <Link href="/request/new" className={buttonVariants({ size: "sm" })}>{t("startRequest")}</Link>
+          {!user && <Link href="/signin?next=/notifications" className={buttonVariants({ size: "sm", variant: "outline" })}>{t("signIn")}</Link>}
+        </div>
+      )}
     </div>
   );
 }

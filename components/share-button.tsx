@@ -48,7 +48,7 @@ export function ShareActions({ url, title, text, label, className, buttonClassNa
         className={cn(base, "border-border bg-card hover:bg-accent", buttonClassName)}
       >
         <MessageCircle className="size-4 shrink-0" aria-hidden />
-        <span>WhatsApp</span>
+        <span>{tc("shareWhatsapp")}</span>
       </a>
       <span role="status" aria-live="polite" className="text-xs text-muted-foreground" data-testid={`${testId}-status`}>{copied ? tc("copied") : ""}</span>
     </div>

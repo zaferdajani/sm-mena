@@ -25,14 +25,16 @@ export default async function OwnerPage({ params }: PageProps<"/[locale]/owner">
   if (user?.role === "client") redirect(`/${locale}/owner/needs`);
   const t = await getTranslations("OwnerEarly");
   const r = await getTranslations("Registration");
+  // Before launch the page promises an early introduction; once browsing is open it says so (docs/58).
+  const live = !isRegistrationPhase();
   return (
     <div data-testid="owner-start">
       {isRegistrationPhase() && <p className="registration-eyebrow">{r("phaseLabel")}</p>}
       <h1 className="text-2xl font-extrabold leading-tight">{t("title")}</h1>
-      <p className="mt-2 mb-4 text-sm leading-7 text-muted-foreground">{t("intro")}</p>
+      <p className="mt-2 mb-4 text-sm leading-7 text-muted-foreground">{t(live ? "live.intro" : "intro")}</p>
       <ul className="mb-5 grid gap-1.5 text-sm leading-7" data-testid="owner-promises">
         {(["match", "private", "free"] as const).map((k) => (
-          <li key={k} className="flex gap-2"><span aria-hidden className="text-brand">✓</span>{t(`promises.${k}`)}</li>
+          <li key={k} className="flex gap-2"><span aria-hidden className="text-brand">✓</span>{t(live && k === "match" ? "live.match" : `promises.${k}`)}</li>
         ))}
       </ul>
       <SignInForm next={`/${locale}/owner/needs`} />

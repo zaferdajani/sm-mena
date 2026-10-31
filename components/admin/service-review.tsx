@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { reviewServiceAction } from "@/app/[locale]/(main)/admin/service-actions";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
@@ -33,7 +33,7 @@ export function ServiceReview({
   const isArabic = /[؀-ۿ]/.test(tag.text);
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
 
-  if (state?.ok) return <p className="rounded-xl border p-4 text-sm text-brand" role="status">✓ {t(`done.${state.ok}`, { name: tag.text })}</p>;
+  if (state?.ok) return <ReviewDone text={t(`done.${state.ok}`, { name: tag.text })} />;
 
   return (
     <article className="grid gap-3 rounded-xl border p-4" data-testid="pending-service">
@@ -63,7 +63,7 @@ export function ServiceReview({
             </label>
             <label className="grid gap-1 text-sm">
               {t("nameEn")}
-              <Input name="nameEn" required minLength={2} maxLength={80} dir="ltr" defaultValue={isArabic ? "" : tag.text} />
+              <Input name="nameEn" maxLength={80} dir="ltr" defaultValue={isArabic ? "" : tag.text} placeholder={t("nameEnOptional")} />
             </label>
             <label className="grid gap-1 text-sm">
               {t("group")}
@@ -89,7 +89,7 @@ export function ServiceReview({
           </label>
           <div className="flex flex-wrap gap-2">
             <SubmitButton className="h-9">{t("approveButton")}</SubmitButton>
-            <button type="submit" formNoValidate name="action" value="reject" className="h-9 rounded-lg px-3 text-sm text-destructive hover:bg-destructive/10" data-testid="reject-service">
+            <button type="submit" formNoValidate name="action" value="reject" onClick={(e) => { if (!window.confirm(t("rejectConfirm", { name: tag.text }))) e.preventDefault(); }} className="h-9 rounded-lg px-3 text-sm text-destructive hover:bg-destructive/10" data-testid="reject-service">
               {t("reject")}
             </button>
           </div>
@@ -114,4 +114,16 @@ export function ServiceReview({
       )}
     </article>
   );
+}
+
+/**
+ * The outcome, scrolled into view: the card it replaces was taller, so on a phone it ended up off-screen. No page
+ * refresh, which would drop the card and its message; the menu badge updates on the next page.
+ */
+function ReviewDone({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, []);
+  return <p ref={ref} className="rounded-xl border p-4 text-sm text-brand" role="status">✓ {text}</p>;
 }

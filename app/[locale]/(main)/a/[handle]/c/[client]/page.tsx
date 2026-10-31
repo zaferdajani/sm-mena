@@ -6,6 +6,8 @@ import { DemoNotice } from "@/components/demo/demo-banner";
 import { FeedList } from "@/components/feed/feed-list";
 import { AccountLinks, ManagedChip } from "@/components/profile/client-showcase";
 import { OwnerClientPanel } from "@/components/profile/owner-work-panel";
+import { InquiryDialog } from "@/components/profile/inquiry-dialog";
+import { canUse } from "@/lib/feature-gate";
 import { getCurrentAgency } from "@/lib/auth/session";
 import { ShareActions } from "@/components/share-button";
 import { SITE_URL } from "@/lib/site";
@@ -57,6 +59,7 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
   const posts = await feedPage({ agencyId: agency.id, clientId: client.id }, null, visitorId, { limit: 24, stateKey: await interactionKey() });
   const country = COUNTRIES.find((x) => x.code === client.country);
   const isOwner = (await getCurrentAgency())?.id === agency.id;
+  const contact = !isOwner && !agency.isDemo && (await canUse("messaging"));
   const meta = [client.industry ? tInd(client.industry) : null, country ? `${country.flag} ${locale === "ar" ? country.ar : country.en}` : null].filter(Boolean).join(" · ");
 
   return (
@@ -87,23 +90,38 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
           <p className="text-sm text-muted-foreground">{[meta, t("accountPosts", { count: client.postCount })].filter(Boolean).join(" · ")}</p>
           <p className="text-xs text-muted-foreground">{t("managedAccountHint", { agency: agency.name })}</p>
           {client.confirmedAt && <p className="mt-1 text-xs font-medium text-brand" data-testid="account-confirmed">✓ {t("confirmedByClient")}</p>}
-          {client.links.length > 0 && (
-            <div className="mt-3" data-testid="account-channels">
-              <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("browseLive")}</p>
-              <AccountLinks links={client.links} size="lg" />
-            </div>
-          )}
-          <ShareActions
-            className="mt-4"
-            variant="primary"
-            url={`${SITE_URL}/${locale}/a/${agency.handle}/c/${client.id}`}
-            title={`${name} · ${agency.name}`}
-            text={t("shareClientText", { agency: agency.name, client: name })}
-            label={t("shareClient")}
-            testId="share-client"
-          />
         </div>
       </header>
+      {/* Full width under the header: beside the logo the channel names broke mid-word on a phone. */}
+      <div className="space-y-4 px-4 pb-4">
+        {client.links.length > 0 && (
+          <div data-testid="account-channels">
+            <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("browseLive")}</p>
+            <AccountLinks links={client.links} size="lg" />
+          </div>
+        )}
+        {/* The next step from someone's work: ask the agency for the same. */}
+        {contact && (
+          <InquiryDialog
+            agencyId={agency.id}
+            agencyName={agency.name}
+            services={agency.services}
+            defaultMessage={t("askLikeClient", { client: name })}
+            label={t("contactAgency", { agency: agency.name })}
+            testId="account-contact"
+            variant="default"
+            className="h-11 w-full gap-1.5 sm:w-auto"
+          />
+        )}
+        <ShareActions
+          variant={contact ? "outline" : "primary"}
+          url={`${SITE_URL}/${locale}/a/${agency.handle}/c/${client.id}`}
+          title={`${name} · ${agency.name}`}
+          text={t("shareClientText", { agency: agency.name, client: name })}
+          label={t("shareClient")}
+          testId="share-client"
+        />
+      </div>
       {isOwner && <OwnerClientPanel client={{ id: client.id, name }} />}
       {/* The agency's note on this project: what it did, the problem it solved, the result (docs/28). */}
       {description && (

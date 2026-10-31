@@ -27,7 +27,7 @@ export type PostFormProps = {
   contentLang: ContentLang;
   /** A new post for this client (from "Add work for this client"); one of `clients`. */
   defaultClientId?: string;
-  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation; app?: PostApp | null; video?: string; importedVideo?: boolean };
+  initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: { id: string; thumbUrl: string }[]; translation?: PostTranslation; app?: PostApp | null; video?: string; importedVideo?: boolean };
 };
 
 export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial, defaultClientId }: PostFormProps) {
@@ -38,14 +38,29 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
   const [files, setFiles] = useState<{ file: File; url: string }[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
   const picker = useRef<HTMLInputElement>(null);
+  // Editing: the photos already published, which of them to remove, and which is the cover (the first by default).
+  const existing = initial?.images ?? [];
+  const [removed, setRemoved] = useState<Set<string>>(new Set());
+  const [cover, setCover] = useState<string | null>(existing[0]?.id ?? null);
+  const keptCount = existing.filter((i) => !removed.has(i.id)).length;
+  // After a save the page sends the photos as they now are: start again from those.
+  const savedPhotos = existing.map((i) => i.id).join(",");
+  const [shownPhotos, setShownPhotos] = useState(savedPhotos);
+  if (shownPhotos !== savedPhotos) {
+    setShownPhotos(savedPhotos);
+    setRemoved(new Set());
+    setCover(existing[0]?.id ?? null);
+    setFiles([]);
+  }
 
   useEffect(() => () => files.forEach((f) => URL.revokeObjectURL(f.url)), [files]);
 
   const addFiles = (list: FileList | null) => {
     if (!list) return;
+    const room = 10 - keptCount;
     const next = [...files, ...Array.from(list).map((file) => ({ file, url: URL.createObjectURL(file) }))];
-    if (next.length > 10) setLocalError("tooMany");
-    setFiles(next.slice(0, 10));
+    if (next.length > room) setLocalError("tooMany");
+    setFiles(next.slice(0, room));
   };
 
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -53,10 +68,14 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
     setLocalError(null);
     const form = new FormData(event.currentTarget);
     form.delete("images");
-    if (mode === "create" && !files.length) return setLocalError("noImages");
+    if (!files.length && !keptCount) return setLocalError("noImages");
     if (!form.getAll("services").length) return setLocalError("noServices");
+    if (mode === "edit") {
+      for (const id of removed) form.append("removeImage", id);
+      if (cover && !removed.has(cover)) form.set("coverImage", cover);
+    }
     start(async () => {
-      if (mode === "create") {
+      if (files.length) {
         // Compress in the browser at the same visible quality (SSIM search) so
         // the request fits a serverless body limit; the server re-encodes too.
         const small = await compressForRequest(files.map((f) => f.file), POST_UPLOAD);
@@ -73,57 +92,73 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
       <FormError message={error ? t(`errors.${error}`) : undefined} />
       {initial && <input type="hidden" name="postId" value={initial.postId} />}
 
-      {mode === "create" ? (
-        <Field label={t("images")} hint={t("imagesHint")}>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-            {files.map((f, i) => (
-              <div key={f.url} className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+      <Field label={t("images")} hint={mode === "edit" ? t("imagesEditHint") : t("imagesHint")}>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5" data-testid="post-images">
+          {/* Published photos (editing): remove one, or make it the cover. */}
+          {existing.map((img) => {
+            const gone = removed.has(img.id);
+            return (
+              <div key={img.id} className={`relative aspect-square overflow-hidden rounded-lg bg-muted ${gone ? "opacity-40" : ""}`} data-testid="post-image-existing">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={f.url} alt="" className="size-full object-cover" />
-                {i === 0 && <span className="absolute start-1 bottom-1 rounded bg-black/60 px-1.5 text-[10px] text-white">{t("cover")}</span>}
+                <img src={img.thumbUrl} alt="" className="size-full object-cover" />
+                {!gone && cover === img.id && <span className="absolute start-1 bottom-1 rounded bg-black/60 px-1.5 text-[10px] text-white">{t("cover")}</span>}
+                {!gone && cover !== img.id && (
+                  <button type="button" onClick={() => setCover(img.id)} className="absolute start-1 bottom-1 rounded bg-white/90 px-1.5 text-[10px] font-medium text-foreground" data-testid="post-image-make-cover">
+                    {t("makeCover")}
+                  </button>
+                )}
                 <button
                   type="button"
-                  aria-label={t("remove")}
-                  onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                  aria-label={gone ? t("undoRemove") : t("remove")}
+                  onClick={() => setRemoved((r) => { const next = new Set(r); if (next.has(img.id)) next.delete(img.id); else next.add(img.id); return next; })}
                   className="absolute end-1 top-1 rounded-full bg-black/60 p-0.5 text-white"
+                  data-testid="post-image-remove"
                 >
                   <X className="size-3.5" />
                 </button>
               </div>
-            ))}
-            {files.length < 10 && (
+            );
+          })}
+          {files.map((f, i) => (
+            <div key={f.url} className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={f.url} alt="" className="size-full object-cover" />
+              {mode === "create" && i === 0 && <span className="absolute start-1 bottom-1 rounded bg-black/60 px-1.5 text-[10px] text-white">{t("cover")}</span>}
               <button
                 type="button"
-                onClick={() => picker.current?.click()}
-                className="flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed text-xs text-muted-foreground hover:border-primary hover:text-primary"
+                aria-label={t("remove")}
+                onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                className="absolute end-1 top-1 rounded-full bg-black/60 p-0.5 text-white"
               >
-                <ImagePlus className="size-6" />
-                {t("addImages")}
+                <X className="size-3.5" />
               </button>
-            )}
-          </div>
-          <input
-            ref={picker}
-            type="file"
-            name="images"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif"
-            multiple
-            className="sr-only"
-            data-testid="image-input"
-            onChange={(e) => {
-              addFiles(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </Field>
-      ) : (
-        <div className="grid grid-cols-5 gap-2">
-          {initial?.images.map((src) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={src} src={src} alt="" className="aspect-square rounded-lg object-cover" />
+            </div>
           ))}
+          {keptCount + files.length < 10 && (
+            <button
+              type="button"
+              onClick={() => picker.current?.click()}
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed text-xs text-muted-foreground hover:border-primary hover:text-primary"
+            >
+              <ImagePlus className="size-6" />
+              {t("addImages")}
+            </button>
+          )}
         </div>
-      )}
+        <input
+          ref={picker}
+          type="file"
+          name="images"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif"
+          multiple
+          className="sr-only"
+          data-testid="image-input"
+          onChange={(e) => {
+            addFiles(e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </Field>
 
       <Field label={t("caption")} htmlFor="caption">
         <Textarea id="caption" name="caption" rows={4} maxLength={2200} defaultValue={initial?.caption} placeholder={t("captionPlaceholder")} />

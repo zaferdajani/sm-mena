@@ -235,7 +235,13 @@ export function MatchChat({
   };
   const onResult = (action: ResultAction, label: string) => {
     if (action === "restart") return restart();
-    if (action === "send") return setRequestFor(turns.findLastIndex((x) => x.recommendation?.agencies.length));
+    if (action === "send") {
+      // Also with no match: the project goes to agencies as they join (the request form opens under the last answer).
+      const at = turns.findLastIndex((x) => x.recommendation);
+      if (at >= 0) return setRequestFor(at);
+      const q = new URLSearchParams({ ...(need.services[0] ? { service: need.services[0] } : {}), ...(need.city ? { city: need.city } : {}) });
+      return router.push(`/${locale}/request/new${q.size ? `?${q}` : ""}`);
+    }
     advance(reopen(need, action), [...turns, user(label)]);
   };
 
@@ -297,9 +303,8 @@ export function MatchChat({
                 )}
               </div>
             )}
-            {turn === lastAssistant && (turn.mode === "basic" || turn.provider === "mock") && (
-              <p className="text-[11px] text-muted-foreground">{t(turn.provider === "mock" ? "mockMode" : "basicMode")}</p>
-            )}
+            {/* "Basic mode, no AI" is for us, not for a business owner; only the test assistant still says so. */}
+            {turn === lastAssistant && turn.provider === "mock" && <p className="text-[11px] text-muted-foreground">{t("mockMode")}</p>}
           </div>
         ))}
         {pending && (

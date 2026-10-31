@@ -7,7 +7,8 @@ import { messagesFor } from "@/lib/data/support-threads";
 import { bugCounts, listErrors, listSiteChecks, listSupportRequests, staleErrorCount, SUPPORT_STATUSES, supportRef, type SupportStatus } from "@/lib/data/bugs";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { replySupportAction, resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
+import { resolveStaleErrorsAction, updateErrorAction, updateSupportAction } from "../bug-actions";
+import { SupportReplyForm } from "@/components/admin/support-reply-form";
 
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-destructive/10 text-destructive",
@@ -29,7 +30,8 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
   // Support staff see user reports only; the error journal is for maintenance and backbone.
   const canErrors = can(me.role, "bugs.manage");
   const sp = await searchParams;
-  const tab = sp.tab === "reports" || !canErrors ? "reports" : "errors";
+  // People's reports first: the nav badge counts them. The error log is the second tab, for whoever fixes bugs.
+  const tab = sp.tab === "errors" && canErrors ? "errors" : "reports";
   const t = await getTranslations("AdminBugs");
   const [counts, checks] = await Promise.all([bugCounts(), canErrors ? listSiteChecks() : []]);
   const ago = (d: Date) => timeAgo(d.toISOString(), locale);
@@ -47,12 +49,12 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
         ]}
       />
       {canErrors && <SiteChecks checks={checks} t={t} ago={ago} />}
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="tab"
         current={tab}
         options={[
-          ...(canErrors ? [{ value: "errors", label: t("tabs.errors") }] : []),
           { value: "reports", label: t("tabs.reports", { count: counts.newReports }) },
+          ...(canErrors ? [{ value: "errors", label: t("tabs.errors") }] : []),
         ]}
       />
       {tab === "errors" ? <ErrorList filter={sp.filter} hours={sp.hours} t={t} ago={ago} /> : <ReportList status={sp.status} t={t} ago={ago} locale={locale} />}
@@ -106,7 +108,7 @@ async function ErrorList({ filter: raw, hours: rawHours, t, ago }: { filter: unk
   const [rows, stale] = await Promise.all([listErrors(filter), filter === "unresolved" ? staleErrorCount(hours) : 0]);
   return (
     <section className="space-y-3">
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="filter"
         current={filter}
         keep={{ tab: "errors" }}
@@ -182,7 +184,7 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
   const threads = await messagesFor(rows.map((r) => r.id));
   return (
     <section className="space-y-3">
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="status"
         current={status}
         keep={{ tab: "reports" }}
@@ -218,9 +220,13 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
                 <video key={a.key} controls preload="metadata" playsInline src={`/api/support-media/${a.key}`} className="max-h-72 rounded-lg border" data-testid="report-video" aria-label={t("recording")} />
               ),
             )}
-            <p className="text-xs text-muted-foreground" dir="ltr">
-              {[r.email, r.path, r.locale, r.viewport, r.appCommit?.slice(0, 7)].filter(Boolean).join(" · ")}
-            </p>
+            <p className="text-xs text-muted-foreground" dir="ltr">{[r.email, r.path].filter(Boolean).join(" · ")}</p>
+            {(r.locale || r.viewport || r.appCommit) && (
+              <details className="text-xs text-muted-foreground">
+                <summary className="cursor-pointer">{t("technical")}</summary>
+                <p dir="ltr">{[r.locale, r.viewport, r.appCommit?.slice(0, 7)].filter(Boolean).join(" · ")}</p>
+              </details>
+            )}
             {r.resolutionCommit && (
               <p className="text-xs text-muted-foreground">
                 {t("fixedIn")} <span className="font-mono" dir="ltr">{r.resolutionCommit.slice(0, 7)}</span>
@@ -237,22 +243,15 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
               </ol>
             )}
             {r.confirmedAt && <p className="text-xs font-medium text-brand">{t("confirmedByReporter")}</p>}
-            <form action={replySupportAction} className="grid gap-2" data-testid="report-reply">
+            <SupportReplyForm id={r.id} status={r.status} />
+            {/* Status only, without a message; the note stays with the team. */}
+            <form action={updateSupportAction} className="flex flex-wrap items-end gap-2">
               <input type="hidden" name="id" value={r.id} />
-              <textarea name="body" rows={2} required minLength={2} maxLength={3000} placeholder={t("replyHint")} aria-label={t("reply")} className="rounded-md border bg-background px-2 py-1.5 text-xs" dir="auto" />
-              <div className="flex flex-wrap items-center gap-2">
-                <select name="status" defaultValue="" className="h-8 rounded-md border bg-background px-2 text-xs" aria-label={t("reply")}>
-                  <option value="">—</option>
-                  {SUPPORT_STATUSES.map((s) => (
-                    <option key={s} value={s}>{t(`reportStatus.${s}`)}</option>
-                  ))}
-                </select>
-                <button type="submit" className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">{t("sendReply")}</button>
-              </div>
-            </form>
-            <form action={updateSupportAction} className="flex flex-wrap items-center gap-2">
-              <input type="hidden" name="id" value={r.id} />
-              <input name="note" defaultValue={r.adminNote ?? ""} placeholder={t("note")} className="h-9 min-w-40 flex-1 rounded-md border bg-background px-2 text-xs" dir="auto" />
+              <label className="grid min-w-40 flex-1 gap-1 text-xs font-medium">
+                {t("internalNote")}
+                <input name="note" defaultValue={r.adminNote ?? ""} className="h-9 rounded-md border bg-background px-2 text-xs font-normal" dir="auto" />
+              </label>
+              <span className="w-full text-xs text-muted-foreground">{t("statusOnlyHint")}</span>
               {SUPPORT_STATUSES.filter((s) => s !== r.status).map((s) => (
                 <button key={s} type="submit" name="status" value={s} className="rounded-md border px-2.5 py-1.5 text-xs hover:bg-muted">
                   {t(`reportStatus.${s}`)}

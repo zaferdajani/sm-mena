@@ -217,11 +217,14 @@ export function ClientItem({ client, industries, countries, industryLabel, postC
           <span className="grid size-10 place-items-center rounded-full border bg-muted text-sm font-semibold text-muted-foreground">{client.name.slice(0, 1)}</span>
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-semibold">{client.name}</p>
+          <p className="font-semibold" dir="auto">{client.name}</p>
           <p className="text-xs text-muted-foreground">
             {[industryLabel, t("posts", { count: postCount })].filter(Boolean).join(" · ")}
           </p>
         </div>
+      </div>
+      {/* The actions get their own row: beside the name they squeezed it to one letter per line on a phone. */}
+      <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="client-item-actions">
         <Link href={{ pathname: "/studio/new", query: { client: client.id } }} className="inline-flex h-8 items-center gap-1 rounded-lg bg-brand px-3 text-sm font-medium text-white hover:bg-brand-deep" data-testid="client-add-work">
           <Plus className="size-4" aria-hidden />
           {t("addWork")}

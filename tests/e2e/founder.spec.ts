@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { joinAgency } from "./helpers";
+import { joinAgency, newPackageForm } from "./helpers";
 
 // docs/45: Founder commercial perks are earned by useful supply, not by registering.
 test("registration alone does not activate Founder perks; a real profile with a package does", async ({ page }) => {
@@ -26,8 +26,7 @@ test("registration alone does not activate Founder perks; a real profile with a 
   await expect(page.getByTestId("founder-activation")).toHaveAttribute("data-eligible", "false");
 
   // One useful package is proof enough.
-  await page.goto("/en/studio/packages");
-  const form = page.getByTestId("package-form").last();
+  const form = await newPackageForm(page);
   await form.locator('input[name="title"]').fill("Monthly content");
   await form.locator('select[name="service"]').selectOption({ index: 1 });
   await form.locator('input[name="priceJod"]').fill("300");
@@ -55,8 +54,7 @@ test("an eligible Founder sees a new relevant brief at once; a registration-only
   await founderPage.getByTestId("service-suggestion").first().click();
   await founderPage.getByTestId("profile-form").locator('button[type="submit"]').click();
   await founderPage.waitForURL(/\/studio\/(packages|profile)/);
-  await founderPage.goto("/en/studio/packages");
-  const form = founderPage.getByTestId("package-form").last();
+  const form = await newPackageForm(founderPage);
   await form.locator('input[name="title"]').fill("TikTok starter");
   await form.locator('select[name="service"]').selectOption({ index: 1 });
   await form.locator('input[name="priceJod"]').fill("200");

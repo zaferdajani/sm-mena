@@ -103,7 +103,7 @@ test("from an accepted quote to an approved work order that releases the protect
   await agency.goto("/en/studio/contracts");
   await agency.getByTestId("buying-contract-row").filter({ hasText: "Menu shoot for a café" }).click();
   await signAsBuyer(agency, "Buyer Owner");
-  await agency.getByRole("button", { name: /Pay 200 JOD into protection/ }).click();
+  await agency.getByRole("button", { name: /Pay 200 JOD/ }).click();
   await agency.getByRole("button", { name: "Pay now (test)" }).click();
   await expect(agency.getByTestId("funded-ok")).toBeVisible();
 
