@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireAgency } from "@/lib/auth/guards";
 import { TEAM_SIZES } from "@/lib/core/catalog/labels";
 import { audit, updateAgency } from "@/lib/data/agencies";
+import { setSetupReminders } from "@/lib/data/setup-reminders";
 
 // "Make your page stronger" (docs/65 stage 3): the two facts every agency directory shows, saved on
 // their own without the long page editor. Both optional; nothing else on the page is touched.
@@ -28,4 +29,13 @@ export async function saveBasicsAction(_: BasicsState, formData: FormData): Prom
   await audit(user.id, "agency.update", "agency", agency.id, { via: "strength", fields: Object.keys(patch) });
   revalidatePath("/[locale]", "layout");
   return { ok: true };
+}
+
+/** Studio → Account: setup-reminder emails on or off (docs/65 stage 4). */
+export async function setSetupRemindersAction(formData: FormData) {
+  const { user, agency } = await requireAgency();
+  const optIn = formData.get("optIn") === "on";
+  await setSetupReminders(user.id, agency.id, optIn);
+  await audit(user.id, "agency.setup_reminders", "agency", agency.id, { optIn });
+  revalidatePath("/[locale]", "layout");
 }

@@ -10,7 +10,8 @@ import { packageSchema, studioProfileSchema } from "@/lib/validation/studio";
 import { redirect } from "@/i18n/navigation";
 import { pingIndexNow } from "@/lib/indexnow";
 import { requireAgency } from "@/lib/auth/guards";
-import { audit, isHandleTaken, updateAgency } from "@/lib/data/agencies";
+import { audit, isHandleTaken, recordHandleChange, updateAgency } from "@/lib/data/agencies";
+import { consumesChange, handlePolicy } from "@/lib/core/rules/handle-policy";
 import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
 import { answerPartnerRequest, sendPartnerRequest } from "@/lib/data/partners";
@@ -154,6 +155,9 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   if (handleCheck === "invalid") return { error: "handleInvalid" };
   if (handleCheck === "reserved") return { error: "handleReserved" };
   if (await isHandleTaken(d.handle, agency.id)) return { error: "handleTaken" };
+  // Free to change until the first publish, then once (docs/65 stage 8); the old link redirects.
+  const handleChanging = d.handle !== agency.handle;
+  if (handleChanging && !handlePolicy(agency).canChange) return { error: "handleLocked" };
 
   // The agency's own channels: the same rules as a client's accounts (docs/28), up to 10.
   const socialValues = formData.getAll("socialValue").map(String);
@@ -213,6 +217,7 @@ export async function updateProfileAction(_: StudioState, formData: FormData): P
   });
   if (avatarKey && agency.avatarKey) await storage().remove([agency.avatarKey]).catch(() => {});
   await audit(user.id, "agency.update", "agency", agency.id);
+  if (handleChanging && consumesChange(agency)) await recordHandleChange(agency.id, agency.handle);
   if (!agency.isDemo) pingIndexNow([`/a/${d.handle}`]);
   revalidatePath("/[locale]", "layout");
   // Leave the long form so the result is plain to see: a new agency goes on to

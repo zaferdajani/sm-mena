@@ -65,6 +65,8 @@ export function SetupWizard(props: {
   acceptingProjects: boolean;
   /** Review invitations are a launch-phase feature; the success screen offers them only when they work. */
   reviewsOn: boolean;
+  /** How many pictures the phone's share sheet just added (app/share-target); null when not arriving that way. */
+  sharedIn?: number | null;
 }) {
   const t = useTranslations("Setup");
   const router = useRouter();
@@ -120,6 +122,7 @@ export function SetupWizard(props: {
         </button>
       </div>
       {props.invited && <p className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm">{t("invited")}</p>}
+      {props.sharedIn !== null && props.sharedIn !== undefined && <p role="status" className="rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="setup-shared-in">{t("live.sharedIn", { count: props.sharedIn })}</p>}
       <WorkScreen {...props} view={view} setView={setView} visibility={visibility} pending={pending} run={run} error={error} setError={setError} registerDraft={registerDraft} />
     </section>
   );
@@ -559,7 +562,10 @@ function Live({ view, agency, visibility, siteUrl, pending, error, acceptingProj
     window.scrollTo({ top: 0 });
     title.current?.focus();
   }, []);
+  // Counted, never who (docs/65 stage 5).
+  const shared = () => { void fetch("/api/funnel", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ step: "link_shared" }), keepalive: true }).catch(() => undefined); };
   const copy = async () => {
+    shared();
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -574,7 +580,7 @@ function Live({ view, agency, visibility, siteUrl, pending, error, acceptingProj
         <>
           <p className="break-all rounded-xl border bg-background p-3 text-sm font-semibold" dir="ltr" data-testid="setup-page-link">{url}</p>
           <div className="flex flex-wrap gap-2">
-            <a href={`https://wa.me/?text=${encodeURIComponent(t("live.whatsappText", { url }))}`} target="_blank" rel="noopener noreferrer" className={primary} data-testid="setup-share-whatsapp">{t("live.whatsapp")}</a>
+            <a href={`https://wa.me/?text=${encodeURIComponent(t("live.whatsappText", { url }))}`} target="_blank" rel="noopener noreferrer" className={primary} data-testid="setup-share-whatsapp" onClick={shared}>{t("live.whatsapp")}</a>
             <button type="button" className={secondary} onClick={copy} data-testid="setup-copy-link">{copied ? <><Check className="size-4" /> {t("live.copied")}</> : <><Copy className="size-4" /> {t("live.copy")}</>}</button>
           </div>
           <p className="text-xs text-muted-foreground">{t("live.direct")}</p>

@@ -27,6 +27,8 @@ export default function manifest(): MetadataRoute.Manifest {
           { name: "المساعد الذكي", short_name: "المساعد", url: "/ar/match" },
           { name: "استكشف", short_name: "استكشف", url: "/ar/explore" },
         ],
+    // "Share → Sawwiq" from Photos or WhatsApp opens the one-screen setup with the pictures loaded (app/share-target, docs/65 stage 7).
+    ...({ share_target: { action: "/api/share-target", method: "POST", enctype: "multipart/form-data", params: { title: "title", text: "text", url: "url", files: [{ name: "images", accept: ["image/*"] }] } } } as object),
     icons: [
       { src: "/brand/mark-192.png", sizes: "192x192", type: "image/png" },
       { src: "/brand/mark-512.png", sizes: "512x512", type: "image/png" },

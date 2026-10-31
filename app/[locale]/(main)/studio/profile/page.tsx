@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { handlePolicy } from "@/lib/core/rules/handle-policy";
 import { BehanceShortcut } from "@/components/studio/behance-shortcut";
 import { GoogleForm } from "@/components/studio/google-form";
 import { ProfileForm } from "@/components/studio/profile-form";
@@ -39,6 +40,7 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
       <ProfileForm
         welcome={welcome}
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingTexts: (await pendingTexts(agency.pendingServices)).map((p) => p.text) }}
+        handleRule={handlePolicy(agency).reason}
         options={{
           roles: ROLES.map((r) => ({ key: r.key, label: locale === "ar" ? r.name_ar : r.name_en })),
           popularServices: [...FOOTER_SERVICES],
