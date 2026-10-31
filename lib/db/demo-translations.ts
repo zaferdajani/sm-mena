@@ -159,3 +159,25 @@ export const DEMO_TRANSLATIONS: Record<string, DemoTranslation> = {
     },
   },
 };
+
+/**
+ * Arabic names and introductions of the demo agencies that write in English, so
+ * an Arabic page shows them in Arabic. Applied with the other demo texts
+ * (lib/db/demo-text-refresh.ts), to new and existing demo data.
+ */
+export const DEMO_TRANSLATIONS_AR: Record<string, { name: string; bio: string }> = {
+  "petra.growth": { name: "بترا للنمو", bio: "تسويق أداء للمتاجر الإلكترونية: إعلانات ميتا وتيك توك تدفع تكلفتها بنفسها." },
+  "aqaba.waves": { name: "أمواج العقبة", bio: "محتوى سياحة وضيافة من البحر الأحمر: تصوير بالدرون وصور وفيديو قصير." },
+  "reel.house.jo": { name: "ريل هاوس", bio: "ريلز وفيديوهات تيك توك توقف التمرير: محتوى عملاء وصنّاع محتوى وحملات مؤثرين." },
+  "linked.levant": { name: "ليفانت للأعمال", bio: "محتوى وإعلانات لينكدإن للشركات والتعليم والخدمات المهنية." },
+  "salt.stories": { name: "حكايات السلط", bio: "سرد قصصي للجمعيات ومشاريع التراث والتعليم." },
+  "search.first.jo": { name: "سيرش فيرست", bio: "SEO وإعلانات جوجل ومواقع إلكترونية تجلب العملاء من البحث." },
+  "jeddah.growth": { name: "جدة للنمو", bio: "فريق واحد من الهوية إلى الأداء: هوية ومحتوى وإعلانات ممولة للعلامات السعودية." },
+  "dubai.loop": { name: "دبي لوب", bio: "استوديو محتوى وإعلانات ممولة لعلامات الضيافة ونمط الحياة في دبي." },
+  "capital.b2b.ae": { name: "كابيتال للأعمال", bio: "لينكدإن وSEO ومحتوى القيادة الفكرية لشركات الأعمال في أبوظبي." },
+  "doha.frame": { name: "إطار الدوحة", bio: "تغطية فعاليات وإنتاج فيديو ووسائل تواصل لقاعات قطر وعلاماتها." },
+  "alex.reels": { name: "أليكس ريلز", bio: "ريلز وتيك توك وحملات صنّاع محتوى من الإسكندرية للعلامات المصرية." },
+  "riyadh.pulse": { name: "نبض الرياض", bio: "إعلانات جوجل وSEO ومواقع ثنائية اللغة للعقارات والخدمات المهنية في السعودية. عملاء محتملون يمكن عدّهم." },
+  "khobar.brands": { name: "علامات الخبر", bio: "هوية بصرية وتغليف ومحتوى تواصل للعلامات السعودية الجديدة، من الشعار إلى الإطلاق." },
+  "abha.trails": { name: "دروب أبها ميديا", bio: "أفلام سياحية وتصوير بالدرون وقصص مصورة من جبال عسير للفنادق والرحلات والوجهات." },
+};
