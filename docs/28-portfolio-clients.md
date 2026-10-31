@@ -68,3 +68,7 @@ The Behind-the-Page movement (marketing/05) needs proof, not claims:
 ## Videos on posts
 
 A post can carry a **video link** (YouTube, TikTok, Instagram or Facebook). `embedFromUrl` (`lib/social/embed.ts`) turns it into the platform's official player, the same `posts.embed` shape as imported work (docs/53); any other link is refused. Work imported from a connected platform keeps its own player and does not show the field. Video posts carry a play mark in grids.
+
+## Adding work under a client (owner)
+
+The owner finds "Add work for this client" where they look for it: a panel on their own client page and on the Clients tab (only they see it), a button on each Clients-tab card, and one on each client in Studio → Clients. Each opens Studio → New post with that client already chosen (`/studio/new?client=<id>`; an id that is not one of the agency's clients is ignored). Added after a provider asked on staging how the work under a client got there.

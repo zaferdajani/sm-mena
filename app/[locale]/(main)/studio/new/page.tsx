@@ -9,8 +9,10 @@ import { requireAgency } from "@/lib/auth/guards";
 import { contentLang } from "@/lib/content-lang";
 import { postFormOptions } from "@/lib/studio-options";
 
-export default async function NewPostPage({ params }: PageProps<"/[locale]/studio/new">) {
+export default async function NewPostPage({ params, searchParams }: PageProps<"/[locale]/studio/new">) {
   const { locale } = await params;
+  // "Add work for this client" (client page, Clients tab, Studio → Clients) opens the form with that client chosen.
+  const client = (await searchParams).client;
   setRequestLocale(locale);
   const { agency } = await requireAgency();
   const t = await getTranslations("Studio");
@@ -43,7 +45,7 @@ export default async function NewPostPage({ params }: PageProps<"/[locale]/studi
           </Link>
         </div>
       )}
-      <PostForm mode="create" contentLang={contentLang(agency.contentLang)} {...await postFormOptions(agency.services, agency.id)} />
+      <PostForm mode="create" contentLang={contentLang(agency.contentLang)} {...await postFormOptions(agency.services, agency.id)} defaultClientId={typeof client === "string" ? client : undefined} />
       <p className="mt-4 text-sm leading-7 text-muted-foreground">{isRegistrationPhase() ? phaseCopy("studio.publishNote") : tg("publishReminder")}</p>
     </div>
   );

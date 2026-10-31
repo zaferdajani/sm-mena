@@ -31,3 +31,31 @@ export async function OwnerWorkPanel({ empty, hidden }: { empty: boolean; hidden
     </section>
   );
 }
+
+/**
+ * Shown only to the owner on one of their clients' pages and on the Clients tab: how work gets here.
+ * Owners asked how the projects under a client were added (staging feedback, 2026-10-31): one tap to add
+ * work with that client already chosen, and one to edit the client and its project note.
+ */
+export async function OwnerClientPanel({ client }: { client?: { id: string; name: string } }) {
+  const t = await getTranslations("Profile.ownerClient");
+  const primary = "inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-brand px-4 text-sm font-medium text-white hover:bg-brand-deep";
+  const secondary = "inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border px-4 text-sm font-medium hover:bg-muted";
+  return (
+    <section className="mx-4 my-4 rounded-xl border border-brand-line bg-brand-soft/40 p-4 text-sm" data-testid="owner-client-panel">
+      <p className="font-semibold">{client ? t("title", { client: client.name }) : t("listTitle")}</p>
+      <p className="mt-1 text-muted-foreground">{client ? t("body", { client: client.name }) : t("listBody")}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {client ? (
+          <>
+            <Link href={{ pathname: "/studio/new", query: { client: client.id } }} className={primary} data-testid="owner-add-client-work"><Plus className="size-4" aria-hidden />{t("addWork")}</Link>
+            <Link href="/studio/clients" className={secondary} data-testid="owner-edit-client"><Pencil className="size-4" aria-hidden />{t("editClient")}</Link>
+          </>
+        ) : (
+          <Link href="/studio/clients" className={primary} data-testid="owner-add-client"><Plus className="size-4" aria-hidden />{t("addClient")}</Link>
+        )}
+        <Link href="/studio/posts" className={secondary} data-testid="owner-edit-projects"><Pencil className="size-4" aria-hidden />{t("editWork")}</Link>
+      </div>
+    </section>
+  );
+}

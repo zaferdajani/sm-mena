@@ -5,6 +5,8 @@ import { ChevronLeft } from "lucide-react";
 import { DemoNotice } from "@/components/demo/demo-banner";
 import { FeedList } from "@/components/feed/feed-list";
 import { AccountLinks, ManagedChip } from "@/components/profile/client-showcase";
+import { OwnerClientPanel } from "@/components/profile/owner-work-panel";
+import { getCurrentAgency } from "@/lib/auth/session";
 import { ShareActions } from "@/components/share-button";
 import { SITE_URL } from "@/lib/site";
 import { Link } from "@/i18n/navigation";
@@ -54,6 +56,7 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
   const [t, tInd, visitorId] = await Promise.all([getTranslations("Profile"), getTranslations("Industries"), getVisitorId()]);
   const posts = await feedPage({ agencyId: agency.id, clientId: client.id }, null, visitorId, { limit: 24, stateKey: await interactionKey() });
   const country = COUNTRIES.find((x) => x.code === client.country);
+  const isOwner = (await getCurrentAgency())?.id === agency.id;
   const meta = [client.industry ? tInd(client.industry) : null, country ? `${country.flag} ${locale === "ar" ? country.ar : country.en}` : null].filter(Boolean).join(" · ");
 
   return (
@@ -101,6 +104,7 @@ export default async function AccountPage({ params }: PageProps<"/[locale]/a/[ha
           />
         </div>
       </header>
+      {isOwner && <OwnerClientPanel client={{ id: client.id, name }} />}
       {/* The agency's note on this project: what it did, the problem it solved, the result (docs/28). */}
       {description && (
         <section className="mx-4 mb-4 rounded-xl border bg-muted/30 p-4" data-testid="account-note">
