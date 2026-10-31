@@ -5,6 +5,7 @@ import { useFormatter } from "next-intl";
 import { useTranslations } from "next-intl";
 import { useActionState, useState, useTransition } from "react";
 import { confirmLinkAction, deleteClientAction, resetConfirmationAction, saveClientAction } from "@/app/[locale]/(main)/studio/actions";
+import { Link } from "@/i18n/navigation";
 import { SocialIcon } from "@/components/social-icon";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
@@ -221,6 +222,10 @@ export function ClientItem({ client, industries, countries, industryLabel, postC
             {[industryLabel, t("posts", { count: postCount })].filter(Boolean).join(" · ")}
           </p>
         </div>
+        <Link href={{ pathname: "/studio/new", query: { client: client.id } }} className="inline-flex h-8 items-center gap-1 rounded-lg bg-brand px-3 text-sm font-medium text-white hover:bg-brand-deep" data-testid="client-add-work">
+          <Plus className="size-4" aria-hidden />
+          {t("addWork")}
+        </Link>
         <Button type="button" variant="outline" size="sm" onClick={() => setEditing(true)}>
           {t("edit")}
         </Button>
