@@ -27,6 +27,9 @@ export async function FoundingPanel({ status, eligible = false }: { status: Foun
             : t("closed", { size: FOUNDING.size })}
       </p>
       {status.member && <p className={`mt-3 rounded-lg border px-3 py-2 text-sm ${eligible ? "border-emerald-600/30 bg-emerald-600/5" : "border-amber-600/30 bg-amber-600/5"}`} data-testid="founder-activation" data-eligible={eligible}>{eligible ? t("activationReady") : t("activationTodo")}</p>}
+      {/* The perks fold away: on a phone nine cards pushed the page's status and next step far down. */}
+      <details className="mt-3 group" data-testid="founding-benefits">
+        <summary className="cursor-pointer text-sm font-medium text-brand">{t("showBenefits")}</summary>
       <ul className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
         {benefits.map((b) => (
           <li key={b} className="rounded-lg border px-3 py-2">
@@ -36,6 +39,7 @@ export async function FoundingPanel({ status, eligible = false }: { status: Foun
         ))}
       </ul>
       <p className="mt-2 text-xs text-muted-foreground">{t("notRank")}</p>
+      </details>
     </section>
   );
 }

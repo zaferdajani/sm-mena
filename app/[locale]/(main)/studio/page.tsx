@@ -50,9 +50,10 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           </Link>
         </p>
       )}
-      {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} eligible={founderEligibility({ ...agency, packageCount: packages.length }).eligible} />}
+      {/* Where the page stands and the next step come first; the founding perks follow. */}
       <PageStrengthCard agency={agency} visibility={publication.visibility} packageCount={packages.length} />
-      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: null, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
+      {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} eligible={founderEligibility({ ...agency, packageCount: packages.length }).eligible} />}
+      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: isRegistrationPhase() ? null : agency.foundingSeat, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-testid="insight-tiles">
@@ -64,7 +65,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
           ))}
         </dl>
       </section>
-      <ClicksChart data={insights.daily} title={t("chartTitle")} tableLabel={t("chartTable")} dateLabel={t("date")} valueLabel={t("clicks")} locale={locale} />
+      <ClicksChart data={insights.daily} title={t("chartTitle")} tableLabel={t("chartTable")} dateLabel={t("date")} valueLabel={t("clicks")} maxLabel={t("chartMax")} locale={locale} />
       <div className="grid gap-4 sm:grid-cols-2">
         <section className="rounded-xl border p-4">
           <h2 className="mb-2 text-sm font-semibold">{t("stats.contacts")}</h2>

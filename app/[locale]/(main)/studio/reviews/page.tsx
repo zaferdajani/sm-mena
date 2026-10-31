@@ -49,7 +49,7 @@ export default async function StudioReviewsPage({ params }: PageProps<"/[locale]
           <ul className="divide-y rounded-xl border text-sm">
             {invites.map((i) => (
               <li key={i.id} className="flex justify-between px-3 py-2">
-                <span>{i.clientName || "—"}</span>
+                <span dir="auto" className={i.clientName ? undefined : "text-muted-foreground"}>{i.clientName || t("studio.noClientName")}</span>
                 <span className="text-xs text-muted-foreground">
                   {i.usedAt ? t("studio.used") : i.expiresAt < now ? t("studio.expired") : t("studio.pending")} · {timeAgo(i.createdAt.toISOString(), locale)}
                 </span>

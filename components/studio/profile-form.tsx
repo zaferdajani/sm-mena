@@ -66,6 +66,9 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
     setMain(next);
   };
 
+  // A freelancer is one person: their own wording where the agency wording would be wrong ("the agency", "you all").
+  type KindKey = "name" | "bioPlaceholder" | "about" | "aboutPlaceholder" | "startingPriceHint" | "servesHint";
+  const tk = (key: KindKey, values?: Record<string, string>) => (agency.kind === "freelancer" ? t(`${key}Freelancer`, values) : t(key, values));
   return (
     <form
       ref={form}
@@ -130,20 +133,20 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("name")} htmlFor="name"><Input id="name" name="name" required maxLength={80} defaultValue={agency.name} {...langAttrs(main)} /></Field>
+        <Field label={tk("name")} htmlFor="name"><Input id="name" name="name" required maxLength={80} defaultValue={agency.name} {...langAttrs(main)} /></Field>
         <Field label={t("handle")} htmlFor="handle"><Input id="handle" name="handle" required maxLength={30} dir="ltr" defaultValue={agency.handle} /></Field>
       </div>
-      <Field label={t("bio")} htmlFor="bio"><Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={agency.bio} placeholder={t("bioPlaceholder")} {...langAttrs(main)} /></Field>
-      <Field label={t("about")} htmlFor="about"><Textarea id="about" name="about" rows={5} maxLength={1500} defaultValue={agency.about} placeholder={t("aboutPlaceholder")} {...langAttrs(main)} /></Field>
+      <Field label={t("bio")} htmlFor="bio"><Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={agency.bio} placeholder={tk("bioPlaceholder")} {...langAttrs(main)} /></Field>
+      <Field label={tk("about")} htmlFor="about"><Textarea id="about" name="about" rows={5} maxLength={1500} defaultValue={agency.about} placeholder={tk("aboutPlaceholder")} {...langAttrs(main)} /></Field>
       <Field label={t("strengths")} hint={t("strengthsHint")} htmlFor="strengths">
         <Textarea id="strengths" name="strengths" rows={4} maxLength={1000} defaultValue={agency.strengths.join("\n")} placeholder={t("strengthsPlaceholder")} {...langAttrs(main)} />
       </Field>
       <OtherLanguage main={main} filled={trFilled}>
         {(attrs, label) => (
           <>
-            <Field label={label(t("name"))} htmlFor="tr_name"><Input id="tr_name" name="tr_name" maxLength={80} defaultValue={tr.name ?? ""} {...attrs} /></Field>
+            <Field label={label(tk("name"))} htmlFor="tr_name"><Input id="tr_name" name="tr_name" maxLength={80} defaultValue={tr.name ?? ""} {...attrs} /></Field>
             <Field label={label(t("bio"))} htmlFor="tr_bio"><Textarea id="tr_bio" name="tr_bio" rows={3} maxLength={500} defaultValue={tr.bio ?? ""} {...attrs} /></Field>
-            <Field label={label(t("about"))} htmlFor="tr_about"><Textarea id="tr_about" name="tr_about" rows={5} maxLength={1500} defaultValue={tr.about ?? ""} {...attrs} /></Field>
+            <Field label={label(tk("about"))} htmlFor="tr_about"><Textarea id="tr_about" name="tr_about" rows={5} maxLength={1500} defaultValue={tr.about ?? ""} {...attrs} /></Field>
             <Field label={label(t("strengths"))} hint={t("strengthsHint")} htmlFor="tr_strengths">
               <Textarea id="tr_strengths" name="tr_strengths" rows={4} maxLength={1000} defaultValue={(tr.strengths ?? []).join("\n")} {...attrs} />
             </Field>
@@ -152,12 +155,12 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
       </OtherLanguage>
       <div className="grid gap-4 sm:grid-cols-2">
         <CountryCityField countries={options.countries} defaultCountry={agency.country} defaultCity={agency.city} countryLabel={t("country")} cityLabel={t("city")} className={select} />
-        <Field label={t("startingPrice")} hint={t("startingPriceHint")} htmlFor="startingPriceJod">
+        <Field label={t("startingPrice")} hint={tk("startingPriceHint")} htmlFor="startingPriceJod">
           <Input id="startingPriceJod" name="startingPriceJod" type="number" inputMode="numeric" min={0} dir="ltr" defaultValue={agency.startingPriceJod ?? ""} />
         </Field>
       </div>
 
-      <Field label={t("serves")} hint={t("servesHint", { country: options.countries.find((c) => c.code === agency.country)?.name ?? "" })}>
+      <Field label={t("serves")} hint={tk("servesHint", { country: options.countries.find((c) => c.code === agency.country)?.name ?? "" })}>
         <ServesField
           options={options.countries.filter((c) => c.code !== agency.country).map((c) => ({ key: c.code, label: `${c.flag} ${c.name}` }))}
           gulf={["sa", "ae", "kw", "qa", "bh", "om"]}

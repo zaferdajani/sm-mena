@@ -57,7 +57,7 @@
     "loginButton": "Sign in",
     "noAccount": "No account yet?",
     "joinLink": "Create your agency page for free",
-    "joinTitle": "Showcase your agency",
+    "joinTitle": "Show your work on Sawwiq",
     "joinSubtitle": "A free page for social media agencies and freelancers in Jordan. Businesses browse your work and contact you directly.",
     "agencyName": "Agency name",
     "handle": "Username",
@@ -120,7 +120,9 @@
     "handleAuto": "Your page link. We suggested it from your name; you can change it.",
     "passwordHint": "At least 8 characters.",
     "refCodeOpen": "Did a Sawwiq agent introduce you? Add their code",
-    "consentLink": "Read the terms"
+    "consentLink": "Read the terms",
+    "handleEnglishOnly": "The page link takes English letters, numbers, dots and _ only (like riyada.media). Other letters were left out.",
+    "handleFromEmail": "Your page link. Type it in English letters, or we'll suggest one from your email."
   },
   "Cities": {
     "amman": "Amman",
@@ -276,7 +278,12 @@
     "share": "Share",
     "demo": "Demo account",
     "pioneer": "Founding Member medal",
-    "shareWhatsapp": "Share on WhatsApp"
+    "shareWhatsapp": "Share on WhatsApp",
+    "publishedTitle": "Published",
+    "publishedBody": "This work now shows on your page. Only you see this message.",
+    "addAnother": "Add another work",
+    "viewMyPage": "View my page",
+    "backToStudio": "Back to Studio"
   },
   "Post": {
     "like": "Like",
@@ -520,7 +527,7 @@
     "overview": "Insights",
     "posts": "My posts",
     "newPost": "New post",
-    "inbox": "Messages",
+    "inbox": "Contact requests",
     "profile": "Page",
     "viewPage": "View my page",
     "welcome": "Welcome to Sawwiq! Complete your page and add your first work so businesses can find you.",
@@ -614,7 +621,10 @@
         "tryHint": "From the app mall (pcn.store): deploy the app, publish it, create an embed key that allows https://sawwiq.org, and paste the embed link. Only app-mall links are accepted; the app runs in its sandbox, your code never leaves it.",
         "store": "Store page (App Store / Google Play)",
         "web": "Web address of the app"
-      }
+      },
+      "imagesEditHint": "Tap × to remove a photo (tap again to keep it), \"Make cover\" to show it first, or add photos (up to 10). Changes apply when you save.",
+      "makeCover": "Make cover",
+      "undoRemove": "Keep this photo"
     },
     "profileForm": {
       "avatar": "Profile picture or logo",
@@ -674,7 +684,13 @@
       "socialLinks": "Your platforms online",
       "socialLinksHint": "Add your accounts on Instagram, Behance (a platform for showing design work), TikTok, YouTube, Facebook, LinkedIn and X: the account name or its link. Each shows on your page as a tappable badge with the platform's logo. Leave out the ones you don't use.",
       "addSocial": "Add a channel",
-      "removeSocial": "Remove channel"
+      "removeSocial": "Remove channel",
+      "nameFreelancer": "Your name or brand",
+      "bioPlaceholderFreelancer": "What do you specialise in? Who do you work with?",
+      "aboutFreelancer": "About you",
+      "aboutPlaceholderFreelancer": "Who you are, how you work and what you excel at…",
+      "startingPriceHintFreelancer": "Your smallest package. Shown as \"From\".",
+      "servesHintFreelancer": "You'll also appear to businesses looking there, marked as based in {country}."
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -686,7 +702,8 @@
       "about": "About",
       "showArchived": "Show archived",
       "showActive": "Show current messages",
-      "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq."
+      "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq.",
+      "intro": "People who tapped \"Message\" on your page and left their name and phone. Reply by WhatsApp or a call. Written conversations on Sawwiq are in"
     },
     "billing": "Plan & billing",
     "security": "Security",
@@ -733,13 +750,22 @@
       "account": "Account",
       "more": "More",
       "addWork": "Add work",
-      "import": "Import work"
+      "import": "Import work",
+      "visibility": "Who can see my page"
     },
     "suspended": {
       "title": "Your page is paused",
       "body": "Sawwiq's team has paused your page, so visitors can't see it for now. Your work and messages are safe.",
       "ask": "Ask the team why"
-    }
+    },
+    "visibilityHint": "To choose who can see your page (everyone, people with the link, or only you):",
+    "postsTitle": "My work",
+    "postsHint": "Each work shows on your page as a post. Tap Edit to change or delete it.",
+    "untitled": "Untitled work",
+    "forClient": "For {client}",
+    "postStats": "{views} views · {likes} likes, since published",
+    "chartMax": "Highest:",
+    "editOrDelete": "Edit"
   },
   "Admin": {
     "title": "Admin",
@@ -981,7 +1007,10 @@
       "googleHint": "Paste your Google Maps business link or Place ID to show your Google rating on your page.",
       "googleConnected": "Connected: {name} ★ {rating} ({count})",
       "googleSaved": "Link saved. The rating appears once a Google API key is configured.",
-      "googleNotFound": "We couldn't find this place on Google. Check the link."
+      "googleNotFound": "We couldn't find this place on Google. Check the link.",
+      "googleSave": "Save Google link",
+      "clientNamePlaceholder": "e.g. Sanabel Bakery",
+      "noClientName": "No name given"
     },
     "admin": {
       "title": "Reviews",
@@ -1006,7 +1035,7 @@
       "service": "Service",
       "price": "Price (JOD)",
       "billing": "Billing",
-      "deliverables": "What's included (one per line)",
+      "deliverables": "Other items (one per line)",
       "deliverablesPlaceholder": "12 posts per month\n8 stories\nMonthly report",
       "add": "Add package",
       "save": "Save",
@@ -1019,7 +1048,9 @@
         "generic": "Could not save."
       },
       "includes": "What's included",
-      "deliveryDays": "Delivered within (days, optional)"
+      "deliveryDays": "Delivered within (days, optional)",
+      "edit": "Edit",
+      "deliverablesMore": "Something else included that isn't in the list? (optional)"
     },
     "pin": "Pin to top",
     "unpin": "Unpin",
@@ -2163,7 +2194,8 @@
       "builderFeeTest": "No fee in test mode. Once live: {fee}% of each amount released to the agency.",
       "checkoutTest": "Test checkout: no real money is charged.",
       "soonTitle": "Protected payments: coming soon",
-      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee."
+      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee.",
+      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%."
     },
     "cancelMutual": {
       "title": "Cancel by agreement",
@@ -2533,7 +2565,8 @@
       }
     },
     "inquiryNotice": "Your message also starts a chat with the agency on Sawwiq. Chats are recorded and may be reviewed by our team for quality assurance.",
-    "openChats": "Open my chats"
+    "openChats": "Open my chats",
+    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in"
   },
   "Notifications": {
     "tab": "Notifications",
@@ -2850,7 +2883,8 @@
       "seeksHint": "Missing a component? Sawwiq finds trusted freelancers and agencies to fill it, so you can take on the full project.",
       "gapHint": "Don't have one of these in house? That's fine: Sawwiq will suggest freelancers and partner agencies for the missing roles.",
       "doQuestion": "What do you do?"
-    }
+    },
+    "seeksEmpty": "nothing chosen yet. Choose the roles you need partners for in your page settings."
   },
   "Demo": {
     "badge": "Demo",
@@ -3425,7 +3459,8 @@
       }
     },
     "activationReady": "Your early-member benefits are activated. Financial benefits apply under the published terms when protected payments go live.",
-    "activationTodo": "Complete your profile and add genuine work or a useful package to activate early-member benefits. Registration alone is not enough."
+    "activationTodo": "Complete your profile and add genuine work or a useful package to activate early-member benefits. Registration alone is not enough.",
+    "showBenefits": "What founding members get"
   },
   "Agent": {
     "title": "My referrals",
@@ -4840,7 +4875,8 @@
       "acknowledge": "I understand and agree to this visibility choice, and I have the right to share the content with the audience I selected.",
       "mediaNote": "Switching to private stops new access through Sawwiq; it cannot erase copies downloaded or cached elsewhere. Older content previously served through public URLs may remain accessible at its source or in external caches.",
       "save": "Save publication choice",
-      "preview": "Preview your profile"
+      "preview": "Preview your profile",
+      "now": "Your page now: {state}"
     },
     "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
     "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
@@ -5716,7 +5752,8 @@
       "price": "Add a package or a starting price",
       "moreWork": "Add two more projects",
       "available": "Switch \"open to new projects\" back on"
-    }
+    },
+    "change": "Change"
   },
   "ServiceProposalEmail": {
     "subject": "New service awaiting approval: {service}",
