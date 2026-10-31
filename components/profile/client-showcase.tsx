@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { Briefcase } from "lucide-react";
+import { Briefcase, Plus } from "lucide-react";
 import { ShareActions } from "@/components/share-button";
 import { SITE_URL } from "@/lib/site";
 import { SocialIcon } from "@/components/social-icon";
@@ -58,7 +58,7 @@ export async function AccountLinks({ links, size = "sm" }: { links: ClientLink[]
 }
 
 /** The Clients tab: each account the agency handles, with its logo, the real accounts it runs and the work it did for it. */
-export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, agencyName }: { clients: ClientShowcase[]; lang?: string; handle: string; agencyName?: string }) {
+export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, agencyName, ownerView = false }: { clients: ClientShowcase[]; lang?: string; handle: string; agencyName?: string; /** The page's owner: each card also offers "Add work". */ ownerView?: boolean }) {
   const t = await getTranslations("Profile");
   const tInd = await getTranslations("Industries");
   const locale = await getLocale();
@@ -100,6 +100,12 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
                 <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("accountsManaged")}</p>
                 <AccountLinks links={c.links} />
               </div>
+            )}
+            {ownerView && (
+              <Link href={{ pathname: "/studio/new", query: { client: c.id } }} className="relative z-10 mt-3 inline-flex h-9 items-center gap-1 rounded-lg bg-brand px-3 text-sm font-medium text-white hover:bg-brand-deep" data-testid="client-card-add-work">
+                <Plus className="size-4" aria-hidden />
+                {t("ownerClient.addWork")}
+              </Link>
             )}
             <ShareActions
               className="relative z-10 mt-3 w-fit"
