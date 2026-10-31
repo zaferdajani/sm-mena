@@ -6,7 +6,7 @@ import { currentCountry } from "@/lib/country-choice";
 import { ClientShowcaseList } from "@/components/profile/client-showcase";
 import { accountTiles, clientShowcase, listClients } from "@/lib/data/portfolio-clients";
 import { AccountTiles } from "@/components/profile/account-tiles";
-import { OwnerClientPanel, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
+import { OwnerClientPanel, OwnerTabHint, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -110,6 +110,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const rating = ratingSummary(agency);
   const avatarUrl = mediaUrl(agency.avatarKey);
   const primary = agency.services[0];
+  const packageContact = !isOwner && !agency.isDemo && (await canUse("messaging")) ? { agencyId: agency.id, agencyName: agency.name, services: agency.services } : null;
   // Services the agency added itself, waiting for an admin (docs/30): shown as theirs, never in search or links.
   const pendingServices = (await pendingTexts(agency.pendingServices)).map((p) => p.text).filter(Boolean);
 
@@ -127,8 +128,11 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
     [t("services"), [...agency.services.map((s) => serviceLabel(s, locale)), ...pendingServices].join("، ") || t("notSet")],
     [t("platforms"), agency.platforms.map((p) => tPlat(p)).join("، ") || t("notSet")],
     [t("industries"), agency.industries.map((i) => tInd(i)).join("، ") || t("notSet")],
-    [t("team"), agency.teamSize ? tTeam(agency.teamSize) : t("notSet")],
-    [t("founded"), agency.foundedYear ? String(agency.foundedYear) : t("notSet")],
+    // A freelancer is one person: no team size or founding year.
+    ...(agency.kind === "freelancer" ? [] : [
+      [t("team"), agency.teamSize ? tTeam(agency.teamSize) : t("notSet")] as [string, string],
+      [t("founded"), agency.foundedYear ? String(agency.foundedYear) : t("notSet")] as [string, string],
+    ]),
     [t("languages"), agency.languages.map((l) => tLang(l)).join("، ")],
   ];
 
@@ -151,9 +155,11 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader registrationMode={isRegistrationPhase()}
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingServices, ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
+        // A demo agency shows no phone, WhatsApp or email (they could reach a stranger) and no verified badge.
+        agency={{ ...agency, ...(agency.isDemo ? { whatsapp: null, phone: null, email: null, isVerified: false } : {}), avatarUrl: mediaUrl(agency.avatarKey), pendingServices, ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
         following={following}
         followersHref={isOwner ? "/studio/followers" : undefined}
+        ownerView={isOwner}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />
@@ -185,6 +191,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ))}
       {tab === "clients" && isOwner && <OwnerClientPanel />}
       {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} agencyName={agency.name} ownerView={isOwner} />}
+      {(tab === "reviews" || tab === "about") && isOwner && <OwnerTabHint tab={tab} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />
@@ -198,7 +205,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           {pkgs && pkgs.length > 0 && (
             <section>
               <h2 className="mb-3 font-semibold">{tSeo("packagesTitle", { name: agency.name })}</h2>
-              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} lang={agency.contentLang} />
+              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} lang={agency.contentLang} contact={packageContact} />
               {pkgs.length > 3 && (
                 <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "about" } }} className="mt-2 inline-block text-sm font-medium text-brand">
                   {tSeo("allPackages", { count: pkgs.length })}
@@ -219,7 +226,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       ) : null}
       {tab === "about" && pkgs && pkgs.length > 0 && (
         <div className="px-4 pt-4">
-          <PackageList packages={pkgs} currency={currencyOf(agency.country)} lang={agency.contentLang} />
+          <PackageList packages={pkgs} currency={currencyOf(agency.country)} lang={agency.contentLang} contact={packageContact} />
         </div>
       )}
       {tab === "about" && (

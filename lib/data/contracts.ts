@@ -36,7 +36,7 @@ import { seal, tryOpen } from "@/lib/auth/secret-box";
 import { paymentProvider } from "@/lib/payments/provider";
 import { protectedPaymentsLive } from "@/lib/payments/readiness";
 import { founderEligibility, founderFeeDecision, type FounderFeeDecision } from "@/lib/founding";
-import { notifyContract } from "./contract-notify";
+import { notifyContract, notifyRequestClient } from "./contract-notify";
 import { isUniqueViolation, ledgerKey, settleMilestone } from "./escrow";
 import { hashToken, INVITE_DAYS } from "./reviews";
 
@@ -384,6 +384,12 @@ export async function createContract(agencyId: string, raw: ContractInput): Prom
     contract = await attempt(first.fee, false);
   }
   if (contract.clientAgencyId) await notifyContract(contract, "contract_received", "client");
+  else {
+    // A business owner: their email (when the agency gave one) carries the private link; the device that posted
+    // the project gets an in-app notification that opens it (docs/14).
+    await notifyContract(contract, "contract_received", "client");
+    await notifyRequestClient(contract);
+  }
   return { contract, token };
 }
 
@@ -541,6 +547,22 @@ export const clientToken = (c: Contract) => tryOpen(c.clientTokenEnc);
 export async function contractsForRequest(requestId: string) {
   const db = await getDb();
   return db.select().from(contracts).where(eq(contracts.requestId, requestId)).orderBy(desc(contracts.createdAt));
+}
+
+/**
+ * A business owner's contracts, for "My projects": those made from projects this device posted, and those
+ * this device signed. Each comes with the agency's name; the caller builds the private link (clientToken).
+ */
+export async function contractsForClient(visitorId: string, requestIds: string[]) {
+  const db = await getDb();
+  const mine = requestIds.length ? or(eq(contracts.clientVisitorId, visitorId), inArray(contracts.requestId, requestIds)) : eq(contracts.clientVisitorId, visitorId);
+  return db
+    .select({ contract: contracts, agencyName: agencies.name })
+    .from(contracts)
+    .innerJoin(agencies, eq(agencies.id, contracts.agencyId))
+    .where(and(mine, isNull(contracts.clientAgencyId), ne(contracts.status, "cancelled")))
+    .orderBy(desc(contracts.createdAt))
+    .limit(30);
 }
 
 export async function listAgencyContracts(agencyId: string) {
@@ -795,7 +817,7 @@ export async function submitMilestone(v: ContractView, milestoneId: string, note
     .returning({ id: milestones.id });
   if (!done) return { error: "locked" };
   await logEvent(v.contract.id, "agency", "submitted", `${m.title}${note.trim() ? `: ${note.trim()}` : ""}`);
-  await notifyContract(v.contract, "milestone_submitted", "client", { milestone: m.title, date: dueAt });
+  await notifyContract(v.contract, "milestone_submitted", "client", { milestone: m.title, date: dueAt, milestoneId: m.id });
   return { ok: true };
 }
 
@@ -824,7 +846,7 @@ export async function requestChanges(v: ContractView, milestoneId: string, note:
   if (!done) return { error: "locked" };
   const round = roundsState(v.contract, { ...m, changeRounds: m.changeRounds + 1 });
   await logEvent(v.contract.id, "client", "changes_requested", `${m.title} (${round.used}/${round.included + round.extra}): ${note.trim()}`);
-  await notifyContract(v.contract, "milestone_changes", "agency", { milestone: m.title });
+  await notifyContract(v.contract, "milestone_changes", "agency", { milestone: m.title, milestoneId: m.id });
   return { ok: true };
 }
 
@@ -924,7 +946,7 @@ export async function approveMilestone(v: ContractView, milestoneId: string): Pr
     if (!row) return { error: "locked" };
     await logEvent(v.contract.id, "client", "approved", m.title);
   }
-  await notifyContract(v.contract, "milestone_approved", "agency", { milestone: m.title });
+  await notifyContract(v.contract, "milestone_approved", "agency", { milestone: m.title, milestoneId: m.id });
   await completeIfDone(v.contract.id);
   return { ok: true };
 }

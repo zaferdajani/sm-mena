@@ -83,8 +83,8 @@ export default async function AdminTeam({ params }: PageProps<"/[locale]/admin/t
             <li key={r} className="rounded-xl border p-3 text-sm">
               <p className="font-medium">{t(`roles.${r}.name`)}</p>
               <p className="mt-1 text-xs text-muted-foreground">{t(`roles.${r}.body`)}</p>
-              <p className="mt-1 text-[11px] text-muted-foreground" dir="ltr">
-                {permissionsOf(r).length} permissions
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {t("permissionsCount", { count: permissionsOf(r).length })}
               </p>
             </li>
           ))}

@@ -61,9 +61,10 @@ export function LanguageOffer({ texts }: { texts: Record<string, OfferText> }) {
   return (
     <div className="flex items-center gap-2 border-b bg-brand/5 px-4 py-1.5 text-sm" role="region" aria-label={languageOf(suggestion)?.label} data-testid="language-offer">
       <Globe className="size-4 shrink-0 text-brand" />
-      <p className="min-w-0 flex-1 truncate" lang={suggestion} dir={dir}>
-        {offer.text}{" "}
-        <button type="button" onClick={accept} className="font-semibold text-brand underline-offset-4 hover:underline" data-testid="language-offer-accept">
+      {/* The button sits outside the text, so a long sentence on a phone wraps instead of hiding it behind "…". */}
+      <p className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1.5" lang={suggestion} dir={dir}>
+        <span>{offer.text}</span>
+        <button type="button" onClick={accept} className="shrink-0 font-semibold text-brand underline underline-offset-4" data-testid="language-offer-accept">
           {offer.switch}
         </button>
       </p>

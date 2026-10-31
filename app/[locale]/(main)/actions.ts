@@ -1,5 +1,6 @@
 "use server";
 
+import { notifyStaff } from "@/lib/data/staff-notify";
 import { mayReadAgencyId } from "@/lib/data/publication";
 import { getPost } from "@/lib/data/posts";
 import { canUse } from "@/lib/feature-gate";
@@ -160,5 +161,6 @@ export async function reportPost(_: ReportState, formData: FormData): Promise<Re
   if (!(await getPost(parsed.data.postId))) return { error: "generic" };
   if (!rateLimit(`report:${visitorId}`, 10, 24 * 3600 * 1000)) return { error: "generic" };
   await createReport({ postId: parsed.data.postId, reason: parsed.data.reason, details: parsed.data.details ?? "", visitorId });
+  await notifyStaff("postReport");
   return { ok: true };
 }

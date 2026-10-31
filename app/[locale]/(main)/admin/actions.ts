@@ -9,6 +9,7 @@ import { adminResetMfa } from "@/lib/auth/mfa";
 import { audit, getAgencyByHandle } from "@/lib/data/agencies";
 import { reactivateAgency } from "@/lib/data/deactivation";
 import { createPromotion, removeDemoData, resolveReport, setAgencyFlags, setPostStatus, setPromotionStatus } from "@/lib/data/admin";
+import { addNotifications } from "@/lib/data/notifications";
 import { getDb } from "@/lib/db";
 import { posts, users } from "@/lib/db/schema";
 import { setReviewStatus } from "@/lib/data/reviews";
@@ -22,6 +23,7 @@ export async function setVerifiedAction(agencyId: string, verified: boolean) {
   const admin = await requireStaff("agencies.moderate");
   await setAgencyFlags(uuid.parse(agencyId), { isVerified: verified });
   await audit(admin.id, verified ? "agency.verify" : "agency.unverify", "agency", agencyId);
+  if (verified) await addNotifications([{ agencyId, kind: "account_verified", href: "/studio" }]);
   refresh();
 }
 
@@ -29,6 +31,8 @@ export async function setStatusAction(agencyId: string, status: "active" | "susp
   const admin = await requireStaff("agencies.moderate");
   await setAgencyFlags(uuid.parse(agencyId), { status: z.enum(["active", "suspended"]).parse(status) });
   await audit(admin.id, `agency.${status}`, "agency", agencyId);
+  // The provider is told either way; the Studio also shows a notice while the page is paused.
+  await addNotifications([{ agencyId, kind: status === "suspended" ? "account_suspended" : "account_reactivated", href: status === "suspended" ? "/support" : "/studio" }]);
   refresh();
 }
 

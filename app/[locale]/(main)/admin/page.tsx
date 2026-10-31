@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, ShieldAlert } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Circle, ShieldAlert } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { funnelSummary } from "@/lib/data/funnel";
 import { Link } from "@/i18n/navigation";
@@ -9,6 +9,7 @@ import { mfaKeyConfigured } from "@/lib/auth/mfa";
 import { googleConfigured } from "@/lib/google";
 import { paymentProvider } from "@/lib/payments/provider";
 import { monetizationReadiness, platformStats } from "@/lib/data/admin";
+import { adminAttention } from "@/lib/data/admin-attention";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 
 export default async function AdminDashboard({ params }: PageProps<"/[locale]/admin">) {
@@ -19,7 +20,15 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
   const tt = await getTranslations("AdminTeam");
   const showStats = can(me.role, "stats.view");
   const showSystem = can(me.role, "system.view");
-  const [s, funnel] = await Promise.all([platformStats(), funnelSummary()]);
+  const [s, attention, funnel] = await Promise.all([platformStats(), adminAttention(), funnelSummary()]);
+  // What waits for the team, each row one tap from the page that handles it (only sections this role may open).
+  const waiting = ([
+    ["supportReports", attention.supportReports, "/admin/bugs", "support.manage"],
+    ["disputes", attention.disputes, "/admin/payments?tab=protected", "payments.view"],
+    ["postReports", attention.postReports, "/admin/reports", "content.moderate"],
+    ["services", attention.services, "/admin/services", "agencies.moderate"],
+    ["siteErrors", attention.siteErrors, "/admin/bugs?tab=errors", "bugs.manage"],
+  ] as const).filter(([, n, , perm]) => n > 0 && can(me.role, perm));
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
   const tiles: [string, number][] = [
     ["agencies", s.agencies.active], ["verified", s.agencies.verified], ["paid", s.agencies.paid],
@@ -28,13 +37,15 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
     // Onboarding funnel, last 30 days (docs/65 stage 5).
     ["joinViews", funnel.join_view], ["accountsCreated", funnel.account_created], ["firstPhotos", funnel.first_photo_uploaded], ["pagesPublished", funnel.page_published], ["activated24h", funnel.activated24h], ["linksShared", funnel.link_shared],
   ];
-  const health: [string, string][] = [
-    ["database", process.env.DATABASE_URL ? "Postgres" : "PGlite"],
-    ["storage", process.env.STORAGE_PROVIDER === "supabase" ? "Supabase" : "local"],
-    ["ai", aiStatus()],
-    ["google", googleConfigured() ? t("health.on") : t("health.off")],
-    ["payments", paymentProvider().label],
-    ["mfa", mfaKeyConfigured() ? t("health.on") : t("health.off")],
+  // Plain words for the owner; the technical value (engine, model, provider) stays one tap away.
+  const ai = aiStatus();
+  const health: [string, string, string][] = [
+    ["database", process.env.DATABASE_URL ? t("health.ready") : t("health.localCopy"), process.env.DATABASE_URL ? "Postgres" : "PGlite"],
+    ["storage", process.env.STORAGE_PROVIDER === "supabase" ? t("health.ready") : t("health.localFiles"), process.env.STORAGE_PROVIDER === "supabase" ? "Supabase" : "local"],
+    ["ai", ai === "basic" ? t("health.aiBasic") : t("health.aiOn"), ai],
+    ["google", googleConfigured() ? t("health.on") : t("health.off"), ""],
+    ["payments", paymentProvider().id === "mock" ? t("health.paymentsTest") : t("health.on"), paymentProvider().id],
+    ["mfa", mfaKeyConfigured() ? t("health.on") : t("health.off"), ""],
   ];
   return (
     <div className="space-y-6">
@@ -52,6 +63,23 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
           )}
         </p>
       )}
+      <section className="rounded-xl border p-4" data-testid="admin-attention">
+        <h2 className="font-semibold">{t("attention.title")}</h2>
+        {waiting.length ? (
+          <ul className="mt-2 divide-y">
+            {waiting.map(([key, count, href]) => (
+              <li key={key}>
+                <Link href={href} className="flex min-h-11 items-center justify-between gap-3 py-2 text-sm hover:text-brand" data-testid={`attention-${key}`}>
+                  <span>{t(`attention.${key}`, { count })}</span>
+                  <ChevronLeft className="size-4 shrink-0 ltr:rotate-180" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-1 text-sm text-muted-foreground">{t("attention.none")}</p>
+        )}
+      </section>
       {showStats && <p className="text-xs text-muted-foreground" data-testid="real-data-note">{t("realOnly")}</p>}
       {showStats && (
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-testid="admin-stats">
@@ -87,10 +115,14 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
             {health.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b py-1 last:border-0">
                 <dt className="text-muted-foreground">{t(`health.${k}` as "health.ai")}</dt>
-                <dd className="min-w-0 truncate font-medium" dir="ltr">{v}</dd>
+                <dd className="min-w-0 truncate font-medium">{v}</dd>
               </div>
             ))}
           </dl>
+          <details className="mt-2 text-xs text-muted-foreground">
+            <summary className="cursor-pointer">{t("health.technical")}</summary>
+            <p className="break-all" dir="ltr">{health.filter(([, , raw]) => raw).map(([k, , raw]) => `${k}: ${raw}`).join(" · ")}</p>
+          </details>
         </section>
       )}
     </div>

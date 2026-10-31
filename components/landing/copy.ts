@@ -66,7 +66,7 @@ const ar: SiteCopy = {
   ],
   country: { label: "الدولة", locate: "حدّد دولتي من موقعي" },
   signUp: { label: "انضم مجاناً", short: "انضم" },
-  cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "اقرأ المراجعات" },
+  cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "شاهد تقييمات الوكالات" },
   chapters: [
     { id: "start", label: "البداية", title: "اعثر على وكالة التسويق المناسبة في الأردن", body: "لعيادتك الطبية، عيادة الأسنان، صيدليتك، مطعمك، متجرك ومكتبك العقاري. شاهد أعمالاً حقيقية، واسأل المطابق الذكي، وادفع على مراحل وأنت مطمئن." },
     { id: "how", label: "أعمال حقيقية", title: "شاهد الشغل قبل الكلام", body: "منشورات وحملات حقيقية نفّذتها الوكالات لمطاعم وعيادات ومتاجر في الأردن، ومعها تقييمات \u2068Google\u2069 ومراجعات موثّقة.", tags: ["منشورات حقيقية", "تقييمات \u2068Google\u2069"] },
@@ -134,7 +134,7 @@ const ar: SiteCopy = {
       { slug: "ads_meta", icon: "ads", photo: "ads", title: "الإعلانات الممولة", items: "ميتا، تيك توك، سناب شات، جوجل، لينكدإن" },
       { slug: "video_production", icon: "video", photo: "video", title: "الإنتاج الإبداعي", items: "فيديو، تصوير، تصميم جرافيك، موشن جرافيك، كتابة إعلانية" },
       { slug: "brand_identity", icon: "design", photo: "brand", title: "العلامة التجارية", items: "هوية بصرية، استراتيجية العلامة، تصميم التغليف" },
-      { slug: "web_design", icon: "web", photo: "web", title: "الرقمي والنمو", items: "\u2068SEO\u2069، تسويق بالإيميل وواتساب، مواقع ومتاجر إلكترونية، تطبيقات الجوال، صيانة المواقع، التحليلات" },
+      { slug: "web_design", icon: "web", photo: "web", title: "الرقمي والنمو", items: "مواقع ومتاجر إلكترونية، \u2068SEO\u2069، تسويق بالإيميل وواتساب، تطبيقات الجوال، صيانة المواقع، التحليلات" },
       { slug: "event_coverage", icon: "onsite", photo: "onsite", title: "على أرض الواقع", items: "تغطية الفعاليات، المطبوعات، الإعلانات الخارجية، التفعيلات" },
     ],
   },
@@ -178,6 +178,8 @@ const ar: SiteCopy = {
       { label: "تصفّح الوكالات", href: "explore" },
       { label: "المطابق الذكي", href: "match" },
       { label: "انضم كوكالة", href: "join" },
+      { label: "المساعدة والتواصل", href: "support" },
+      { label: "الشروط والخصوصية", href: "legal" },
     ],
   },
 };
@@ -195,7 +197,7 @@ const en: SiteCopy = {
   ],
   country: { label: "Country", locate: "Use my location" },
   signUp: { label: "Join free", short: "Join" },
-  cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "Read reviews" },
+  cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "See agency ratings" },
   chapters: [
     { id: "start", label: "Start", title: "Find the right marketing agency in Jordan", body: "For your clinic, dental practice, pharmacy, restaurant, shop or real estate office. See real work, ask the AI matchmaker, and pay by milestone." },
     { id: "how", label: "Real work", title: "See the work before the pitch", body: "Real posts and campaigns agencies made for restaurants, clinics and shops across Jordan, with Google ratings and verified reviews.", tags: ["Real posts", "Google ratings"] },
@@ -263,7 +265,7 @@ const en: SiteCopy = {
       { slug: "ads_meta", icon: "ads", photo: "ads", title: "Paid ads", items: "Meta, TikTok, Snapchat, Google, LinkedIn" },
       { slug: "video_production", icon: "video", photo: "video", title: "Creative production", items: "Video, photography, graphic design, motion graphics, copywriting" },
       { slug: "brand_identity", icon: "design", photo: "brand", title: "Brand", items: "Brand identity, brand strategy, packaging" },
-      { slug: "web_design", icon: "web", photo: "web", title: "Digital and growth", items: "SEO, email and WhatsApp marketing, websites and online stores, mobile apps, maintenance, analytics" },
+      { slug: "web_design", icon: "web", photo: "web", title: "Digital and growth", items: "Websites and online stores, SEO, email and WhatsApp marketing, mobile apps, maintenance, analytics" },
       { slug: "event_coverage", icon: "onsite", photo: "onsite", title: "On the ground", items: "Event coverage, print, outdoor ads, activations" },
     ],
   },
@@ -307,6 +309,8 @@ const en: SiteCopy = {
       { label: "Browse agencies", href: "explore" },
       { label: "AI matchmaker", href: "match" },
       { label: "Join as an agency", href: "join" },
+      { label: "Help and contact", href: "support" },
+      { label: "Terms and privacy", href: "legal" },
     ],
   },
 };
