@@ -1,7 +1,7 @@
 # 64 — Native beta: staging, phone builds and release (M4)
 
 Status: the build workflow and the server endpoints are on branch `feat/m4-native-beta`. Nothing here changes production:
-`API_V1_ENABLED` stays unset on Vercel production, and the workflow refuses production and localhost addresses.
+`API_V1_ENABLED=true` is set on Vercel production since 31 Oct 2026 (the owner's go-live). Builds still point their staging address at staging only: the workflow refuses production and localhost addresses for `api_url`, and the real site is always `EXPO_PUBLIC_PRODUCTION_URL=https://sawwiq.org`.
 Builds the device run needs: docs/60 (prototype), roadmap §11 (M3/M4).
 
 ## 1. What the app now does (M4 scope)
@@ -72,4 +72,4 @@ One build talks to the real site (`https://sawwiq.org`, `EXPO_PUBLIC_PRODUCTION_
 - The app remembers which site the account is on (`sawwiq.session.site` in the Keychain/Keystore) and sends every request there. Settings shows the site.
 - The same email on both sites: the real account wins in the app; reach the test account on the staging website.
 - A mistyped real password is also tried on the staging site, which is ours, over HTTPS, and never stores or logs passwords.
-- **Going live** is one switch: `API_V1_ENABLED=true` on Production in Vercel. Until then sawwiq.org answers 404 on `/api/v1`, the app signs staging accounts in, and the sign-up screen says account creation opens soon and links to the website.
+- **Live since 31 Oct 2026.** The owner said go live and `API_V1_ENABLED=true` was set on Production in Vercel (one switch; unset it and redeploy to turn the app off again). sawwiq.org now answers on `/api/v1`: real accounts sign in on the real site, new accounts made in the app are created there, and staging accounts still fall through to staging.
