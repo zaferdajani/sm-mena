@@ -769,6 +769,10 @@ async function refundLateDeposit(m: Milestone, amountFils: number, providerRef: 
   await logEvent(m.contractId, "system", "refunded", `${m.title}: payment arrived after cancellation and was refunded in full`);
   const { dispatchMoneyOut } = await import("./money-out");
   await dispatchMoneyOut({ milestoneId: m.id }).catch((e) => console.error("[money-out]", e));
+  if (process.env.VIRTUAL_PAYMENTS === "sandbox") {
+    const { creditContractRefund } = await import("@/lib/payments/virtual-wallet");
+    await creditContractRefund(m.contractId, m.id, amountFils).catch((e) => console.error("[virtual-wallet]", e));
+  }
   return "refunded_late";
 }
 

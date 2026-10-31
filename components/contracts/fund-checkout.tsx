@@ -1,18 +1,37 @@
 import { FlaskConical, ShieldCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { clientMockPayAction } from "@/app/[locale]/(main)/contract-actions";
+import { clientMockPayAction, clientVirtualPayAction } from "@/app/[locale]/(main)/contract-actions";
+import { VirtualCardForm } from "@/components/payments/virtual-card-form";
 import { SubmitButton } from "@/components/submit-button";
 import { Link } from "@/i18n/navigation";
 import type { ContractView } from "@/lib/data/contracts";
 import { formatFils } from "@/lib/format";
+import { readVirtualWallet, virtualCheckoutEnabled } from "@/lib/payments/virtual-wallet";
 
 /**
  * The built-in test checkout for paying a milestone into protection, for
  * contracts sent while protected payments were in test mode: no real money.
  */
-export async function FundCheckout({ v, milestoneId, hidden, back, locale }: { v: ContractView; milestoneId: string; hidden: Record<string, string>; back: string; locale: string }) {
+export async function FundCheckout({ v, milestoneId, hidden, back, locale, cardError }: { v: ContractView; milestoneId: string; hidden: Record<string, string>; back: string; locale: string; cardError?: string | null }) {
   const t = await getTranslations("Contracts");
   const m = v.milestones.find((x) => x.id === milestoneId)!;
+  if (virtualCheckoutEnabled()) {
+    const wallet = await readVirtualWallet(v.contract.clientEmail || `contract:${v.contract.id}`);
+    return (
+      <div className="space-y-4">
+        <VirtualCardForm
+          action={clientVirtualPayAction}
+          hidden={{ ...hidden, milestoneId: m.id }}
+          amountFils={m.amountFils}
+          currency={v.contract.currency}
+          locale={locale}
+          balanceFils={wallet.balances[v.contract.currency] ?? 0}
+          cardError={cardError}
+        />
+        <Link href={back} className="block text-center text-sm text-muted-foreground hover:underline">{t("fundPage.back")}</Link>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto max-w-sm space-y-5 px-4 py-10">
       <div className="space-y-1 rounded-lg bg-amber-500/10 p-3 text-xs" role="note" data-testid="payments-readiness" data-live="false">

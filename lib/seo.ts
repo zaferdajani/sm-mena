@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { routing } from "@/i18n/routing";
+import { isStagingMode } from "@/lib/core/rules/staging";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -14,8 +15,8 @@ export const brandOf = (locale: string) => (locale === "ar" ? BRAND.ar : BRAND.e
 const OG_COUNTRY: Record<string, string> = { jo: "JO", sa: "SA", ae: "AE", kw: "KW", qa: "QA", bh: "BH", om: "OM", eg: "EG" };
 const ogLocale = (locale: string, country = "jo") => `${locale === "ar" ? "ar" : "en"}_${OG_COUNTRY[country] ?? "JO"}`;
 
-/** SEO_INDEXABLE=false keeps the whole site out of search engines (staging, before launch). */
-export const siteIndexable = () => process.env.SEO_INDEXABLE !== "false";
+/** SEO_INDEXABLE=false keeps the whole site out of search engines (staging, before launch). Staging is never indexed. */
+export const siteIndexable = () => !isStagingMode() && process.env.SEO_INDEXABLE !== "false";
 
 /** A hire page for a service is indexed once this many real (non-demo) agencies offer it... */
 export const INDEX_MIN_SERVICE = 1;

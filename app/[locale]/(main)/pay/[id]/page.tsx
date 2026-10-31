@@ -1,22 +1,39 @@
 import { CreditCard, FlaskConical } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { VirtualCardForm } from "@/components/payments/virtual-card-form";
 import { SubmitButton } from "@/components/submit-button";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { getPayment } from "@/lib/data/payments";
 import { formatFils, isTestPayments } from "@/lib/payments/provider";
-import { mockPayAction } from "../../billing-actions";
+import { readVirtualWallet, virtualCheckoutEnabled } from "@/lib/payments/virtual-wallet";
+import { mockPayAction, virtualPlanPayAction } from "../../billing-actions";
 
 // Built-in test checkout (PAYMENTS_PROVIDER=mock). A real gateway replaces
 // this page with its own hosted payment page.
-export default async function PayPage({ params }: PageProps<"/[locale]/pay/[id]">) {
+export default async function PayPage({ params, searchParams }: PageProps<"/[locale]/pay/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  const { agency } = await requireAgency();
+  const { agency, user } = await requireAgency();
   const payment = /^[0-9a-f-]{36}$/.test(id) ? await getPayment(id) : null;
   if (!payment || payment.agencyId !== agency.id || !isTestPayments()) notFound();
   const t = await getTranslations("Billing");
+  if (virtualCheckoutEnabled() && payment.status === "pending") {
+    const wallet = await readVirtualWallet(user.email);
+    const card = (await searchParams).card;
+    return (
+      <VirtualCardForm
+        action={virtualPlanPayAction}
+        hidden={{ id: payment.id }}
+        amountFils={payment.amountFils}
+        currency="JOD"
+        locale={locale}
+        balanceFils={wallet.balances.JOD ?? 0}
+        cardError={typeof card === "string" ? card : null}
+      />
+    );
+  }
   return (
     <div className="mx-auto max-w-sm space-y-5 px-4 py-10">
       <p className="flex items-center gap-2 rounded-lg bg-amber-500/10 p-3 text-xs" role="note">

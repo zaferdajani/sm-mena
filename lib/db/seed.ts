@@ -24,7 +24,11 @@ import { storage } from "../storage";
 import { closeDb, getDb } from "./index";
 import { demoAvatar, demoImage, rng, type DemoKind } from "./demo-images";
 import { DEMO_REQUESTS, PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "./demo-portfolio";
+import { assertStagingDatabase, isStagingMode } from "@/lib/core/rules/staging";
+import { DEMO_CAPTIONS, DEMO_HEADLINES, DEMO_PACKAGES, DEMO_RESULTS, DEMO_REVIEWS, DEMO_REVIEW_REPLY, demoLang, otherOf, packageTexts, type Bi, type DemoReview } from "./demo-texts";
+import { refreshDemoTexts } from "./demo-text-refresh";
 import { DEMO_PROFILES, DEMO_ROLES } from "./demo-profiles";
+import { STAGING_PASSWORD } from "./staging-password";
 import { DEMO_TRANSLATIONS } from "./demo-translations";
 import { ROLE_KEYS } from "../services/catalog";
 import { agencies, appSettings, events, follows, inquiries, likes, packages, posts, projectRequests, promotions, reviews, saves, users, type DeliverableLine } from "./schema";
@@ -43,11 +47,12 @@ type DemoAgency = {
   verified: boolean;
   founded: number;
   team: string;
-  // Optional, for specialised agencies: their own post headlines/captions, packages and client reviews.
-  headlines?: string[];
-  captions?: string[];
-  packages?: { title: string; service: string; priceJod: number; items: DeliverableLine[]; deliverables?: string[]; deliveryDays?: number }[];
-  reviews?: [string, string, string][];
+  // Optional, for specialised agencies: their own post headlines/captions, packages and client reviews,
+  // each in both languages (the agency's one is shown, the other is its translation).
+  headlines?: Bi[];
+  captions?: Bi[];
+  packages?: { title: Bi; service: string; priceJod: number; items: DeliverableLine[]; deliverables?: Bi[]; deliveryDays?: number }[];
+  reviews?: { ar: DemoReview; en: DemoReview }[];
 };
 
 // Fictional names. Any resemblance to a real agency is unintended.
@@ -76,17 +81,24 @@ export const DEMO_AGENCIES: DemoAgency[] = [
     verified: true,
     founded: 2018,
     team: "6-15",
-    headlines: ["احجز موعدك", "Book online", "عيادة الأسنان", "Meet the doctor", "توصيل الصيدلية", "+62% bookings"],
+    headlines: [
+      { ar: "احجز موعدك", en: "Book your visit" },
+      { ar: "الحجز عبر الإنترنت", en: "Book online" },
+      { ar: "عيادة الأسنان", en: "Dental clinic" },
+      { ar: "تعرّف على الطبيب", en: "Meet the doctor" },
+      { ar: "توصيل الصيدلية", en: "Pharmacy delivery" },
+      { ar: "حجوزات أكثر 62%", en: "+62% bookings" },
+    ],
     captions: [
-      "حملة حجوزات لعيادة أسنان في عبدون: إعلانات جوجل، تحسين خرائط جوجل، ومتابعة عبر واتساب.",
-      "Doctor-led Reels for a dermatology clinic: three videos a week, every script reviewed by the medical team.",
-      "إطلاق خدمة التوصيل لصيدلية في إربد عبر إعلانات ميتا وطلبات واتساب.",
-      "Physiotherapy centre: explainer videos and a booking funnel. +62% bookings in 60 days.",
-      "تحسين ظهور مركز طبي على جوجل: صفحات للخدمات، تقييمات المرضى، وموقع أسرع.",
+      { ar: "حملة حجوزات لعيادة أسنان في عبدون: إعلانات جوجل، تحسين خرائط جوجل، ومتابعة عبر واتساب.", en: "A bookings campaign for a dental clinic in Abdoun: Google Ads, Google Maps optimisation and WhatsApp follow-up." },
+      { ar: "ريلز يقدّمها الطبيب لعيادة جلدية: ثلاثة فيديوهات أسبوعيًا، وكل نص يراجعه الفريق الطبي.", en: "Doctor-led Reels for a dermatology clinic: three videos a week, every script reviewed by the medical team." },
+      { ar: "إطلاق خدمة التوصيل لصيدلية في إربد عبر إعلانات ميتا وطلبات واتساب.", en: "Launching a pharmacy's delivery service in Irbid with Meta ads and WhatsApp orders." },
+      { ar: "مركز علاج طبيعي: فيديوهات توضيحية ومسار حجز. زيادة الحجوزات 62% خلال 60 يومًا.", en: "Physiotherapy centre: explainer videos and a booking funnel. +62% bookings in 60 days." },
+      { ar: "تحسين ظهور مركز طبي على جوجل: صفحات للخدمات، تقييمات المرضى، وموقع أسرع.", en: "A medical centre's visibility on Google: service pages, patient reviews and a faster website." },
     ],
     packages: [
       {
-        title: "باقة العيادة",
+        title: { ar: "باقة العيادة", en: "Clinic Package" },
         service: "smm_management",
         priceJod: 320,
         items: [
@@ -95,11 +107,11 @@ export const DEMO_AGENCIES: DemoAgency[] = [
           { key: "community_replies", quantity: 1, platform: "facebook" },
           { key: "monthly_report", quantity: 1 },
         ],
-        deliverables: ["يراجع الطبيب كل محتوى قبل نشره"],
+        deliverables: [{ ar: "يراجع الطبيب كل محتوى قبل نشره", en: "The doctor reviews every piece of content before it goes out" }],
         deliveryDays: 30,
       },
       {
-        title: "Bookings Growth",
+        title: { ar: "نمو الحجوزات", en: "Bookings Growth" },
         service: "ads_google",
         priceJod: 550,
         items: [
@@ -108,14 +120,14 @@ export const DEMO_AGENCIES: DemoAgency[] = [
           { key: "seo_optimization", quantity: 1 },
           { key: "monthly_report", quantity: 1 },
         ],
-        deliverables: ["Google Business Profile and reviews set up"],
+        deliverables: [{ ar: "إعداد ملف جوجل للأعمال والتقييمات", en: "Google Business Profile and reviews set up" }],
         deliveryDays: 30,
       },
     ],
     reviews: [
-      ["د. لينا", "عيادة بسمة لطب الأسنان", "تضاعفت الحجوزات من جوجل خلال شهرين، والمحتوى كان دقيقاً طبياً ومحترماً للمرضى."],
-      ["Dr. Hani", "Irbid Physio Centre", "They understood medical advertising rules and our patients' concerns. Clear weekly reports."],
-      ["مها", "صيدلية الريحان", "حملة التوصيل عبر واتساب رفعت الطلبات بشكل واضح، وفريقهم سريع في الرد."],
+      { ar: ["د. لينا", "عيادة بسمة لطب الأسنان", "تضاعفت الحجوزات من جوجل خلال شهرين، والمحتوى كان دقيقاً طبياً ومحترماً للمرضى."], en: ["Dr. Lina", "Basma Dental Clinic", "Bookings from Google doubled in two months, and the content was medically accurate and respectful of patients."] },
+      { ar: ["د. هاني", "مركز إربد للعلاج الطبيعي", "فهموا قواعد الإعلان الطبي ومخاوف مرضانا، وتقاريرهم الأسبوعية واضحة."], en: ["Dr. Hani", "Irbid Physio Centre", "They understood medical advertising rules and our patients' concerns. Clear weekly reports."] },
+      { ar: ["مها", "صيدلية الريحان", "حملة التوصيل عبر واتساب رفعت الطلبات بشكل واضح، وفريقهم سريع في الرد."], en: ["Maha", "Al Rayhan Pharmacy", "The WhatsApp delivery campaign clearly lifted orders, and their team answers fast."] },
     ],
   },
   // Gulf and Egypt (prices in each country's currency, a month).
@@ -309,25 +321,6 @@ function demoPhone(city: string, index: number) {
   return code === "jo" ? `+96279${digits}` : `+${countryOf(code).dial}5${digits}`;
 }
 
-const HEADLINES: Record<DemoKind, string[]> = {
-  ad: ["-30% اليوم فقط", "NEW DROP", "اطلب الآن", "Limited offer"],
-  content: ["قائمة الشتاء", "Behind the scenes", "نصيحة اليوم", "Meet the team"],
-  video: ["Reel · 0:24", "ريلز جديد", "UGC · 0:15", "Drone · 0:30"],
-  branding: ["Brand refresh", "هوية جديدة", "Logo system", "Type & colour"],
-  photo: ["Product shoot", "جلسة تصوير", "Menu shoot", "Lookbook"],
-  results: ["+180% reach", "3.2x ROAS", "+45% leads", "-38% CPA"],
-};
-
-const CAPTIONS = [
-  "حملة إطلاق لمدة ٣٠ يوماً: محتوى يومي وإعلانات موجّهة لسكان عمّان.",
-  "Monthly content calendar: 12 posts, 8 stories and 4 reels.",
-  "إعادة تصميم هوية الحساب بالكامل مع قوالب ثابتة للمنشورات.",
-  "Ramadan campaign with creators and paid social. Results in the last slide.",
-  "تصوير منتجات بخلفية بيضاء ونمط حياة للموقع والإنستغرام.",
-  "From 2k to 18k followers in four months with organic reels.",
-];
-
-const RESULTS = ["+180% reach in 30 days", "3.2x return on ad spend", "+45% leads", "18k new followers", null, null];
 
 function kindFor(service: string): DemoKind {
   if (service.startsWith("ads_") || service === "seo" || service === "analytics") return "results";
@@ -368,6 +361,7 @@ async function syncDemoPassword(log: (...a: unknown[]) => void) {
 }
 
 export async function seed({ reset: doReset = false, quiet = false, adminOnly = false, restoreDemo = false } = {}) {
+  assertStagingDatabase();
   const log = quiet ? () => {} : console.log;
   // Reset first: on PGlite it reopens the store, so the handle is taken after it.
   if (doReset) await reset();
@@ -375,8 +369,9 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   // Every built-in service gets its numbered tag (data/service-catalog.json).
   await syncServiceCatalog();
   const production = process.env.NODE_ENV === "production";
-  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (production ? null : "admin@sawwiq.test");
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (production ? null : "admin-pass-123");
+  const staging = isStagingMode();
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? (staging ? "staging-owner@sawwiq.test" : production ? null : "admin@sawwiq.test");
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? (staging ? STAGING_PASSWORD : production ? null : "admin-pass-123");
   // The admin is ensured on every run, so secrets added after the first deploy still work.
   if (adminEmail && adminPassword && (!production || adminPassword.length >= 12)) {
     if (!(await getUserByEmail(adminEmail))) {
@@ -402,6 +397,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const [removedFlag] = await db.select().from(appSettings).where(sql`${appSettings.key} = 'demo_removed'`);
   if (removedFlag && !doReset) {
     log("Demo data was removed by an admin; not adding it back. Use --reset to start over.");
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
   const fresh = n === 0;
@@ -410,6 +406,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   // restoreDemo: lib/db/rebuild-demo-media.ts re-creates demo agencies it removed.
   if (!fresh && demoCount === 0 && !restoreDemo) {
     log(`Database already has ${n} agencies and no demo data. Use --reset to start over.`);
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
   const existing = new Set((await db.select({ handle: agencies.handle }).from(agencies)).map((a) => a.handle));
@@ -420,14 +417,17 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     await addDemoProfiles(log);
     await addDemoRoles(log);
     await addDemoTranslations(log);
+    await refreshDemoTexts(log);
     await addDemoRequests(log);
     log(`Database already has ${n} agencies. Use --reset to start over.`);
+    await seedStagingIfNeeded(log, adminOnly);
     return;
   }
 
   // Demo agency accounts must not share a known password on a public deployment.
-  const demoPassword =
-    process.env.SEED_DEMO_PASSWORD ?? (production ? randomBytes(18).toString("base64url") : DEMO_PASSWORD);
+  const demoPassword = isStagingMode()
+    ? STAGING_PASSWORD
+    : process.env.SEED_DEMO_PASSWORD ?? (production ? randomBytes(18).toString("base64url") : DEMO_PASSWORD);
 
   const now = Date.now();
   const r = rng(42);
@@ -436,6 +436,9 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   const createdIndex: number[] = []; // DEMO_AGENCIES index for each created agency
 
   for (const [index, demo] of toCreate) {
+    // Every text of a demo agency is in its own language; the other one goes into `translation` (lib/db/demo-texts.ts).
+    const lang = demoLang(demo.name);
+    const other = otherOf(lang);
     const email = `${demo.handle.replace(/\./g, "-")}@sawwiq.test`;
     const user = (await getUserByEmail(email)) ?? (await createUser(email, demoPassword));
     const agency = await createAgency(
@@ -461,6 +464,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
         ],
         foundedYear: demo.founded,
         teamSize: demo.team,
+        contentLang: lang,
       },
       { isVerified: demo.verified, isDemo: true },
     );
@@ -479,21 +483,25 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
       const imageCount = 1 + Math.floor(r() * 3);
       const sources = [];
       for (let i = 0; i < imageCount; i++) {
-        const pool = demo.headlines ?? HEADLINES[kind];
-        const headline = pool[Math.floor(r() * pool.length)];
+        const pool = demo.headlines ?? DEMO_HEADLINES[kind];
+        const headline = pool[Math.floor(r() * pool.length)][lang];
         const tall = p % 3 === 1;
         sources.push(demoImage(i === imageCount - 1 && imageCount > 1 ? "results" : kind, index * 100 + p * 10 + i, headline, `@${demo.handle}`, tall));
       }
       // Encoded side by side: each image runs its own quality search (lib/images.ts).
       const processed = await Promise.all(sources.map(async (source) => processImage(await source)));
+      const captions = demo.captions ?? DEMO_CAPTIONS;
+      const caption = captions[Math.floor(r() * captions.length)];
+      const result = DEMO_RESULTS[Math.floor(r() * DEMO_RESULTS.length)];
       const post = await createPostFromProcessed(
         agency.id,
         {
-          caption: (demo.captions ?? CAPTIONS)[Math.floor(r() * (demo.captions ?? CAPTIONS).length)],
+          caption: caption[lang],
           services: [service, ...(r() > 0.6 ? [demo.services[(p + 1) % demo.services.length]] : [])].filter((v, i, a) => a.indexOf(v) === i),
           platforms: [demo.platforms[p % demo.platforms.length]],
           industry: demo.industries[p % demo.industries.length],
-          result: RESULTS[Math.floor(r() * RESULTS.length)],
+          result: result ? result[lang] : null,
+          translation: { caption: caption[other], ...(result ? { result: result[other] } : {}) },
         },
         processed,
         new Date(now - Math.floor(r() * 60 * 24 * 3600 * 1000)),
@@ -532,32 +540,25 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
     { agencyId: agencyIds[1], name: "Omar", phone: "+962790000002", businessName: "Desert Threads", service: "ads_meta", message: "We sell clothing online and want to scale Meta ads. Budget around 800 JOD a month.", consentVersion: "2026-09" },
   ]);
 
-  // Demo packages and client reviews (demo agencies only; removable with them).
-  const REVIEW_TEXTS = [
-    ["سارة", "مقهى الورد", "فريق محترف جداً، التزموا بالمواعيد وتضاعف التفاعل على حسابنا خلال شهرين."],
-    ["Omar", "Desert Threads", "Clear reporting every week and our cost per sale dropped by a third. Would hire again."],
-    ["لينا", "عيادة بسمة", "التواصل ممتاز والمحتوى مناسب لجمهورنا. نتمنى سرعة أكبر في التعديلات."],
-    ["Khaled", "Levant Tours", "Great creative ideas and solid execution on our Reels. Pricing was fair for the quality."],
-    ["رنا", "متجر رنا", "نتائج جيدة في الإعلانات لكن احتجنا لمتابعة أكثر في البداية."],
-    ["Yousef", "Amman Realty", "Professional team that understood the Jordanian market. Leads improved quickly."],
-  ];
+  // Demo packages and client reviews (demo agencies only; removable with them), in the agency's language.
   for (const [i2, agencyId] of agencyIds.entries()) {
     const index = createdIndex[i2];
     const demo = DEMO_AGENCIES[index];
+    const lang = demoLang(demo.name);
+    const other = otherOf(lang);
     const pkgRows = demo.packages
-      ? demo.packages.map((p, i) => ({ agencyId, service: p.service, title: p.title, description: "", priceJod: p.priceJod, billing: "monthly" as const, deliverables: p.deliverables ?? [], items: p.items, deliveryDays: p.deliveryDays ?? null, position: i }))
+      ? demo.packages.map((p, i) => ({ agencyId, service: p.service, title: p.title[lang], description: "", priceJod: p.priceJod, billing: "monthly" as const, deliverables: (p.deliverables ?? []).map((d) => d[lang]), items: p.items, deliveryDays: p.deliveryDays ?? null, position: i, translation: { title: p.title[other], deliverables: (p.deliverables ?? []).map((d) => d[other]) } }))
       : demo.services.slice(0, 2).map((service, i) => ({
       agencyId,
       service,
-      title: i === 0 ? (demo.handle.includes(".") && /[a-z]/.test(demo.name) ? "Starter" : "الباقة الأساسية") : (/[a-z]/i.test(demo.name) ? "Growth" : "باقة النمو"),
+      ...packageTexts(DEMO_PACKAGES[i], lang),
       description: "",
       priceJod: i === 0 ? demo.price : demo.price * 2,
       billing: "monthly" as const,
-      deliverables: i === 0 ? ["12 posts", "8 stories", "Monthly report"] : ["20 posts", "4 Reels", "Paid ads management", "Weekly report"],
       position: i,
     }));
     await db.insert(packages).values(pkgRows);
-    const reviewTexts = demo.reviews ?? REVIEW_TEXTS;
+    const reviewTexts = (demo.reviews ?? DEMO_REVIEWS).map((pair) => pair[lang]);
     const count = 2 + Math.floor(r() * 4);
     let sum = 0;
     const rows = [];
@@ -579,7 +580,7 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
         reviewerBusiness: business,
         service: demo.services[k % demo.services.length],
         visitorId: `demo-reviewer-${index}-${k}`,
-        reply: k === 0 ? (/[a-z]/i.test(demo.name) ? "Thank you, it was a pleasure working with you!" : "شكراً لثقتكم، سعدنا بالعمل معكم!") : null,
+        reply: k === 0 ? DEMO_REVIEW_REPLY[lang] : null,
         repliedAt: k === 0 ? new Date() : null,
         consentVersion: "2026-09",
         createdAt: new Date(now - Math.floor(r() * 90) * 24 * 3600 * 1000),
@@ -606,12 +607,20 @@ export async function seed({ reset: doReset = false, quiet = false, adminOnly = 
   await addDemoProfiles(log);
   await addDemoRoles(log);
   await addDemoTranslations(log);
+  await refreshDemoTexts(log);
   await addDemoRequests(log);
   log(`Seeded ${toCreate.length} demo agencies and ${postIds.length} posts.`);
-  if (!production) {
+  if (!production || isStagingMode()) {
     log(`Admin: ${adminEmail} / ${adminPassword}`);
     log(`Demo agency login: ${DEMO_AGENCIES[0].handle.replace(/\./g, "-")}@sawwiq.test / ${demoPassword}`);
   }
+  await seedStagingIfNeeded(log, adminOnly);
+}
+
+async function seedStagingIfNeeded(log: (...a: unknown[]) => void, adminOnly: boolean) {
+  if (adminOnly || !isStagingMode()) return;
+  const { seedStaging } = await import("./seed-staging");
+  await seedStaging(log);
 }
 
 if (process.argv[1] && /seed\.ts$/.test(process.argv[1])) {

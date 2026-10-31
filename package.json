@@ -18,8 +18,9 @@
     "db:rebuild-demo-media": "tsx lib/db/rebuild-demo-media.ts",
     "db:reset-staff-2fa": "tsx lib/db/reset-staff-2fa.ts",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx --env-file-if-exists=.env.local lib/db/seed.ts",
-    "db:reset": "tsx --env-file-if-exists=.env.local lib/db/seed.ts --reset",
+    "db:seed": "tsx --require ./scripts/preload-server-only.cjs --env-file-if-exists=.env.local lib/db/seed.ts",
+    "db:reset": "tsx --require ./scripts/preload-server-only.cjs --env-file-if-exists=.env.local lib/db/seed.ts --reset",
+    "db:staging-refresh": "tsx --require ./scripts/preload-server-only.cjs lib/db/staging-refresh.ts",
     "ai:eval": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/ai-eval.ts",
     "i18n:translate": "tsx --env-file-if-exists=.env.local scripts/i18n-translate.ts",
     "seo:check": "tsx scripts/seo-check.ts"
