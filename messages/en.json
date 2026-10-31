@@ -398,7 +398,7 @@
     "aboutProject": "About this project",
     "ownerClient": {
       "title": "This is {client}'s page as visitors see it",
-      "body": "Only you see this box. To add work under {client}, tap Add work: upload the pictures (or paste a video link), write what you did, and publish. It appears here and on your page.",
+      "body": "Only you see this box. To add work under {client}, tap Add work for this client: upload the pictures (or paste a video link), write what you did, and publish. It appears here and on your page.",
       "listTitle": "Your clients as visitors see them",
       "listBody": "Only you see this box. Each card opens the client's page with the work you did for them. To show work under a client, tap Add work on its card.",
       "addWork": "Add work for this client",
