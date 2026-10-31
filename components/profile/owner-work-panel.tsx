@@ -59,3 +59,18 @@ export async function OwnerClientPanel({ client }: { client?: { id: string; name
     </section>
   );
 }
+
+/** The owner on their own Reviews or About tab: where that content comes from, one tap to it. Only they see it. */
+export async function OwnerTabHint({ tab }: { tab: "reviews" | "about" }) {
+  const t = await getTranslations(`Profile.ownerTab.${tab}`);
+  return (
+    <section className="mx-4 my-4 rounded-xl border border-brand-line bg-brand-soft/40 p-4 text-sm" data-testid={`owner-${tab}-hint`}>
+      <p className="font-semibold">{t("title")}</p>
+      <p className="mt-1 text-muted-foreground">{t("body")}</p>
+      <Link href={tab === "reviews" ? "/studio/reviews" : "/studio/profile"} className="mt-3 inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-brand px-4 text-sm font-medium text-white hover:bg-brand-deep">
+        <Pencil className="size-4" aria-hidden />
+        {t("action")}
+      </Link>
+    </section>
+  );
+}

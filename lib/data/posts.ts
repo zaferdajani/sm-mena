@@ -267,9 +267,10 @@ function agencyView(a: Agency): PostView["agency"] {
     contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
-    isVerified: a.isVerified,
+    // A demo agency is never shown as verified, and its contact numbers are never offered: they could reach a stranger.
+    isVerified: a.isVerified && !a.isDemo,
     isDemo: a.isDemo,
-    whatsapp: a.whatsapp,
+    whatsapp: a.isDemo ? null : a.whatsapp,
   };
 }
 

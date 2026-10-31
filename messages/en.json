@@ -391,7 +391,8 @@
       "manage": "Show them from the Studio",
       "add": "Add a project",
       "edit": "Edit or delete projects",
-      "studio": "Open Studio"
+      "studio": "Open Studio",
+      "editPage": "Edit my page"
     },
     "servicePending": "Awaiting approval",
     "servicePendingHint": "Added by the agency. Sawwiq's team is reviewing it before it joins the list of services.",
@@ -405,6 +406,20 @@
       "editClient": "Edit client and project note",
       "addClient": "Add a client",
       "editWork": "Edit or delete work"
+    },
+    "demoContact": "This is a demo agency: it takes no work, so its phone and WhatsApp are hidden.",
+    "demoContactLink": "See real agencies",
+    "ownerTab": {
+      "reviews": {
+        "title": "Your reviews come from your clients",
+        "body": "Only you see this box. Send a client your review link from the Studio; their review appears here after they submit it.",
+        "action": "Ask a client for a review"
+      },
+      "about": {
+        "title": "This tab shows what you fill in on your page",
+        "body": "Only you see this box. Anything marked “Not set” is empty in your page editor: add your introduction, team, founding year and languages there.",
+        "action": "Complete my page"
+      }
     }
   },
   "Explore": {

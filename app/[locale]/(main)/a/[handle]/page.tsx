@@ -6,7 +6,7 @@ import { currentCountry } from "@/lib/country-choice";
 import { ClientShowcaseList } from "@/components/profile/client-showcase";
 import { accountTiles, clientShowcase, listClients } from "@/lib/data/portfolio-clients";
 import { AccountTiles } from "@/components/profile/account-tiles";
-import { OwnerClientPanel, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
+import { OwnerClientPanel, OwnerTabHint, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -145,9 +145,11 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ]}
       />}
       <ProfileHeader registrationMode={isRegistrationPhase()}
-        agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingServices, ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
+        // A demo agency shows no phone, WhatsApp or email (they could reach a stranger) and no verified badge.
+        agency={{ ...agency, ...(agency.isDemo ? { whatsapp: null, phone: null, email: null, isVerified: false } : {}), avatarUrl: mediaUrl(agency.avatarKey), pendingServices, ratingAverage: rating.average, memberNo: isRegistrationPhase() ? null : agency.foundingSeat, founding: isFoundingMember(agency), pioneerNumber: agency.postCount > 0 ? agency.pioneerNumber : null }}
         following={following}
         followersHref={isOwner ? "/studio/followers" : undefined}
+        ownerView={isOwner}
         servesNote={note}
         inquirySlot={(await canUse("messaging")) ? <InquiryDialog agencyId={agency.id} agencyName={agency.name} services={agency.services} /> : null}
       />
@@ -179,6 +181,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ))}
       {tab === "clients" && isOwner && <OwnerClientPanel />}
       {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} agencyName={agency.name} ownerView={isOwner} />}
+      {(tab === "reviews" || tab === "about") && isOwner && <OwnerTabHint tab={tab} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />

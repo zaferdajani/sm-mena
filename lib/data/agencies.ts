@@ -142,7 +142,8 @@ export function toSummary(a: Agency): AgencySummary {
     contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
-    isVerified: a.isVerified,
+    // A demo agency is never shown as verified, and its contact numbers are never offered: they could reach a stranger.
+    isVerified: a.isVerified && !a.isDemo,
     pioneerNumber: a.pioneerNumber ?? null,
     isDemo: a.isDemo,
     country: a.country,
@@ -153,7 +154,7 @@ export function toSummary(a: Agency): AgencySummary {
     followerCount: a.followerCount,
     services: a.services,
     startingPriceJod: a.startingPriceJod,
-    whatsapp: a.whatsapp,
+    whatsapp: a.isDemo ? null : a.whatsapp,
     ratingAverage: a.ratingCount ? Math.round((a.ratingSum / a.ratingCount) * 10) / 10 : null,
     ratingCount: a.ratingCount,
     googleRating: a.googleRating,
