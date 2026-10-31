@@ -1,6 +1,7 @@
 import { isRegistrationPhase, PUBLICATION_CONSENT_VERSION } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, arrayOverlaps, desc, eq, or, sql } from "drizzle-orm";
+import { searchIntent } from "@/lib/search-intent";
 import { countryOfCity } from "@/lib/countries";
 import { agencyConditions, inCountry, realUnless } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
@@ -199,7 +200,15 @@ export async function listAgencies(filters: {
   if (filters.verified) conditions.push(eq(agencies.isVerified, true));
   conditions.push(...agencyConditions(filters));
   if (filters.q) {
-    conditions.push(sql`${agencies.searchText} like ${`%${normalizeForSearch(filters.q)}%`}`);
+    // The words themselves, or a service or business type the words name ("سوشال", "مخبز", "bakery").
+    const intent = searchIntent(filters.q);
+    conditions.push(
+      or(
+        sql`${agencies.searchText} like ${`%${normalizeForSearch(filters.q)}%`}`,
+        ...(intent.services.length ? [arrayOverlaps(agencies.services, intent.services)] : []),
+        ...(intent.industries.length ? [arrayOverlaps(agencies.industries, intent.industries)] : []),
+      )!,
+    );
   }
   const rows = await db
     .select()

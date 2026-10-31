@@ -1,5 +1,6 @@
 import { mayReadAgency, mayReadAgencyId, discoverableProfiles, type Viewer } from "@/lib/data/publication";
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
+import { searchIntent } from "@/lib/search-intent";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency, type PostEmbed } from "@/lib/db/schema";
@@ -253,7 +254,16 @@ function filterConditions(filters: FeedFilters): SQL[] {
   c.push(...agencyConditions(filters, { platformsOnAgency: false }));
   if (filters.q) {
     const like = `%${normalizeForSearch(filters.q)}%`;
-    c.push(or(sql`${posts.searchText} like ${like}`, sql`${agencies.searchText} like ${like}`)!);
+    // The words, or a service or business type they name (lib/search-intent.ts).
+    const intent = searchIntent(filters.q);
+    c.push(
+      or(
+        sql`${posts.searchText} like ${like}`,
+        sql`${agencies.searchText} like ${like}`,
+        ...(intent.services.length ? [arrayOverlaps(posts.services, intent.services)] : []),
+        ...(intent.industries.length ? [inArray(posts.industry, intent.industries)] : []),
+      )!,
+    );
   }
   return c;
 }

@@ -10,6 +10,8 @@ import { EmbedPlayer } from "@/components/post/embed-player";
 import { PostCard } from "@/components/post/post-card";
 import { PostGrid } from "@/components/post/post-grid";
 import { ReportDialog } from "@/components/post/report-dialog";
+import { InquiryDialog } from "@/components/profile/inquiry-dialog";
+import { canUse } from "@/lib/feature-gate";
 import { DeletePostButton } from "@/components/studio/delete-post-button";
 import { Link } from "@/i18n/navigation";
 import { getCurrentAgency } from "@/lib/auth/session";
@@ -116,6 +118,23 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
           <ReportDialog postId={post.id} />
         )}
       </div>
+      {/* Liked the work: ask for the same, here, not only on WhatsApp (the message keeps this post attached). */}
+      {!isOwner && !post.agency.isDemo && (await canUse("messaging")) && (
+        <div className="px-3 pb-2">
+          <InquiryDialog
+            agencyId={post.agency.id}
+            agencyName={post.agency.name}
+            services={post.services}
+            postId={post.id}
+            defaultService={post.services[0]}
+            defaultMessage={tp("askLikePost")}
+            label={tp("askLikePostButton")}
+            testId="post-ask"
+            variant="outline"
+            className="h-11 w-full gap-1.5"
+          />
+        </div>
+      )}
       {others.length > 0 && (
         <section className="mt-4 border-t pt-4">
           <h2 className="mb-3 px-3 text-sm font-semibold text-muted-foreground">

@@ -6,6 +6,13 @@ import { cn } from "cn"
 
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
+
+/** The close button's name for screen readers, in the page's language. */
+function CloseLabel() {
+  const t = useTranslations("Common")
+  return <span className="sr-only">{t("close")}</span>
+}
 
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -72,7 +79,7 @@ function DialogContent({
           >
             <XIcon
             />
-            <span className="sr-only">Close</span>
+            <CloseLabel />
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>

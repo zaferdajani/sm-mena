@@ -31,11 +31,15 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const [country, chosen, matchOpen] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker")]);
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
+  // Inside the app the logo and the "Home" tab lead to the same place (the landing page stays the front page at /).
+  const homeHref = reg ? "/" : "/feed";
+  const countryOptions = COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }));
   const picker = (
-    <CountryPicker current={country} chosen={chosen !== null}
-      options={COUNTRIES.map((c) => ({ code: c.code, name: locale === "ar" ? c.ar : c.en, flag: c.flag }))}
-      label={th("country")} locateLabel={th("useLocation")} />
+    <CountryPicker current={country} chosen={chosen !== null} options={countryOptions}
+      label={th("country")} locateLabel={th("useLocation")} locateFailedLabel={th("locationFailed")} />
   );
+  // The phone header is crowded: the flag alone, the full name on the list itself.
+  const phonePicker = <CountryPicker current={country} chosen={chosen !== null} options={countryOptions} label={th("country")} locateLabel={th("useLocation")} variant="compact" />;
   const items: NavItem[] = reg ? [
     { href: "/", label: rt("navHome"), icon: "home" },
     { href: "/examples", label: rt("navExamples"), icon: "explore" },
@@ -57,7 +61,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
     <AppFrame>
       <InterfaceBackground />
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
-        <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
+        <Link href={homeHref} className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} />
         </Link>
         <nav aria-label={t("menu")}>
@@ -77,17 +81,17 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
       <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
-        <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
+        <Link href={homeHref} className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} compact />
         </Link>
         <div className="sw-app-tools flex min-w-0 items-center gap-1">
-          {picker}<HeaderBell />
+          {phonePicker}<HeaderBell />
           {user ? (
             <Link href="/support" aria-label={tf("report")} className="rounded-md p-2 text-muted-foreground hover:bg-muted"><LifeBuoy className="size-5" /></Link>
           ) : (
             <>
               <Link href="/start" className="shrink-0 rounded-full border-2 border-brand px-3 py-1 text-sm font-semibold text-brand hover:bg-brand-soft" data-testid="header-join">{t("joinShort")}</Link>
-              <Link href="/login" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
+              <Link href="/signin" aria-label={t("login")} className="rounded-md p-2 text-muted-foreground hover:bg-muted" data-testid="header-login"><LogIn className="size-5" /></Link>
             </>
           )}
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />

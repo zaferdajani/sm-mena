@@ -1,5 +1,5 @@
 import { requireDirectory } from "@/lib/launch-access";
-import { EmptySupply } from "@/components/demo/empty-supply";
+import { DemoOffer, EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
 import { demoMode } from "@/lib/demo-mode";
 import { pageMeta } from "@/lib/seo";
@@ -64,9 +64,17 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
     <>
       <ClosestMatches matches={closest} currency={currency} viewCountry={country}
         sendHref={(await canUse("quote_requests")) ? { pathname: "/request/new", query: { ...(filters.service ? { service: filters.service } : {}), ...(filters.city ? { city: filters.city } : {}) } } : null} />
+      <DemoOffer />
       <Empty text="" clear={tc("clearFilters")} />
     </>
-  ) : <Empty text={tc("noResults")} clear={tc("clearFilters")} />;
+  ) : (
+    <>
+      <Empty text={tc("noResults")} clear={tc("clearFilters")} />
+      <DemoOffer />
+    </>
+  );
+  // A handful of real results: say the sample agencies exist too (FEW = fewer than a screenful).
+  const fewResults = count > 0 && count < FEW;
   const resultLabel = t("results", { count }) + (posts?.nextCursor ? "+" : "");
   const query = Object.fromEntries(Object.entries(sp).filter(([k, v]) => k !== "tab" && typeof v === "string")) as Record<string, string>;
   return (
@@ -94,7 +102,10 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
       </header>
       <div data-testid="explore-results">
         {posts && (posts.items.length ? (
-          <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
+          <>
+            <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
+            {fewResults && !posts.nextCursor && <DemoOffer />}
+          </>
         ) : hasActiveFilters(p) ? closestBlock : <EmptySupply text={td("emptyWork")} />)}
         {agencies && (agencies.length ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="explore-agency-grid">
@@ -103,12 +114,15 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
                 <AgencyRow agency={a} viewCountry={country} />
               </div>
             ))}
+            {fewResults && <div className="lg:col-span-2"><DemoOffer /></div>}
           </div>
         ) : hasActiveFilters(p) ? closestBlock : <EmptySupply />)}
       </div>
     </div>
   );
 }
+
+const FEW = 6;
 
 function Empty({ text, clear }: { text: string; clear: string | null }) {
   return (

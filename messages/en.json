@@ -405,7 +405,11 @@
       "editClient": "Edit client and project note",
       "addClient": "Add a client",
       "editWork": "Edit or delete work"
-    }
+    },
+    "contactAgency": "Message {agency}",
+    "askLikeClient": "Hello, I saw your work for {client} on Sawwiq and would like something similar for my business.",
+    "askLikePostButton": "Ask for work like this",
+    "askLikePost": "Hello, I saw this work on Sawwiq and would like something similar for my business."
   },
   "Explore": {
     "title": "Explore",
@@ -457,7 +461,8 @@
     "country": "Country",
     "useLocation": "Use my location",
     "themeDark": "Dark mode",
-    "themeLight": "Light mode"
+    "themeLight": "Light mode",
+    "locationFailed": "Couldn't read your location. Pick your country from the list."
   },
   "Inquiry": {
     "open": "Message",
@@ -1025,7 +1030,9 @@
     "unpin": "Unpin",
     "pinned": "Pinned",
     "pinLimit": "You can pin up to 3 posts.",
-    "deliveryIn": "Delivered within {days, plural, one {# day} other {# days}}"
+    "deliveryIn": "Delivered within {days, plural, one {# day} other {# days}}",
+    "ask": "Ask about this package",
+    "askMessage": "Hello, I'm interested in your package “{title}”. Is it available for my business?"
   },
   "Match": {
     "title": "AI agency matchmaker",
@@ -2605,7 +2612,9 @@
       "account_verified": "Your page is verified: it now shows the verified badge.",
       "service_approved": "“{service}” was approved and is now a Sawwiq service.",
       "service_rejected": "“{service}” wasn't added to Sawwiq's services. You can pick a close service from the list."
-    }
+    },
+    "startRequest": "Request a project",
+    "signIn": "Sign in"
   },
   "PortfolioClients": {
     "title": "Accounts and clients",
@@ -2875,7 +2884,8 @@
     },
     "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
     "off": "The demo is switched off right now.",
-    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies."
+    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies.",
+    "fewHint": "Only a few real pages match so far. You can also look around with the clearly labelled sample agencies."
   },
   "PartnerContracts": {
     "request": "Ask this partner for a contract",
@@ -3384,7 +3394,9 @@
       "closedAccount": "This account was closed. To reopen it, contact support.",
       "adult": "Sawwiq accounts are for people aged 18 or older."
     },
-    "adult": "I am 18 or older (or the legal age where I live, if higher)."
+    "adult": "I am 18 or older (or the legal age where I live, if higher).",
+    "back": "Back",
+    "why": "Sign in to keep what you like, save and follow, on any device."
   },
   "Founding": {
     "memberTitle": "Sawwiq early member · {year}",

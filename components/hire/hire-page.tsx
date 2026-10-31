@@ -144,7 +144,7 @@ export async function HirePage({ locale, service, city, country: countryParam }:
         {cards.length ? (
           <ul className="grid gap-4 sm:grid-cols-2" data-testid="hire-cards">
             {cards.map((a) => (
-              <li key={a.id} className="flex flex-col rounded-xl border p-4">
+              <li key={a.id} className="flex min-w-0 flex-col rounded-xl border p-4">
                 <div className="flex items-start gap-3">
                   <AgencyAvatar name={agencyName(a, locale)} src={a.avatarUrl} size={52} />
                   <div className="min-w-0 flex-1">

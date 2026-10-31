@@ -104,6 +104,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const rating = ratingSummary(agency);
   const avatarUrl = mediaUrl(agency.avatarKey);
   const primary = agency.services[0];
+  const packageContact = !isOwner && !agency.isDemo && (await canUse("messaging")) ? { agencyId: agency.id, agencyName: agency.name, services: agency.services } : null;
   // Services the agency added itself, waiting for an admin (docs/30): shown as theirs, never in search or links.
   const pendingServices = (await pendingTexts(agency.pendingServices)).map((p) => p.text).filter(Boolean);
 
@@ -192,7 +193,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
           {pkgs && pkgs.length > 0 && (
             <section>
               <h2 className="mb-3 font-semibold">{tSeo("packagesTitle", { name: agency.name })}</h2>
-              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} lang={agency.contentLang} />
+              <PackageList packages={pkgs.slice(0, 3)} currency={currencyOf(agency.country)} lang={agency.contentLang} contact={packageContact} />
               {pkgs.length > 3 && (
                 <Link href={{ pathname: `/a/${agency.handle}`, query: { tab: "about" } }} className="mt-2 inline-block text-sm font-medium text-brand">
                   {tSeo("allPackages", { count: pkgs.length })}
@@ -213,7 +214,7 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
       ) : null}
       {tab === "about" && pkgs && pkgs.length > 0 && (
         <div className="px-4 pt-4">
-          <PackageList packages={pkgs} currency={currencyOf(agency.country)} lang={agency.contentLang} />
+          <PackageList packages={pkgs} currency={currencyOf(agency.country)} lang={agency.contentLang} contact={packageContact} />
         </div>
       )}
       {tab === "about" && (
