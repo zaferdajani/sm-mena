@@ -6,7 +6,7 @@ import { currentCountry } from "@/lib/country-choice";
 import { ClientShowcaseList } from "@/components/profile/client-showcase";
 import { accountTiles, clientShowcase, listClients } from "@/lib/data/portfolio-clients";
 import { AccountTiles } from "@/components/profile/account-tiles";
-import { OwnerWorkPanel } from "@/components/profile/owner-work-panel";
+import { OwnerClientPanel, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -177,7 +177,8 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
         ) : (
           <p className="px-4 py-16 text-center text-muted-foreground">{t("noPosts")}</p>
         ))}
-      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} agencyName={agency.name} />}
+      {tab === "clients" && isOwner && <OwnerClientPanel />}
+      {tab === "clients" && <ClientShowcaseList clients={clients as Awaited<ReturnType<typeof clientShowcase>>} lang={agency.contentLang} handle={agency.handle} agencyName={agency.name} ownerView={isOwner} />}
       {tab === "reviews" && reviewRows && sub && (
         <div className="space-y-4 px-4 py-4">
           <ReviewSummary average={rating.average} count={rating.count} sub={sub} />

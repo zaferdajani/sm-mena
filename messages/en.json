@@ -395,7 +395,17 @@
     },
     "servicePending": "Awaiting approval",
     "servicePendingHint": "Added by the agency. Sawwiq's team is reviewing it before it joins the list of services.",
-    "aboutProject": "About this project"
+    "aboutProject": "About this project",
+    "ownerClient": {
+      "title": "This is {client}'s page as visitors see it",
+      "body": "Only you see this box. To add work under {client}, tap Add work: upload the pictures (or paste a video link), write what you did, and publish. It appears here and on your page.",
+      "listTitle": "Your clients as visitors see them",
+      "listBody": "Only you see this box. Each card opens the client's page with the work you did for them. To show work under a client, tap Add work on its card.",
+      "addWork": "Add work for this client",
+      "editClient": "Edit client and project note",
+      "addClient": "Add a client",
+      "editWork": "Edit or delete work"
+    }
   },
   "Explore": {
     "title": "Explore",
@@ -2631,7 +2641,8 @@
     "copied": "Copied",
     "whatsapp": "Send on WhatsApp",
     "whatsappText": "Hi! We listed {account} as an account we handle on Sawwiq. Could you confirm it with one tap? {url}",
-    "reset": "Withdraw confirmation"
+    "reset": "Withdraw confirmation",
+    "addWork": "Add work"
   },
   "MatchWizard": {
     "placeholder": "Or type it: e.g. Instagram and TikTok for a restaurant in {city}, {budget} a month",
