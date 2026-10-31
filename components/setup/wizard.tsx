@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { reportClientError } from "@/components/error-reporter";
 import { ItemBrowser, ResourceChooser, type ConnectionLite, type ProviderState, type ResourceLite } from "@/components/social/connect";
 import { RealExamples } from "@/components/setup/real-examples";
+import { AvailabilityToggle } from "@/components/studio/availability-toggle";
+import { ReviewInvite } from "@/components/studio/review-invite";
 import { Link, useRouter } from "@/i18n/navigation";
 import {
   finishSetupAction,
@@ -59,6 +61,10 @@ export function SetupWizard(props: {
   visibility: ProfileVisibility;
   /** The public link, for the success screen. */
   siteUrl: string;
+  /** "Open to new projects" as saved on the page. */
+  acceptingProjects: boolean;
+  /** Review invitations are a launch-phase feature; the success screen offers them only when they work. */
+  reviewsOn: boolean;
 }) {
   const t = useTranslations("Setup");
   const router = useRouter();
@@ -96,7 +102,7 @@ export function SetupWizard(props: {
 
   if (view.status === "finished") {
     return (
-      <Live view={view} agency={props.agency} visibility={visibility} siteUrl={props.siteUrl} pending={pending} error={error}
+      <Live view={view} agency={props.agency} visibility={visibility} siteUrl={props.siteUrl} pending={pending} error={error} acceptingProjects={props.acceptingProjects} reviewsOn={props.reviewsOn}
         onAnother={() => run(() => startAnotherAction())}
         onVisibility={(v, ack) => run(() => setVisibilityAction(v, ack))} />
     );
@@ -539,7 +545,7 @@ function ImportLinks({ view, run, pending, onPictures, room }: { view: SetupView
 }
 
 /** The success screen: the link, WhatsApp, and (for a private page) the publish choice right here. */
-function Live({ view, agency, visibility, siteUrl, pending, error, onAnother, onVisibility }: { view: SetupView; agency: Agency; visibility: ProfileVisibility; siteUrl: string; pending: boolean; error: string | null; onAnother: () => void; onVisibility: (v: ProfileVisibility, ack: boolean) => void }) {
+function Live({ view, agency, visibility, siteUrl, pending, error, acceptingProjects, reviewsOn, onAnother, onVisibility }: { view: SetupView; agency: Agency; visibility: ProfileVisibility; siteUrl: string; pending: boolean; error: string | null; acceptingProjects: boolean; reviewsOn: boolean; onAnother: () => void; onVisibility: (v: ProfileVisibility, ack: boolean) => void }) {
   const t = useTranslations("Setup");
   const tp = useTranslations("Registration.publication");
   const title = useRef<HTMLHeadingElement>(null);
@@ -586,6 +592,10 @@ function Live({ view, agency, visibility, siteUrl, pending, error, onAnother, on
           <button type="button" className={primary} disabled={pending || !acknowledge || chosen === visibility} onClick={() => onVisibility(chosen, acknowledge)} data-testid="setup-publish-now">{t("publishBox.publish")}</button>
         </div>
       )}
+      {/* Open to new projects: on by default, one tap to pause; off keeps the page listed but out of recommendations. */}
+      <AvailabilityToggle initial={acceptingProjects} />
+      {/* A past client's review is the strongest proof a new page can carry; the link is private and used once. */}
+      {reviewsOn && open && <div data-testid="setup-review-invite"><ReviewInvite agencyName={agency.name} /></div>}
       <div className="flex flex-wrap gap-2">
         <Link href={`/a/${agency.handle}`} className={secondary} data-testid="setup-view-portfolio">{t("live.view")}</Link>
         {view.postId && <Link href={`/p/${view.postId}`} className={secondary}>{t("finished.viewProject")}</Link>}

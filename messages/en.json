@@ -5719,7 +5719,20 @@
       "logo": "Add your logo or photo",
       "platforms": "Choose the platforms you work on",
       "price": "Add a package or a starting price",
-      "moreWork": "Add two more projects"
+      "moreWork": "Add two more projects",
+      "available": "Switch \"open to new projects\" back on"
     }
+  },
+  "Availability": {
+    "label": "Open to new projects",
+    "on": "Yes",
+    "off": "Paused",
+    "hint": "When paused, your page stays visible but is not suggested to business owners. Switch it back on any time.",
+    "error": "That didn't save. Try again.",
+    "badgeOn": "Open to new projects",
+    "badgeOff": "Not taking new projects right now",
+    "stale": "Still open to new projects? It has been a while since you confirmed.",
+    "confirm": "Yes, still open",
+    "closeNow": "Pause for now"
   }
 }

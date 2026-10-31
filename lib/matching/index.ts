@@ -1,5 +1,6 @@
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
+import { openToProjects } from "@/lib/data/availability";
 import "server-only";
 import { countryOfCity } from "@/lib/countries";
 import { scopedCountry, scopedIncludeDemo } from "./scope";
@@ -38,7 +39,7 @@ export async function findMatches(need: Need, limit = 8): Promise<Match[]> {
   const candidates = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), discoverableProfiles(), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, realUnless(scopedIncludeDemo())));
+    .where(and(eq(agencies.status, "active"), discoverableProfiles(), openToProjects(), services ? arrayOverlaps(agencies.services, services) : undefined, country ? inCountry(country) : undefined, realUnless(scopedIncludeDemo())));
   if (!candidates.length) return [];
   const ids = candidates.map((c) => c.id);
 

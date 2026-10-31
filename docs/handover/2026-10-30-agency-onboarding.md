@@ -24,7 +24,7 @@ Rules:
 ## Next (in order; each one ships on its own)
 
 1. **Owner answers still open** (see docs/65 "Questions for the owner"): one combined rights-and-audience box (needs legal), founder benefits tied to a published page, done-with-you setup for the founding 100, reminders by email only or WhatsApp too. Do not build any of these before the owner answers.
-2. **Live screen additions (council-competitors.md):** an availability toggle "متاح لمشاريع جديدة" (default on; a new `agencies.available_until` or boolean, fed to `pageStrength` as freshness) and "ask a past client for a review" (a WhatsApp template with the existing signed review-invite link from `components/studio/review-invite.tsx`).
+2. ~~Live screen additions~~ **Done 31 Oct:** "Open to new projects" switch (`agencies.accepting_projects`, migration 0042, `lib/data/availability.ts`, `components/studio/availability-toggle.tsx`), the badge on the public page, the 60-day "still open?" nudge, and the review request on the live screen.
 3. **"Make it stronger" first step = one service card**: service, price from (JOD), delivery days, optional revisions; then team size band and minimum project; each with the reason "clients filter by this". Reuse `/studio/packages`.
 4. **Setup reminders (opt-in):** an unticked box at sign-up, at most 3 emails over 7 days, stopping when the page is match-ready; through the existing half-hourly Site check. No reminder without the box. Never log the address.
 5. **Funnel events without personal data:** `join_view`, `account_created`, `first_photo_uploaded`, `page_published`, `link_shared`, `wa_click`; activation = published and match-ready within 24 h, and first WhatsApp click or quote within 7 days.

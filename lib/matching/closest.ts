@@ -1,4 +1,5 @@
 import { discoverableProfiles } from "@/lib/data/publication";
+import { openToProjects } from "@/lib/data/availability";
 import "server-only";
 import { and, arrayOverlaps, desc, eq, inArray, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
@@ -35,7 +36,7 @@ export async function closestAgencies(req: Requirements, { includeDemo = false, 
   const rows = await db
     .select()
     .from(agencies)
-    .where(and(eq(agencies.status, "active"), discoverableProfiles(), realUnless(includeDemo), services ? or(inCountry(req.country), arrayOverlaps(agencies.services, services)) : inCountry(req.country)))
+    .where(and(eq(agencies.status, "active"), discoverableProfiles(), openToProjects(), realUnless(includeDemo), services ? or(inCountry(req.country), arrayOverlaps(agencies.services, services)) : inCountry(req.country)))
     .orderBy(desc(agencies.isVerified), desc(agencies.postCount))
     .limit(400);
   if (!rows.length) return [];

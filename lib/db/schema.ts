@@ -337,6 +337,10 @@ export const agencies = pgTable(
     teamSize: text("team_size"),
     isVerified: boolean("is_verified").notNull().default(false),
     isDemo: boolean("is_demo").notNull().default(false),
+    // "Open to new projects" (docs/65): off keeps the page listed but out of recommendations; the
+    // timestamp is when the owner last set or confirmed it, so a stale answer can be asked again.
+    acceptingProjects: boolean("accepting_projects").notNull().default(true),
+    acceptingUpdatedAt: timestamp("accepting_updated_at", { withTimezone: true }),
     // The marketing agent who brought this provider (docs/42), and why an admin voided it, if they did.
     referredByAgentId: uuid("referred_by_agent_id"),
     referralVoidReason: text("referral_void_reason"),

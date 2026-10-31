@@ -54,6 +54,8 @@
   font-weight: 500;
   background: var(--background);
 }
+.openBadge { color: var(--brand-deep, var(--brand)); border-color: var(--brand-line); background: var(--brand-soft); }
+.closedBadge { color: var(--muted-foreground); }
 .founderBadge {
   background: color-mix(in srgb, var(--gold) 12%, var(--card));
   border-color: color-mix(in srgb, var(--gold) 40%, var(--border));

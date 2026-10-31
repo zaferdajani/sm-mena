@@ -7,6 +7,7 @@ import { SERVICE_GROUPS } from "@/lib/core/catalog/services/catalog";
 import { matchOwner, OWNER_MATCH_LIMIT, type OwnerMatch, type ProviderFacts } from "@/lib/core/rules/matching/owners";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
+import { openToProjects } from "@/lib/data/availability";
 import { sendPlainEmail } from "@/lib/notify";
 
 // Owner ↔ provider matching (docs/59). Three steps, each its own call so staff can preview before anything
@@ -21,7 +22,7 @@ async function providerFacts(country: string): Promise<ProviderFacts[]> {
   const rows = await db
     .select({ id: agencies.id, country: agencies.country, city: agencies.city, servesCountries: agencies.servesCountries, services: agencies.services, industries: agencies.industries, isDemo: agencies.isDemo, status: agencies.status, postCount: agencies.postCount, bio: agencies.bio })
     .from(agencies)
-    .where(and(eq(agencies.isDemo, false), eq(agencies.status, "active"), discoverableProfiles(), sql`(${agencies.country} = ${country} or ${country} = any(${agencies.servesCountries}))`));
+    .where(and(eq(agencies.isDemo, false), eq(agencies.status, "active"), discoverableProfiles(), openToProjects(), sql`(${agencies.country} = ${country} or ${country} = any(${agencies.servesCountries}))`));
   return rows.map((r) => ({ id: r.id, country: r.country, city: r.city, servesCountries: r.servesCountries, services: r.services, industries: r.industries, isDemo: r.isDemo, active: r.status === "active", postCount: r.postCount, hasBio: r.bio.trim().length > 0 }));
 }
 

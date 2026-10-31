@@ -1,7 +1,9 @@
 import { CheckCircle2, Circle, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { pageStrength, type PageStep } from "@/lib/core/rules/page-strength";
+import { availabilityStale, pageStrength, type PageStep } from "@/lib/core/rules/page-strength";
+import { AvailabilityToggle } from "@/components/studio/availability-toggle";
+import { availabilityFormAction } from "@/app/[locale]/(main)/studio/availability-actions";
 import type { ProfileVisibility } from "@/lib/launch-phase";
 import type { Agency } from "@/lib/db/schema";
 
@@ -14,6 +16,7 @@ const HREF: Record<PageStep, string> = {
   whatsapp: "/studio/profile",
   city: "/studio/profile",
   publish: "/studio/publication",
+  available: "/studio",
   intro: "/studio/profile",
   logo: "/studio/profile",
   platforms: "/studio/profile",
@@ -22,8 +25,8 @@ const HREF: Record<PageStep, string> = {
 };
 
 export async function PageStrengthCard({ agency, visibility, packageCount }: { agency: Agency; visibility: ProfileVisibility; packageCount: number }) {
-  const t = await getTranslations("PageStrength");
-  const s = pageStrength({
+  const [t, ta] = await Promise.all([getTranslations("PageStrength"), getTranslations("Availability")]);
+  const facts = {
     visibility,
     services: agency.services,
     city: agency.city,
@@ -34,7 +37,12 @@ export async function PageStrengthCard({ agency, visibility, packageCount }: { a
     platforms: agency.platforms,
     startingPriceJod: agency.startingPriceJod,
     packageCount,
-  });
+    acceptingProjects: agency.acceptingProjects,
+    acceptingUpdatedAt: agency.acceptingUpdatedAt,
+    createdAt: agency.createdAt,
+  };
+  const s = pageStrength(facts);
+  const stale = availabilityStale(facts);
   const steps = (Object.keys(HREF) as PageStep[]).map((key) => ({ key, done: !s.missing.includes(key) }));
   return (
     <section className="registration-card space-y-4" data-testid="page-strength" data-next={s.next ?? ""} data-match-ready={s.matchReady}>
@@ -52,6 +60,16 @@ export async function PageStrengthCard({ agency, visibility, packageCount }: { a
         <Link href={HREF[s.next]} className="sw-invitation-cta inline-flex items-center gap-2" data-testid="page-next-step">
           <Plus className="size-4" aria-hidden /> {t(`steps.${s.next}`)}
         </Link>
+      )}
+      <AvailabilityToggle initial={agency.acceptingProjects} />
+      {stale && (
+        <form action={availabilityFormAction} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-brand-line bg-brand-soft p-3 text-sm" data-testid="availability-stale">
+          <span>{ta("stale")}</span>
+          <span className="flex gap-2">
+            <button type="submit" name="intent" value="confirm" className="min-h-11 rounded-lg bg-primary px-3 font-semibold text-primary-foreground">{ta("confirm")}</button>
+            <button type="submit" name="intent" value="close" className="min-h-11 rounded-lg border px-3 font-semibold">{ta("closeNow")}</button>
+          </span>
+        </form>
       )}
       <details className="text-sm">
         <summary className="min-h-11 cursor-pointer py-2 font-semibold">{t("all", { done: steps.filter((x) => x.done).length, total: steps.length })}</summary>
