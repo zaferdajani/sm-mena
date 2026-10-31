@@ -52,6 +52,7 @@ export async function login(_: FormState, formData: FormData): Promise<FormState
 async function homeFor(userId: string, role: string) {
   if (isStaffRole(role)) return "/admin";
   if (role === "agent") return "/agent";
+  if (role === "client") return "/owner/needs";
   return (await getAgencyByOwner(userId)) ? "/studio" : "/";
 }
 

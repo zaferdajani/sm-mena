@@ -58,6 +58,33 @@ The key that protects authenticator codes was generated anew on Vercel. Sign in 
 - **Rate limits.** Limits kept in memory apply per function instance. That's fine at this size; a shared store (e.g. Upstash) is the upgrade path.
 - **Deploys.** Every push to `main` deploys automatically, and every other branch gets a preview link.
 
+## Staging subdomain
+
+QA uses `https://staging.sawwiq.org`, mapped to git branch `cursor/staging-qa-fafd` in the existing Vercel project `sm-mena`. It is a branch domain with its own env, database and storage. It is not a path on sawwiq.org: `sawwiq.org/staging` would run the production deployment and see live data, so that fallback is not used.
+
+The app serves that hostname only when `STAGING_MODE=true`, `VERCEL_ENV` is not `production`, and `DATABASE_URL` does not contain the live project `dzedhnmxywtteeduwpby`. Otherwise the hostname returns 503, including `/api` and `/media`. The server also refuses to boot if staging mode is aimed at the live database.
+
+Do not change the `@` or `www` records. In Namecheap → sawwiq.org → **Advanced DNS**, add:
+
+| Action | Type | Host | Value |
+|---|---|---|---|
+| Add | CNAME | `staging` | `cname.vercel-dns.com` |
+
+In Vercel → project `sm-mena` → **Settings → Domains**, add `staging.sawwiq.org` and connect it to Git branch `cursor/staging-qa-fafd`. Do not redirect it to `sawwiq.org`.
+
+Then add environment variables scoped to **Preview** and that Git branch only (not Production, and not every preview). Copy the shape of the production app config, not the live data:
+
+- Do **not** copy production `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, or `MFA_ENCRYPTION_KEY`.
+- `DATABASE_URL` is the session-pooler URL for Supabase project `sawwiq-staging` (ref `klbjfgeoztmvtiolvjbk`). Copy or reset the database password in the Supabase dashboard. The project is empty until `npm run db:migrate` and `npm run db:seed` run with that URL.
+- Generate new `MFA_ENCRYPTION_KEY`, `CRON_SECRET`, and `PAYMENTS_WEBHOOK_SECRET`.
+- `NEXT_PUBLIC_SITE_URL=https://staging.sawwiq.org`
+- The rest is in `.env.staging.example`: `STAGING_MODE=true`, `VIRTUAL_PAYMENTS=sandbox`, `LAUNCH_PHASE=full`, `PAYMENTS_PROVIDER=mock`, `PROTECTED_PAYMENTS_LIVE=false`, `SEO_INDEXABLE=false`, `ADMIN_REQUIRE_2FA=false`, `AUTH_SHOW_CODES=true`, `AI_PROVIDER=basic`, `MONETIZATION_ENABLED=true`, and `FEATURE_DEFAULTS` with `prelaunch_home=off`.
+- Storage uses the staging Supabase project (bucket `media`) or `STORAGE_PROVIDER=local`, which does not survive on Vercel.
+
+Leave `STAGING_MODE` unset until the branch `DATABASE_URL` override exists. Preview env currently inherits the production database URL. `node scripts/vercel-admin.mjs staging` prints this checklist. It does not copy production secrets. Without `VERCEL_TOKEN` it cannot attach the domain.
+
+**Reference accounts.** Every staging build runs `npm run db:staging-refresh` after the migrations (staging-only `vercel.json`). In staging mode only, and never against the live database, it creates any missing staging test account and fills `staging.agency.*` and `staging.free.*` once as complete reference profiles (`lib/db/staging-reference.ts`): introduction, strengths, packages, clients with logos, Instagram/TikTok links and an "About this project" note, posts with pictures and a sample video, reviews, and one service awaiting approval. It also redraws demo pictures whose files are missing from staging storage. It never prints the staging password and never fails the build. Production builds run without it.
+
 ## Database connections on Vercel
 
 Each Vercel function instance opens its own small connection pool. Supabase's session pooler (port 5432, the `DATABASE_URL` secret) only allows a handful of clients on the free plan, so the site runs out of connections under load. When `VERCEL` is set, `lib/db/index.ts` sends the site's queries to the transaction pooler instead: same host and credentials, port 6543, built for serverless. Migrations (`npm run db:migrate`, run in the Vercel build) and the Maintenance workflow keep using the session pooler URL as given. Nothing to change in the secrets.
