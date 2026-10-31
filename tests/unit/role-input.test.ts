@@ -11,7 +11,7 @@ describe("role vocabulary and duplicate prevention", () => {
     for (const role of catalog.roles) expect(role.name_ar).not.toMatch(/سيو/);
     for (const service of catalog.services.filter((s) => /(^|_)seo($|_)/.test(s.key))) {
       expect(service.name_ar).toContain("SEO");
-      expect(service.name_ar).not.toMatch(/السيو|تحسين محركات البحث/);
+      expect(service.name_ar).not.toMatch(/السيو/);
     }
     const generator = readFileSync("scripts/gen-service-catalog.py", "utf8");
     expect(generator).toContain('("seo_specialist", "مختص SEO", "SEO specialist")');

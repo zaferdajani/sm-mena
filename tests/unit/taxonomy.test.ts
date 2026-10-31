@@ -28,13 +28,16 @@ describe("taxonomy", () => {
     expect(isServiceKey("not_a_service")).toBe(false);
   });
 
-  it("keeps the term SEO in English in every language", () => {
+  it("names SEO in Arabic with the acronym kept, so both readers find it", () => {
+    // The owner asked for a plain Arabic name (31 Oct 2026); "(SEO)" stays in it because that is the word people
+    // who know the service search for. Transliterations («سيو») stay out of names and copy; the matchmaker and
+    // service search still understand them (lib/ai/extract.ts, data/service-catalog.json aliases).
     const seo = allServices.find((s) => s.key === "seo")!;
-    expect(seo.name_ar).toBe("SEO");
+    expect(seo.name_ar).toBe("تحسين الظهور في محركات البحث (SEO)");
     expect(seo.name_en).toBe("SEO");
     for (const file of ["../../messages/ar.json", "../../data/hire-content.json"]) {
       const text = readFileSync(new URL(file, import.meta.url), "utf8");
-      expect(text).not.toMatch(/السيو|تحسين محركات البحث/);
+      expect(text).not.toMatch(/السيو/);
     }
   });
 });

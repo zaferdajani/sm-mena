@@ -1,13 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { PORTFOLIO_CAPTIONS, SAUDI_DEMO_AGENCIES } from "@/lib/db/demo-portfolio";
 import { DEMO_PROFILES } from "@/lib/db/demo-profiles";
-import { DEMO_TRANSLATIONS } from "@/lib/db/demo-translations";
+import { DEMO_TRANSLATIONS, DEMO_TRANSLATIONS_AR } from "@/lib/db/demo-translations";
 import { DEMO_AGENCIES } from "@/lib/db/seed";
 
 const arabic = (s: string) => /[؀-ۿ]/.test(s);
-const all = [...DEMO_AGENCIES, ...SAUDI_DEMO_AGENCIES] as { handle: string; name: string; bio: string; captions?: string[] }[];
+const all = [...DEMO_AGENCIES, ...SAUDI_DEMO_AGENCIES] as { handle: string; name: string; bio: string; captions?: { ar: string; en: string }[] }[];
 
 describe("demo agencies in English", () => {
+  it("gives every English demo agency an Arabic name and bio, and every Arabic one an English pair of its own captions", () => {
+    for (const a of all.filter((x) => !arabic(x.name))) {
+      const tr = DEMO_TRANSLATIONS_AR[a.handle];
+      expect(tr, a.handle).toBeDefined();
+      expect(arabic(tr.name) && arabic(tr.bio), a.handle).toBe(true);
+    }
+    for (const a of all) for (const c of a.captions ?? []) {
+      expect(arabic(c.ar) && !arabic(c.en), a.handle).toBe(true);
+    }
+  });
+
   it("gives every Arabic demo agency an English name, bio, About and strengths", () => {
     for (const a of all.filter((x) => arabic(x.name + x.bio))) {
       const tr = DEMO_TRANSLATIONS[a.handle];
@@ -23,8 +34,8 @@ describe("demo agencies in English", () => {
 
   it("translates every Arabic caption of their posts", () => {
     for (const [handle, tr] of Object.entries(DEMO_TRANSLATIONS)) {
-      const own = all.find((a) => a.handle === handle)?.captions ?? [];
-      for (const caption of [...(PORTFOLIO_CAPTIONS[handle] ?? []), ...own].filter(arabic)) {
+      // An agency's own captions (lib/db/seed.ts) carry their English side themselves.
+      for (const caption of (PORTFOLIO_CAPTIONS[handle] ?? []).filter(arabic)) {
         expect(tr.captions[caption], `${handle}: ${caption}`).toBeTruthy();
       }
       for (const en of Object.values(tr.captions)) expect(arabic(en)).toBe(false);

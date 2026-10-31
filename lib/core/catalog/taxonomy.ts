@@ -129,7 +129,7 @@ export const taxonomy = {
       "services": [
         {
           "key": "seo",
-          "name_ar": "SEO",
+          "name_ar": "تحسين الظهور في محركات البحث (SEO)",
           "name_en": "SEO"
         },
         {
