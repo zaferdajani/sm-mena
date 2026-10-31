@@ -6,9 +6,13 @@ import { deliverable, lineLabel } from "@/lib/deliverables";
 import { serviceLabel } from "@/lib/labels";
 import { localized } from "@/lib/content-lang";
 import styles from "./profile-layout.module.css";
+import { InquiryDialog } from "./inquiry-dialog";
+
+/** Messaging the agency about one package; absent where messaging is off, on sample agencies and for the owner. */
+export type PackageContact = { agencyId: string; agencyName: string; services: string[] };
 
 /** Presentation only. Package terms, prices, billing and translations are unchanged. */
-export async function PackageList({ packages: rows, currency = "JOD", lang = "ar" }: { packages: Package[]; currency?: string; lang?: string }) {
+export async function PackageList({ packages: rows, currency = "JOD", lang = "ar", contact }: { packages: Package[]; currency?: string; lang?: string; contact?: PackageContact | null }) {
   const t = await getTranslations("Packages");
   const locale = await getLocale();
   const td = await getTranslations("Deliverables");
@@ -48,6 +52,18 @@ export async function PackageList({ packages: rows, currency = "JOD", lang = "ar
               </ul>
             )}
             {p.deliveryDays ? <p className={styles.delivery}><Clock className="size-4 shrink-0" aria-hidden />{t("deliveryIn", { days: p.deliveryDays })}</p> : null}
+            {/* A price with nothing to tap sent visitors back up the page to find "Message". */}
+            {contact && (
+              <InquiryDialog
+                {...contact}
+                defaultService={p.service}
+                defaultMessage={t("askMessage", { title: p.title })}
+                label={t("ask")}
+                testId="package-ask"
+                variant="outline"
+                className="mt-3 h-10 w-full gap-1.5"
+              />
+            )}
           </li>
         ))}
       </ul>

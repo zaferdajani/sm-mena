@@ -1,17 +1,18 @@
-import NextLink from "next/link";
 import { releaseInfo } from "@/lib/release";
 
-/** A visible source identifier, not a claim that CI or visual QA passed. */
+/**
+ * Which build this page came from, for the team (the data attributes, and /api/version). Visitors see only a
+ * faint short version, not a link: the internal revision name and a raw JSON page meant nothing to them.
+ */
 export function ReleaseStamp() {
   const release = releaseInfo();
   return (
-    // This diagnostic is a non-localized JSON endpoint, not an application page.
-    <NextLink href="/api/version" prefetch={false} target="_blank" rel="noopener noreferrer"
+    <span
       data-testid="release-stamp" data-ui-revision={release.revision}
       data-release-sha={release.commit ?? "unknown"} data-release-environment={release.environment}
-      className="inline-block max-w-full break-all font-mono text-[11px] leading-5 text-muted-foreground hover:underline"
-      title={release.commit ?? release.revision}>
-      <bdi dir="ltr">{release.revision}{release.commit ? ` · ${release.commit.slice(0, 8)}` : ""}</bdi>
-    </NextLink>
+      className="inline-block font-mono text-[10px] leading-5 text-muted-foreground/60"
+      title={release.revision}>
+      <bdi dir="ltr">v{release.commit ? ` ${release.commit.slice(0, 7)}` : ""}</bdi>
+    </span>
   );
 }

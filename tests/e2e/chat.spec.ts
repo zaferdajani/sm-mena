@@ -93,5 +93,7 @@ test("the chat is readable in Arabic on a phone", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "محادثاتي" })).toBeVisible();
   await page.goto("/ar/notifications");
   await expect(page.getByRole("heading", { name: "الإشعارات" })).toBeVisible();
-  await expect(visibleBell(page)).toBeVisible();
+  // A visitor with no account and nothing received: no bell in the header, and the empty page offers the next step.
+  await expect(visibleBell(page)).toHaveCount(0);
+  await expect(page.getByTestId("notifications-next")).toContainText("اطلب مشروعًا");
 });
