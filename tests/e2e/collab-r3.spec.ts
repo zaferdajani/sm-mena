@@ -12,7 +12,9 @@ async function joinFreelancer(page: Page, prefix: string) {
   await page.fill("#name", `Free ${handle}`);
   await page.fill("#handle", handle);
   await nextJoinStep(page);
-  await page.getByTestId("kind-freelancer").check();
+  // The kind is a pair of styled buttons (docs/65): tap the visible label, as a person does.
+  await page.locator('label:has([data-testid="kind-freelancer"])').click();
+  await expect(page.getByTestId("kind-freelancer")).toBeChecked();
   await page.fill("#whatsapp", "0791112233");
   await page.fill("#email", `${handle}@test.jo`);
   await page.fill("#password", "password-123");
