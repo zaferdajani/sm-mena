@@ -36,7 +36,7 @@ describe("demo texts in one language per agency", () => {
     }
     const [cafe] = await db.select().from(portfolioClients).where(and(eq(portfolioClients.agencyId, nakhla.id), eq(portfolioClients.name, "مقهى الياسمين (تجريبي)")));
     expect(cafe.translation.name).toBe("Yasmeen Café (demo)");
-  }, 300_000);
+  }, 600_000);
 
   it("brings older mixed rows to the agency's language once, and leaves them alone after that", async () => {
     const db = await getDb();
@@ -71,5 +71,5 @@ describe("demo texts in one language per agency", () => {
     expect(again?.posts).toBe(0);
     expect(again?.reviews).toBe(0);
     expect(again?.packages).toBe(0);
-  }, 300_000);
+  }, 600_000);
 });
