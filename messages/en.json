@@ -3291,7 +3291,7 @@
         "liveSwitch": "Live switch set in the deployment"
       }
     },
-    "pilotsPlaceholder": "Usernames, e.g. nakhla.studio, petra.growth"
+    "pilotsPlaceholder": "Usernames, e.g. studio.amman, media.house"
   },
   "Closest": {
     "title": "No exact matches",

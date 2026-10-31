@@ -70,7 +70,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         <nav aria-label={t("menu")}>
           <SideNav items={[
             ...items.slice(0, 3), ...(!reg ? [{ href: "/hire", label: t("hire"), icon: "hire" } as NavItem] : []), ...items.slice(3),
-            ...(user ? [] : [{ href: "/login", label: t("login"), icon: "login" } as NavItem]),
+            ...(user ? [] : [{ href: "/signin", label: t("login"), icon: "login" } as NavItem]),
           ]} />
           <HeaderBell variant="row" />
         </nav>
