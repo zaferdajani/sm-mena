@@ -2,6 +2,7 @@ import { requireDirectory } from "@/lib/launch-access";
 import { EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
 import { demoMode } from "@/lib/demo-mode";
+import { industryForWords } from "@/lib/industry-words";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
@@ -39,7 +40,9 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const p = parseExploreParams(sp);
   const country = countryOfCity(p.city) ?? (await currentCountry());
   const { tab, ...rest } = p;
-  const filters = { ...rest, country, includeDemo: await demoMode() };
+  // "مخبز", "bakery": an everyday word for a business type searches that type (no agency names itself "bakery").
+  const meantIndustry = !rest.industry ? industryForWords(rest.q) : null;
+  const filters = { ...rest, ...(meantIndustry ? { q: undefined, industry: meantIndustry } : {}), country, includeDemo: await demoMode() };
   const { includeDemo: _demo, ...clientFilters } = filters;
   void _demo;
   const currency = currencyOf(country);
@@ -76,6 +79,9 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           <h1 className="font-heading text-2xl font-bold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground" data-testid="explore-result-count">{resultLabel}</p>
         </div>
+        {meantIndustry && (
+          <p className="text-sm text-muted-foreground" data-testid="explore-meant-industry">{t("meantIndustry", { query: rest.q ?? "", industry: tInd(meantIndustry as "restaurant_cafe") })}</p>
+        )}
         <ExploreFilters options={options} resultLabel={resultLabel} currency={locale === "ar" ? (COUNTRIES.find((c) => c.currency === currency)?.currencyAr ?? currency) : currency} />
         {filters.service && (
           <Link href={`/hire/${filters.service}/${filters.city ?? country}`} className="flex items-center justify-between rounded-xl border bg-accent/60 px-4 py-2.5 text-sm font-medium" data-testid="hire-link">

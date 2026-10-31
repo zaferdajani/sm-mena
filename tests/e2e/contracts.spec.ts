@@ -69,7 +69,9 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   await client.getByText(/I have read this document and agree to it/).click();
   await client.getByRole("button", { name: "Sign contract" }).click();
   await expect(client.getByTestId("contract-status")).toHaveText("Active");
-  await client.getByRole("button", { name: /Pay 150 JOD into protection/ }).click();
+  // Signed: said at the top of the page, with the next step (paying the first milestone).
+  await expect(client.getByTestId("signed-ok")).toContainText("Next step");
+  await client.getByRole("button", { name: /Pay 150 JOD/ }).click();
   await expect(client.getByTestId("fund-amount")).toContainText("150");
   await client.getByRole("button", { name: "Pay now (test)" }).click();
   await expect(client.getByTestId("funded-ok")).toBeVisible();
@@ -92,7 +94,7 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   await client.getByRole("button", { name: /Approve and release 150 JOD/ }).click();
   await expect(client.getByTestId("milestone").first()).toHaveAttribute("data-status", "released");
   await expect(client.getByTestId("money-held")).toContainText("0");
-  await expect(client.getByRole("button", { name: /Pay 150 JOD into protection/ })).toBeVisible(); // next milestone
+  await expect(client.getByRole("button", { name: /Pay 150 JOD/ })).toBeVisible(); // next milestone
 
   // Admin sees the protected money.
   const admin = await browser.newPage();

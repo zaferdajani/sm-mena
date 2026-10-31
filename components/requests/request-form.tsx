@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Copy, MessageCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { createRequestAction } from "@/app/[locale]/(main)/request-actions";
 import { FormError } from "@/components/form-error";
 import { ChipGroup, Field } from "@/components/studio/chips";
@@ -36,28 +36,10 @@ export function RequestForm({
   source?: "form" | "ai";
 }) {
   const t = useTranslations("Requests");
-  const locale = useLocale();
   const [state, action] = useActionState(createRequestAction, undefined);
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
 
-  if (state?.token) {
-    const link = `${window.location.origin}/${locale}/r/${state.token}`;
-    return (
-      <div className="space-y-3 rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="request-created">
-        <p className="flex items-center gap-2 font-semibold">
-          <CheckCircle2 className="size-5 text-brand" />
-          {t("created", { count: state.invited ?? 0 })}
-        </p>
-        <p>{t("saveLink")}</p>
-        <a href={link} className="block break-all font-mono text-xs text-brand underline" dir="ltr" data-testid="request-link">
-          {link}
-        </a>
-        <Link href={`/requests/${state.requestId}`} className="inline-block font-medium text-brand">
-          {t("pageTitle")} →
-        </Link>
-      </div>
-    );
-  }
+  if (state?.token) return <RequestCreated token={state.token} requestId={state.requestId} invited={state.invited ?? 0} />;
 
   return (
     <form action={action} className="sw-request-form grid min-w-0 gap-6" data-testid="request-form">
@@ -122,5 +104,48 @@ export function RequestForm({
       </label>
       <SubmitButton className="h-11 text-base">{t("submit")}</SubmitButton>
     </form>
+  );
+}
+
+/**
+ * After sending: what happened (honestly, also when no agency was invited yet), where the quotes will
+ * appear, and the private link as buttons (copy, send to my WhatsApp) instead of a raw address.
+ */
+function RequestCreated({ token, requestId, invited }: { token: string; requestId?: string; invited: number }) {
+  const t = useTranslations("Requests");
+  const locale = useLocale();
+  const [copied, setCopied] = useState(false);
+  const link = `${window.location.origin}/${locale}/r/${token}`;
+  const button = "inline-flex h-9 items-center gap-1.5 rounded-lg border bg-background px-3 text-sm font-medium hover:bg-muted";
+  return (
+    <div className="space-y-3 rounded-xl border border-brand-line bg-brand-soft p-4 text-sm" data-testid="request-created">
+      <p className="flex items-center gap-2 font-semibold">
+        <CheckCircle2 className="size-5 shrink-0 text-brand" />
+        {t("created", { count: invited })}
+      </p>
+      <p>{t("createdNext")}</p>
+      {requestId && (
+        <Link href={`/requests/${requestId}`} className="inline-flex h-10 items-center rounded-lg bg-brand px-4 font-medium text-white hover:bg-brand-deep">
+          {t("openMyProject")}
+        </Link>
+      )}
+      <p className="text-muted-foreground">{t("saveLink")}</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className={button}
+          data-testid="request-link"
+          data-link={link}
+          onClick={() => void navigator.clipboard?.writeText(link).then(() => setCopied(true), () => undefined)}
+        >
+          <Copy className="size-4" aria-hidden />
+          {copied ? t("linkCopied") : t("copyLink")}
+        </button>
+        <a href={`https://wa.me/?text=${encodeURIComponent(link)}`} target="_blank" rel="noopener noreferrer" className={button}>
+          <MessageCircle className="size-4" aria-hidden />
+          {t("sendToWhatsapp")}
+        </a>
+      </div>
+    </div>
   );
 }

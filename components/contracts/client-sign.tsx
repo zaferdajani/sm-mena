@@ -2,7 +2,7 @@
 
 import { MessageSquareDiff, PenLine } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { clientAmendAction, clientDeclineAction, clientSignAction } from "@/app/[locale]/(main)/contract-actions";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
@@ -18,6 +18,14 @@ export function ClientSign({ hidden }: { hidden: Record<string, string> }) {
   const tl = useTranslations("Agreements");
   const [state, action] = useActionState(clientSignAction, undefined);
   const [amend, amendAction] = useActionState(clientAmendAction, undefined);
+  // Signed: back to the top, where the page now says so and names the next step (the long contract text is gone,
+  // so the person was left looking at the footer).
+  useEffect(() => {
+    if (!state?.ok) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("signed", "1");
+    window.location.assign(url);
+  }, [state]);
   return (
     <section className="space-y-3 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4" data-testid="client-sign">
       <h2 className="flex items-center gap-2 font-semibold">

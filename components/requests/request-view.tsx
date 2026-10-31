@@ -26,6 +26,9 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
   const unreadFrom = await unreadByAgencyForRequest(request.id);
   const chatHref = (handle: string) => (access.token ? `/r/${access.token}/chat/${handle}` : `/requests/${request.id}/chat/${handle}`);
   const open = request.status === "open" && request.expiresAt > new Date();
+  // The budget in the request's own currency (د.أ, ر.س…), one figure when both ends are the same.
+  const currency = currencyOf(request.country);
+  const budget = (min: number | null, max: number) => (min && min !== max ? `${formatJod(min, locale, currency)} – ${formatJod(max, locale, currency)}` : formatJod(max, locale, currency));
   const fmtDate = new Intl.DateTimeFormat(locale === "ar" ? "ar-JO-u-nu-latn" : "en", { day: "numeric", month: "long" });
   return (
     <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-design-surface="request-detail">
@@ -34,13 +37,13 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
         <p className="flex flex-wrap items-center gap-2 text-sm">
           <span className={cn("rounded-full px-2 py-0.5 text-xs", open ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground")}>{open ? t("status.open") : t("status.closed")}</span>
           {open && <span className="text-muted-foreground">{t("expires", { date: fmtDate.format(request.expiresAt) })}</span>}
-          <span className="text-muted-foreground">· {t("invited", { count: invitedCount })}</span>
+          <span className="text-muted-foreground">{t("invited", { count: invitedCount })}</span>
         </p>
         <div className="rounded-xl bg-muted p-3 text-sm">
           <p className="mb-1 font-medium">{request.services.map((s) => serviceLabel(s, locale)).join(" · ")}</p>
           <p className="text-xs text-muted-foreground">
             {request.city ? tCity(request.city) : t("anyCity")}
-            {request.budgetMaxJod ? ` · ${request.budgetMinJod ?? 0}–${request.budgetMaxJod} JOD` : ""}
+            {request.budgetMaxJod ? ` · ${budget(request.budgetMinJod, request.budgetMaxJod)}` : ""}
           </p>
           {(request.fullService || request.brands) && (
             <p className="mt-1 flex flex-wrap gap-1.5 text-xs">
@@ -55,7 +58,8 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
 
       <section>
         <h2 className="mb-2 font-semibold">{t("proposals", { count: proposals.length })}</h2>
-        {!proposals.length && <p className="rounded-xl border p-4 text-sm text-muted-foreground">{t("noProposals")}</p>}
+        {/* Honest about the wait: with no agency invited yet there is no "24–48 hours" to promise. */}
+        {!proposals.length && <p className="rounded-xl border p-4 text-sm text-muted-foreground" data-testid="no-proposals">{t(invitedCount ? "noProposals" : "noProposalsNoMatch")}</p>}
         <ul className="space-y-3" data-testid="proposals">
           {proposals.map((p) => (
             <li key={p.id} className={cn("space-y-3 rounded-xl border p-4", p.status === "accepted" && "border-primary", p.status === "declined" && "opacity-60")}>
@@ -76,6 +80,12 @@ export async function RequestView({ request, proposals, invitedCount, access }: 
               </div>
               <p className="text-sm"><span className="font-medium">{t("timelineLabel")}:</span> <span dir="auto">{p.timeline}</span></p>
               <p className="whitespace-pre-line text-sm" dir="auto">{p.message}</p>
+              {/* After accepting, say what happens next and where (the project only said "closed"). */}
+              {p.status === "accepted" && (
+                <p className="rounded-lg border border-brand-line bg-brand-soft p-3 text-sm" data-testid="accepted-next">
+                  {t("acceptedNext", { agency: p.agency.name })}
+                </p>
+              )}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <ProposalActions access={access} proposalId={p.id} status={p.status} />
                 <div className="flex flex-wrap items-center gap-2">

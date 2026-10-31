@@ -4,7 +4,7 @@ import { createTranslator } from "use-intl";
 import { tryOpen } from "@/lib/auth/secret-box";
 import type { ContractNotificationKind } from "@/lib/chat";
 import { getDb } from "@/lib/db";
-import { agencies, type Contract } from "@/lib/db/schema";
+import { agencies, projectRequests, type Contract } from "@/lib/db/schema";
 import { formatDate } from "@/lib/format";
 import { sendContractEmail } from "@/lib/notify";
 import { SITE_URL } from "@/lib/site";
@@ -18,7 +18,7 @@ import { addNotifications, type NewNotification } from "./notifications";
 // where the party gave an address. Params never hold a phone or an email.
 
 export type Audience = "agency" | "client" | "both";
-export type NotifyParams = { milestone?: string; date?: Date | null; days?: number };
+export type NotifyParams = { milestone?: string; date?: Date | null; days?: number; /** Opens the contract at this milestone (#milestone-<id>). */ milestoneId?: string };
 
 type ContractRef = Pick<Contract, "id" | "agencyId" | "clientAgencyId" | "clientVisitorId" | "clientName" | "clientEmail" | "clientTokenEnc" | "title" | "locale">;
 
@@ -37,12 +37,13 @@ export async function notifyContract(c: ContractRef, kind: ContractNotificationK
     const buyer = c.clientAgencyId ? await party(c.clientAgencyId) : null;
     const base = { title: c.title, ...(p.milestone ? { milestone: p.milestone } : {}), ...(p.date ? { date: p.date.toISOString() } : {}), ...(p.days !== undefined ? { days: p.days } : {}) };
     const out: NewNotification[] = [];
-    const href = `/studio/contracts/${c.id}`;
+    const anchor = p.milestoneId ? `#milestone-${p.milestoneId}` : "";
+    const href = `/studio/contracts/${c.id}${anchor}`;
     const toAgency = audience === "agency" || audience === "both";
     const toClient = audience === "client" || audience === "both";
     if (toAgency) out.push({ agencyId: c.agencyId, kind, href, params: { ...base, name: buyer?.name ?? c.clientName } });
     if (toClient && buyer) out.push({ agencyId: buyer.id, kind, href, params: { ...base, name: supplier?.name ?? "" } });
-    if (toClient && c.clientVisitorId) out.push({ visitorId: c.clientVisitorId, kind, href: clientDeviceHref(c.id), params: { ...base, name: supplier?.name ?? "" } });
+    if (toClient && c.clientVisitorId) out.push({ visitorId: c.clientVisitorId, kind, href: `${clientDeviceHref(c.id)}${anchor}`, params: { ...base, name: supplier?.name ?? "" } });
     await addNotifications(out);
 
     const link = (path: string) => `${SITE_URL}/${c.locale === "en" ? "en" : "ar"}${path}`;
@@ -52,6 +53,23 @@ export async function notifyContract(c: ContractRef, kind: ContractNotificationK
     else if (toClient && token) await email(c.clientEmail, kind, { ...p, title: c.title, name: supplier?.name ?? "" }, link(`/c/${token}`));
   } catch (e) {
     // Notifying is a courtesy; the contract page and its history are the record.
+    if (process.env.NODE_ENV !== "test") console.error("[contract-notify]", e);
+  }
+}
+
+/**
+ * A contract from a quote the client accepted: the device that posted the project hears about it at once, and
+ * the notification opens the project, which shows the contract with its signing link (the link itself is
+ * never stored in a notification).
+ */
+export async function notifyRequestClient(c: Pick<Contract, "requestId" | "agencyId" | "title">) {
+  if (!c.requestId) return;
+  try {
+    const db = await getDb();
+    const [request] = await db.select({ visitorId: projectRequests.visitorId }).from(projectRequests).where(eq(projectRequests.id, c.requestId));
+    const [supplier] = await db.select({ name: agencies.name }).from(agencies).where(eq(agencies.id, c.agencyId));
+    if (request?.visitorId) await addNotifications([{ visitorId: request.visitorId, kind: "contract_received", href: `/requests/${c.requestId}`, requestId: c.requestId, params: { name: supplier?.name ?? "", title: c.title } }]);
+  } catch (e) {
     if (process.env.NODE_ENV !== "test") console.error("[contract-notify]", e);
   }
 }

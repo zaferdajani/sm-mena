@@ -56,6 +56,8 @@ export function useRangeLabel() {
     const f = (n: number) => formatAmount(n, locale, currency);
     if (r.min === null && r.max !== null) return tw("budget.under", { max: f(r.max) });
     if (r.max === null && r.min !== null) return tw("budget.over", { min: f(r.min) });
+    // One figure when both ends are the same ("300 – 300" read as a mistake).
+    if (r.min !== null && r.min === r.max) return f(r.min);
     return tw("budget.between", { min: f(r.min ?? 0), max: f(r.max ?? 0) });
   };
 }
@@ -231,10 +233,11 @@ export function WizardChips({
   } else if (step === "results") {
     body = (
       <>
-        {hasResults && canRequest && (
-          <Chip primary onClick={() => onResult("send", tw("chips.sendProject"))} testId="send-project">
+        {/* Always a way forward: with no match yet, the project still goes to agencies as they join. */}
+        {canRequest && (
+          <Chip primary onClick={() => onResult("send", tw(hasResults ? "chips.sendProject" : "chips.sendProjectAnyway"))} testId="send-project">
             <Sparkles className="me-1 inline size-3.5" aria-hidden />
-            {tw("chips.sendProject")}
+            {tw(hasResults ? "chips.sendProject" : "chips.sendProjectAnyway")}
           </Chip>
         )}
         {!aiMode && (

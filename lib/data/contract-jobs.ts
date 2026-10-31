@@ -74,7 +74,7 @@ export async function autoApprove(contractId: string, milestoneId: string, now =
   }
   await logEvent(v.contract.id, "system", "auto_approved", m.title);
   await db.insert(auditLogs).values({ actorUserId: null, action: "escrow.auto_release", entity: "milestone", entityId: m.id, meta: { contractId: v.contract.id, reviewDueAt: m.reviewDueAt.toISOString(), heldFils: v.heldBy[m.id] ?? 0 } });
-  await notifyContract(v.contract, "milestone_auto_approved", "both", { milestone: m.title });
+  await notifyContract(v.contract, "milestone_auto_approved", "both", { milestone: m.title, milestoneId: m.id });
   await completeIfDone(v.contract.id);
   return true;
 }

@@ -255,7 +255,8 @@
     "match": "AI assistant",
     "login": "Sign in",
     "agent": "My referrals",
-    "joinShort": "Join"
+    "joinShort": "Join",
+    "myProjects": "My projects"
   },
   "Common": {
     "verified": "Business identity verified",
@@ -437,7 +438,8 @@
     "budgetFrom": "From {min} {currency}",
     "fullService": "Full service, A to Z",
     "fullServiceHint": "Agencies that do content, ads and branding together",
-    "upToIn": "Up to {price} {currency}"
+    "upToIn": "Up to {price} {currency}",
+    "meantIndustry": "Showing agencies for “{industry}”, which fits “{query}”."
   },
   "Saved": {
     "title": "Saved",
@@ -1091,7 +1093,7 @@
       "generic": "Could not send.",
       "unavailable": "Sending projects for quotes isn't available right now."
     },
-    "created": "Your project was sent! We invited {count} agencies to send quotes.",
+    "created": "{count, plural, =0 {Your project was sent. No agency matches it exactly yet; agencies that offer this service can see it and send quotes.} one {Your project was sent! We invited one agency to send a quote.} other {Your project was sent! We invited # agencies to send quotes.}}",
     "saveLink": "Save this link to follow quotes from any device:",
     "pageTitle": "Quotes for your project",
     "status": {
@@ -1099,7 +1101,7 @@
       "closed": "Closed"
     },
     "expires": "Accepting quotes until {date}",
-    "invited": "{count} agencies invited",
+    "invited": "{count, plural, =0 {No agency invited yet} one {One agency invited} other {# agencies invited}}",
     "noProposals": "No quotes yet. They usually arrive within 24–48 hours.",
     "proposals": "{count, plural, =0 {No quotes} one {1 quote} other {# quotes}}",
     "price": "Price",
@@ -1126,7 +1128,30 @@
     "fullService": "I want one team for everything, A to Z",
     "fullServiceHint": "Content, ads and branding together, working on its own without daily chasing. Agencies that cover all of it are shown first.",
     "brands": "Brands or businesses covered",
-    "brandsPlaceholder": "e.g. Accrues (B2B), Nashmi (B2C), Neo (online store)"
+    "brandsPlaceholder": "Example: Sanabel Bakery, and its Zarqa branch",
+    "contracts": {
+      "title": "My contracts",
+      "sign": "Review and sign",
+      "open": "Open"
+    },
+    "projectsTitle": "My project requests",
+    "account": {
+      "title": "My account",
+      "signedOut": "You're not signed in. Your projects are kept on this device; sign in to keep them with your email."
+    },
+    "createdNext": "Quotes will appear in My projects, and you'll get a notification on this device when one arrives.",
+    "openMyProject": "Open my project",
+    "copyLink": "Copy the link",
+    "linkCopied": "Link copied",
+    "sendToWhatsapp": "Send it to my WhatsApp",
+    "noProposalsNoMatch": "No quotes yet. No agency matches this exactly yet, but agencies that offer this service can see your project and send a quote. You'll be notified here.",
+    "cancel": "Cancel",
+    "acceptYes": "Yes, accept this quote",
+    "declineConfirm": "Decline this quote? The agency is told, and you can't undo it.",
+    "declineYes": "Yes, decline",
+    "closeConfirm": "Close this project? Agencies won't be able to send quotes anymore.",
+    "closeYes": "Yes, close it",
+    "acceptedNext": "You accepted this quote. Next: {agency} prepares a contract for you to sign. It appears at the top of this page and in My projects, and you'll get a notification. Meanwhile you can chat with them."
   },
   "Opportunities": {
     "tab": "Opportunities",
@@ -1826,8 +1851,8 @@
       "number": "Contract {number}",
       "period": "{start} → {end}",
       "total": "Total",
-      "held": "Held for milestones",
-      "released": "Paid out",
+      "held": "Held until approval",
+      "released": "Passed to the agency",
       "client": "Client",
       "agency": "Agency",
       "nextStep": "Next step",
@@ -1855,10 +1880,10 @@
       "clientTick": "Confirmed",
       "submitNote": "What did you deliver? Links, files, notes",
       "submit": "Send for approval",
-      "needsFunding": "Waiting for the client to pay this milestone into protection.",
+      "needsFunding": "Waiting for the client to pay this milestone. The money is held until the client approves the work.",
       "changes": "Client asked for changes: {note}",
       "delivered": "Agency's note: {note}",
-      "fund": "Pay {amount} into protection",
+      "fund": "Pay {amount} (held until you approve)",
       "fundHint": "The amount stays in protection until you accept this milestone or its review period ends.",
       "confirmAll": "Tick each item you've checked, then approve.",
       "approveRelease": "Approve and release {amount}",
@@ -1889,7 +1914,8 @@
       "grantRound": "Give an extra round of changes (free)",
       "clientAskedRound": "The client asks for an extra round of changes. Give it free, or propose a paid change request below.",
       "autoApproved": "Accepted automatically when the review period ended.",
-      "withPartner": "Delivered with {name}"
+      "withPartner": "Delivered with {name}",
+      "fundExplain": "How it works: you pay this milestone now; the money is held and reaches the agency only after you approve the work (or the review period ends without an answer)."
     },
     "client": {
       "title": "Contract with {agency}",
@@ -1909,7 +1935,9 @@
         "rateLimited": "Too many attempts. Try again later.",
         "signature": "Draw your signature to sign.",
         "notFound": "This contract was not found."
-      }
+      },
+      "signedOk": "Signed. The contract is now active, and both of you have a copy below.",
+      "signedNextPay": "Signed. Next step: pay the first milestone below. The money is held by the payment partner and reaches the agency only after you approve the work."
     },
     "dispute": {
       "open": "Report a problem",
@@ -1972,7 +2000,7 @@
       "moneyHeld": "Money is held for this contract. Report a problem instead so our team can settle it."
     },
     "fundPage": {
-      "title": "Pay milestone into protection",
+      "title": "Pay this milestone (held until you approve)",
       "pay": "Pay now (test)",
       "back": "Back to contract",
       "paid": "Paid in. The agency can start this milestone."
@@ -2197,7 +2225,9 @@
       "refunded": "{amount} refunded to the client, no fee",
       "test": "Test",
       "pdfAr": "PDF (Arabic)",
-      "pdfEn": "PDF (English)"
+      "pdfEn": "PDF (English)",
+      "clientAmount": "Amount {gross}",
+      "feePreview": "the fee shown is a preview; nothing is charged in test mode"
     },
     "buying": {
       "title": "Contracts you're buying",
@@ -2704,7 +2734,8 @@
       "changeBudget": "Change budget",
       "changeCity": "Change city",
       "switchYes": "Yes, show agencies in {country}",
-      "switchNo": "No, stay in {country}"
+      "switchNo": "No, stay in {country}",
+      "sendProjectAnyway": "Send my project anyway"
     },
     "budget": {
       "under": "Under {max}",
@@ -5379,6 +5410,18 @@
       "edit": "Edit my answers",
       "home": "Back to Sawwiq",
       "matches": "My provider matches"
+    },
+    "live": {
+      "intro": "Tell us what your business needs. We'll introduce you to matching agencies and freelancers in your city, and you can browse and send your project now.",
+      "match": "We introduce you to providers in your city for the services you need.",
+      "needsIntro": "One minute. This decides which providers we introduce you to.",
+      "doneIntro": "We have your needs and your city in {country}. You can browse providers or send your project for quotes now.",
+      "next": {
+        "open": "Browse providers, or send your project to get quotes.",
+        "match": "We also send you the providers that fit your city and services."
+      },
+      "sendProject": "Send my project for quotes",
+      "browse": "Browse providers"
     }
   },
   "OwnerMatches": {

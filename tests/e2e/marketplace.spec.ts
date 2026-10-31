@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { login } from "./helpers";
+import { drawSignature, login } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -23,7 +23,7 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   await page.check('input[name="consent"]');
   await page.getByTestId("request-form").getByRole("button").last().click();
   await expect(page.getByTestId("request-created")).toBeVisible();
-  const link = await page.getByTestId("request-link").innerText();
+  const link = (await page.getByTestId("request-link").getAttribute("data-link"))!;
 
   // The top-matched agency was invited and sends a quote.
   const agency = await browser.newPage();
@@ -41,14 +41,43 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   // The client accepts it on the private page.
   await page.goto(link);
   await expect(page.getByTestId("proposals").locator("> li")).toHaveCount(1);
-  page.on("dialog", (d) => d.accept());
   await page.getByTestId("accept").click();
+  // Asked on the page, then the next step is spelled out.
+  await page.getByTestId("confirm-yes").click();
   await expect(page.getByText("Closed")).toBeVisible();
+  await expect(page.getByTestId("accepted-next")).toBeVisible();
 
   // Now the chosen agency can see how to reach the client.
   await agency.reload();
   await expect(agency.getByTestId("client-phone")).toBeVisible();
+
+  // The client's "My projects" (a bottom tab once they posted a project) counts the quote.
+  await page.goto("/en/requests");
+  await expect(page.getByTestId("request-proposal-count").first()).toHaveText("1 quote");
+  if (info.project.name === "mobile") await expect(page.locator("[data-app-nav]").getByRole("link", { name: "My projects" })).toBeVisible();
+
+  // The agency sends a contract from the accepted quote; the client hears about it and finds it in their account.
+  await agency.getByTestId("create-contract").click();
+  await agency.fill("#c-signer", "Agency Signer");
+  await drawSignature(agency);
+  await agency.getByText(/I agree to this document on behalf of/).click();
+  await agency.getByRole("button", { name: "Sign and send to client" }).click();
+  await expect(agency).toHaveURL(/\/en\/studio\/contracts\/[0-9a-f-]+\?sent=1/);
   await agency.close();
+  await page.goto("/en/notifications");
+  await page.getByTestId("notification").filter({ hasText: "sent you a contract" }).first().click();
+  await expect(page).toHaveURL(/\/en\/requests\/[0-9a-f-]{36}$/);
+  await expect(page.getByTestId("request-contract")).toContainText("Review and sign");
+  await page.goto("/en/requests");
+  await expect(page.getByTestId("client-contracts").getByTestId("request-contract")).toHaveCount(1);
+  await page.getByTestId("client-contracts").getByTestId("request-contract").click();
+  await page.fill("#signer", "E2E Client");
+  await drawSignature(page);
+  await page.getByText(/I have read this document and agree to it/).click();
+  await page.getByRole("button", { name: "Sign contract" }).click();
+  // Signed: back at the top, with the next step.
+  await expect(page.getByTestId("signed-ok")).toBeVisible();
+  await expect(page).toHaveURL(/signed=1/);
 });
 
 test("a client reviews an agency through a single-use invite link", async ({ page, browser }, info) => {
