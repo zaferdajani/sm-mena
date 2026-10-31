@@ -92,8 +92,16 @@ test("admin console sections load", async ({ page }) => {
   await page.goto("/en/admin/stats?days=7");
   await expect(page.getByTestId("admin-stats-page")).toBeVisible();
   await expect(page.getByText("How far visitors get")).toBeVisible();
+  // The tabs and filters are real links (they once lost their page and opened a 404).
+  await page.getByRole("group").getByRole("link", { name: "30" , exact: false }).first().click();
+  await expect(page).toHaveURL(/\/en\/admin\/stats\?days=30$/);
   await page.goto("/en/admin/bugs");
-  await expect(page.getByText("Error journal")).toBeVisible();
+  await expect(page).toHaveURL(/\/en\/admin\/bugs$/);
+  await page.getByRole("group").getByRole("link", { name: "Error journal" }).click();
+  await expect(page).toHaveURL(/\/en\/admin\/bugs\?tab=errors$/);
+  await expect(page.getByTestId("error-list")).toHaveCount(1);
+  await page.goto("/en/admin/payments");
+  for (const link of await page.getByRole("group").getByRole("link").all()) expect(await link.getAttribute("href")).toMatch(/^\/en\/admin\/payments\?/);
   await page.goto("/en/admin/users?q=admin");
   await expect(page.getByTestId("admin-users")).toContainText(ADMIN.email);
   await page.goto("/en/admin/audit");

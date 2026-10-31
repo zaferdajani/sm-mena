@@ -9,6 +9,7 @@ import { logout } from "@/app/[locale]/(auth)/actions";
 import { AgencyAvatar } from "@/components/agency-avatar";
 import { StudioNav } from "@/components/studio/studio-nav";
 import { CreatorSetupNudge } from "@/components/studio/creator-guide";
+import { SuspendedNotice } from "@/components/studio/suspended-notice";
 import { Link } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
 import { unreadForAgency } from "@/lib/data/conversations";
@@ -25,7 +26,7 @@ export const metadata: Metadata = { robots: { index: false } };
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
   const { agency } = await requireAgency();
-  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <RegistrationStudioShell agency={agency}><MedalPanel agencyId={agency.id} />{children}</RegistrationStudioShell>;
+  if (isRegistrationPhase() && !isLaunchPilot(agency.handle)) return <RegistrationStudioShell agency={agency}><SuspendedNotice status={agency.status} /><MedalPanel agencyId={agency.id} />{children}</RegistrationStudioShell>;
   const t = await getTranslations("Studio");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
@@ -100,6 +101,7 @@ export default async function StudioLayout({ children }: { children: React.React
         />
       </div>
       <div className="sw-workspace-body py-6">
+        <SuspendedNotice status={agency.status} />
         <CreatorSetupNudge hasWork={agency.postCount > 0} />
         <MedalPanel agencyId={agency.id} />
         {children}

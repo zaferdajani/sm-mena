@@ -14,10 +14,10 @@ import {
 } from "@/app/[locale]/(main)/admin/actions";
 import { Button } from "@/components/ui/button";
 
-function ActionButton({ onRun, children, variant = "outline", testId }: { onRun: () => Promise<unknown>; children: React.ReactNode; variant?: "outline" | "destructive" | "default" | "secondary"; testId?: string }) {
+function ActionButton({ onRun, children, variant = "outline", testId, confirmText }: { onRun: () => Promise<unknown>; children: React.ReactNode; variant?: "outline" | "destructive" | "default" | "secondary"; testId?: string; /** Asked first; the action runs only on OK. */ confirmText?: string }) {
   const [pending, start] = useTransition();
   return (
-    <Button size="sm" variant={variant} disabled={pending} data-testid={testId} onClick={() => start(async () => void (await onRun()))}>
+    <Button size="sm" variant={variant} disabled={pending} data-testid={testId} onClick={() => (!confirmText || window.confirm(confirmText)) && start(async () => void (await onRun()))}>
       {children}
     </Button>
   );
@@ -30,7 +30,7 @@ export function AgencyAdminButtons({ id, verified, status }: { id: string; verif
       <ActionButton onRun={() => setVerifiedAction(id, !verified)} variant={verified ? "outline" : "default"} testId="verify-toggle">
         {verified ? t("unverify") : t("verify")}
       </ActionButton>
-      <ActionButton onRun={() => setStatusAction(id, status === "active" ? "suspended" : "active")} variant={status === "active" ? "destructive" : "secondary"}>
+      <ActionButton onRun={() => setStatusAction(id, status === "active" ? "suspended" : "active")} variant={status === "active" ? "destructive" : "secondary"} testId="status-toggle" confirmText={status === "active" ? t("suspendConfirm") : undefined}>
         {status === "active" ? t("suspend") : t("activate")}
       </ActionButton>
     </div>

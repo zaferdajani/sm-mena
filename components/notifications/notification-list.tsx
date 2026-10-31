@@ -66,6 +66,11 @@ const ICONS: Record<NotificationKind, LucideIcon> = {
   contract_completed: BadgeCheck,
   review_invite: Star,
   owner_intro: Handshake,
+  account_suspended: XCircle,
+  account_reactivated: RotateCcw,
+  account_verified: BadgeCheck,
+  service_approved: ShieldCheck,
+  service_rejected: XCircle,
 };
 
 const isKind = (kind: string): kind is NotificationKind => (NOTIFICATION_KINDS as readonly string[]).includes(kind);
@@ -86,6 +91,7 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
           name: String(params.name ?? ""),
           city: String(params.city ?? ""),
           title: String(params.title ?? ""),
+          service: String(params.service ?? ""),
           milestone: String(params.milestone ?? ""),
           date: params.date ? formatDate(new Date(String(params.date)), locale) : "",
           days: Number(params.days ?? 0),

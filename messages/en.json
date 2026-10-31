@@ -734,6 +734,11 @@
       "more": "More",
       "addWork": "Add work",
       "import": "Import work"
+    },
+    "suspended": {
+      "title": "Your page is paused",
+      "body": "Sawwiq's team has paused your page, so visitors can't see it for now. Your work and messages are safe.",
+      "ask": "Ask the team why"
     }
   },
   "Admin": {
@@ -846,7 +851,18 @@
     "testLedgerTitle": "Test transactions",
     "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
     "testLedgerExport": "Download test transactions (CSV)",
-    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic."
+    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic.",
+    "suspendConfirm": "Pause this page? Visitors won't see it until you reactivate it, and the provider is told.",
+    "more": "More",
+    "attention": {
+      "title": "Needs your attention",
+      "none": "Nothing is waiting for you right now.",
+      "supportReports": "{count, plural, one {One new support report} other {# new support reports}}",
+      "disputes": "{count, plural, one {One payment dispute to decide} other {# payment disputes to decide}}",
+      "postReports": "{count, plural, one {One reported post to check} other {# reported posts to check}}",
+      "services": "{count, plural, one {One new service to approve} other {# new services to approve}}",
+      "siteErrors": "{count, plural, one {One site error to look at} other {# site errors to look at}}"
+    }
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -1511,7 +1527,9 @@
       "owner": "Owner",
       "backbone": "Backbone (engineering)",
       "maintenance": "Maintenance",
-      "support": "Support"
+      "support": "Support",
+      "client": "Business owner",
+      "agent": "Referral agent"
     },
     "mfaOn": "2FA on",
     "mfaOff": "2FA off",
@@ -2581,7 +2599,12 @@
       "reminder_inquiry_to_answer": "Reminder: an inquiry is waiting for your reply: “{title}”",
       "reminder_hold_expiring": "Reminder: the capacity hold on “{title}” expires soon",
       "reminder_availability_stale": "Reminder: your availability needs confirming",
-      "owner_intro": "A business owner in {city} asked to be introduced to you: {services}"
+      "owner_intro": "A business owner in {city} asked to be introduced to you: {services}",
+      "account_suspended": "Sawwiq's team paused your page: visitors can't see it for now. Tap to ask why.",
+      "account_reactivated": "Your page is visible again.",
+      "account_verified": "Your page is verified: it now shows the verified badge.",
+      "service_approved": "“{service}” was approved and is now a Sawwiq service.",
+      "service_rejected": "“{service}” wasn't added to Sawwiq's services. You can pick a close service from the list."
     }
   },
   "PortfolioClients": {
@@ -2771,7 +2794,8 @@
       "exists": "A tag with this name already exists: merge instead.",
       "target": "Pick a tag to merge into.",
       "notFound": "Already reviewed."
-    }
+    },
+    "nameEnOptional": "Optional: the Arabic name is used if empty"
   },
   "Partners": {
     "tab": "Partners",

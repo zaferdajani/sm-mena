@@ -63,7 +63,7 @@ export function ServiceReview({
             </label>
             <label className="grid gap-1 text-sm">
               {t("nameEn")}
-              <Input name="nameEn" required minLength={2} maxLength={80} dir="ltr" defaultValue={isArabic ? "" : tag.text} />
+              <Input name="nameEn" maxLength={80} dir="ltr" defaultValue={isArabic ? "" : tag.text} placeholder={t("nameEnOptional")} />
             </label>
             <label className="grid gap-1 text-sm">
               {t("group")}

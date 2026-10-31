@@ -29,7 +29,8 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
   // Support staff see user reports only; the error journal is for maintenance and backbone.
   const canErrors = can(me.role, "bugs.manage");
   const sp = await searchParams;
-  const tab = sp.tab === "reports" || !canErrors ? "reports" : "errors";
+  // People's reports first: the nav badge counts them. The error log is the second tab, for whoever fixes bugs.
+  const tab = sp.tab === "errors" && canErrors ? "errors" : "reports";
   const t = await getTranslations("AdminBugs");
   const [counts, checks] = await Promise.all([bugCounts(), canErrors ? listSiteChecks() : []]);
   const ago = (d: Date) => timeAgo(d.toISOString(), locale);
@@ -47,12 +48,12 @@ export default async function AdminBugs({ params, searchParams }: PageProps<"/[l
         ]}
       />
       {canErrors && <SiteChecks checks={checks} t={t} ago={ago} />}
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="tab"
         current={tab}
         options={[
-          ...(canErrors ? [{ value: "errors", label: t("tabs.errors") }] : []),
           { value: "reports", label: t("tabs.reports", { count: counts.newReports }) },
+          ...(canErrors ? [{ value: "errors", label: t("tabs.errors") }] : []),
         ]}
       />
       {tab === "errors" ? <ErrorList filter={sp.filter} hours={sp.hours} t={t} ago={ago} /> : <ReportList status={sp.status} t={t} ago={ago} locale={locale} />}
@@ -106,7 +107,7 @@ async function ErrorList({ filter: raw, hours: rawHours, t, ago }: { filter: unk
   const [rows, stale] = await Promise.all([listErrors(filter), filter === "unresolved" ? staleErrorCount(hours) : 0]);
   return (
     <section className="space-y-3">
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="filter"
         current={filter}
         keep={{ tab: "errors" }}
@@ -182,7 +183,7 @@ async function ReportList({ status: raw, t, ago, locale }: { status: unknown; t:
   const threads = await messagesFor(rows.map((r) => r.id));
   return (
     <section className="space-y-3">
-      <FilterChips
+      <FilterChips pathname="/admin/bugs"
         param="status"
         current={status}
         keep={{ tab: "reports" }}

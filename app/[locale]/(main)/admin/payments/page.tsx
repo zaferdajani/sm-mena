@@ -40,7 +40,7 @@ export default async function AdminPayments({ params, searchParams }: PageProps<
         {isTestPayments() && <FlaskConical className="size-4 text-amber-600" />}
         {t("provider", { name: paymentProvider().label })}
       </p>
-      <FilterChips
+      <FilterChips pathname="/admin/payments"
         param="tab"
         current={tab}
         options={[
@@ -81,7 +81,7 @@ export default async function AdminPayments({ params, searchParams }: PageProps<
             <ManualPaymentForm />
           </details>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <FilterChips param="status" current={status} keep={{ tab: "plans" }} options={STATUSES.map((s) => ({ value: s, label: s === "all" ? t("all") : tb(`status.${s}`) }))} />
+            <FilterChips pathname="/admin/payments" param="status" current={status} keep={{ tab: "plans" }} options={STATUSES.map((s) => ({ value: s, label: s === "all" ? t("all") : tb(`status.${s}`) }))} />
             <a href="/api/admin/payments" className="flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm hover:bg-muted" download>
               <Download className="size-4" /> {t("export")}
             </a>

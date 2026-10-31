@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, ShieldAlert } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Circle, ShieldAlert } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { aiStatus } from "@/lib/ai/agent";
@@ -8,6 +8,7 @@ import { mfaKeyConfigured } from "@/lib/auth/mfa";
 import { googleConfigured } from "@/lib/google";
 import { paymentProvider } from "@/lib/payments/provider";
 import { monetizationReadiness, platformStats } from "@/lib/data/admin";
+import { adminAttention } from "@/lib/data/admin-attention";
 import { monetizationEnabled } from "@/lib/monetization/plans";
 
 export default async function AdminDashboard({ params }: PageProps<"/[locale]/admin">) {
@@ -18,7 +19,15 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
   const tt = await getTranslations("AdminTeam");
   const showStats = can(me.role, "stats.view");
   const showSystem = can(me.role, "system.view");
-  const s = await platformStats();
+  const [s, attention] = await Promise.all([platformStats(), adminAttention()]);
+  // What waits for the team, each row one tap from the page that handles it (only sections this role may open).
+  const waiting = ([
+    ["supportReports", attention.supportReports, "/admin/bugs", "support.manage"],
+    ["disputes", attention.disputes, "/admin/payments?tab=protected", "payments.view"],
+    ["postReports", attention.postReports, "/admin/reports", "content.moderate"],
+    ["services", attention.services, "/admin/services", "agencies.moderate"],
+    ["siteErrors", attention.siteErrors, "/admin/bugs?tab=errors", "bugs.manage"],
+  ] as const).filter(([, n, , perm]) => n > 0 && can(me.role, perm));
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
   const tiles: [string, number][] = [
     ["agencies", s.agencies.active], ["verified", s.agencies.verified], ["paid", s.agencies.paid],
@@ -49,6 +58,23 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
           )}
         </p>
       )}
+      <section className="rounded-xl border p-4" data-testid="admin-attention">
+        <h2 className="font-semibold">{t("attention.title")}</h2>
+        {waiting.length ? (
+          <ul className="mt-2 divide-y">
+            {waiting.map(([key, count, href]) => (
+              <li key={key}>
+                <Link href={href} className="flex min-h-11 items-center justify-between gap-3 py-2 text-sm hover:text-brand" data-testid={`attention-${key}`}>
+                  <span>{t(`attention.${key}`, { count })}</span>
+                  <ChevronLeft className="size-4 shrink-0 ltr:rotate-180" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-1 text-sm text-muted-foreground">{t("attention.none")}</p>
+        )}
+      </section>
       {showStats && <p className="text-xs text-muted-foreground" data-testid="real-data-note">{t("realOnly")}</p>}
       {showStats && (
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-testid="admin-stats">
