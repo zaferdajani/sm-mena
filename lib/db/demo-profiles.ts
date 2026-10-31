@@ -7,7 +7,8 @@ export type DemoProfile = {
   serves?: string[];
   about: string;
   strengths: string[];
-  clients?: { name: string; industry: string; country: string; description: string; links: { kind: string; value: string }[]; posts: number }[];
+  /** `translation`: the client's name and note in the agency's other language, so an English page never shows «(تجريبي)» and vice versa. */
+  clients?: { name: string; industry: string; country: string; description: string; links: { kind: string; value: string }[]; posts: number; translation?: { name: string; description: string } }[];
 };
 
 export const DEMO_PROFILES: Record<string, DemoProfile> = {
@@ -19,6 +20,7 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
     clients: [
       {
         name: "مقهى الياسمين (تجريبي)",
+        translation: { name: "Yasmeen Café (demo)", description: "Monthly content, Reels and account management since 2023." },
         industry: "restaurant_cafe",
         country: "jo",
         description: "محتوى شهري وريلز وإدارة حسابات منذ 2023.",
@@ -32,6 +34,7 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
       },
       {
         name: "مطعم بيت الكنافة (تجريبي)",
+        translation: { name: "Kunafa House Restaurant (demo)", description: "The Riyadh branch launch: menu photography and an opening campaign on Instagram and Snapchat." },
         industry: "restaurant_cafe",
         country: "sa",
         description: "إطلاق فرع الرياض: تصوير المنيو وحملة افتتاح على إنستغرام وسناب شات.",
@@ -51,6 +54,7 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
     clients: [
       {
         name: "Oud & Musk Store (demo)",
+        translation: { name: "متجر عود ومسك (تجريبي)", description: "إعلانات ممولة على وسائل التواصل وتسوق جوجل منذ 2024." },
         industry: "ecommerce",
         country: "sa",
         description: "Paid social and Google Shopping since 2024.",
@@ -80,6 +84,7 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
     clients: [
       {
         name: "حلويات السدرة (تجريبي)",
+        translation: { name: "Sidra Sweets (demo)", description: "Account management and Snapchat ads for the Ramadan season." },
         industry: "restaurant_cafe",
         country: "sa",
         description: "إدارة حسابات وإعلانات سناب شات لموسم رمضان.",
@@ -100,6 +105,7 @@ export const DEMO_PROFILES: Record<string, DemoProfile> = {
     clients: [
       {
         name: "Marina Bay Suites (demo)",
+        translation: { name: "أجنحة مارينا باي (تجريبي)", description: "محتوى دائم وحملات حجوزات." },
         industry: "tourism_hospitality",
         country: "ae",
         description: "Always-on content and booking campaigns.",

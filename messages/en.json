@@ -1245,7 +1245,14 @@
     "declineYes": "Yes, decline",
     "closeConfirm": "Close this project? Agencies won't be able to send quotes anymore.",
     "closeYes": "Yes, close it",
-    "acceptedNext": "You accepted this quote. Next: {agency} prepares a contract for you to sign. It appears at the top of this page and in My projects, and you'll get a notification. Meanwhile you can chat with them."
+    "acceptedNext": "You accepted this quote. Next: {agency} prepares a contract for you to sign. It appears at the top of this page and in My projects, and you'll get a notification. Meanwhile you can chat with them.",
+    "serviceGroups": {
+      "chosen": "Chosen services",
+      "remove": "Remove {service}",
+      "hint": "Open a category and tap what you need (up to {count}).",
+      "max": "That's the maximum of {count} services. Remove one to add another.",
+      "count": "{count, plural, one {{count} service} other {{count} services}}"
+    }
   },
   "Opportunities": {
     "tab": "Opportunities",

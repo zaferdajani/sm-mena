@@ -18,6 +18,10 @@ async function main() {
     const line = a.join(" ");
     if (!/password/i.test(line)) console.log(line);
   });
+  // Demo agencies' texts in one language each (lib/db/demo-text-refresh.ts); once, flagged.
+  const { refreshDemoTexts } = await import("./demo-text-refresh");
+  const demo = await refreshDemoTexts(console.log);
+  if (demo) console.log("Staging refresh: demo texts updated.");
   console.log("Staging refresh: done.");
 }
 

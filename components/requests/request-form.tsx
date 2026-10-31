@@ -6,6 +6,7 @@ import { useActionState, useState } from "react";
 import { createRequestAction } from "@/app/[locale]/(main)/request-actions";
 import { FormError } from "@/components/form-error";
 import { ChipGroup, Field } from "@/components/studio/chips";
+import { ServiceGroups } from "@/components/requests/service-groups";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,13 +24,13 @@ export type RequestDefaults = {
 };
 
 export function RequestForm({
-  services,
   cities,
   platforms,
   defaults = {},
   source = "form",
 }: {
-  services: Option[];
+  /** Kept for callers; the picker reads the taxonomy by category itself. */
+  services?: Option[];
   cities: Option[];
   platforms?: Option[];
   defaults?: RequestDefaults;
@@ -47,7 +48,7 @@ export function RequestForm({
       <input type="hidden" name="source" value={source} />
       {!platforms && defaults.platforms?.map((p) => <input key={p} type="hidden" name="platforms" value={p} />)}
       <Field label={t("services")}>
-        <ChipGroup name="services" options={services} defaultValues={defaults.services} />
+        <ServiceGroups defaultValues={defaults.services} />
       </Field>
       {platforms && (
         <Field label={t("platforms")}>

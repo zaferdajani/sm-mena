@@ -374,7 +374,7 @@ s("trademark_registration", G, "brand_identity", "تسجيل العلامة ال
 
 # ───────────── digital ─────────────
 G = "digital"
-s("seo", G, "", "SEO", "SEO",
+s("seo", G, "", "تحسين الظهور في محركات البحث (SEO)", "SEO",
   ["سيو", "SEO", "تصدر جوجل", "تصدر قوقل", "محركات البحث", "أرشفة"], ["seo_specialist"])
 s("arabic_seo", G, "seo", "SEO العربي", "Arabic SEO",
   ["سيو عربي", "كلمات مفتاحية عربية", "Arabic SEO", "أرشفة عربية"], ["seo_specialist", "content_writer_ar"])
