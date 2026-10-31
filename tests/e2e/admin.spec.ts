@@ -80,7 +80,7 @@ test("pausing a page asks first, tells the provider, and shows under Paused", as
   await provider.goto("/en/studio");
   await expect(provider.getByTestId("suspended-notice")).toBeVisible();
   await provider.goto("/en/studio/notifications");
-  await expect(provider.getByText("paused your page")).toBeVisible();
+  await expect(provider.getByTestId("notification").filter({ hasText: "paused your page" })).toBeVisible();
   // Reactivating is not a destructive action: no question, and the notice goes.
   await row.getByTestId("status-toggle").click();
   await provider.goto("/en/studio");
