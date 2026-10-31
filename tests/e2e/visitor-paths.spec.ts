@@ -7,6 +7,8 @@ test("a visitor can ask about a package, the work for a client, and a post, with
   test.setTimeout(150_000);
   const { handle } = await joinAgency(page, "paths");
   await page.goto("/en/studio/packages");
+  // The first package's full form starts folded under the quick first-service card.
+  await page.getByTestId("full-package-form").locator("> summary").click();
   const form = page.getByTestId("package-form").last();
   await form.locator('input[name="title"]').fill("Bakery Starter");
   await form.locator('select[name="service"]').selectOption({ index: 1 });

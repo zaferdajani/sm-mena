@@ -3,6 +3,7 @@ import { attributeReferral } from "@/lib/data/referrals";
 import { assignFoundingSeats } from "@/lib/data/teaser";
 import { createUser, deleteUser, getUserByEmail } from "@/lib/data/users";
 import { internationalPhone } from "@/lib/dial-codes";
+import { JOIN_ROLES } from "@/lib/services/catalog";
 import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
 import { validateHandle } from "@/lib/text";
@@ -54,8 +55,8 @@ export async function registerProvider(input: ProviderSignupInput): Promise<{ ok
       pendingServices: picked.pending,
       kind,
       teamRoles,
-      // Nothing is "looked for" until the provider says so: a guessed list advertised them for roles they never chose.
-      seeksRoles: [],
+      // An agency is offered partners for the key roles it doesn't have in house (it can change this in the studio).
+      seeksRoles: kind === "agency" ? JOIN_ROLES.filter((r) => !teamRoles.includes(r)) : [],
     }, { setupRemindersOptIn: input.reminders === true });
     agencyId = created.id;
     await recordFunnel("account_created", created.id);
