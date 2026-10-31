@@ -5,7 +5,8 @@ import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
 import { getCurrentAgency, getSessionUser } from "@/lib/auth/session";
 
-// "Share → Sawwiq" from Photos or WhatsApp (the installed app's share target, app/manifest.ts; docs/65
+// "Share → Sawwiq" from Photos or WhatsApp (the installed app's share target, app/manifest.ts; docs/65. Under /api so the
+// locale proxy leaves the POST alone;
 // stage 7). The phone posts the pictures here; they are staged privately in the first-run setup draft
 // and the person lands on the one-screen setup with them already in place. Nothing is published.
 export const dynamic = "force-dynamic";

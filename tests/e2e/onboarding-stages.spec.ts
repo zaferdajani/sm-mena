@@ -28,7 +28,7 @@ test("the reminder box is unticked by default and the choice shows under Account
 test("pictures shared from the phone land in the setup draft", async ({ page }) => {
   await joinAgency(page, "share", { stay: true });
   const origin = new URL(page.url()).origin;
-  const response = await page.request.post(`${origin}/share-target`, {
+  const response = await page.request.post(`${origin}/api/share-target`, {
     multipart: {
       title: "From Photos",
       images: { name: "shot.png", mimeType: "image/png", buffer: await pngBuffer("#3b6") },
@@ -36,9 +36,10 @@ test("pictures shared from the phone land in the setup draft", async ({ page }) 
     maxRedirects: 0,
   });
   expect(response.status()).toBe(303);
-  expect(response.headers().location).toMatch(/\/en\/portfolio-setup\?shared=1$/);
+  // The page opens in the page's own content language (Arabic by default).
+  expect(response.headers().location).toMatch(/\/(ar|en)\/portfolio-setup\?shared=1$/);
   await page.goto(response.headers().location!);
-  await expect(page.getByTestId("setup-shared-in")).toContainText("1 photo");
+  await expect(page.getByTestId("setup-shared-in")).toBeVisible();
   await expect(page.getByTestId("setup-media").locator("li")).toHaveCount(1);
 });
 
@@ -69,7 +70,7 @@ test("the page link changes freely before publishing, once after it, and the old
   // The old link still opens the page, at its new address.
   const old = await page.request.get(`/en/a/${handle}`, { maxRedirects: 0 });
   expect(old.status()).toBe(308);
-  expect(old.headers().location).toMatch(new RegExp(`/en/a/${renamed.replace(".", "\\\\.")}$`));
+  expect(old.headers().location?.endsWith(`/en/a/${renamed}`)).toBe(true);
   // Nobody else can take the old link.
   const other = await page.context().browser()!.newContext();
   const otherPage = await other.newPage();

@@ -29,7 +29,7 @@ Rules:
 4. ~~Setup reminders~~ **Done 31 Oct** (`lib/data/setup-reminders.ts`, daily via `/api/cron/retention`; the toggle under Studio → Account). Email only: WhatsApp reminders wait for the owner's answer and a template provider.
 5. ~~Funnel events~~ **Done 31 Oct** (`lib/data/funnel.ts`, tiles on `/admin`). `wa_click` is the existing `contact_click` with channel whatsapp.
 6. **Bulk first run (still open):** many projects at once from one PDF or many photos as project cards (the review screen of `components/studio/portfolio-import.tsx` already does this for the import tool); then the first-run screen and `/studio/new` can share one "add work" component.
-7. ~~PWA share target~~ **Done 31 Oct** (`app/manifest.ts`, `app/share-target/route.ts`). Only an installed app on Android Chrome shows "Sawwiq" in the share sheet; iOS Safari does not support share targets.
+7. ~~PWA share target~~ **Done 31 Oct** (`app/manifest.ts`, `app/api/share-target/route.ts`). Only an installed app on Android Chrome shows "Sawwiq" in the share sheet; iOS Safari does not support share targets.
 8. ~~Handle policy~~ **Done 31 Oct** (`lib/core/rules/handle-policy.ts`, `agencies.previous_handle`, permanent redirect in `/a/[handle]`).
 
 ## Known gaps
