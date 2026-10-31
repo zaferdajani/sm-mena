@@ -1,4 +1,4 @@
-import { AlarmClock, BadgeCheck, BellRing, FileSignature, FileText, Gavel, Handshake, Inbox, MessagesSquare, PackageCheck, RotateCcw, ShieldCheck, Star, XCircle, type LucideIcon } from "lucide-react";
+import { AlarmClock, BadgeCheck, BellRing, FileSignature, FileText, Gavel, Handshake, Inbox, LifeBuoy, MessagesSquare, PackageCheck, RotateCcw, ShieldCheck, Star, XCircle, type LucideIcon } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { NOTIFICATION_KINDS, type NotificationKind } from "@/lib/chat";
@@ -9,6 +9,9 @@ import { serviceLabel } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<NotificationKind, LucideIcon> = {
+  support_received: LifeBuoy,
+  support_update: LifeBuoy,
+  support_reply: LifeBuoy,
   message: MessagesSquare,
   proposal_received: FileText,
   proposal_accepted: BadgeCheck,
@@ -96,6 +99,8 @@ export async function NotificationList({ rows, empty }: { rows: Notification[]; 
           date: params.date ? formatDate(new Date(String(params.date)), locale) : "",
           days: Number(params.days ?? 0),
           count: Number(params.count ?? 1),
+          ref: String(params.ref ?? ""),
+          status: String(params.status ?? "other"),
           services: String(params.services ?? "")
             .split(",")
             .filter(Boolean)

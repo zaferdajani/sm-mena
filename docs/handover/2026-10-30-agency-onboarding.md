@@ -25,12 +25,12 @@ Rules:
 
 1. **Owner answers still open** (see docs/65 "Questions for the owner"): one combined rights-and-audience box (needs legal), founder benefits tied to a published page, done-with-you setup for the founding 100, reminders by email only or WhatsApp too. Do not build any of these before the owner answers.
 2. ~~Live screen additions~~ **Done 31 Oct:** "Open to new projects" switch (`agencies.accepting_projects`, migration 0042, `lib/data/availability.ts`, `components/studio/availability-toggle.tsx`), the badge on the public page, the 60-day "still open?" nudge, and the review request on the live screen.
-3. **"Make it stronger" first step = one service card**: service, price from (JOD), delivery days, optional revisions; then team size band and minimum project; each with the reason "clients filter by this". Reuse `/studio/packages`.
-4. **Setup reminders (opt-in):** an unticked box at sign-up, at most 3 emails over 7 days, stopping when the page is match-ready; through the existing half-hourly Site check. No reminder without the box. Never log the address.
-5. **Funnel events without personal data:** `join_view`, `account_created`, `first_photo_uploaded`, `page_published`, `link_shared`, `wa_click`; activation = published and match-ready within 24 h, and first WhatsApp click or quote within 7 days.
-6. **Bulk first run:** many projects at once from one PDF or many photos as project cards (the review screen of `components/studio/portfolio-import.tsx` already does this for the import tool); then the first-run screen and `/studio/new` can share one "add work" component.
-7. **PWA share target** so "Share → Sawwiq" from Photos or WhatsApp opens the add-work screen with the images loaded. No provider needed.
-8. **Handle policy after first publish:** editable until the first publish, then one change with a 301 from the old link.
+3. ~~"Make it stronger" first step~~ **Done 31 Oct:** first service card and the two basics on `/studio/packages` (`first-service-card.tsx`, `page-basics.tsx`, `strength-actions.ts`). Also done: in-app support notices (`lib/data/support-inbox.ts`, docs/63).
+4. ~~Setup reminders~~ **Done 31 Oct** (`lib/data/setup-reminders.ts`, daily via `/api/cron/retention`; the toggle under Studio → Account). Email only: WhatsApp reminders wait for the owner's answer and a template provider.
+5. ~~Funnel events~~ **Done 31 Oct** (`lib/data/funnel.ts`, tiles on `/admin`). `wa_click` is the existing `contact_click` with channel whatsapp.
+6. **Bulk first run (still open):** many projects at once from one PDF or many photos as project cards (the review screen of `components/studio/portfolio-import.tsx` already does this for the import tool); then the first-run screen and `/studio/new` can share one "add work" component.
+7. ~~PWA share target~~ **Done 31 Oct** (`app/manifest.ts`, `app/api/share-target/route.ts`). Only an installed app on Android Chrome shows "Sawwiq" in the share sheet; iOS Safari does not support share targets.
+8. ~~Handle policy~~ **Done 31 Oct** (`lib/core/rules/handle-policy.ts`, `agencies.previous_handle`, permanent redirect in `/a/[handle]`).
 
 ## Known gaps
 - `tests/live/setup-journey.mjs` (the manual live check) was updated for the one screen but has not been run against production since.

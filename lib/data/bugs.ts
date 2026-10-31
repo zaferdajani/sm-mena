@@ -6,6 +6,7 @@ import { storage } from "@/lib/storage";
 import { errorFingerprint, normalizePath } from "./error-fingerprint";
 import { SUPPORT_STATUSES, type SupportStatus } from "./bug-statuses";
 import { errorEvents, siteChecks, supportMessages, supportRequests } from "@/lib/db/schema";
+import { notifyReporter } from "./support-inbox";
 
 // Automatic error journal (browser and server errors) and user-submitted
 // problem reports, triaged in Admin → Bugs. Modelled on OneClickConvert's bug
@@ -182,6 +183,8 @@ export async function setSupportStatus(id: string, adminId: string | null, statu
     .update(supportRequests)
     .set({ status, adminNote: clip(note, 2000), resolutionCommit: clip(commit, 80) ?? undefined, handledBy: adminId, handledAt: new Date() })
     .where(and(eq(supportRequests.id, id)));
+  // The reporter hears about it in their notification centre too (the email follows from sendSupportUpdates).
+  if (status === "planned" || status === "done" || status === "waiting") await notifyReporter(id, "support_update", db);
 }
 
 /**

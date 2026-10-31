@@ -1,5 +1,6 @@
 import { CheckCircle2, ChevronLeft, Circle, ShieldAlert } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { funnelSummary } from "@/lib/data/funnel";
 import { Link } from "@/i18n/navigation";
 import { aiStatus } from "@/lib/ai/agent";
 import { requireAdmin } from "@/lib/auth/guards";
@@ -19,7 +20,7 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
   const tt = await getTranslations("AdminTeam");
   const showStats = can(me.role, "stats.view");
   const showSystem = can(me.role, "system.view");
-  const [s, attention] = await Promise.all([platformStats(), adminAttention()]);
+  const [s, attention, funnel] = await Promise.all([platformStats(), adminAttention(), funnelSummary()]);
   // What waits for the team, each row one tap from the page that handles it (only sections this role may open).
   const waiting = ([
     ["supportReports", attention.supportReports, "/admin/bugs", "support.manage"],
@@ -33,6 +34,8 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
     ["agencies", s.agencies.active], ["verified", s.agencies.verified], ["paid", s.agencies.paid],
     ["posts", s.posts.total], ["postsRecent", s.posts.recent], ["visitors", s.visitors30d], ["views", s.views30d],
     ["contacts", s.contacts30d], ["inquiries", s.inquiries30d], ["contactsPerAgency", s.contactsPerAgency], ["openReports", s.openReports],
+    // Onboarding funnel, last 30 days (docs/65 stage 5).
+    ["joinViews", funnel.join_view], ["accountsCreated", funnel.account_created], ["firstPhotos", funnel.first_photo_uploaded], ["pagesPublished", funnel.page_published], ["activated24h", funnel.activated24h], ["linksShared", funnel.link_shared],
   ];
   // Plain words for the owner; the technical value (engine, model, provider) stays one tap away.
   const ai = aiStatus();

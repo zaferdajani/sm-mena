@@ -9,7 +9,8 @@ import { AccountTiles } from "@/components/profile/account-tiles";
 import { OwnerClientPanel, OwnerTabHint, OwnerWorkPanel } from "@/components/profile/owner-work-panel";
 import { servesNote } from "@/lib/serves-note";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+import { agencyByPreviousHandle } from "@/lib/data/agencies";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { FeedList } from "@/components/feed/feed-list";
 import { InquiryDialog } from "@/components/profile/inquiry-dialog";
@@ -71,7 +72,12 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
   const rawTab = (await searchParams).tab;
   const tab = rawTab === "about" || rawTab === "reviews" || rawTab === "clients" ? rawTab : "work";
   const found = await visibleAgencyByHandle(handle);
-  if (!found) notFound();
+  if (!found) {
+    // A link shared before the handle changed keeps working (docs/65 stage 8).
+    const moved = await agencyByPreviousHandle(handle);
+    if (moved) permanentRedirect(`/${locale}/a/${moved.handle}`);
+    notFound();
+  }
   // Name, bio, about and strengths in the reader's language when the agency wrote both (lib/content-lang.ts).
   const agency = localizedAgency(found, locale);
 

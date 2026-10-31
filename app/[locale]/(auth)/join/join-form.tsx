@@ -266,6 +266,11 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
           <span>{t("adult")}</span>
         </label>
         {errorLine("adult")}
+        {/* Unticked by default (docs/65 stage 4): at most 3 emails over 7 days, none once the page is ready. */}
+        <label className="sw-join-consent flex items-start gap-3 text-sm">
+          <input type="checkbox" name="reminders" className="mt-1 size-4 accent-[var(--primary)]" data-testid="join-reminders" />
+          <span>{t("reminders")}</span>
+        </label>
         </div>
 
         <div className="sw-join-actions">

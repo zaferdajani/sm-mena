@@ -25,6 +25,7 @@ import {
 import { getItemForAgency, stageItem } from "@/lib/data/social";
 import { publicationFor, setPublication } from "@/lib/data/publication";
 import { PROFILE_VISIBILITIES, type ProfileVisibility } from "@/lib/launch-phase";
+import { recordFunnel } from "@/lib/data/funnel";
 import { contentLang } from "@/lib/content-lang";
 import { assertBehanceUrl } from "@/lib/behance/fetch";
 import { canUse } from "@/lib/feature-gate";
@@ -280,6 +281,8 @@ export async function finishSetupAction(input: unknown): Promise<SetupResult> {
 
   let visibility = publication.visibility;
   if (changing && (await setPublication(user.id, agency.id, p.visibility))) visibility = p.visibility;
+  // A page that was already public counts as published the moment its first project is (docs/65 stage 5).
+  else if (visibility === "public" && agency.postCount === 0) await recordFunnel("page_published", agency.id);
   revalidatePath("/[locale]", "layout");
   return { postId: published.postId, view: (await getSetup(agency.id)) ?? undefined, visibility };
 }

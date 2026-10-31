@@ -99,11 +99,26 @@ export async function getAgencyByOwner(userId: string) {
 
 export async function isHandleTaken(handle: string, exceptAgencyId?: string) {
   const db = await getDb();
+  const wanted = handle.toLowerCase();
+  // A page's old link stays its own: it redirects there (docs/65 stage 8), so nobody else can take it.
   const [row] = await db
     .select({ id: agencies.id })
     .from(agencies)
-    .where(eq(agencies.handle, handle.toLowerCase()));
+    .where(or(eq(agencies.handle, wanted), eq(agencies.previousHandle, wanted)));
   return Boolean(row && row.id !== exceptAgencyId);
+}
+
+/** The page an old link belonged to, for the permanent redirect to its new handle. */
+export async function agencyByPreviousHandle(handle: string) {
+  const db = await getDb();
+  const [row] = await db.select({ handle: agencies.handle }).from(agencies).where(and(eq(agencies.previousHandle, handle.toLowerCase()), eq(agencies.status, "active")));
+  return row ?? null;
+}
+
+/** Records a handle change made after the first publish: the old link redirects, and the one change is spent. */
+export async function recordHandleChange(agencyId: string, previousHandle: string) {
+  const db = await getDb();
+  await db.update(agencies).set({ previousHandle: previousHandle.toLowerCase(), handleChangedAt: new Date() }).where(eq(agencies.id, agencyId));
 }
 
 export type AgencySummary = {

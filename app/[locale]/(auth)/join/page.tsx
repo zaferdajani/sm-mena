@@ -3,7 +3,9 @@ import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { isCrawler } from "@/lib/crawler";
+import { recordFunnel } from "@/lib/data/funnel";
 import { currentCountry, phoneCountry } from "@/lib/country-choice";
 import { isReferralCode, normalizeCode, REFERRAL_COOKIE } from "@/lib/referrals";
 import { countryOptions } from "@/lib/country-options";
@@ -28,6 +30,8 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   const fromCookie = (await cookies()).get(REFERRAL_COOKIE)?.value;
   const refCode = [fromUrl, fromCookie].map(normalizeCode).find((c) => isReferralCode(c)) ?? "";
   setRequestLocale(locale);
+  // The funnel's first step (docs/65 stage 5): a count, never who.
+  if (!isCrawler((await headers()).get("user-agent") ?? "")) await recordFunnel("join_view");
   const t = await getTranslations("Auth");
   const [countries, country, phoneFrom] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry()]);
   const r = await getTranslations("Registration");

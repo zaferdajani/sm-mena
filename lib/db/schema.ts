@@ -62,6 +62,12 @@ export const eventType = pgEnum("event_type", [
   "recommended",
   "proposal",
   "ai_chat",
+  // Onboarding funnel (docs/65 stage 5): counts only, never who.
+  "join_view",
+  "account_created",
+  "first_photo_uploaded",
+  "page_published",
+  "link_shared",
 ]);
 export const contactChannel = pgEnum("contact_channel", [
   "whatsapp",
@@ -341,6 +347,15 @@ export const agencies = pgTable(
     // timestamp is when the owner last set or confirmed it, so a stale answer can be asked again.
     acceptingProjects: boolean("accepting_projects").notNull().default(true),
     acceptingUpdatedAt: timestamp("accepting_updated_at", { withTimezone: true }),
+    // Setup reminders (docs/65 stage 4): an unticked box at sign-up; at most 3 emails over 7 days, stopping
+    // once the page is match-ready. The count and the last send make every reminder go once.
+    setupRemindersOptIn: boolean("setup_reminders_opt_in").notNull().default(false),
+    setupRemindersSent: integer("setup_reminders_sent").notNull().default(0),
+    setupReminderAt: timestamp("setup_reminder_at", { withTimezone: true }),
+    // Handle policy (docs/65 stage 8): free to change until the first project is published, then once;
+    // the old link redirects to the new one.
+    previousHandle: text("previous_handle"),
+    handleChangedAt: timestamp("handle_changed_at", { withTimezone: true }),
     // The marketing agent who brought this provider (docs/42), and why an admin voided it, if they did.
     referredByAgentId: uuid("referred_by_agent_id"),
     referralVoidReason: text("referral_void_reason"),

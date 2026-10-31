@@ -31,9 +31,11 @@ export type ProfileFormProps = {
     contentLang: string; translation: AgencyTranslation | null;
   };
   options: { roles: Option[]; popularServices: string[]; countries: CountryOption[]; platforms: Option[]; industries: Option[]; languages: Option[]; teamSizes: Option[] };
+  /** The handle rule for this page (lib/core/rules/handle-policy.ts): free, once more, or locked. */
+  handleRule?: "free" | "once_left" | "locked";
 };
 
-export function ProfileForm({ agency, options, welcome = false }: ProfileFormProps & { welcome?: boolean }) {
+export function ProfileForm({ agency, options, welcome = false, handleRule = "free" }: ProfileFormProps & { welcome?: boolean }) {
   const t = useTranslations("Studio.profileForm");
   // Saved numbers split back into their country picker and local part.
   const wa = splitPhone(agency.whatsapp, agency.country.toUpperCase());
@@ -134,7 +136,10 @@ export function ProfileForm({ agency, options, welcome = false }: ProfileFormPro
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={tk("name")} htmlFor="name"><Input id="name" name="name" required maxLength={80} defaultValue={agency.name} {...langAttrs(main)} /></Field>
-        <Field label={t("handle")} htmlFor="handle"><Input id="handle" name="handle" required maxLength={30} dir="ltr" defaultValue={agency.handle} /></Field>
+        <Field label={t("handle")} htmlFor="handle">
+          <Input id="handle" name="handle" required maxLength={30} dir="ltr" defaultValue={agency.handle} readOnly={handleRule === "locked"} aria-describedby="handle-rule" data-testid="profile-handle" />
+          <p id="handle-rule" className="text-xs text-muted-foreground" data-testid="handle-rule" data-rule={handleRule}>{t(`handleRule.${handleRule}`)}</p>
+        </Field>
       </div>
       <Field label={t("bio")} htmlFor="bio"><Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={agency.bio} placeholder={tk("bioPlaceholder")} {...langAttrs(main)} /></Field>
       <Field label={tk("about")} htmlFor="about"><Textarea id="about" name="about" rows={5} maxLength={1500} defaultValue={agency.about} placeholder={tk("aboutPlaceholder")} {...langAttrs(main)} /></Field>

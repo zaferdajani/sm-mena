@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, login, pngBuffer } from "./helpers";
+import { ADMIN, joinAgency, login, pngBuffer } from "./helpers";
 
 // docs/61: a complaint with a screenshot, sent from an Arabic phone, reaches Admin → Bugs
 // with its report number, page and screen size; the screenshot is private to staff.
@@ -35,4 +35,21 @@ test("a complaint with a screenshot reaches Admin → Bugs, screenshot private",
   const visitor = await browser.newContext();
   expect((await visitor.request.get(src)).status()).toBe(404);
   await visitor.close();
+});
+
+// docs/63: the reporter hears about the report in their notification centre too, never with the report text.
+test("a signed-in agency's report shows up in its Studio notifications", async ({ page }) => {
+  await joinAgency(page, "notice");
+  const message = `البحث لا يعمل ${Date.now()}`;
+  await page.goto("/ar/support?from=/ar/studio");
+  await page.fill("#message", message);
+  await page.getByTestId("support-form").getByRole("button", { name: "إرسال" }).click();
+  await expect(page.getByTestId("support-sent")).toBeVisible();
+  const ref = (await page.getByTestId("support-ref").textContent())!.trim();
+  await page.goto("/ar/studio/notifications");
+  const notice = page.locator('[data-testid="notification"][data-kind="support_received"]').first();
+  await expect(notice).toBeVisible();
+  await expect(notice).toContainText(ref);
+  await expect(notice).not.toContainText("البحث لا يعمل");
+  await expect(notice).toHaveAttribute("href", /\/ar\/support\/t\//);
 });

@@ -104,6 +104,7 @@ export async function join(_: FormState, formData: FormData): Promise<FormState>
     newServices: all("newServices"),
     teamRoles: all("teamRoles"),
     ref: String(formData.get("ref") ?? ""),
+    reminders: formData.get("reminders") === "on",
   });
   if ("error" in created) return { error: created.error, fields };
   const user = { id: created.userId };

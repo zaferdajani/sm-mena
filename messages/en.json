@@ -122,7 +122,8 @@
     "refCodeOpen": "Did a Sawwiq agent introduce you? Add their code",
     "consentLink": "Read the terms",
     "handleEnglishOnly": "The page link takes English letters, numbers, dots and _ only (like riyada.media). Other letters were left out.",
-    "handleFromEmail": "Your page link. Type it in English letters, or we'll suggest one from your email."
+    "handleFromEmail": "Your page link. Type it in English letters, or we'll suggest one from your email.",
+    "reminders": "Remind me by email to finish my page: at most 3 emails in the first week, none once the page is ready."
   },
   "Cities": {
     "amman": "Amman",
@@ -683,7 +684,8 @@
         "email": "Invalid email.",
         "avatar": "Could not upload the picture.",
         "generic": "Could not save.",
-        "socialLink": "One of the channel links is not on its network."
+        "socialLink": "One of the channel links is not on its network.",
+        "handleLocked": "The link can no longer be changed."
       },
       "country": "Country",
       "about": "Introduction",
@@ -712,7 +714,12 @@
       "aboutFreelancer": "About you",
       "aboutPlaceholderFreelancer": "Who you are, how you work and what you excel at…",
       "startingPriceHintFreelancer": "Your smallest package. Shown as \"From\".",
-      "servesHintFreelancer": "You'll also appear to businesses looking there, marked as based in {country}."
+      "servesHintFreelancer": "You'll also appear to businesses looking there, marked as based in {country}.",
+      "handleRule": {
+        "free": "You can change the link freely until your first project is published.",
+        "once_left": "Your first project is published, so the link can change once more; the old link will redirect to the new one.",
+        "locked": "The link was changed after publishing; it cannot change again. The old link redirects here."
+      }
     },
     "inboxPage": {
       "empty": "No messages yet. Messages from the \"Message\" button on your page arrive here.",
@@ -806,7 +813,13 @@
       "contacts": "Contact clicks (30 days)",
       "inquiries": "Messages (30 days)",
       "openReports": "Open reports",
-      "contactsPerAgency": "Clicks per agency"
+      "contactsPerAgency": "Clicks per agency",
+      "joinViews": "Sign-up views (30d)",
+      "accountsCreated": "Accounts created (30d)",
+      "firstPhotos": "First photo uploaded (30d)",
+      "pagesPublished": "Pages published (30d)",
+      "activated24h": "Published within 24 h (30d)",
+      "linksShared": "Links shared (30d)"
     },
     "readiness": {
       "title": "Revenue switch-on readiness",
@@ -1099,7 +1112,8 @@
       "includes": "What's included",
       "deliveryDays": "Delivered within (days, optional)",
       "edit": "Edit",
-      "deliverablesMore": "Something else included that isn't in the list? (optional)"
+      "deliverablesMore": "Something else included that isn't in the list? (optional)",
+      "fullForm": "Need more? Open the full package form"
     },
     "pin": "Pin to top",
     "unpin": "Unpin",
@@ -2833,7 +2847,10 @@
       "account_reactivated": "Your page is visible again.",
       "account_verified": "Your page is verified: it now shows the verified badge.",
       "service_approved": "“{service}” was approved and is now a Sawwiq service.",
-      "service_rejected": "“{service}” wasn't added to Sawwiq's services. You can pick a close service from the list."
+      "service_rejected": "“{service}” wasn't added to Sawwiq's services. You can pick a close service from the list.",
+      "support_received": "We received your report {ref}. We will tell you here when there is news.",
+      "support_update": "Report {ref}: {status, select, planned {being worked on} done {handled} waiting {we need a detail from you} other {updated}}. Open it to see more.",
+      "support_reply": "Support replied to your report {ref}. Open it to read the reply."
     },
     "startRequest": "Request a project",
     "signIn": "Sign in"
@@ -5459,7 +5476,8 @@
         "intro": "Write a two-line introduction",
         "price": "Add a package or a starting price",
         "moreWork": "Add two more projects: pages with 3 look real"
-      }
+      },
+      "sharedIn": "{count, plural, =0 {Nothing came through. Pick the photos here instead.} one {# photo added from your phone.} other {# photos added from your phone.}}"
     }
   },
   "Social": {
@@ -6026,5 +6044,46 @@
       "seen": "Seen",
       "quotes": "Quotes"
     }
+  },
+  "Strength": {
+    "serviceCard": {
+      "title": "Your first service card",
+      "body": "One service with a price. Clients compare prices before they write, and the matchmaker uses it too.",
+      "saved": "Saved. It shows on your page under Services and packages.",
+      "service": "Service",
+      "price": "Price (JOD)",
+      "priceHint": "A starting price is fine; add 'from' in the description later.",
+      "delivery": "Delivery (days)",
+      "deliveryHint": "Optional. How long one order takes.",
+      "billing": {
+        "one_off": "One-off",
+        "monthly": "Monthly"
+      },
+      "why": "Clients filter by price and delivery time on every directory. A card beats 'contact us for a quote'.",
+      "save": "Save the card"
+    },
+    "basics": {
+      "title": "Two facts clients look for",
+      "body": "Team size and the smallest project you take. Both are optional; both are on every agency card elsewhere.",
+      "saved": "Saved.",
+      "error": "Check the numbers and try again.",
+      "teamSize": "Team size",
+      "teamSizeNone": "Prefer not to say",
+      "minProject": "Smallest project (JOD)",
+      "minProjectHint": "Below this you usually say no. Clients use it to self-select.",
+      "save": "Save"
+    }
+  },
+  "SetupReminderEmail": {
+    "subject": "Your Sawwiq page is almost ready",
+    "body": "You asked us to remind you. Your page is one step from being ready for business owners:\\n{step}\\n\\nOpen your Studio:",
+    "stop": "To stop these reminders, open Studio → Account → Setup reminders. At most three are sent, in your first week."
+  },
+  "SetupReminders": {
+    "title": "Setup reminders",
+    "on": "On: up to 3 emails in your first week, none once your page is ready.",
+    "off": "Off.",
+    "turnOff": "Turn off",
+    "turnOn": "Turn on"
   }
 }
