@@ -9,6 +9,7 @@ import ar from "@/messages/ar.json";
 import en from "@/messages/en.json";
 import { supportRef, type SupportStatus } from "./bugs";
 import type { Attachment } from "./support-files";
+import { notifyReporter } from "./support-inbox";
 
 // The conversation on a problem report (docs/63). The reporter opens it with
 // the private link /support/t/<token> (from the help chat, "My reports" or an
@@ -69,6 +70,7 @@ export async function addStaffReply(requestId: string, body: string, status?: Su
   const db = await getDb();
   await db.insert(supportMessages).values({ requestId, author: "staff", body: body.slice(0, 4000) });
   await db.update(supportRequests).set({ reporterUnread: true, ...(status ? { status, handledAt: new Date() } : {}) }).where(eq(supportRequests.id, requestId));
+  await notifyReporter(requestId, "support_reply", db);
 }
 
 export function replyEmail(ref: string, locale: string | null, token: string) {

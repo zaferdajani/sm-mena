@@ -3,6 +3,10 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { FileSignature } from "lucide-react";
 import { BehanceShortcut } from "@/components/studio/behance-shortcut";
 import { PackageForm } from "@/components/studio/package-form";
+import { FirstServiceCard } from "@/components/studio/first-service-card";
+import { PageBasics } from "@/components/studio/page-basics";
+import { FOOTER_SERVICES } from "@/components/shell/site-footer";
+import { TEAM_SIZES } from "@/lib/core/catalog/labels";
 import { Link } from "@/i18n/navigation";
 import { PLATFORMS } from "@/lib/labels";
 import { requireAgency } from "@/lib/auth/guards";
@@ -20,11 +24,15 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
   const ts = await getTranslations("Studio");
   const tp = await getTranslations("Platforms");
   const tc = await getTranslations("Contracts");
+  const tTeam = await getTranslations("TeamSize");
   const platforms = PLATFORMS.map((p) => ({ key: p, label: tp(p) }));
   const lang = await getLocale();
   const rows = await listPackages(agency.id);
   const own = allServices.filter((s) => agency.services.includes(s.key));
   const services = (own.length ? own : allServices).map((s) => ({ key: s.key, label: lang === "ar" ? s.name_ar : s.name_en }));
+  // The first card asks for one service: the page's own first, else the common ones (docs/65 stage 3).
+  const firstServices = own.length ? services : services.filter((s) => (FOOTER_SERVICES as readonly string[]).includes(s.key));
+  const basicsMissing = !agency.teamSize || agency.startingPriceJod === null;
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       {welcome && (
@@ -36,6 +44,8 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
           </p>
         </div>
       )}
+      {rows.length === 0 && <FirstServiceCard services={firstServices} />}
+      {basicsMissing && <PageBasics teamSizes={TEAM_SIZES.map((key) => ({ key, label: tTeam(key) }))} teamSize={agency.teamSize} startingPriceJod={agency.startingPriceJod} />}
       <p className="text-sm text-muted-foreground">{t("studio.intro")}</p>
       {rows.map((p) => (
         <div key={p.id} className="space-y-1">
@@ -45,7 +55,14 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
           </Link>}
         </div>
       ))}
-      {rows.length < MAX_PACKAGES ? <PackageForm key={`new-${rows.length}`} services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} /> : <p className="text-sm text-muted-foreground">{t("studio.limit")}</p>}
+      {rows.length < MAX_PACKAGES ? (
+        rows.length === 0 ? (
+          <details className="rounded-xl border p-4" data-testid="full-package-form">
+            <summary className="min-h-11 cursor-pointer text-sm font-semibold">{t("studio.fullForm")}</summary>
+            <div className="pt-3"><PackageForm key={`new-${rows.length}`} services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} /></div>
+          </details>
+        ) : <PackageForm key={`new-${rows.length}`} services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} />
+      ) : <p className="text-sm text-muted-foreground">{t("studio.limit")}</p>}
     </div>
   );
 }
