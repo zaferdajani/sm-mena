@@ -25,10 +25,12 @@ export type PostFormProps = {
   clients: Option[];
   /** The agency's main language; the optional translation is in the other one. */
   contentLang: ContentLang;
+  /** A new post for this client (from "Add work for this client"); one of `clients`. */
+  defaultClientId?: string;
   initial?: { postId: string; caption: string; services: string[]; platforms: string[]; industry: string | null; result: string | null; clientId: string | null; images: string[]; translation?: PostTranslation; app?: PostApp | null; video?: string; importedVideo?: boolean };
 };
 
-export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial }: PostFormProps) {
+export function PostForm({ mode, services, platforms, industries, clients, contentLang, initial, defaultClientId }: PostFormProps) {
   const t = useTranslations("Studio.form");
   const tc = useTranslations("PortfolioClients");
   const [state, formAction] = useActionState(mode === "create" ? createPostAction : updatePostAction, undefined);
@@ -193,7 +195,7 @@ export function PostForm({ mode, services, platforms, industries, clients, conte
       </details>
       <Field label={tc("postClient")} hint={tc("postClientHint")} htmlFor="clientId">
         <div className="flex items-center gap-3">
-          <select id="clientId" name="clientId" defaultValue={initial?.clientId ?? ""} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm">
+          <select id="clientId" name="clientId" defaultValue={initial?.clientId ?? (clients.some((o) => o.key === defaultClientId) ? defaultClientId : "")} className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-transparent px-2 text-sm">
             <option value="">{tc("postClientNone")}</option>
             {clients.map((o) => (
               <option key={o.key} value={o.key}>{o.label}</option>
