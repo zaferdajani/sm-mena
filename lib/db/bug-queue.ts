@@ -9,6 +9,7 @@ import { closeDb, getDb, type DB } from "./index";
 import { appSettings, auditLogs, errorEvents, supportMessages, supportRequests, users } from "./schema";
 import { newRunKeys, open, queueReplies, queueUpdates, redactContact, seal, type QueueBundle, type QueueReply, type SealedBundle } from "../bug-queue";
 import { storage } from "../storage";
+import { notifyReporter } from "../data/support-inbox";
 
 const ref = (id: string) => id.slice(0, 8).toUpperCase();
 const REPLY_KEY = "bug_agent_reply_key";
@@ -121,6 +122,7 @@ async function applyReplies(db: DB) {
       .set({ reporterUnread: true, ...(r.status ? { status: r.status, handledAt: new Date(), handledBy: null } : {}), ...(r.commit ? { resolutionCommit: r.commit } : {}) })
       .where(eq(supportRequests.id, match.id));
     await db.insert(auditLogs).values({ actorUserId: null, action: "support.agent_reply", entity: "support_request", entityId: match.id, meta: { via: "bug-agent", status: r.status ?? null } });
+    await notifyReporter(match.id, "support_reply", db);
     // Counts only: the log is public.
     console.log(`Reply on ${r.ref}${r.status ? ` → ${r.status}` : ""}`);
     written++;
@@ -151,6 +153,7 @@ async function applyUpdates() {
         .set({ status: u.status, adminNote: u.note, resolutionCommit: u.commit ?? null, handledBy: null, handledAt: new Date() })
         .where(eq(supportRequests.id, match.id));
       await db.insert(auditLogs).values({ actorUserId: null, action: `support.${u.status}`, entity: "support_request", entityId: match.id, meta: { via: "bug-agent", commit: u.commit ?? null } });
+      await notifyReporter(match.id, "support_update", db);
       console.log(`Report ${u.ref} → ${u.status}`);
     } else {
       const resolved = u.status !== "investigating";

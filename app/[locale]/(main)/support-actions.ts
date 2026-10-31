@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getSessionUser } from "@/lib/auth/session";
 import { replyAddress, SUPPORT_KINDS, submitSupportRequest, supportRef } from "@/lib/data/bugs";
 import { notifySupportReceived } from "@/lib/data/support-notify";
+import { notifyReporter } from "@/lib/data/support-inbox";
 import { rateLimit } from "@/lib/rate-limit";
 import { releaseInfo } from "@/lib/release";
 import { clientIp } from "@/lib/request";
@@ -60,5 +61,7 @@ export async function submitSupportAction(_: SupportState, formData: FormData): 
   });
   // The receipt email is a courtesy; the report is already stored.
   await notifySupportReceived(id).catch((e) => console.warn("[support] receipt email:", e instanceof Error ? e.message : e));
+  // The same receipt in their notification centre (docs/63).
+  await notifyReporter(id, "support_received").catch(() => false);
   return { done: true, ref: supportRef(id), token: accessToken ?? undefined };
 }

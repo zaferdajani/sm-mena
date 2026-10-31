@@ -993,7 +993,8 @@
         "generic": "Could not save."
       },
       "includes": "What's included",
-      "deliveryDays": "Delivered within (days, optional)"
+      "deliveryDays": "Delivered within (days, optional)",
+      "fullForm": "Need more? Open the full package form"
     },
     "pin": "Pin to top",
     "unpin": "Unpin",
@@ -2571,7 +2572,10 @@
       "reminder_inquiry_to_answer": "Reminder: an inquiry is waiting for your reply: “{title}”",
       "reminder_hold_expiring": "Reminder: the capacity hold on “{title}” expires soon",
       "reminder_availability_stale": "Reminder: your availability needs confirming",
-      "owner_intro": "A business owner in {city} asked to be introduced to you: {services}"
+      "owner_intro": "A business owner in {city} asked to be introduced to you: {services}",
+      "support_received": "We received your report {ref}. We will tell you here when there is news.",
+      "support_update": "Report {ref}: {status, select, planned {being worked on} done {handled} waiting {we need a detail from you} other {updated}}. Open it to see more.",
+      "support_reply": "Support replied to your report {ref}. Open it to read the reply."
     }
   },
   "PortfolioClients": {
@@ -5698,5 +5702,34 @@
     "stale": "Still open to new projects? It has been a while since you confirmed.",
     "confirm": "Yes, still open",
     "closeNow": "Pause for now"
+  },
+  "Strength": {
+    "serviceCard": {
+      "title": "Your first service card",
+      "body": "One service with a price. Clients compare prices before they write, and the matchmaker uses it too.",
+      "saved": "Saved. It shows on your page under Services and packages.",
+      "service": "Service",
+      "price": "Price (JOD)",
+      "priceHint": "A starting price is fine; add 'from' in the description later.",
+      "delivery": "Delivery (days)",
+      "deliveryHint": "Optional. How long one order takes.",
+      "billing": {
+        "one_off": "One-off",
+        "monthly": "Monthly"
+      },
+      "why": "Clients filter by price and delivery time on every directory. A card beats 'contact us for a quote'.",
+      "save": "Save the card"
+    },
+    "basics": {
+      "title": "Two facts clients look for",
+      "body": "Team size and the smallest project you take. Both are optional; both are on every agency card elsewhere.",
+      "saved": "Saved.",
+      "error": "Check the numbers and try again.",
+      "teamSize": "Team size",
+      "teamSizeNone": "Prefer not to say",
+      "minProject": "Smallest project (JOD)",
+      "minProjectHint": "Below this you usually say no. Clients use it to self-select.",
+      "save": "Save"
+    }
   }
 }
