@@ -46,7 +46,7 @@ The same path we took on OneClickConvert: first make every page honest and index
 
 Volumes are unmeasured. Replace this list with Search Console data after about 60 days, as on OneClickConvert.
 
-The term **SEO** stays in English in every language (service name, hire page, deliverables and copy); `tests/unit/taxonomy.test.ts` checks it. The matchmaker still understands «سيو» and «تحسين محركات البحث» when a client types them (`lib/ai/extract.ts`).
+The service is named in Arabic with the acronym kept: «تحسين الظهور في محركات البحث (SEO)» (owner decision, 31 Oct 2026); English stays "SEO", and sub-services keep the acronym in their names. The transliteration «السيو» stays out of names and copy (`tests/unit/taxonomy.test.ts`); the matchmaker and service search still understand «سيو» and «تحسين محركات البحث» when a client types them (`lib/ai/extract.ts`, catalog aliases).
 
 | Page | Arabic phrase | English phrase | Kind |
 |---|---|---|---|
