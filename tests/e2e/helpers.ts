@@ -85,3 +85,14 @@ export async function signInClient(page: Page, email = `client-${Date.now()}-${M
   await page.waitForURL((url) => !url.pathname.endsWith("/signin"));
   return email;
 }
+
+/**
+ * Studio → Packages, ready to add one: the new-package form, unfolded when the page shows it folded under the
+ * quick "first service" card (an agency with no packages yet, docs/65).
+ */
+export async function newPackageForm(page: Page) {
+  await page.goto("/en/studio/packages");
+  const folded = page.getByTestId("full-package-form");
+  if (await folded.count()) await folded.locator("> summary").click();
+  return page.getByTestId("package-form").last();
+}

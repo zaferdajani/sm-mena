@@ -1,15 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { joinAgency, pngBuffer } from "./helpers";
+import { joinAgency, pngBuffer, newPackageForm } from "./helpers";
 
 // Visitor paths from the usability review (2026-10-31): a next step wherever a visitor looks.
 
 test("a visitor can ask about a package, the work for a client, and a post, without going back up the page", async ({ page, browser }) => {
   test.setTimeout(150_000);
   const { handle } = await joinAgency(page, "paths");
-  await page.goto("/en/studio/packages");
-  // The first package's full form starts folded under the quick first-service card.
-  await page.getByTestId("full-package-form").locator("> summary").click();
-  const form = page.getByTestId("package-form").last();
+  const form = await newPackageForm(page);
   await form.locator('input[name="title"]').fill("Bakery Starter");
   await form.locator('select[name="service"]').selectOption({ index: 1 });
   await form.locator('input[name="priceJod"]').fill("250");
