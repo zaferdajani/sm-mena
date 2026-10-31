@@ -116,6 +116,13 @@ test("two milestones: pay in, deliver, changes (rounds), dispute with evidence, 
   const card = admin.getByTestId("dispute").filter({ hasText: `Agency ${handle}` });
   await expect(card.getByTestId("admin-evidence")).toContainText("only English arrived");
   await expect(card.getByTestId("admin-evidence")).toContainText("sent by WhatsApp");
+  // Nothing is pre-chosen; the admin picks split, and confirms who gets what before the money moves.
+  await expect(card.getByRole("button", { name: "Issue decision (appealable for 7 days)" })).toBeDisabled();
+  await card.getByTestId("decision-split").check();
+  admin.on("dialog", (d) => {
+    expect(d.message()).toContain("to the agency");
+    void d.accept();
+  });
   await card.getByTestId("split-release").fill("100");
   await card.getByTestId("split-refund").fill("50");
   await card.getByTestId("decision-reason").fill("Logo delivered in full; the menu is half done (English only).");
@@ -136,6 +143,7 @@ test("two milestones: pay in, deliver, changes (rounds), dispute with evidence, 
   await admin.reload();
   const again = admin.getByTestId("dispute").filter({ hasText: `Agency ${handle}` });
   await expect(again).toContainText("The Arabic menu never arrived");
+  await again.getByTestId("decision-split").check();
   await again.getByTestId("split-release").fill("75");
   await again.getByTestId("split-refund").fill("75");
   await again.getByTestId("decision-reason").fill("On appeal: the Arabic menu was a draft, so half the milestone is refunded.");

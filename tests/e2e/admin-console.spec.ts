@@ -106,6 +106,12 @@ test("admin console sections load", async ({ page }) => {
   await expect(page.getByTestId("admin-users")).toContainText(ADMIN.email);
   await page.goto("/en/admin/audit");
   await expect(page.getByTestId("audit-log")).toBeVisible();
+  // Entries read as sentences; the raw code is behind "Details".
+  await expect(page.getByTestId("audit-log")).toContainText("Signed in");
+  await page.goto("/en/admin/requests");
+  await expect(page.getByTestId("admin-requests")).toContainText("Project requests");
+  await page.getByRole("group").getByRole("link", { name: "All" }).click();
+  await expect(page).toHaveURL(/\/en\/admin\/requests\?status=all$/);
   await page.goto("/en/admin/security");
   await expect(page.getByTestId("mfa-start")).toBeVisible();
   await page.goto("/en/admin");

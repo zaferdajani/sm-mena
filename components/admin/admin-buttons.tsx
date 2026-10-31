@@ -65,13 +65,13 @@ export function ReactivateButton({ id }: { id: string }) {
   );
 }
 
-export function ReportButtons({ id, postId, hidden }: { id: string; postId: string | null; hidden: boolean }) {
+export function ReportButtons({ id, postId, hidden, handled = false }: { id: string; postId: string | null; hidden: boolean; handled?: boolean }) {
   const t = useTranslations("Admin");
   return (
     <div className="flex flex-wrap gap-2">
-      {!hidden && <ActionButton variant="destructive" onRun={() => resolveReportAction(id, "hide")}>{t("hidePost")}</ActionButton>}
+      {!hidden && <ActionButton variant="destructive" confirmText={t("hidePostConfirm")} onRun={() => resolveReportAction(id, "hide")}>{t("hidePost")}</ActionButton>}
       {hidden && postId && <ActionButton onRun={() => setPostStatusAction(postId, "published")}>{t("unhide")}</ActionButton>}
-      <ActionButton onRun={() => resolveReportAction(id, "dismiss")}>{t("dismiss")}</ActionButton>
+      {!handled && <ActionButton confirmText={t("dismissConfirm")} onRun={() => resolveReportAction(id, "dismiss")}>{t("dismiss")}</ActionButton>}
     </div>
   );
 }
@@ -84,7 +84,7 @@ export function PromotionButtons({ id, status }: { id: string; status: "active" 
       <ActionButton onRun={() => setPromotionStatusAction(id, status === "active" ? "paused" : "active")}>
         {status === "active" ? t("pause") : t("resume")}
       </ActionButton>
-      <ActionButton variant="destructive" onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
+      <ActionButton variant="destructive" confirmText={t("endConfirm")} onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export function CollabFeedbackStatusButton({ id, status }: { id: string; status:
   return (
     <span className="flex flex-wrap gap-2">
       {status !== "published" && <ActionButton variant="outline" testId="collab-feedback-publish" onRun={() => setCollabFeedbackStatusAction(id, "published")}>{t("show")}</ActionButton>}
-      {status !== "hidden" && <ActionButton variant="destructive" testId="collab-feedback-moderate" onRun={() => setCollabFeedbackStatusAction(id, "hidden")}>{t("hide")}</ActionButton>}
+      {status !== "hidden" && <ActionButton variant="destructive" testId="collab-feedback-moderate" confirmText={t("hideConfirm")} onRun={() => setCollabFeedbackStatusAction(id, "hidden")}>{t("hide")}</ActionButton>}
     </span>
   );
 }
@@ -102,7 +102,7 @@ export function CollabFeedbackStatusButton({ id, status }: { id: string; status:
 export function ReviewStatusButton({ id, status }: { id: string; status: "published" | "hidden" }) {
   const t = useTranslations("Reviews.admin");
   return (
-    <ActionButton variant={status === "published" ? "destructive" : "outline"} onRun={() => setReviewStatusAction(id, status === "published" ? "hidden" : "published")}>
+    <ActionButton variant={status === "published" ? "destructive" : "outline"} confirmText={status === "published" ? t("hideConfirm") : undefined} onRun={() => setReviewStatusAction(id, status === "published" ? "hidden" : "published")}>
       {status === "published" ? t("hide") : t("show")}
     </ActionButton>
   );

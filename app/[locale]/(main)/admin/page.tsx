@@ -34,13 +34,15 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
     ["posts", s.posts.total], ["postsRecent", s.posts.recent], ["visitors", s.visitors30d], ["views", s.views30d],
     ["contacts", s.contacts30d], ["inquiries", s.inquiries30d], ["contactsPerAgency", s.contactsPerAgency], ["openReports", s.openReports],
   ];
-  const health: [string, string][] = [
-    ["database", process.env.DATABASE_URL ? "Postgres" : "PGlite"],
-    ["storage", process.env.STORAGE_PROVIDER === "supabase" ? "Supabase" : "local"],
-    ["ai", aiStatus()],
-    ["google", googleConfigured() ? t("health.on") : t("health.off")],
-    ["payments", paymentProvider().label],
-    ["mfa", mfaKeyConfigured() ? t("health.on") : t("health.off")],
+  // Plain words for the owner; the technical value (engine, model, provider) stays one tap away.
+  const ai = aiStatus();
+  const health: [string, string, string][] = [
+    ["database", process.env.DATABASE_URL ? t("health.ready") : t("health.localCopy"), process.env.DATABASE_URL ? "Postgres" : "PGlite"],
+    ["storage", process.env.STORAGE_PROVIDER === "supabase" ? t("health.ready") : t("health.localFiles"), process.env.STORAGE_PROVIDER === "supabase" ? "Supabase" : "local"],
+    ["ai", ai === "basic" ? t("health.aiBasic") : t("health.aiOn"), ai],
+    ["google", googleConfigured() ? t("health.on") : t("health.off"), ""],
+    ["payments", paymentProvider().id === "mock" ? t("health.paymentsTest") : t("health.on"), paymentProvider().id],
+    ["mfa", mfaKeyConfigured() ? t("health.on") : t("health.off"), ""],
   ];
   return (
     <div className="space-y-6">
@@ -110,10 +112,14 @@ export default async function AdminDashboard({ params }: PageProps<"/[locale]/ad
             {health.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b py-1 last:border-0">
                 <dt className="text-muted-foreground">{t(`health.${k}` as "health.ai")}</dt>
-                <dd className="min-w-0 truncate font-medium" dir="ltr">{v}</dd>
+                <dd className="min-w-0 truncate font-medium">{v}</dd>
               </div>
             ))}
           </dl>
+          <details className="mt-2 text-xs text-muted-foreground">
+            <summary className="cursor-pointer">{t("health.technical")}</summary>
+            <p className="break-all" dir="ltr">{health.filter(([, , raw]) => raw).map(([k, , raw]) => `${k}: ${raw}`).join(" · ")}</p>
+          </details>
         </section>
       )}
     </div>

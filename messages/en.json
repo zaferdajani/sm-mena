@@ -823,7 +823,8 @@
         "dates": "End must be after start.",
         "generic": "Could not create."
       },
-      "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day."
+      "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day.",
+      "endConfirm": "End this promotion? This can't be undone."
     },
     "statistics": "Statistics",
     "payments": "Payments",
@@ -843,7 +844,14 @@
       "off": "off",
       "mfaMissingKey": "MFA_ENCRYPTION_KEY is not set: admins can't use two-factor sign-in.",
       "mfaYouOff": "Your account has no two-factor sign-in.",
-      "turnOn": "Turn it on"
+      "turnOn": "Turn it on",
+      "ready": "Ready",
+      "localCopy": "Local test copy",
+      "localFiles": "On this server only",
+      "aiBasic": "Basic mode (no AI key)",
+      "aiOn": "On",
+      "paymentsTest": "Test mode: no real money",
+      "technical": "Technical details"
     },
     "deactivated": "Deactivated",
     "reactivate": "Reactivate",
@@ -862,7 +870,25 @@
       "postReports": "{count, plural, one {One reported post to check} other {# reported posts to check}}",
       "services": "{count, plural, one {One new service to approve} other {# new services to approve}}",
       "siteErrors": "{count, plural, one {One site error to look at} other {# site errors to look at}}"
-    }
+    },
+    "reportsOpen": "To check",
+    "reportsHandled": "Handled",
+    "noHandledReports": "No handled reports yet.",
+    "reportHidden": "Post hidden",
+    "reportDismissed": "Report dismissed, post kept",
+    "hidePostConfirm": "Hide this post? Visitors won't see it until you show it again.",
+    "dismissConfirm": "Dismiss this report and keep the post visible?",
+    "agencyFilters": {
+      "all": "All",
+      "new": "New this week",
+      "unverified": "Not verified",
+      "suspended": "Paused"
+    },
+    "noAgencies": "No pages here.",
+    "newAgency": "New",
+    "postsCount": "{count, plural, =0 {no posts} one {one post} other {# posts}}",
+    "editPlan": "Change plan",
+    "planUntilLabel": "Plan valid until (optional)"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -987,7 +1013,8 @@
       "title": "Reviews",
       "hide": "Hide",
       "show": "Show",
-      "hidden": "Hidden"
+      "hidden": "Hidden",
+      "hideConfirm": "Hide this from the public page? You can show it again later."
     },
     "completedProject": "Completed-project review"
   },
@@ -1326,7 +1353,13 @@
     "fromReporter": "Reporter",
     "fromAgent": "Agent",
     "fromStaff": "Team",
-    "confirmedByReporter": "The reporter confirmed the fix works"
+    "confirmedByReporter": "The reporter confirmed the fix works",
+    "statusAfter": "Status after the reply",
+    "keepStatus": "Keep: {status}",
+    "replySent": "Sent. The reporter sees it in their conversation and gets a link by email.",
+    "internalNote": "Internal note (only the team sees it)",
+    "statusOnlyHint": "Change the status without a message. Planned and Done email the reporter.",
+    "technical": "Technical details"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -1516,7 +1549,8 @@
     "stuckStatus": {
       "failed": "Failed",
       "pending": "Waiting for partner"
-    }
+    },
+    "testProvider": "test mode (no real money)"
   },
   "AdminUsers": {
     "search": "Search email or username",
@@ -1632,7 +1666,8 @@
         "name": "Support",
         "body": "Helps people: user reports, looking up users and agencies, verification and content moderation. No payments or system settings."
       }
-    }
+    },
+    "permissionsCount": "{count, plural, one {one permission} other {# permissions}}"
   },
   "AdminAudit": {
     "intro": "Every admin action, admin sign-in, two-factor change and payment change, newest first.",
@@ -1640,7 +1675,113 @@
     "when": "When",
     "who": "Who",
     "action": "Action",
-    "details": "Details"
+    "details": "Details",
+    "actions": {
+      "auth_login": "Signed in",
+      "account_close": "Closed an account",
+      "account_email_changed": "Changed an account email",
+      "account_password_changed": "Changed a password",
+      "account_password_reset": "Reset a password",
+      "agency_verify": "Verified a page",
+      "agency_unverify": "Removed a page's verification",
+      "agency_suspended": "Paused a page",
+      "agency_active": "Reactivated a page",
+      "agency_reactivated": "Reactivated a closed page",
+      "agency_plan": "Changed a page's plan",
+      "agency_update": "Edited a page",
+      "agency_deactivated_owner": "A provider closed their page",
+      "agency_deactivated_admin": "Closed a page",
+      "service_approve": "Approved a new service",
+      "service_merge": "Merged a typed service into an existing one",
+      "service_reject": "Rejected a typed service",
+      "report_hide": "Hid a reported post",
+      "report_dismiss": "Dismissed a report",
+      "post_hidden": "Hid a post",
+      "post_published": "Showed a post again",
+      "post_delete": "Deleted a post",
+      "review_hidden": "Hid a review",
+      "review_published": "Showed a review again",
+      "collab_feedback_hidden": "Hid partner feedback",
+      "collab_feedback_published": "Published partner feedback",
+      "promotion_create": "Started a promotion",
+      "promotion_paused": "Paused a promotion",
+      "promotion_active": "Resumed a promotion",
+      "promotion_ended": "Ended a promotion",
+      "support_staff_reply": "Replied to a support report",
+      "support_reporter_reply": "A reporter replied",
+      "support_reporter_confirmed": "A reporter confirmed the fix",
+      "support_planned": "Marked a support report planned",
+      "support_done": "Marked a support report done",
+      "support_declined": "Declined a support report",
+      "support_waiting": "Marked a support report waiting on the reporter",
+      "support_new": "Reopened a support report",
+      "bug_resolve_stale": "Closed old site errors",
+      "escrow_dispute_decision": "Decided a payment dispute",
+      "escrow_dispute_closed": "Closed a payment dispute",
+      "escrow_release": "Released held money to an agency",
+      "escrow_refund": "Refunded held money to a client",
+      "escrow_chargeback_opened": "Recorded a chargeback",
+      "payment_manual": "Recorded a manual payment",
+      "payment_refund": "Refunded a payment",
+      "payments_export_test_ledger": "Exported the test payments ledger",
+      "receipt_pdf_view": "Opened a receipt",
+      "contract_pdf_view": "Opened a contract PDF",
+      "nda_pdf_view": "Opened an NDA PDF",
+      "mfa_enable": "Turned on two-step sign-in",
+      "mfa_disable": "Turned off two-step sign-in",
+      "mfa_reset_by_admin": "Reset someone's two-step sign-in",
+      "mfa_backup_code_used": "Used a backup code",
+      "mfa_backup_codes_regenerated": "Made new backup codes",
+      "staff_invite": "Invited a team member",
+      "staff_invite_revoke": "Cancelled a team invitation",
+      "staff_accept": "Joined the team",
+      "staff_role": "Changed a team member's role",
+      "staff_disable": "Disabled a team member",
+      "staff_enable": "Re-enabled a team member",
+      "staff_expiry": "Changed a team member's access end date",
+      "ownership_assign": "Assigned the platform owner",
+      "ownership_transfer": "Transferred platform ownership",
+      "feature_set": "Changed a feature switch",
+      "demo_remove": "Removed the demo data",
+      "conversation_hide": "Hid a conversation",
+      "conversation_unhide": "Showed a conversation again",
+      "appearance_background_add": "Added a background",
+      "appearance_background_remove": "Removed a background",
+      "appearance_background_on": "Turned a background on",
+      "appearance_background_off": "Turned a background off",
+      "owners_matches_computed": "Computed business-owner matches",
+      "owners_matches_sent": "Sent business-owner match emails",
+      "prospect_added": "Added a prospect",
+      "prospect_imported": "Imported prospects",
+      "prospect_updated": "Updated a prospect",
+      "prospect_removed": "Removed a prospect",
+      "referrals_agent_created": "Added a referral agent",
+      "referrals_agent_updated": "Updated a referral agent",
+      "referrals_payout": "Recorded a referral payout",
+      "referrals_void": "Voided a referral",
+      "referrals_restore": "Restored a referral",
+      "referrals_tiers": "Changed referral rates",
+      "pioneer_extended": "Extended a pioneer seal",
+      "golive_tick": "Ticked a go-live step",
+      "golive_untick": "Unticked a go-live step",
+      "social_connect": "Connected a social account",
+      "social_connect_failed": "A social connection failed",
+      "social_disconnect": "Disconnected a social account",
+      "social_select": "Chose work from a social account",
+      "behance_import_read": "Read a Behance profile",
+      "behance_import_post": "Imported a Behance project",
+      "behance_import_apply": "Applied a Behance import",
+      "portfolio_import_read": "Read a portfolio file",
+      "portfolio_import_apply": "Applied a portfolio import",
+      "share_proposed": "Proposed a shared milestone",
+      "share_accepted": "Accepted a shared milestone",
+      "share_declined": "Declined a shared milestone",
+      "collab_inquiry_sent": "Sent a partner inquiry",
+      "collab_inquiry_converted": "Turned a partner inquiry into work"
+    },
+    "other": "Other action",
+    "by": "by",
+    "system": "the system"
   },
   "Deliverables": {
     "groups": {
@@ -2093,7 +2234,10 @@
         "reason": "Write clear reasons (at least 10 characters).",
         "locked": "This dispute can't be decided now.",
         "invalid": "Check the fields."
-      }
+      },
+      "confirm": "Issue this decision? {agency} to the agency and {client} back to the client. Both are told.",
+      "confirmRelease": "Release {amount} to the agency? This can't be undone.",
+      "confirmRefund": "Refund {amount} to the client? This can't be undone."
     },
     "fromPackage": "Create a contract from this package",
     "commit": {
@@ -2795,7 +2939,8 @@
       "target": "Pick a tag to merge into.",
       "notFound": "Already reviewed."
     },
-    "nameEnOptional": "Optional: the Arabic name is used if empty"
+    "nameEnOptional": "Optional: the Arabic name is used if empty",
+    "rejectConfirm": "Reject “{name}”? The provider is told and it leaves their page."
   },
   "Partners": {
     "tab": "Partners",
@@ -3000,17 +3145,17 @@
       },
       "collaboration": {
         "name": "Collaboration",
-        "desc": "Discover collaborators, availability, private roster, structured work inquiries (V2, release 1).",
+        "desc": "Discover collaborators, availability, private roster, structured work inquiries.",
         "soon": "Collaboration tools are under construction."
       },
       "collaboration_delivery": {
         "name": "Work orders",
-        "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration (V2, release 2).",
+        "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration.",
         "soon": "Work orders are under construction. Inquiries and quotes keep working."
       },
       "collaboration_intelligence": {
         "name": "Planner, worksheet and feedback",
-        "desc": "Scope-to-team planner, private cost worksheet and templates, collaborator feedback, next actions and reminders (V2, release 3).",
+        "desc": "Scope-to-team planner, private cost worksheet and templates, collaborator feedback, next actions and reminders.",
         "soon": "The planner, worksheet and feedback tools are under construction. Work orders keep working."
       }
     },
@@ -3038,7 +3183,8 @@
         "disputeCover": "Someone assigned to review disputes and stuck payouts every day",
         "liveSwitch": "Live switch set in the deployment"
       }
-    }
+    },
+    "pilotsPlaceholder": "Usernames, e.g. nakhla.studio, petra.growth"
   },
   "Closest": {
     "title": "No exact matches",
@@ -5733,5 +5879,45 @@
     "stale": "Still open to new projects? It has been a while since you confirmed.",
     "confirm": "Yes, still open",
     "closeNow": "Pause for now"
+  },
+  "StaffAlertEmail": {
+    "supportReport": {
+      "subject": "New support report on Sawwiq",
+      "body": "Someone sent a support report. Read it and reply from Admin → Bugs:"
+    },
+    "postReport": {
+      "subject": "A post was reported on Sawwiq",
+      "body": "A visitor reported a post. Check it and hide it or dismiss the report from Admin → Reports:"
+    },
+    "dispute": {
+      "subject": "A payment dispute was opened on Sawwiq",
+      "body": "A client or agency opened a dispute on a protected payment. Read both sides and decide from Admin → Payments:"
+    },
+    "appeal": {
+      "subject": "A dispute decision was appealed on Sawwiq",
+      "body": "One side appealed your decision. The final decision is yours, from Admin → Payments:"
+    }
+  },
+  "AdminRequests": {
+    "nav": "Requests",
+    "title": "Project requests",
+    "intro": "What business owners asked for and how far each request got. Without the client's name or phone.",
+    "empty": "No requests here.",
+    "noType": "Business type not given",
+    "budget": "{min}–{max} {currency}",
+    "viaAssistant": "via the AI assistant",
+    "demo": "demo",
+    "stuck": "No quote after two days: worth a look.",
+    "status": {
+      "open": "Open",
+      "closed": "Closed",
+      "all": "All"
+    },
+    "counts": {
+      "matched": "Matched",
+      "invited": "Invited",
+      "seen": "Seen",
+      "quotes": "Quotes"
+    }
   }
 }

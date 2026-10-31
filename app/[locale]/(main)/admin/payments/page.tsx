@@ -38,7 +38,7 @@ export default async function AdminPayments({ params, searchParams }: PageProps<
     <div className="space-y-5" data-testid="admin-payments">
       <p className="flex items-center gap-2 text-xs text-muted-foreground">
         {isTestPayments() && <FlaskConical className="size-4 text-amber-600" />}
-        {t("provider", { name: paymentProvider().label })}
+        {t("provider", { name: paymentProvider().id === "mock" ? t("testProvider") : paymentProvider().label })}
       </p>
       <FilterChips pathname="/admin/payments"
         param="tab"

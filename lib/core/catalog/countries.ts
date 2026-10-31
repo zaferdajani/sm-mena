@@ -93,6 +93,12 @@ export const countryName = (code: string, locale: string) => (locale === "ar" ? 
 export const currencyOf = (code: string | null | undefined) => countryOf(code).currency;
 export const citiesOf = (code: string | null | undefined) => countryOf(code).cities;
 /** The country a city belongs to (city keys are unique across countries). */
+/** A city's name in the reader's language, from any country (admin lists showed raw keys like "amman"). */
+export function cityName(key: string | null | undefined, locale: string): string {
+  if (!key) return "";
+  const city = COUNTRIES.flatMap((x) => x.cities).find((c) => c.key === key);
+  return city ? (locale === "ar" ? city.ar : city.en) : key;
+}
 export const countryOfCity = (city: string | null | undefined): CountryCode | null => (city ? (cityCountry.get(city) ?? null) : null);
 export const isCityIn = (city: string, code: string) => countryOfCity(city) === code;
 

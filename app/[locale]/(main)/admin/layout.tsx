@@ -25,6 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const tag = await getTranslations("AdminAgents");
   const tpr = await getTranslations("AdminProspects");
   const tow = await getTranslations("AdminOwners");
+  const treq = await getTranslations("AdminRequests");
   // Each person sees only the sections their role allows (pages check again on the server).
   const nav: { href: string; label: string; badge?: number; perm: Permission }[] = [
     { href: "/admin", label: t("dashboard"), perm: "dashboard.view" },
@@ -41,6 +42,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/agents", label: tag("nav"), perm: "agents.manage" },
     { href: "/admin/prospects", label: tpr("nav"), perm: "prospects.manage" },
     { href: "/admin/owners", label: tow("nav"), perm: "owners.manage" },
+    { href: "/admin/requests", label: treq("nav"), perm: "agencies.view" },
     { href: "/admin/users", label: t("users"), perm: "users.view" },
     { href: "/admin/team", label: tt("nav"), perm: "staff.manage" },
     { href: "/admin/appearance", label: tp("nav"), perm: "appearance.manage" },

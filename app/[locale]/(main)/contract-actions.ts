@@ -1,5 +1,6 @@
 "use server";
 
+import { notifyStaff } from "@/lib/data/staff-notify";
 import { canUse } from "@/lib/feature-gate";
 import { featureOpen } from "@/lib/features";
 import { revalidatePath } from "next/cache";
@@ -163,6 +164,7 @@ export async function agencyDisputeAction(_: ActionState, formData: FormData): P
   const d = disputeSchema.safeParse(Object.fromEntries(formData));
   if (!d.success) return { error: "note" };
   const r = await openDispute(v, "agency", d.data.note, d.data.milestoneId || null);
+  if (!("error" in r)) await notifyStaff("dispute");
   refresh();
   return "error" in r ? { error: r.error } : { ok: true };
 }
@@ -317,6 +319,7 @@ export async function clientDisputeAction(_: ActionState, formData: FormData): P
   const d = disputeSchema.safeParse(Object.fromEntries(formData));
   if (!d.success) return { error: "note" };
   const r = await openDispute(c.v, "client", d.data.note, d.data.milestoneId || null);
+  if (!("error" in r)) await notifyStaff("dispute");
   refresh();
   return done(r);
 }
@@ -348,6 +351,7 @@ export async function appealAction(_: ActionState, formData: FormData): Promise<
   const d = z.object({ disputeId: z.string().uuid(), note: z.string().trim().min(10).max(4000) }).safeParse(Object.fromEntries(formData));
   if (!d.success) return { error: "note" };
   const r = await appealDispute(p.v, p.side, d.data.disputeId, d.data.note);
+  if (!("error" in r)) await notifyStaff("appeal");
   refresh();
   return done(r);
 }
