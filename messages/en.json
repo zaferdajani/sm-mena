@@ -57,7 +57,7 @@
     "loginButton": "Sign in",
     "noAccount": "No account yet?",
     "joinLink": "Create your agency page for free",
-    "joinTitle": "Showcase your agency",
+    "joinTitle": "Show your work on Sawwiq",
     "joinSubtitle": "A free page for social media agencies and freelancers in Jordan. Businesses browse your work and contact you directly.",
     "agencyName": "Agency name",
     "handle": "Username",
@@ -121,6 +121,8 @@
     "passwordHint": "At least 8 characters.",
     "refCodeOpen": "Did a Sawwiq agent introduce you? Add their code",
     "consentLink": "Read the terms",
+    "handleEnglishOnly": "The page link takes English letters, numbers, dots and _ only (like riyada.media). Other letters were left out.",
+    "handleFromEmail": "Your page link. Type it in English letters, or we'll suggest one from your email.",
     "reminders": "Remind me by email to finish my page: at most 3 emails in the first week, none once the page is ready."
   },
   "Cities": {
@@ -256,7 +258,8 @@
     "match": "AI assistant",
     "login": "Sign in",
     "agent": "My referrals",
-    "joinShort": "Join"
+    "joinShort": "Join",
+    "myProjects": "My projects"
   },
   "Common": {
     "verified": "Business identity verified",
@@ -277,7 +280,12 @@
     "share": "Share",
     "demo": "Demo account",
     "pioneer": "Founding Member medal",
-    "shareWhatsapp": "Share on WhatsApp"
+    "shareWhatsapp": "Share on WhatsApp",
+    "publishedTitle": "Published",
+    "publishedBody": "This work now shows on your page. Only you see this message.",
+    "addAnother": "Add another work",
+    "viewMyPage": "View my page",
+    "backToStudio": "Back to Studio"
   },
   "Post": {
     "like": "Like",
@@ -392,7 +400,8 @@
       "manage": "Show them from the Studio",
       "add": "Add a project",
       "edit": "Edit or delete projects",
-      "studio": "Open Studio"
+      "studio": "Open Studio",
+      "editPage": "Edit my page"
     },
     "servicePending": "Awaiting approval",
     "servicePendingHint": "Added by the agency. Sawwiq's team is reviewing it before it joins the list of services.",
@@ -406,7 +415,25 @@
       "editClient": "Edit client and project note",
       "addClient": "Add a client",
       "editWork": "Edit or delete work"
-    }
+    },
+    "demoContact": "This is a demo agency: it takes no work, so its phone and WhatsApp are hidden.",
+    "demoContactLink": "See real agencies",
+    "ownerTab": {
+      "reviews": {
+        "title": "Your reviews come from your clients",
+        "body": "Only you see this box. Send a client your review link from the Studio; their review appears here after they submit it.",
+        "action": "Ask a client for a review"
+      },
+      "about": {
+        "title": "This tab shows what you fill in on your page",
+        "body": "Only you see this box. Anything marked “Not set” is empty in your page editor: add your introduction, team, founding year and languages there.",
+        "action": "Complete my page"
+      }
+    },
+    "contactAgency": "Message {agency}",
+    "askLikeClient": "Hello, I saw your work for {client} on Sawwiq and would like something similar for my business.",
+    "askLikePostButton": "Ask for work like this",
+    "askLikePost": "Hello, I saw this work on Sawwiq and would like something similar for my business."
   },
   "Explore": {
     "title": "Explore",
@@ -438,7 +465,8 @@
     "budgetFrom": "From {min} {currency}",
     "fullService": "Full service, A to Z",
     "fullServiceHint": "Agencies that do content, ads and branding together",
-    "upToIn": "Up to {price} {currency}"
+    "upToIn": "Up to {price} {currency}",
+    "meantIndustry": "Showing agencies for “{industry}”, which fits “{query}”."
   },
   "Saved": {
     "title": "Saved",
@@ -458,7 +486,8 @@
     "country": "Country",
     "useLocation": "Use my location",
     "themeDark": "Dark mode",
-    "themeLight": "Light mode"
+    "themeLight": "Light mode",
+    "locationFailed": "Couldn't read your location. Pick your country from the list."
   },
   "Inquiry": {
     "open": "Message",
@@ -521,7 +550,7 @@
     "overview": "Insights",
     "posts": "My posts",
     "newPost": "New post",
-    "inbox": "Messages",
+    "inbox": "Contact requests",
     "profile": "Page",
     "viewPage": "View my page",
     "welcome": "Welcome to Sawwiq! Complete your page and add your first work so businesses can find you.",
@@ -615,7 +644,10 @@
         "tryHint": "From the app mall (pcn.store): deploy the app, publish it, create an embed key that allows https://sawwiq.org, and paste the embed link. Only app-mall links are accepted; the app runs in its sandbox, your code never leaves it.",
         "store": "Store page (App Store / Google Play)",
         "web": "Web address of the app"
-      }
+      },
+      "imagesEditHint": "Tap × to remove a photo (tap again to keep it), \"Make cover\" to show it first, or add photos (up to 10). Changes apply when you save.",
+      "makeCover": "Make cover",
+      "undoRemove": "Keep this photo"
     },
     "profileForm": {
       "avatar": "Profile picture or logo",
@@ -677,6 +709,12 @@
       "socialLinksHint": "Add your accounts on Instagram, Behance (a platform for showing design work), TikTok, YouTube, Facebook, LinkedIn and X: the account name or its link. Each shows on your page as a tappable badge with the platform's logo. Leave out the ones you don't use.",
       "addSocial": "Add a channel",
       "removeSocial": "Remove channel",
+      "nameFreelancer": "Your name or brand",
+      "bioPlaceholderFreelancer": "What do you specialise in? Who do you work with?",
+      "aboutFreelancer": "About you",
+      "aboutPlaceholderFreelancer": "Who you are, how you work and what you excel at…",
+      "startingPriceHintFreelancer": "Your smallest package. Shown as \"From\".",
+      "servesHintFreelancer": "You'll also appear to businesses looking there, marked as based in {country}.",
       "handleRule": {
         "free": "You can change the link freely until your first project is published.",
         "once_left": "Your first project is published, so the link can change once more; the old link will redirect to the new one.",
@@ -693,7 +731,8 @@
       "about": "About",
       "showArchived": "Show archived",
       "showActive": "Show current messages",
-      "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq."
+      "replyMessage": "Hello {name}, thanks for contacting {agency} on Sawwiq.",
+      "intro": "People who tapped \"Message\" on your page and left their name and phone. Reply by WhatsApp or a call. Written conversations on Sawwiq are in"
     },
     "billing": "Plan & billing",
     "security": "Security",
@@ -740,8 +779,22 @@
       "account": "Account",
       "more": "More",
       "addWork": "Add work",
-      "import": "Import work"
-    }
+      "import": "Import work",
+      "visibility": "Who can see my page"
+    },
+    "suspended": {
+      "title": "Your page is paused",
+      "body": "Sawwiq's team has paused your page, so visitors can't see it for now. Your work and messages are safe.",
+      "ask": "Ask the team why"
+    },
+    "visibilityHint": "To choose who can see your page (everyone, people with the link, or only you):",
+    "postsTitle": "My work",
+    "postsHint": "Each work shows on your page as a post. Tap Edit to change or delete it.",
+    "untitled": "Untitled work",
+    "forClient": "For {client}",
+    "postStats": "{views} views · {likes} likes, since published",
+    "chartMax": "Highest:",
+    "editOrDelete": "Edit"
   },
   "Admin": {
     "title": "Admin",
@@ -831,7 +884,8 @@
         "dates": "End must be after start.",
         "generic": "Could not create."
       },
-      "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day."
+      "free": "Promotions are free during the pilot. Suggested later price: {price} JOD per day.",
+      "endConfirm": "End this promotion? This can't be undone."
     },
     "statistics": "Statistics",
     "payments": "Payments",
@@ -851,7 +905,14 @@
       "off": "off",
       "mfaMissingKey": "MFA_ENCRYPTION_KEY is not set: admins can't use two-factor sign-in.",
       "mfaYouOff": "Your account has no two-factor sign-in.",
-      "turnOn": "Turn it on"
+      "turnOn": "Turn it on",
+      "ready": "Ready",
+      "localCopy": "Local test copy",
+      "localFiles": "On this server only",
+      "aiBasic": "Basic mode (no AI key)",
+      "aiOn": "On",
+      "paymentsTest": "Test mode: no real money",
+      "technical": "Technical details"
     },
     "deactivated": "Deactivated",
     "reactivate": "Reactivate",
@@ -859,7 +920,36 @@
     "testLedgerTitle": "Test transactions",
     "testLedgerBody": "Every payment step run in test mode (no real money), kept permanently, including those of deactivated and demo agencies: {count, plural, one {# entry} other {# entries}}.",
     "testLedgerExport": "Download test transactions (CSV)",
-    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic."
+    "realOnly": "Real numbers only: demo pages and Sawwiq team test pages are not counted. These are recorded events, not unique people, paying clients or bot-filtered traffic.",
+    "suspendConfirm": "Pause this page? Visitors won't see it until you reactivate it, and the provider is told.",
+    "more": "More",
+    "attention": {
+      "title": "Needs your attention",
+      "none": "Nothing is waiting for you right now.",
+      "supportReports": "{count, plural, one {One new support report} other {# new support reports}}",
+      "disputes": "{count, plural, one {One payment dispute to decide} other {# payment disputes to decide}}",
+      "postReports": "{count, plural, one {One reported post to check} other {# reported posts to check}}",
+      "services": "{count, plural, one {One new service to approve} other {# new services to approve}}",
+      "siteErrors": "{count, plural, one {One site error to look at} other {# site errors to look at}}"
+    },
+    "reportsOpen": "To check",
+    "reportsHandled": "Handled",
+    "noHandledReports": "No handled reports yet.",
+    "reportHidden": "Post hidden",
+    "reportDismissed": "Report dismissed, post kept",
+    "hidePostConfirm": "Hide this post? Visitors won't see it until you show it again.",
+    "dismissConfirm": "Dismiss this report and keep the post visible?",
+    "agencyFilters": {
+      "all": "All",
+      "new": "New this week",
+      "unverified": "Not verified",
+      "suspended": "Paused"
+    },
+    "noAgencies": "No pages here.",
+    "newAgency": "New",
+    "postsCount": "{count, plural, =0 {no posts} one {one post} other {# posts}}",
+    "editPlan": "Change plan",
+    "planUntilLabel": "Plan valid until (optional)"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -978,13 +1068,17 @@
       "googleHint": "Paste your Google Maps business link or Place ID to show your Google rating on your page.",
       "googleConnected": "Connected: {name} ★ {rating} ({count})",
       "googleSaved": "Link saved. The rating appears once a Google API key is configured.",
-      "googleNotFound": "We couldn't find this place on Google. Check the link."
+      "googleNotFound": "We couldn't find this place on Google. Check the link.",
+      "googleSave": "Save Google link",
+      "clientNamePlaceholder": "e.g. Sanabel Bakery",
+      "noClientName": "No name given"
     },
     "admin": {
       "title": "Reviews",
       "hide": "Hide",
       "show": "Show",
-      "hidden": "Hidden"
+      "hidden": "Hidden",
+      "hideConfirm": "Hide this from the public page? You can show it again later."
     },
     "completedProject": "Completed-project review"
   },
@@ -1003,7 +1097,7 @@
       "service": "Service",
       "price": "Price (JOD)",
       "billing": "Billing",
-      "deliverables": "What's included (one per line)",
+      "deliverables": "Other items (one per line)",
       "deliverablesPlaceholder": "12 posts per month\n8 stories\nMonthly report",
       "add": "Add package",
       "save": "Save",
@@ -1017,13 +1111,17 @@
       },
       "includes": "What's included",
       "deliveryDays": "Delivered within (days, optional)",
+      "edit": "Edit",
+      "deliverablesMore": "Something else included that isn't in the list? (optional)",
       "fullForm": "Need more? Open the full package form"
     },
     "pin": "Pin to top",
     "unpin": "Unpin",
     "pinned": "Pinned",
     "pinLimit": "You can pin up to 3 posts.",
-    "deliveryIn": "Delivered within {days, plural, one {# day} other {# days}}"
+    "deliveryIn": "Delivered within {days, plural, one {# day} other {# days}}",
+    "ask": "Ask about this package",
+    "askMessage": "Hello, I'm interested in your package “{title}”. Is it available for my business?"
   },
   "Match": {
     "title": "AI agency matchmaker",
@@ -1089,7 +1187,7 @@
       "generic": "Could not send.",
       "unavailable": "Sending projects for quotes isn't available right now."
     },
-    "created": "Your project was sent! We invited {count} agencies to send quotes.",
+    "created": "{count, plural, =0 {Your project was sent. No agency matches it exactly yet; agencies that offer this service can see it and send quotes.} one {Your project was sent! We invited one agency to send a quote.} other {Your project was sent! We invited # agencies to send quotes.}}",
     "saveLink": "Save this link to follow quotes from any device:",
     "pageTitle": "Quotes for your project",
     "status": {
@@ -1097,7 +1195,7 @@
       "closed": "Closed"
     },
     "expires": "Accepting quotes until {date}",
-    "invited": "{count} agencies invited",
+    "invited": "{count, plural, =0 {No agency invited yet} one {One agency invited} other {# agencies invited}}",
     "noProposals": "No quotes yet. They usually arrive within 24–48 hours.",
     "proposals": "{count, plural, =0 {No quotes} one {1 quote} other {# quotes}}",
     "price": "Price",
@@ -1124,7 +1222,30 @@
     "fullService": "I want one team for everything, A to Z",
     "fullServiceHint": "Content, ads and branding together, working on its own without daily chasing. Agencies that cover all of it are shown first.",
     "brands": "Brands or businesses covered",
-    "brandsPlaceholder": "e.g. Accrues (B2B), Nashmi (B2C), Neo (online store)"
+    "brandsPlaceholder": "Example: Sanabel Bakery, and its Zarqa branch",
+    "contracts": {
+      "title": "My contracts",
+      "sign": "Review and sign",
+      "open": "Open"
+    },
+    "projectsTitle": "My project requests",
+    "account": {
+      "title": "My account",
+      "signedOut": "You're not signed in. Your projects are kept on this device; sign in to keep them with your email."
+    },
+    "createdNext": "Quotes will appear in My projects, and you'll get a notification on this device when one arrives.",
+    "openMyProject": "Open my project",
+    "copyLink": "Copy the link",
+    "linkCopied": "Link copied",
+    "sendToWhatsapp": "Send it to my WhatsApp",
+    "noProposalsNoMatch": "No quotes yet. No agency matches this exactly yet, but agencies that offer this service can see your project and send a quote. You'll be notified here.",
+    "cancel": "Cancel",
+    "acceptYes": "Yes, accept this quote",
+    "declineConfirm": "Decline this quote? The agency is told, and you can't undo it.",
+    "declineYes": "Yes, decline",
+    "closeConfirm": "Close this project? Agencies won't be able to send quotes anymore.",
+    "closeYes": "Yes, close it",
+    "acceptedNext": "You accepted this quote. Next: {agency} prepares a contract for you to sign. It appears at the top of this page and in My projects, and you'll get a notification. Meanwhile you can chat with them."
   },
   "Opportunities": {
     "tab": "Opportunities",
@@ -1324,7 +1445,13 @@
     "fromReporter": "Reporter",
     "fromAgent": "Agent",
     "fromStaff": "Team",
-    "confirmedByReporter": "The reporter confirmed the fix works"
+    "confirmedByReporter": "The reporter confirmed the fix works",
+    "statusAfter": "Status after the reply",
+    "keepStatus": "Keep: {status}",
+    "replySent": "Sent. The reporter sees it in their conversation and gets a link by email.",
+    "internalNote": "Internal note (only the team sees it)",
+    "statusOnlyHint": "Change the status without a message. Planned and Done email the reporter.",
+    "technical": "Technical details"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {Year} other {# days}}",
@@ -1514,7 +1641,8 @@
     "stuckStatus": {
       "failed": "Failed",
       "pending": "Waiting for partner"
-    }
+    },
+    "testProvider": "test mode (no real money)"
   },
   "AdminUsers": {
     "search": "Search email or username",
@@ -1525,7 +1653,9 @@
       "owner": "Owner",
       "backbone": "Backbone (engineering)",
       "maintenance": "Maintenance",
-      "support": "Support"
+      "support": "Support",
+      "client": "Business owner",
+      "agent": "Referral agent"
     },
     "mfaOn": "2FA on",
     "mfaOff": "2FA off",
@@ -1628,7 +1758,8 @@
         "name": "Support",
         "body": "Helps people: user reports, looking up users and agencies, verification and content moderation. No payments or system settings."
       }
-    }
+    },
+    "permissionsCount": "{count, plural, one {one permission} other {# permissions}}"
   },
   "AdminAudit": {
     "intro": "Every admin action, admin sign-in, two-factor change and payment change, newest first.",
@@ -1636,7 +1767,113 @@
     "when": "When",
     "who": "Who",
     "action": "Action",
-    "details": "Details"
+    "details": "Details",
+    "actions": {
+      "auth_login": "Signed in",
+      "account_close": "Closed an account",
+      "account_email_changed": "Changed an account email",
+      "account_password_changed": "Changed a password",
+      "account_password_reset": "Reset a password",
+      "agency_verify": "Verified a page",
+      "agency_unverify": "Removed a page's verification",
+      "agency_suspended": "Paused a page",
+      "agency_active": "Reactivated a page",
+      "agency_reactivated": "Reactivated a closed page",
+      "agency_plan": "Changed a page's plan",
+      "agency_update": "Edited a page",
+      "agency_deactivated_owner": "A provider closed their page",
+      "agency_deactivated_admin": "Closed a page",
+      "service_approve": "Approved a new service",
+      "service_merge": "Merged a typed service into an existing one",
+      "service_reject": "Rejected a typed service",
+      "report_hide": "Hid a reported post",
+      "report_dismiss": "Dismissed a report",
+      "post_hidden": "Hid a post",
+      "post_published": "Showed a post again",
+      "post_delete": "Deleted a post",
+      "review_hidden": "Hid a review",
+      "review_published": "Showed a review again",
+      "collab_feedback_hidden": "Hid partner feedback",
+      "collab_feedback_published": "Published partner feedback",
+      "promotion_create": "Started a promotion",
+      "promotion_paused": "Paused a promotion",
+      "promotion_active": "Resumed a promotion",
+      "promotion_ended": "Ended a promotion",
+      "support_staff_reply": "Replied to a support report",
+      "support_reporter_reply": "A reporter replied",
+      "support_reporter_confirmed": "A reporter confirmed the fix",
+      "support_planned": "Marked a support report planned",
+      "support_done": "Marked a support report done",
+      "support_declined": "Declined a support report",
+      "support_waiting": "Marked a support report waiting on the reporter",
+      "support_new": "Reopened a support report",
+      "bug_resolve_stale": "Closed old site errors",
+      "escrow_dispute_decision": "Decided a payment dispute",
+      "escrow_dispute_closed": "Closed a payment dispute",
+      "escrow_release": "Released held money to an agency",
+      "escrow_refund": "Refunded held money to a client",
+      "escrow_chargeback_opened": "Recorded a chargeback",
+      "payment_manual": "Recorded a manual payment",
+      "payment_refund": "Refunded a payment",
+      "payments_export_test_ledger": "Exported the test payments ledger",
+      "receipt_pdf_view": "Opened a receipt",
+      "contract_pdf_view": "Opened a contract PDF",
+      "nda_pdf_view": "Opened an NDA PDF",
+      "mfa_enable": "Turned on two-step sign-in",
+      "mfa_disable": "Turned off two-step sign-in",
+      "mfa_reset_by_admin": "Reset someone's two-step sign-in",
+      "mfa_backup_code_used": "Used a backup code",
+      "mfa_backup_codes_regenerated": "Made new backup codes",
+      "staff_invite": "Invited a team member",
+      "staff_invite_revoke": "Cancelled a team invitation",
+      "staff_accept": "Joined the team",
+      "staff_role": "Changed a team member's role",
+      "staff_disable": "Disabled a team member",
+      "staff_enable": "Re-enabled a team member",
+      "staff_expiry": "Changed a team member's access end date",
+      "ownership_assign": "Assigned the platform owner",
+      "ownership_transfer": "Transferred platform ownership",
+      "feature_set": "Changed a feature switch",
+      "demo_remove": "Removed the demo data",
+      "conversation_hide": "Hid a conversation",
+      "conversation_unhide": "Showed a conversation again",
+      "appearance_background_add": "Added a background",
+      "appearance_background_remove": "Removed a background",
+      "appearance_background_on": "Turned a background on",
+      "appearance_background_off": "Turned a background off",
+      "owners_matches_computed": "Computed business-owner matches",
+      "owners_matches_sent": "Sent business-owner match emails",
+      "prospect_added": "Added a prospect",
+      "prospect_imported": "Imported prospects",
+      "prospect_updated": "Updated a prospect",
+      "prospect_removed": "Removed a prospect",
+      "referrals_agent_created": "Added a referral agent",
+      "referrals_agent_updated": "Updated a referral agent",
+      "referrals_payout": "Recorded a referral payout",
+      "referrals_void": "Voided a referral",
+      "referrals_restore": "Restored a referral",
+      "referrals_tiers": "Changed referral rates",
+      "pioneer_extended": "Extended a pioneer seal",
+      "golive_tick": "Ticked a go-live step",
+      "golive_untick": "Unticked a go-live step",
+      "social_connect": "Connected a social account",
+      "social_connect_failed": "A social connection failed",
+      "social_disconnect": "Disconnected a social account",
+      "social_select": "Chose work from a social account",
+      "behance_import_read": "Read a Behance profile",
+      "behance_import_post": "Imported a Behance project",
+      "behance_import_apply": "Applied a Behance import",
+      "portfolio_import_read": "Read a portfolio file",
+      "portfolio_import_apply": "Applied a portfolio import",
+      "share_proposed": "Proposed a shared milestone",
+      "share_accepted": "Accepted a shared milestone",
+      "share_declined": "Declined a shared milestone",
+      "collab_inquiry_sent": "Sent a partner inquiry",
+      "collab_inquiry_converted": "Turned a partner inquiry into work"
+    },
+    "other": "Other action",
+    "by": "by",
+    "system": "the system"
   },
   "Deliverables": {
     "groups": {
@@ -1822,8 +2059,8 @@
       "number": "Contract {number}",
       "period": "{start} → {end}",
       "total": "Total",
-      "held": "Held for milestones",
-      "released": "Paid out",
+      "held": "Held until approval",
+      "released": "Passed to the agency",
       "client": "Client",
       "agency": "Agency",
       "nextStep": "Next step",
@@ -1851,10 +2088,10 @@
       "clientTick": "Confirmed",
       "submitNote": "What did you deliver? Links, files, notes",
       "submit": "Send for approval",
-      "needsFunding": "Waiting for the client to pay this milestone into protection.",
+      "needsFunding": "Waiting for the client to pay this milestone. The money is held until the client approves the work.",
       "changes": "Client asked for changes: {note}",
       "delivered": "Agency's note: {note}",
-      "fund": "Pay {amount} into protection",
+      "fund": "Pay {amount} (held until you approve)",
       "fundHint": "The amount stays in protection until you accept this milestone or its review period ends.",
       "confirmAll": "Tick each item you've checked, then approve.",
       "approveRelease": "Approve and release {amount}",
@@ -1885,7 +2122,8 @@
       "grantRound": "Give an extra round of changes (free)",
       "clientAskedRound": "The client asks for an extra round of changes. Give it free, or propose a paid change request below.",
       "autoApproved": "Accepted automatically when the review period ended.",
-      "withPartner": "Delivered with {name}"
+      "withPartner": "Delivered with {name}",
+      "fundExplain": "How it works: you pay this milestone now; the money is held and reaches the agency only after you approve the work (or the review period ends without an answer)."
     },
     "client": {
       "title": "Contract with {agency}",
@@ -1905,7 +2143,9 @@
         "rateLimited": "Too many attempts. Try again later.",
         "signature": "Draw your signature to sign.",
         "notFound": "This contract was not found."
-      }
+      },
+      "signedOk": "Signed. The contract is now active, and both of you have a copy below.",
+      "signedNextPay": "Signed. Next step: pay the first milestone below. The money is held by the payment partner and reaches the agency only after you approve the work."
     },
     "dispute": {
       "open": "Report a problem",
@@ -1968,7 +2208,7 @@
       "moneyHeld": "Money is held for this contract. Report a problem instead so our team can settle it."
     },
     "fundPage": {
-      "title": "Pay milestone into protection",
+      "title": "Pay this milestone (held until you approve)",
       "pay": "Pay now (test)",
       "back": "Back to contract",
       "paid": "Paid in. The agency can start this milestone."
@@ -2089,7 +2329,10 @@
         "reason": "Write clear reasons (at least 10 characters).",
         "locked": "This dispute can't be decided now.",
         "invalid": "Check the fields."
-      }
+      },
+      "confirm": "Issue this decision? {agency} to the agency and {client} back to the client. Both are told.",
+      "confirmRelease": "Release {amount} to the agency? This can't be undone.",
+      "confirmRefund": "Refund {amount} to the client? This can't be undone."
     },
     "fromPackage": "Create a contract from this package",
     "commit": {
@@ -2159,7 +2402,8 @@
       "builderFeeTest": "No fee in test mode. Once live: {fee}% of each amount released to the agency.",
       "checkoutTest": "Test checkout: no real money is charged.",
       "soonTitle": "Protected payments: coming soon",
-      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee."
+      "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee.",
+      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%."
     },
     "cancelMutual": {
       "title": "Cancel by agreement",
@@ -2193,7 +2437,9 @@
       "refunded": "{amount} refunded to the client, no fee",
       "test": "Test",
       "pdfAr": "PDF (Arabic)",
-      "pdfEn": "PDF (English)"
+      "pdfEn": "PDF (English)",
+      "clientAmount": "Amount {gross}",
+      "feePreview": "the fee shown is a preview; nothing is charged in test mode"
     },
     "buying": {
       "title": "Contracts you're buying",
@@ -2529,7 +2775,8 @@
       }
     },
     "inquiryNotice": "Your message also starts a chat with the agency on Sawwiq. Chats are recorded and may be reviewed by our team for quality assurance.",
-    "openChats": "Open my chats"
+    "openChats": "Open my chats",
+    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in"
   },
   "Notifications": {
     "tab": "Notifications",
@@ -2596,10 +2843,17 @@
       "reminder_hold_expiring": "Reminder: the capacity hold on “{title}” expires soon",
       "reminder_availability_stale": "Reminder: your availability needs confirming",
       "owner_intro": "A business owner in {city} asked to be introduced to you: {services}",
+      "account_suspended": "Sawwiq's team paused your page: visitors can't see it for now. Tap to ask why.",
+      "account_reactivated": "Your page is visible again.",
+      "account_verified": "Your page is verified: it now shows the verified badge.",
+      "service_approved": "“{service}” was approved and is now a Sawwiq service.",
+      "service_rejected": "“{service}” wasn't added to Sawwiq's services. You can pick a close service from the list.",
       "support_received": "We received your report {ref}. We will tell you here when there is news.",
       "support_update": "Report {ref}: {status, select, planned {being worked on} done {handled} waiting {we need a detail from you} other {updated}}. Open it to see more.",
       "support_reply": "Support replied to your report {ref}. Open it to read the reply."
-    }
+    },
+    "startRequest": "Request a project",
+    "signIn": "Sign in"
   },
   "PortfolioClients": {
     "title": "Accounts and clients",
@@ -2698,7 +2952,8 @@
       "changeBudget": "Change budget",
       "changeCity": "Change city",
       "switchYes": "Yes, show agencies in {country}",
-      "switchNo": "No, stay in {country}"
+      "switchNo": "No, stay in {country}",
+      "sendProjectAnyway": "Send my project anyway"
     },
     "budget": {
       "under": "Under {max}",
@@ -2788,7 +3043,9 @@
       "exists": "A tag with this name already exists: merge instead.",
       "target": "Pick a tag to merge into.",
       "notFound": "Already reviewed."
-    }
+    },
+    "nameEnOptional": "Optional: the Arabic name is used if empty",
+    "rejectConfirm": "Reject “{name}”? The provider is told and it leaves their page."
   },
   "Partners": {
     "tab": "Partners",
@@ -2843,7 +3100,8 @@
       "seeksHint": "Missing a component? Sawwiq finds trusted freelancers and agencies to fill it, so you can take on the full project.",
       "gapHint": "Don't have one of these in house? That's fine: Sawwiq will suggest freelancers and partner agencies for the missing roles.",
       "doQuestion": "What do you do?"
-    }
+    },
+    "seeksEmpty": "nothing chosen yet. Choose the roles you need partners for in your page settings."
   },
   "Demo": {
     "badge": "Demo",
@@ -2868,7 +3126,8 @@
     },
     "note": "The demo is shared with other visitors and resets every week. Don't enter real phone numbers or personal details.",
     "off": "The demo is switched off right now.",
-    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies."
+    "emptyWork": "No work posted yet. Agencies that joined haven't shared their work so far; see them under Agencies.",
+    "fewHint": "Only a few real pages match so far. You can also look around with the clearly labelled sample agencies."
   },
   "PartnerContracts": {
     "request": "Ask this partner for a contract",
@@ -2993,17 +3252,17 @@
       },
       "collaboration": {
         "name": "Collaboration",
-        "desc": "Discover collaborators, availability, private roster, structured work inquiries (V2, release 1).",
+        "desc": "Discover collaborators, availability, private roster, structured work inquiries.",
         "soon": "Collaboration tools are under construction."
       },
       "collaboration_delivery": {
         "name": "Work orders",
-        "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration (V2, release 2).",
+        "desc": "Versioned work orders, scoped threads, file versions with pinned comments and the reviewer workflow on top of collaboration.",
         "soon": "Work orders are under construction. Inquiries and quotes keep working."
       },
       "collaboration_intelligence": {
         "name": "Planner, worksheet and feedback",
-        "desc": "Scope-to-team planner, private cost worksheet and templates, collaborator feedback, next actions and reminders (V2, release 3).",
+        "desc": "Scope-to-team planner, private cost worksheet and templates, collaborator feedback, next actions and reminders.",
         "soon": "The planner, worksheet and feedback tools are under construction. Work orders keep working."
       }
     },
@@ -3031,7 +3290,8 @@
         "disputeCover": "Someone assigned to review disputes and stuck payouts every day",
         "liveSwitch": "Live switch set in the deployment"
       }
-    }
+    },
+    "pilotsPlaceholder": "Usernames, e.g. studio.amman, media.house"
   },
   "Closest": {
     "title": "No exact matches",
@@ -3377,7 +3637,9 @@
       "closedAccount": "This account was closed. To reopen it, contact support.",
       "adult": "Sawwiq accounts are for people aged 18 or older."
     },
-    "adult": "I am 18 or older (or the legal age where I live, if higher)."
+    "adult": "I am 18 or older (or the legal age where I live, if higher).",
+    "back": "Back",
+    "why": "Sign in to keep what you like, save and follow, on any device."
   },
   "Founding": {
     "memberTitle": "Sawwiq early member · {year}",
@@ -3418,7 +3680,8 @@
       }
     },
     "activationReady": "Your early-member benefits are activated. Financial benefits apply under the published terms when protected payments go live.",
-    "activationTodo": "Complete your profile and add genuine work or a useful package to activate early-member benefits. Registration alone is not enough."
+    "activationTodo": "Complete your profile and add genuine work or a useful package to activate early-member benefits. Registration alone is not enough.",
+    "showBenefits": "What founding members get"
   },
   "Agent": {
     "title": "My referrals",
@@ -4833,7 +5096,8 @@
       "acknowledge": "I understand and agree to this visibility choice, and I have the right to share the content with the audience I selected.",
       "mediaNote": "Switching to private stops new access through Sawwiq; it cannot erase copies downloaded or cached elsewhere. Older content previously served through public URLs may remain accessible at its source or in external caches.",
       "save": "Save publication choice",
-      "preview": "Preview your profile"
+      "preview": "Preview your profile",
+      "now": "Your page now: {state}"
     },
     "adminPhase": "Current launch phase: early registration. This gate is independent of feature switches; enabling an individual feature does not open public discovery or payments during registration.",
     "llms": "# Sawwiq (سوّق)\nSawwiq is in an early provider-registration phase. Registration and profile creation are free. New profiles are private by default; owners control publication. Public browsing, new platform contracts and payments are not available in this phase. Demonstration profiles are explicitly labelled and do not represent real providers or completed projects.\nPublic pages: https://sawwiq.org/ar and https://sawwiq.org/en\nRegister: https://sawwiq.org/ar/join\nExamples: https://sawwiq.org/ar/examples\nContact: https://sawwiq.org/ar/contact\n",
@@ -5373,6 +5637,18 @@
       "edit": "Edit my answers",
       "home": "Back to Sawwiq",
       "matches": "My provider matches"
+    },
+    "live": {
+      "intro": "Tell us what your business needs. We'll introduce you to matching agencies and freelancers in your city, and you can browse and send your project now.",
+      "match": "We introduce you to providers in your city for the services you need.",
+      "needsIntro": "One minute. This decides which providers we introduce you to.",
+      "doneIntro": "We have your needs and your city in {country}. You can browse providers or send your project for quotes now.",
+      "next": {
+        "open": "Browse providers, or send your project to get quotes.",
+        "match": "We also send you the providers that fit your city and services."
+      },
+      "sendProject": "Send my project for quotes",
+      "browse": "Browse providers"
     }
   },
   "OwnerMatches": {
@@ -5710,7 +5986,8 @@
       "price": "Add a package or a starting price",
       "moreWork": "Add two more projects",
       "available": "Switch \"open to new projects\" back on"
-    }
+    },
+    "change": "Change"
   },
   "ServiceProposalEmail": {
     "subject": "New service awaiting approval: {service}",
@@ -5727,6 +6004,46 @@
     "stale": "Still open to new projects? It has been a while since you confirmed.",
     "confirm": "Yes, still open",
     "closeNow": "Pause for now"
+  },
+  "StaffAlertEmail": {
+    "supportReport": {
+      "subject": "New support report on Sawwiq",
+      "body": "Someone sent a support report. Read it and reply from Admin → Bugs:"
+    },
+    "postReport": {
+      "subject": "A post was reported on Sawwiq",
+      "body": "A visitor reported a post. Check it and hide it or dismiss the report from Admin → Reports:"
+    },
+    "dispute": {
+      "subject": "A payment dispute was opened on Sawwiq",
+      "body": "A client or agency opened a dispute on a protected payment. Read both sides and decide from Admin → Payments:"
+    },
+    "appeal": {
+      "subject": "A dispute decision was appealed on Sawwiq",
+      "body": "One side appealed your decision. The final decision is yours, from Admin → Payments:"
+    }
+  },
+  "AdminRequests": {
+    "nav": "Requests",
+    "title": "Project requests",
+    "intro": "What business owners asked for and how far each request got. Without the client's name or phone.",
+    "empty": "No requests here.",
+    "noType": "Business type not given",
+    "budget": "{min}–{max} {currency}",
+    "viaAssistant": "via the AI assistant",
+    "demo": "demo",
+    "stuck": "No quote after two days: worth a look.",
+    "status": {
+      "open": "Open",
+      "closed": "Closed",
+      "all": "All"
+    },
+    "counts": {
+      "matched": "Matched",
+      "invited": "Invited",
+      "seen": "Seen",
+      "quotes": "Quotes"
+    }
   },
   "Strength": {
     "serviceCard": {

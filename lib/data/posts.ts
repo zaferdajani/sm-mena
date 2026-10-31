@@ -1,5 +1,6 @@
 import { mayReadAgency, mayReadAgencyId, discoverableProfiles, type Viewer } from "@/lib/data/publication";
 import { and, arrayOverlaps, asc, desc, eq, inArray, lt, or, sql, type SQL } from "drizzle-orm";
+import { searchIntent } from "@/lib/search-intent";
 import { agencyConditions, inCountry } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
 import { agencies, portfolioClients, postImages, posts, type Agency, type PostEmbed } from "@/lib/db/schema";
@@ -196,6 +197,70 @@ export async function updatePost(postId: string, agencyId: string, input: PostIn
   return row ?? null;
 }
 
+/** A project's photos for its owner's editor: id and thumbnail, cover first. */
+export async function postImagesForOwner(postId: string, agencyId: string): Promise<{ id: string; thumbUrl: string }[]> {
+  const db = await getDb();
+  const rows = await db
+    .select({ id: postImages.id, thumbKey: postImages.thumbKey })
+    .from(postImages)
+    .innerJoin(posts, eq(posts.id, postImages.postId))
+    .where(and(eq(postImages.postId, postId), eq(posts.agencyId, agencyId)))
+    .orderBy(asc(postImages.position));
+  return rows.map((r) => ({ id: r.id, thumbUrl: mediaUrl(r.thumbKey)! }));
+}
+
+export type ImageEdit = { remove: string[]; cover: string | null; add: ProcessedImage[] };
+
+/**
+ * Changes a published project's photos: removes some, adds new ones at the end, and makes one the cover
+ * (position 0). At least one photo stays and the total stays within `max`. Removed files leave storage
+ * only after the database no longer points at them. Returns an error code, or null when done.
+ */
+export async function editPostImages(postId: string, agencyId: string, edit: ImageEdit, max: number): Promise<"noImages" | "tooMany" | "notFound" | null> {
+  const db = await getDb();
+  const [post] = await db.select({ id: posts.id }).from(posts).where(and(eq(posts.id, postId), eq(posts.agencyId, agencyId)));
+  if (!post) return "notFound";
+  const current = await db.select().from(postImages).where(eq(postImages.postId, postId)).orderBy(asc(postImages.position));
+  const removing = new Set(edit.remove.filter((id) => current.some((c) => c.id === id)));
+  const kept = current.filter((c) => !removing.has(c.id));
+  if (kept.length + edit.add.length === 0) return "noImages";
+  if (kept.length + edit.add.length > max) return "tooMany";
+  if (!removing.size && !edit.add.length && (!edit.cover || edit.cover === current[0]?.id)) return null;
+
+  const uploaded: { key: string; thumbKey: string; image: ProcessedImage }[] = [];
+  try {
+    for (const image of edit.add) {
+      const format = image.fullFormat ?? "webp";
+      const keys = newImageKeys(agencyId, format);
+      uploaded.push({ ...keys, image });
+      await storage().put(keys.key, image.full, STORED_TYPE[format]);
+      await storage().put(keys.thumbKey, image.thumb, "image/webp");
+    }
+    await db.transaction(async (tx) => {
+      if (removing.size) await tx.delete(postImages).where(and(eq(postImages.postId, postId), inArray(postImages.id, [...removing])));
+      const inserted = uploaded.length
+        ? await tx
+            .insert(postImages)
+            .values(uploaded.map((u, i) => ({ postId, position: 1000 + i, key: u.key, thumbKey: u.thumbKey, width: u.image.width, height: u.image.height, color: u.image.color })))
+            .returning({ id: postImages.id })
+        : [];
+      // New order: the chosen cover first, then the kept photos, then the new ones.
+      const order = [...kept.map((k) => k.id), ...inserted.map((r) => r.id)];
+      const cover = edit.cover && order.includes(edit.cover) ? edit.cover : order[0];
+      const final = [cover, ...order.filter((id) => id !== cover)];
+      // Positions are unique per post: move every photo clear of 0…n first, then number them.
+      await tx.update(postImages).set({ position: sql`${postImages.position} + 10000` }).where(eq(postImages.postId, postId));
+      for (const [position, id] of final.entries()) await tx.update(postImages).set({ position }).where(eq(postImages.id, id));
+    });
+  } catch (error) {
+    await storage().remove(uploaded.flatMap((u) => [u.key, u.thumbKey])).catch(() => undefined);
+    throw error;
+  }
+  const gone = current.filter((c) => removing.has(c.id));
+  if (gone.length) await storage().remove(gone.flatMap((g) => [g.key, g.thumbKey])).catch(() => undefined);
+  return null;
+}
+
 export async function deletePost(postId: string, agencyId: string) {
   const db = await getDb();
   const images = await db.select().from(postImages).where(eq(postImages.postId, postId));
@@ -253,7 +318,16 @@ function filterConditions(filters: FeedFilters): SQL[] {
   c.push(...agencyConditions(filters, { platformsOnAgency: false }));
   if (filters.q) {
     const like = `%${normalizeForSearch(filters.q)}%`;
-    c.push(or(sql`${posts.searchText} like ${like}`, sql`${agencies.searchText} like ${like}`)!);
+    // The words, or a service or business type they name (lib/search-intent.ts).
+    const intent = searchIntent(filters.q);
+    c.push(
+      or(
+        sql`${posts.searchText} like ${like}`,
+        sql`${agencies.searchText} like ${like}`,
+        ...(intent.services.length ? [arrayOverlaps(posts.services, intent.services)] : []),
+        ...(intent.industries.length ? [inArray(posts.industry, intent.industries)] : []),
+      )!,
+    );
   }
   return c;
 }
@@ -267,9 +341,10 @@ function agencyView(a: Agency): PostView["agency"] {
     contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
-    isVerified: a.isVerified,
+    // A demo agency is never shown as verified, and its contact numbers are never offered: they could reach a stranger.
+    isVerified: a.isVerified && !a.isDemo,
     isDemo: a.isDemo,
-    whatsapp: a.whatsapp,
+    whatsapp: a.isDemo ? null : a.whatsapp,
   };
 }
 

@@ -1,7 +1,8 @@
 import { requireDirectory } from "@/lib/launch-access";
-import { EmptySupply } from "@/components/demo/empty-supply";
+import { DemoOffer, EmptySupply } from "@/components/demo/empty-supply";
 import type { Metadata } from "next";
 import { demoMode } from "@/lib/demo-mode";
+import { industryForWords } from "@/lib/industry-words";
 import { pageMeta } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AgencyRow } from "@/components/agency-row";
@@ -39,7 +40,9 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const p = parseExploreParams(sp);
   const country = countryOfCity(p.city) ?? (await currentCountry());
   const { tab, ...rest } = p;
-  const filters = { ...rest, country, includeDemo: await demoMode() };
+  // "مخبز", "bakery": an everyday word for a business type searches that type (no agency names itself "bakery").
+  const meantIndustry = !rest.industry ? industryForWords(rest.q) : null;
+  const filters = { ...rest, ...(meantIndustry ? { q: undefined, industry: meantIndustry } : {}), country, includeDemo: await demoMode() };
   const { includeDemo: _demo, ...clientFilters } = filters;
   void _demo;
   const currency = currencyOf(country);
@@ -64,9 +67,17 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
     <>
       <ClosestMatches matches={closest} currency={currency} viewCountry={country}
         sendHref={(await canUse("quote_requests")) ? { pathname: "/request/new", query: { ...(filters.service ? { service: filters.service } : {}), ...(filters.city ? { city: filters.city } : {}) } } : null} />
+      <DemoOffer />
       <Empty text="" clear={tc("clearFilters")} />
     </>
-  ) : <Empty text={tc("noResults")} clear={tc("clearFilters")} />;
+  ) : (
+    <>
+      <Empty text={tc("noResults")} clear={tc("clearFilters")} />
+      <DemoOffer />
+    </>
+  );
+  // A handful of real results: say the sample agencies exist too (FEW = fewer than a screenful).
+  const fewResults = count > 0 && count < FEW;
   const resultLabel = t("results", { count }) + (posts?.nextCursor ? "+" : "");
   const query = Object.fromEntries(Object.entries(sp).filter(([k, v]) => k !== "tab" && typeof v === "string")) as Record<string, string>;
   return (
@@ -76,6 +87,9 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
           <h1 className="font-heading text-2xl font-bold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground" data-testid="explore-result-count">{resultLabel}</p>
         </div>
+        {meantIndustry && (
+          <p className="text-sm text-muted-foreground" data-testid="explore-meant-industry">{t("meantIndustry", { query: rest.q ?? "", industry: tInd(meantIndustry as "restaurant_cafe") })}</p>
+        )}
         <ExploreFilters options={options} resultLabel={resultLabel} currency={locale === "ar" ? (COUNTRIES.find((c) => c.currency === currency)?.currencyAr ?? currency) : currency} />
         {filters.service && (
           <Link href={`/hire/${filters.service}/${filters.city ?? country}`} className="flex items-center justify-between rounded-xl border bg-accent/60 px-4 py-2.5 text-sm font-medium" data-testid="hire-link">
@@ -94,7 +108,10 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
       </header>
       <div data-testid="explore-results">
         {posts && (posts.items.length ? (
-          <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
+          <>
+            <FeedList key={JSON.stringify(filters)} initial={posts} filters={clientFilters} placement="explore" layout="grid" />
+            {fewResults && !posts.nextCursor && <DemoOffer />}
+          </>
         ) : hasActiveFilters(p) ? closestBlock : <EmptySupply text={td("emptyWork")} />)}
         {agencies && (agencies.length ? (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="explore-agency-grid">
@@ -103,12 +120,15 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
                 <AgencyRow agency={a} viewCountry={country} />
               </div>
             ))}
+            {fewResults && <div className="lg:col-span-2"><DemoOffer /></div>}
           </div>
         ) : hasActiveFilters(p) ? closestBlock : <EmptySupply />)}
       </div>
     </div>
   );
 }
+
+const FEW = 6;
 
 function Empty({ text, clear }: { text: string; clear: string | null }) {
   return (

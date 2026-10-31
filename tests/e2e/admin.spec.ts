@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, login } from "./helpers";
+import { ADMIN, joinAgency, login } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -10,8 +10,9 @@ test("admin sees platform stats and monetization readiness", async ({ page }) =>
   await expect(page.getByText("Revenue switch-on readiness")).toBeVisible();
 });
 
-test("admin verifies an agency and the badge appears publicly", async ({ page }, info) => {
-  const handle = info.project.name === "mobile" ? "madaba.pixels" : "zarqa.digital";
+test("admin verifies an agency and the badge appears publicly", async ({ page, browser }) => {
+  // A real provider: demo agencies never show the verified badge.
+  const { handle } = await joinAgency(await (await browser.newContext()).newPage(), "verify");
   await login(page, ADMIN.email, ADMIN.password);
   await page.goto(`/en/admin/agencies?q=${handle}`);
   const row = page.getByTestId("admin-agencies").locator("li", { hasText: `@${handle}` });
@@ -37,8 +38,13 @@ test("a reported post can be hidden by admin", async ({ page, browser }, info) =
   await login(page, ADMIN.email, ADMIN.password);
   await page.goto("/en/admin/reports");
   const report = page.getByTestId("admin-reports").locator("li", { hasText: `@${handle}` });
+  // Hiding asks first; afterwards the report is under "Handled" with what was decided.
+  page.once("dialog", (d) => void d.accept());
   await report.getByRole("button", { name: "Hide post" }).click();
   await expect(report).toHaveCount(0);
+  await page.getByRole("group").getByRole("link", { name: "Handled" }).click();
+  await expect(page).toHaveURL(/\/en\/admin\/reports\?show=handled$/);
+  await expect(page.getByTestId("admin-reports").locator("li", { hasText: `@${handle}` }).getByTestId("report-outcome")).toHaveText("Post hidden");
   await expect.poll(async () => (await visitor.request.get(postUrl)).status(), { timeout: 15_000 }).toBe(404);
   await visitor.close();
 });
@@ -52,4 +58,32 @@ test("admin creates a strip promotion and it shows as sponsored", async ({ page 
   await expect(page.getByTestId("admin-promotions")).toContainText("@linked.levant");
   await page.goto("/en/feed");
   await expect(page.getByRole("navigation", { name: "Agencies" }).getByText("Sponsored")).toBeVisible();
+});
+
+test("pausing a page asks first, tells the provider, and shows under Paused", async ({ browser }) => {
+  const provider = await (await browser.newContext()).newPage();
+  const { handle } = await joinAgency(provider, "pause");
+  const admin = await (await browser.newContext()).newPage();
+  await login(admin, ADMIN.email, ADMIN.password);
+  await admin.goto(`/en/admin/agencies?q=${handle}`);
+  const row = admin.getByTestId("admin-agencies").locator("li", { hasText: `@${handle}` });
+  // Cancelling the question changes nothing.
+  admin.once("dialog", (d) => void d.dismiss());
+  await row.getByTestId("status-toggle").click();
+  await expect(row.getByTestId("status-toggle")).toHaveText("Suspend");
+  admin.once("dialog", (d) => void d.accept());
+  await row.getByTestId("status-toggle").click();
+  await expect(row.getByTestId("status-toggle")).toHaveText("Reactivate");
+  await admin.getByRole("group").getByRole("link", { name: "Paused" }).click();
+  await expect(admin).toHaveURL(new RegExp(`/en/admin/agencies\\?q=${handle.replace(/\./g, "\\.")}&show=suspended$`));
+  await expect(admin.getByTestId("admin-agencies")).toContainText(`@${handle}`);
+  // The provider is told: a notice in the Studio and a notification.
+  await provider.goto("/en/studio");
+  await expect(provider.getByTestId("suspended-notice")).toBeVisible();
+  await provider.goto("/en/studio/notifications");
+  await expect(provider.getByTestId("notification").filter({ hasText: "paused your page" })).toBeVisible();
+  // Reactivating is not a destructive action: no question, and the notice goes.
+  await row.getByTestId("status-toggle").click();
+  await provider.goto("/en/studio");
+  await expect(provider.getByTestId("suspended-notice")).toHaveCount(0);
 });

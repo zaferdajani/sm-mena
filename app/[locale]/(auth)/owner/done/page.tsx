@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -22,17 +23,25 @@ export default async function OwnerDonePage({ params }: PageProps<"/[locale]/own
   const need = await getOwnerNeed(user.id);
   if (!need) redirect(`/${locale}/owner/needs`);
   const t = await getTranslations("OwnerEarly");
+  // Before launch: nothing more to do. Once browsing is open: the next steps are real (browse, send a project).
+  const live = !isRegistrationPhase();
   return (
     <div data-testid="owner-done">
       <p className="flex items-center gap-2 text-brand"><CheckCircle2 className="size-6" aria-hidden /><span className="text-sm font-semibold">{t("done.eyebrow")}</span></p>
       <h1 className="mt-2 text-2xl font-extrabold leading-tight">{t("done.title")}</h1>
-      <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("done.intro", { country: countryName(need.country, locale) })}</p>
+      <p className="mt-2 text-sm leading-7 text-muted-foreground">{t(live ? "live.doneIntro" : "done.intro", { country: countryName(need.country, locale) })}</p>
       <ol className="mt-4 grid gap-2 text-sm leading-7" data-testid="owner-next">
         {(["open", "match", "contact"] as const).map((k, i) => (
-          <li key={k} className="flex gap-3"><span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand">{i + 1}</span>{t(`done.next.${k}`)}</li>
+          <li key={k} className="flex gap-3"><span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-bold text-brand">{i + 1}</span>{t(live && k !== "contact" ? `live.next.${k}` : `done.next.${k}`)}</li>
         ))}
       </ol>
       <div className="mt-6 flex flex-wrap gap-3">
+        {live && (
+          <>
+            <Link href="/request/new" className="sw-invitation-cta" data-testid="owner-send-project">{t("live.sendProject")}</Link>
+            <Link href="/explore" className="registration-secondary" data-testid="owner-browse">{t("live.browse")}</Link>
+          </>
+        )}
         <Link href="/owner/matches" className="registration-secondary" data-testid="owner-to-matches">{t("done.matches")}</Link>
         <Link href="/owner/needs" className="registration-secondary" data-testid="owner-edit">{t("done.edit")}</Link>
         <Link href="/" className="registration-secondary">{t("done.home")}</Link>

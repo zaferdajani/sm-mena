@@ -15,9 +15,12 @@ async function signInOwner(page: Page, email: string) {
   await page.getByRole("button", { name: "Sign in" }).click();
 }
 
-test("owner need → provider match → staff send → owner accepts → provider notified", async ({ browser }) => {
+test("owner need → provider match → staff send → owner accepts → provider notified", async ({ browser }, info) => {
   test.setTimeout(180_000);
   const stamp = Date.now();
+  // An owner sees their best five providers. The suite's database fills Amman with providers that have work,
+  // so this pair meets in a city no other test uses, one per project.
+  const city = info.project.name === "mobile" ? "mafraq" : "karak";
   // 1. a provider in Amman offering social media management, with a published-work count via the profile
   const providerCtx = await browser.newContext();
   const provider = await providerCtx.newPage();
@@ -25,6 +28,7 @@ test("owner need → provider match → staff send → owner accepts → provide
   await provider.goto("/en/studio/profile?welcome=1");
   await provider.fill("#bio", "Social media for cafés and restaurants in Amman.");
   await provider.fill("#startingPriceJod", "200");
+  await provider.selectOption("#city", city);
   await provider.getByTestId("service-search").fill("social media account");
   await provider.getByTestId("service-suggestion").first().click();
   await expect(provider.locator('input[name="services"][value="smm_management"]')).toHaveCount(1);
@@ -38,6 +42,7 @@ test("owner need → provider match → staff send → owner accepts → provide
   await signInOwner(owner, ownerEmail);
   await owner.waitForURL(/\/en\/(owner\/needs|saved)/);
   if (!/owner\/needs/.test(owner.url())) await owner.goto("/en/owner/needs");
+  await owner.selectOption("#city", city);
   await owner.getByTestId("owner-services").locator("label", { hasText: "Social media" }).click();
   await owner.getByTestId("owner-save").click();
   await expect(owner).toHaveURL(/\/en\/owner\/done$/);
@@ -63,6 +68,6 @@ test("owner need → provider match → staff send → owner accepts → provide
 
   // 5. the provider has the introduction in its notifications, with the city and the need
   await provider.goto("/en/studio/notifications");
-  await expect(provider.locator("body")).toContainText(/business owner in amman asked to be introduced/i);
+  await expect(provider.locator("body")).toContainText(new RegExp(`business owner in ${city} asked to be introduced`, "i"));
   await Promise.all([providerCtx.close(), ownerCtx.close(), adminCtx.close()]);
 });

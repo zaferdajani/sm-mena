@@ -48,7 +48,8 @@ export function BehindCard({ card, className }: { card: BehindCardData; classNam
         <p className="mt-10 text-[64px] font-semibold leading-tight">{card.name}</p>
         <p className="mt-3 text-[34px] opacity-90" dir="ltr">@{card.handle}</p>
         <p className="mt-14 text-[76px] font-bold leading-[1.15]">{t("behind")}</p>
-        <p className="mt-7 rounded-full bg-white/15 px-10 py-3.5 text-[40px]">{t("member", { n: member })}</p>
+        {/* No number yet (or hidden during registration): no "0000" placeholder. */}
+        {card.memberNo ? <p className="mt-7 rounded-full bg-white/15 px-10 py-3.5 text-[40px]">{t("member", { n: member })}</p> : null}
       </div>
 
       {card.accounts.length > 0 && (

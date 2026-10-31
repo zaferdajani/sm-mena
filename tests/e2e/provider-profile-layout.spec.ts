@@ -37,7 +37,9 @@ for (const locale of ["ar", "en"]) {
     await expect(header.getByTestId("follower-count")).toBeVisible();
     // The newer main feature stays owner-only; public visitors do not get the private followers link.
     await expect(header.getByTestId("followers-link")).toHaveCount(0);
-    await expect(page.getByTestId("contact-whatsapp")).toHaveAttribute("href", /wa\.me/);
+    // A demo agency offers no phone or WhatsApp (they could reach a stranger); it says so instead.
+    await expect(page.getByTestId("contact-whatsapp")).toHaveCount(0);
+    await expect(page.getByTestId("demo-contact-note")).toBeVisible();
     for (const button of await page.getByTestId("profile-contact-panel").locator("a, button").all()) {
       const box = await button.boundingBox();
       if (box) expect(box.height).toBeGreaterThanOrEqual(44);
@@ -46,6 +48,13 @@ for (const locale of ["ar", "en"]) {
     await capture(page, info, `${locale}-work`);
 
     const tabs = page.getByRole("tablist");
+    // Every tab is on screen at phone width (About used to sit off the edge).
+    const width = page.viewportSize()!.width;
+    for (const tab of await tabs.locator("a").all()) {
+      const box = (await tab.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(width + 1);
+    }
     await tabs.locator('a[href*="tab=about"]').click();
     await expect(page).toHaveURL(/tab=about/);
     await expect(page.getByTestId("package-list")).toBeVisible();
@@ -61,7 +70,7 @@ for (const locale of ["ar", "en"]) {
     }
     await tabs.locator('a').first().click();
     await expect(page).toHaveURL(new RegExp(`/${locale}/a/${DEMO_AGENCY.handle.replaceAll(".", "\\.")}$`));
-    await expect(page.getByTestId("contact-whatsapp")).toBeVisible();
+    await expect(page.getByTestId("demo-contact-note")).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -90,7 +99,10 @@ test("a new provider has a usable profile and keeps its private followers link",
   await page.goto(`/ar/a/${handle}`);
   await expect(page.getByTestId("provider-profile-header")).toBeVisible();
   await expect(page.getByTestId("post-count")).toHaveText("0");
-  await expect(page.getByTestId("contact-whatsapp")).toBeVisible();
+  // The owner sees edit buttons, not contact buttons aimed at themselves.
+  await expect(page.getByTestId("contact-whatsapp")).toHaveCount(0);
+  await expect(page.getByTestId("owner-edit-page")).toHaveAttribute("href", "/ar/studio/profile");
+  await expect(page.getByTestId("message-button")).toHaveCount(0);
   await expect(page.getByTestId("google-rating")).toHaveCount(0);
   await expect(page.getByTestId("package-list")).toHaveCount(0);
   await fitsViewport(page);

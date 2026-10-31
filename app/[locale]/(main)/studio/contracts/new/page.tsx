@@ -12,6 +12,7 @@ import { featureOpen } from "@/lib/features";
 import { featureGate } from "@/lib/feature-gate";
 import { ComingSoon } from "@/components/features/coming-soon";
 import { notFound } from "next/navigation";
+import { FOUNDING, isFoundingMember } from "@/lib/founding";
 
 export default async function NewContract({ params, searchParams }: PageProps<"/[locale]/studio/contracts/new">) {
   const { locale } = await params;
@@ -69,6 +70,7 @@ export default async function NewContract({ params, searchParams }: PageProps<"/
         agencyName={agency.name}
         platforms={PLATFORMS.map((p) => ({ key: p, label: tp(p) }))}
         feePercent={feePercent()}
+        founderFee={isFoundingMember(agency) ? { first: FOUNDING.firstMarketplaceFeePercent, rate: FOUNDING.marketplaceFeePercent } : null}
         currency={currencyOf(agency.country)}
         countryName={countryName(agency.country, locale)}
         paymentsLive={protectedPaymentsLive()}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Globe, Mail, MapPin, MessageCircle, Pencil, Phone, Plus } from "lucide-react";
 import { COUNTRIES, currencyOf } from "@/lib/countries";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -60,7 +60,7 @@ export type ProfileData = {
   googleMapsUrl: string | null;
 };
 
-export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref, previewOnly = false, registrationMode = false }: { agency: ProfileData; following: boolean; previewOnly?: boolean; registrationMode?: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set only for the profile owner by the server. */ followersHref?: string }) {
+export function ProfileHeader({ agency, following, inquirySlot, servesNote, followersHref, previewOnly = false, registrationMode = false, ownerView = false }: { agency: ProfileData; following: boolean; previewOnly?: boolean; registrationMode?: boolean; inquirySlot?: React.ReactNode; servesNote?: string | null; /** Set only for the profile owner by the server. */ followersHref?: string; /** The owner looking at their own page: edit buttons instead of contacting or following themselves. */ ownerView?: boolean }) {
   const t = useTranslations("Profile");
   const tRegistration = useTranslations("Registration");
   const readOnly = previewOnly || registrationMode;
@@ -173,7 +173,19 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
             )}
           </div>
         )}
-        {agency.whatsapp && (
+        {agency.isDemo && !previewOnly && (
+          <p className="text-sm text-muted-foreground" data-testid="demo-contact-note">
+            {t("demoContact")}{" "}
+            <Link href="/explore?tab=agencies" className="inline-flex min-h-11 items-center font-medium text-brand underline underline-offset-4">{t("demoContactLink")}</Link>
+          </p>
+        )}
+        {ownerView && (
+          <div className={styles.secondaryActions} data-testid="owner-page-actions">
+            <Link href="/studio/profile" className={styles.primaryContact} data-testid="owner-edit-page"><Pencil className="size-5 shrink-0" aria-hidden />{t("owner.editPage")}</Link>
+            <Link href="/studio/new" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border px-4 text-sm font-medium hover:bg-muted" data-testid="owner-add-work-header"><Plus className="size-4" aria-hidden />{t("owner.add")}</Link>
+          </div>
+        )}
+        {agency.whatsapp && !ownerView && (
           <ContactLink
             agencyId={agency.id}
             channel="whatsapp"
@@ -184,7 +196,7 @@ export function ProfileHeader({ agency, following, inquirySlot, servesNote, foll
             {tp("whatsapp")}
           </ContactLink>
         )}
-        {!readOnly && <div className={styles.secondaryActions}>
+        {!readOnly && !ownerView && <div className={styles.secondaryActions}>
           {inquirySlot}
           <FollowButton agencyId={agency.id} following={following} count={followers} onCount={setFollowers} />
         </div>}

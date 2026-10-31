@@ -14,10 +14,10 @@ import {
 } from "@/app/[locale]/(main)/admin/actions";
 import { Button } from "@/components/ui/button";
 
-function ActionButton({ onRun, children, variant = "outline", testId }: { onRun: () => Promise<unknown>; children: React.ReactNode; variant?: "outline" | "destructive" | "default" | "secondary"; testId?: string }) {
+function ActionButton({ onRun, children, variant = "outline", testId, confirmText }: { onRun: () => Promise<unknown>; children: React.ReactNode; variant?: "outline" | "destructive" | "default" | "secondary"; testId?: string; /** Asked first; the action runs only on OK. */ confirmText?: string }) {
   const [pending, start] = useTransition();
   return (
-    <Button size="sm" variant={variant} disabled={pending} data-testid={testId} onClick={() => start(async () => void (await onRun()))}>
+    <Button size="sm" variant={variant} disabled={pending} data-testid={testId} onClick={() => (!confirmText || window.confirm(confirmText)) && start(async () => void (await onRun()))}>
       {children}
     </Button>
   );
@@ -30,7 +30,7 @@ export function AgencyAdminButtons({ id, verified, status }: { id: string; verif
       <ActionButton onRun={() => setVerifiedAction(id, !verified)} variant={verified ? "outline" : "default"} testId="verify-toggle">
         {verified ? t("unverify") : t("verify")}
       </ActionButton>
-      <ActionButton onRun={() => setStatusAction(id, status === "active" ? "suspended" : "active")} variant={status === "active" ? "destructive" : "secondary"}>
+      <ActionButton onRun={() => setStatusAction(id, status === "active" ? "suspended" : "active")} variant={status === "active" ? "destructive" : "secondary"} testId="status-toggle" confirmText={status === "active" ? t("suspendConfirm") : undefined}>
         {status === "active" ? t("suspend") : t("activate")}
       </ActionButton>
     </div>
@@ -65,13 +65,13 @@ export function ReactivateButton({ id }: { id: string }) {
   );
 }
 
-export function ReportButtons({ id, postId, hidden }: { id: string; postId: string | null; hidden: boolean }) {
+export function ReportButtons({ id, postId, hidden, handled = false }: { id: string; postId: string | null; hidden: boolean; handled?: boolean }) {
   const t = useTranslations("Admin");
   return (
     <div className="flex flex-wrap gap-2">
-      {!hidden && <ActionButton variant="destructive" onRun={() => resolveReportAction(id, "hide")}>{t("hidePost")}</ActionButton>}
+      {!hidden && <ActionButton variant="destructive" confirmText={t("hidePostConfirm")} onRun={() => resolveReportAction(id, "hide")}>{t("hidePost")}</ActionButton>}
       {hidden && postId && <ActionButton onRun={() => setPostStatusAction(postId, "published")}>{t("unhide")}</ActionButton>}
-      <ActionButton onRun={() => resolveReportAction(id, "dismiss")}>{t("dismiss")}</ActionButton>
+      {!handled && <ActionButton confirmText={t("dismissConfirm")} onRun={() => resolveReportAction(id, "dismiss")}>{t("dismiss")}</ActionButton>}
     </div>
   );
 }
@@ -84,7 +84,7 @@ export function PromotionButtons({ id, status }: { id: string; status: "active" 
       <ActionButton onRun={() => setPromotionStatusAction(id, status === "active" ? "paused" : "active")}>
         {status === "active" ? t("pause") : t("resume")}
       </ActionButton>
-      <ActionButton variant="destructive" onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
+      <ActionButton variant="destructive" confirmText={t("endConfirm")} onRun={() => setPromotionStatusAction(id, "ended")}>{t("end")}</ActionButton>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export function CollabFeedbackStatusButton({ id, status }: { id: string; status:
   return (
     <span className="flex flex-wrap gap-2">
       {status !== "published" && <ActionButton variant="outline" testId="collab-feedback-publish" onRun={() => setCollabFeedbackStatusAction(id, "published")}>{t("show")}</ActionButton>}
-      {status !== "hidden" && <ActionButton variant="destructive" testId="collab-feedback-moderate" onRun={() => setCollabFeedbackStatusAction(id, "hidden")}>{t("hide")}</ActionButton>}
+      {status !== "hidden" && <ActionButton variant="destructive" testId="collab-feedback-moderate" confirmText={t("hideConfirm")} onRun={() => setCollabFeedbackStatusAction(id, "hidden")}>{t("hide")}</ActionButton>}
     </span>
   );
 }
@@ -102,7 +102,7 @@ export function CollabFeedbackStatusButton({ id, status }: { id: string; status:
 export function ReviewStatusButton({ id, status }: { id: string; status: "published" | "hidden" }) {
   const t = useTranslations("Reviews.admin");
   return (
-    <ActionButton variant={status === "published" ? "destructive" : "outline"} onRun={() => setReviewStatusAction(id, status === "published" ? "hidden" : "published")}>
+    <ActionButton variant={status === "published" ? "destructive" : "outline"} confirmText={status === "published" ? t("hideConfirm") : undefined} onRun={() => setReviewStatusAction(id, status === "published" ? "hidden" : "published")}>
       {status === "published" ? t("hide") : t("show")}
     </ActionButton>
   );

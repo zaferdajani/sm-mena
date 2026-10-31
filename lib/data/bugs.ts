@@ -4,6 +4,7 @@ import { and, count, desc, eq, inArray, lt, sql, sum } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { errorFingerprint, normalizePath } from "./error-fingerprint";
+import { SUPPORT_STATUSES, type SupportStatus } from "./bug-statuses";
 import { errorEvents, siteChecks, supportMessages, supportRequests } from "@/lib/db/schema";
 import { notifyReporter } from "./support-inbox";
 
@@ -14,8 +15,7 @@ import { notifyReporter } from "./support-inbox";
 export type ErrorInput = { source: "client" | "server"; kind: string; message: string; stack?: string | null; path?: string | null; userAgent?: string | null };
 export const ERROR_STATUSES = ["open", "investigating", "fixed", "wont_fix", "cannot_reproduce"] as const;
 export type ErrorStatus = (typeof ERROR_STATUSES)[number];
-export const SUPPORT_STATUSES = ["new", "planned", "waiting", "done", "declined"] as const;
-export type SupportStatus = (typeof SUPPORT_STATUSES)[number];
+export { SUPPORT_STATUSES, type SupportStatus };
 
 const clip = (s: string | null | undefined, n: number) => (s ? s.slice(0, n) : null);
 export { errorFingerprint, normalizePath } from "./error-fingerprint";

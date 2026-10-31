@@ -49,7 +49,19 @@ export default async function StudioPackagesPage({ params, searchParams }: PageP
       <p className="text-sm text-muted-foreground">{t("studio.intro")}</p>
       {rows.map((p) => (
         <div key={p.id} className="space-y-1">
-          <PackageForm services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} initial={p} />
+          {/* A saved package is a short card; its full form opens on "Edit" (a column of open forms read as unsaved). */}
+          <details className="group rounded-xl border" data-testid="package-card">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
+              <span className="min-w-0">
+                <span className="block truncate font-semibold" dir="auto">{p.title}</span>
+                <span className="text-sm text-muted-foreground">{p.priceJod.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en")} · {p.billing === "monthly" ? t("perMonth") : t("oneOff")}</span>
+              </span>
+              <span className="shrink-0 rounded-lg border px-3 py-1.5 text-sm font-medium group-open:hidden">{t("studio.edit")}</span>
+            </summary>
+            <div className="border-t p-2">
+              <PackageForm services={services} platforms={platforms} contentLang={contentLang(agency.contentLang)} initial={p} />
+            </div>
+          </details>
           {documentsOpen() && <Link href={{ pathname: "/studio/contracts/new", query: { package: p.id } }} className="flex items-center gap-1 px-1 text-sm text-brand hover:underline" data-testid="package-contract">
             <FileSignature className="size-4" /> {tc("fromPackage")}
           </Link>}

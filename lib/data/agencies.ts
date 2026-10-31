@@ -1,6 +1,7 @@
 import { isRegistrationPhase, PUBLICATION_CONSENT_VERSION } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
-import { or, and, desc, eq, sql } from "drizzle-orm";
+import { and, arrayOverlaps, desc, eq, or, sql } from "drizzle-orm";
+import { searchIntent } from "@/lib/search-intent";
 import { countryOfCity } from "@/lib/countries";
 import { agencyConditions, inCountry, realUnless } from "@/lib/data/agency-filters";
 import { getDb, type DB } from "@/lib/db";
@@ -157,7 +158,8 @@ export function toSummary(a: Agency): AgencySummary {
     contentLang: contentLang(a.contentLang),
     city: a.city,
     avatarUrl: mediaUrl(a.avatarKey),
-    isVerified: a.isVerified,
+    // A demo agency is never shown as verified, and its contact numbers are never offered: they could reach a stranger.
+    isVerified: a.isVerified && !a.isDemo,
     pioneerNumber: a.pioneerNumber ?? null,
     isDemo: a.isDemo,
     country: a.country,
@@ -168,7 +170,7 @@ export function toSummary(a: Agency): AgencySummary {
     followerCount: a.followerCount,
     services: a.services,
     startingPriceJod: a.startingPriceJod,
-    whatsapp: a.whatsapp,
+    whatsapp: a.isDemo ? null : a.whatsapp,
     ratingAverage: a.ratingCount ? Math.round((a.ratingSum / a.ratingCount) * 10) / 10 : null,
     ratingCount: a.ratingCount,
     googleRating: a.googleRating,
@@ -214,7 +216,15 @@ export async function listAgencies(filters: {
   if (filters.verified) conditions.push(eq(agencies.isVerified, true));
   conditions.push(...agencyConditions(filters));
   if (filters.q) {
-    conditions.push(sql`${agencies.searchText} like ${`%${normalizeForSearch(filters.q)}%`}`);
+    // The words themselves, or a service or business type the words name ("سوشال", "مخبز", "bakery").
+    const intent = searchIntent(filters.q);
+    conditions.push(
+      or(
+        sql`${agencies.searchText} like ${`%${normalizeForSearch(filters.q)}%`}`,
+        ...(intent.services.length ? [arrayOverlaps(agencies.services, intent.services)] : []),
+        ...(intent.industries.length ? [arrayOverlaps(agencies.industries, intent.industries)] : []),
+      )!,
+    );
   }
   const rows = await db
     .select()

@@ -151,17 +151,25 @@
   letter-spacing: normal;
   scrollbar-width: thin;
 }
+/* All tabs fit a 390px phone (the last one, About, used to sit off-screen in a strip that scrolled without a cue). */
 .frame [role="tab"] {
-  flex: 1 0 max-content;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  white-space: nowrap;
   min-block-size: 2.75rem;
   margin: 0;
-  padding: .65rem .8rem;
+  padding: .65rem .5rem;
   border: 0;
   border-radius: .7rem;
   font-size: .9375rem;
   line-height: 1.6;
 }
 .frame [role="tab"] > svg { flex: 0 0 auto; }
+@media (max-width: 26rem) {
+  .frame [role="tablist"] { gap: .125rem; padding: .25rem; }
+  .frame [role="tab"] { gap: .25rem; padding-inline: .35rem; font-size: .875rem; }
+  .frame [role="tab"] > svg { display: none; }
+}
 .frame [role="tab"][aria-selected="true"] { background: var(--primary); color: var(--primary-foreground); }
 .frame [data-testid="post-grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .frame [data-testid="post-grid"] > a { border: 1px solid var(--border); border-radius: 1rem; }

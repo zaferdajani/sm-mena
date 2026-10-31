@@ -1,3 +1,4 @@
+import { isRegistrationPhase } from "@/lib/launch-phase";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -36,7 +37,7 @@ export default async function OwnerNeedsPage({ params }: PageProps<"/[locale]/ow
         {t("needs.signedInAs")} <bdi dir="ltr">{user.email}</bdi>
       </p>
       <h1 className="mt-1 text-2xl font-extrabold leading-tight">{t(existing ? "needs.titleEdit" : "needs.title")}</h1>
-      <p className="mt-2 mb-5 text-sm leading-7 text-muted-foreground">{t("needs.intro")}</p>
+      <p className="mt-2 mb-5 text-sm leading-7 text-muted-foreground">{t(isRegistrationPhase() ? "needs.intro" : "live.needsIntro")}</p>
       <OwnerNeedsForm
         countries={countries}
         defaultCountry={existing?.country ?? country}

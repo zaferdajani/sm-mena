@@ -23,11 +23,20 @@ export function PackageForm({ services, platforms, contentLang, initial }: { ser
   const [state, action] = useActionState(savePackageAction, undefined);
   const [deleting, start] = useTransition();
   const [items, setItems] = useState<DeliverableLine[]>(initial?.items ?? []);
+  // Checked here in the page's language: the browser's own "fill out this field" follows the phone's language.
+  const [localError, setLocalError] = useState<string | null>(null);
+  const check = (e: React.FormEvent<HTMLFormElement>) => {
+    const fd = new FormData(e.currentTarget);
+    const problem = String(fd.get("title") ?? "").trim().length < 2 ? "title" : !fd.get("service") ? "service" : !(Number(fd.get("priceJod")) >= 1) ? "price" : null;
+    setLocalError(problem);
+    if (problem) e.preventDefault();
+  };
+  const error = localError ?? state?.error;
   const select = "h-9 w-full rounded-lg border border-input bg-transparent px-2 text-sm";
   return (
-    <form action={action} className="grid gap-3 rounded-xl border p-4" data-testid="package-form">
+    <form action={action} onSubmit={check} noValidate className="grid gap-3 rounded-xl border p-4" data-testid="package-form">
       {!initial && <h2 className="font-semibold">{t("studio.new")}</h2>}
-      <FormError message={state?.error ? (state.error === "limit" ? t("studio.limit") : t(`studio.errors.${state.error}`)) : undefined} />
+      <FormError message={error ? (error === "limit" ? t("studio.limit") : t(`studio.errors.${error}`)) : undefined} />
       {initial && <input type="hidden" name="packageId" value={initial.id} />}
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label={t("studio.title")}>
@@ -59,9 +68,11 @@ export function PackageForm({ services, platforms, contentLang, initial }: { ser
       <Field label={t("studio.deliveryDays")}>
         <Input name="deliveryDays" type="number" min={1} max={365} dir="ltr" defaultValue={initial?.deliveryDays ?? ""} className="w-32" />
       </Field>
-      <Field label={t("studio.deliverables")}>
-        <Textarea name="deliverables" rows={3} maxLength={1000} defaultValue={initial?.deliverables.join("\n")} placeholder={t("studio.deliverablesPlaceholder")} />
-      </Field>
+      {/* One list of contents (the picker above); anything it lacks goes here, folded away until needed. */}
+      <details className="rounded-lg border p-3" open={Boolean(initial?.deliverables.length)} data-testid="package-extra">
+        <summary className="cursor-pointer text-sm font-medium">{t("studio.deliverablesMore")}</summary>
+        <Textarea name="deliverables" rows={3} maxLength={1000} defaultValue={initial?.deliverables.join("\n")} placeholder={t("studio.deliverablesPlaceholder")} className="mt-2" aria-label={t("studio.deliverables")} />
+      </details>
       <OtherLanguage main={contentLang} filled={Boolean(tr.title || tr.description || tr.deliverables?.length)}>
         {(attrs, label) => (
           <>

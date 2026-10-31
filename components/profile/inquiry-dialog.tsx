@@ -14,16 +14,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { serviceLabel } from "@/lib/labels";
 
-export function InquiryDialog({ agencyId, agencyName, services, postId }: { agencyId: string; agencyName: string; services: string[]; postId?: string }) {
+/**
+ * "Message" for an agency. Opened from the profile header, and also where the visitor is looking: a package
+ * (its service chosen, the message started), a client's page and a post.
+ */
+export function InquiryDialog({ agencyId, agencyName, services, postId, defaultService, defaultMessage, label, testId = "message-button", variant = "secondary", className }: {
+  agencyId: string;
+  agencyName: string;
+  services: string[];
+  postId?: string;
+  defaultService?: string;
+  defaultMessage?: string;
+  /** The button's words (default "Message"). */
+  label?: string;
+  testId?: string;
+  variant?: "secondary" | "default" | "outline";
+  className?: string;
+}) {
   const t = useTranslations("Inquiry");
   const tchat = useTranslations("Chat");
   const locale = useLocale();
   const [state, action] = useActionState(sendInquiry, undefined);
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="secondary" className="h-9 flex-1 gap-1.5" data-testid="message-button" />}>
+      <DialogTrigger render={<Button variant={variant} className={className ?? "h-9 flex-1 gap-1.5"} data-testid={testId} />}>
         <Send className="size-4 rtl:-scale-x-100" />
-        {t("open")}
+        {label ?? t("open")}
       </DialogTrigger>
       <DialogContent className="max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
@@ -59,7 +75,7 @@ export function InquiryDialog({ agencyId, agencyName, services, postId }: { agen
             {services.length > 0 && (
               <div className="grid gap-1.5">
                 <Label htmlFor="inq-service">{t("service")}</Label>
-                <select id="inq-service" name="service" className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm">
+                <select id="inq-service" name="service" defaultValue={defaultService && services.includes(defaultService) ? defaultService : ""} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm">
                   <option value="">{t("anyService")}</option>
                   {services.map((s) => (
                     <option key={s} value={s}>{serviceLabel(s, locale)}</option>
@@ -69,7 +85,7 @@ export function InquiryDialog({ agencyId, agencyName, services, postId }: { agen
             )}
             <div className="grid gap-1.5">
               <Label htmlFor="inq-message">{t("message")}</Label>
-              <Textarea id="inq-message" name="message" required minLength={5} maxLength={2000} rows={4} placeholder={t("messagePlaceholder")} />
+              <Textarea id="inq-message" name="message" required minLength={5} maxLength={2000} rows={4} placeholder={t("messagePlaceholder")} defaultValue={defaultMessage} />
             </div>
             <label className="flex items-start gap-2 text-xs text-muted-foreground">
               <input type="checkbox" name="consent" required className="mt-0.5 size-4 accent-[var(--primary)]" />

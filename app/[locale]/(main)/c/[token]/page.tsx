@@ -32,7 +32,7 @@ export default async function ClientContract({ params, searchParams }: PageProps
           {v.agency.name}
         </Link>
       </p>
-      <ClientContractView v={v} locale={locale} hidden={{ token }} pdfRef={token} funded={sp.funded === "1"} />
+      <ClientContractView v={v} locale={locale} hidden={{ token }} pdfRef={token} funded={sp.funded === "1"} signed={sp.signed === "1"} />
     </div>
   );
 }

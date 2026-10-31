@@ -42,7 +42,7 @@ export function GridLink({ lang }: { lang: Lang }) {
 /** Trust: a star readout whose five stars fill one by one on hover. */
 export function StarReadout({ lang }: { lang: Lang }) {
   return (
-    <a className="sw-stars" href={appUrl(lang, "explore")}>
+    <a className="sw-stars" href={appUrl(lang, "explore?tab=agencies")}>
       <span aria-hidden="true" className="sw-stars__row">
         {Array.from({ length: 5 }, (_, i) => (
           <svg key={i} viewBox="0 0 20 20">

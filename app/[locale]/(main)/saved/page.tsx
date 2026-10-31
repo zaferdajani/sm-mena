@@ -10,7 +10,8 @@ import { followedAgencyIds, savedPostIds } from "@/lib/data/interactions";
 import { getPostsByIds } from "@/lib/data/posts";
 import { getDb } from "@/lib/db";
 import { agencies } from "@/lib/db/schema";
-import { interactionKey } from "@/lib/visitor";
+import { getVisitorId, interactionKey } from "@/lib/visitor";
+import { listVisitorRequests } from "@/lib/data/requests";
 import { getSessionUser } from "@/lib/auth/session";
 import { logout } from "@/app/[locale]/(auth)/actions";
 import { SubmitButton } from "@/components/submit-button";
@@ -32,6 +33,9 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
   const [key, user] = await Promise.all([interactionKey(), getSessionUser()]);
   const [postIds, agencyIds] = key ? await Promise.all([savedPostIds(key), followedAgencyIds(key)]) : [[], []];
   const posts = await getPostsByIds(postIds);
+  // "My projects" only for someone who has an account or has sent a request from this device.
+  const visitorId = await getVisitorId();
+  const showRequests = Boolean(user) || (visitorId ? (await listVisitorRequests(visitorId)).length > 0 : false);
   const db = await getDb();
   const followed = agencyIds.length
     ? (await db.select().from(agencies).where(and(inArray(agencies.id, agencyIds), eq(agencies.status, "active"), discoverableProfiles()))).map(toSummary)
@@ -60,7 +64,11 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
             </Link>
           </div>
         )}
-        <Link href="/requests" className="mt-2 inline-block text-sm font-medium text-brand">{tr("myRequests")} →</Link>
+        {showRequests && (
+          <Link href="/requests" className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand" data-testid="saved-my-requests">
+            {tr("myRequests")} <span aria-hidden className="rtl:rotate-180">→</span>
+          </Link>
+        )}
       </header>
       <section>
         <h2 className="mb-2 px-4 text-sm font-semibold sm:px-0">{t("agencies")}</h2>

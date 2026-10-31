@@ -7,7 +7,8 @@ import { VerifiedBadge } from "@/components/verified-badge";
 import { Link } from "@/i18n/navigation";
 import { requireStaff } from "@/lib/auth/guards";
 import { can } from "@/lib/auth/permissions";
-import { adminListAgencies } from "@/lib/data/admin";
+import { AGENCY_FILTERS, adminListAgencies } from "@/lib/data/admin";
+import { FilterChips } from "@/components/admin/filter-chips";
 import { setPlanAction } from "../actions";
 
 export default async function AdminAgencies({ params, searchParams }: PageProps<"/[locale]/admin/agencies">) {
@@ -16,11 +17,13 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
   const me = await requireStaff("agencies.view");
   const moderate = can(me.role, "agencies.moderate");
   const plans = can(me.role, "agencies.plan");
-  const q = String((await searchParams).q ?? "").slice(0, 80);
+  const sp = await searchParams;
+  const q = String(sp.q ?? "").slice(0, 80);
+  const filter = AGENCY_FILTERS.find((f) => f === sp.show) ?? "all";
   const t = await getTranslations("Admin");
   const tc = await getTranslations("Common");
   const tp = await getTranslations("Studio.plan");
-  const rows = await adminListAgencies(q || undefined);
+  const rows = await adminListAgencies(q || undefined, filter);
   const hasDemo = rows.some((r) => r.isDemo && r.status !== "deactivated");
   return (
     <div className="space-y-4">
@@ -30,6 +33,8 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
         </form>
         {hasDemo && can(me.role, "demo.remove") && <RemoveDemoButton />}
       </div>
+      <FilterChips pathname="/admin/agencies" param="show" current={filter} keep={q ? { q } : {}} options={AGENCY_FILTERS.map((f) => ({ value: f, label: t(`agencyFilters.${f}`) }))} />
+      {!rows.length && <p className="rounded-xl border px-3 py-6 text-center text-sm text-muted-foreground">{t("noAgencies")}</p>}
       <ul className="divide-y rounded-xl border" data-testid="admin-agencies">
         {rows.map((a) => (
           <li key={a.id} className="grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-center">
@@ -42,22 +47,35 @@ export default async function AdminAgencies({ params, searchParams }: PageProps<
                   {a.isDemo && <span className="rounded bg-muted px-1.5 text-[10px] text-muted-foreground">{tc("demo")}</span>}
                   {a.status === "suspended" && <span className="rounded bg-destructive/10 px-1.5 text-[10px] text-destructive">{t("suspended")}</span>}
                   {a.status === "deactivated" && <span className="rounded bg-muted px-1.5 text-[10px] text-muted-foreground" data-testid="deactivated-badge">{t("deactivated")}</span>}
+                  {a.isNew && <span className="rounded bg-brand/10 px-1.5 text-[10px] text-brand">{t("newAgency")}</span>}
                 </Link>
-                <p className="truncate text-xs text-muted-foreground" dir="ltr">@{a.handle} · {a.ownerEmail} · {a.postCount} posts</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  <bdi dir="ltr">@{a.handle} · {a.ownerEmail}</bdi> · {t("postsCount", { count: a.postCount })}
+                </p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {moderate && a.status !== "deactivated" && <AgencyAdminButtons id={a.id} verified={a.isVerified} status={a.status} />}
               {moderate && a.status === "deactivated" && !a.isDemo && <ReactivateButton id={a.id} />}
               {plans && (
-                <form action={setPlanAction} className="flex items-center gap-1">
-                  <input type="hidden" name="agencyId" value={a.id} />
-                  <select name="plan" defaultValue={a.plan} aria-label={t("plan")} className="h-8 rounded-md border bg-transparent px-1 text-xs">
-                    {(["free", "pro", "business"] as const).map((p) => <option key={p} value={p}>{tp(p)}</option>)}
-                  </select>
-                  <input type="date" name="until" aria-label={t("planUntil")} defaultValue={a.planExpiresAt?.toISOString().slice(0, 10) ?? ""} className="h-8 rounded-md border bg-transparent px-1 text-xs" dir="ltr" />
-                  <Button type="submit" size="sm" variant="outline">{t("setPlan")}</Button>
-                </form>
+                // Behind a toggle with visible labels: a bare date box beside "Update plan" didn't say what the date meant.
+                <details className="text-xs">
+                  <summary className="cursor-pointer rounded-md border px-2.5 py-1.5" data-testid="plan-toggle">{t("editPlan")} · {tp(a.plan)}</summary>
+                  <form action={setPlanAction} className="mt-2 flex flex-wrap items-end gap-2">
+                    <input type="hidden" name="agencyId" value={a.id} />
+                    <label className="grid gap-1">
+                      {t("plan")}
+                      <select name="plan" defaultValue={a.plan} className="h-8 rounded-md border bg-transparent px-1 text-xs">
+                        {(["free", "pro", "business"] as const).map((p) => <option key={p} value={p}>{tp(p)}</option>)}
+                      </select>
+                    </label>
+                    <label className="grid gap-1">
+                      {t("planUntilLabel")}
+                      <input type="date" name="until" defaultValue={a.planExpiresAt?.toISOString().slice(0, 10) ?? ""} className="h-8 rounded-md border bg-transparent px-1 text-xs" dir="ltr" />
+                    </label>
+                    <Button type="submit" size="sm" variant="outline">{t("setPlan")}</Button>
+                  </form>
+                </details>
               )}
             </div>
           </li>
