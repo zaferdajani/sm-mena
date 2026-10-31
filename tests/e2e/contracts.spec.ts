@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, drawSignature, joinAgency, login } from "./helpers";
+import { ADMIN, drawSignature, joinAgency, login, newPackageForm } from "./helpers";
 
 async function tickAll(page: Page) {
   const milestone = page.getByTestId("milestone").first();
@@ -17,8 +17,7 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   const account = await joinAgency(page, "deal");
 
   // A package with structured contents shows on the public profile.
-  await page.goto("/en/studio/packages");
-  const form = page.getByTestId("package-form").last();
+  const form = await newPackageForm(page);
   await form.locator('input[name="title"]').fill("Instagram Growth");
   await form.locator('select[name="service"]').selectOption({ index: 1 });
   await form.locator('input[name="priceJod"]').fill("300");

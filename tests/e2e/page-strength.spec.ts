@@ -17,7 +17,9 @@ test("the first service card becomes a package and the basics land on the page",
   await page.getByTestId("first-delivery").fill("7");
   await page.getByTestId("first-billing-monthly").check({ force: true });
   await page.getByTestId("first-service-save").click();
-  // Saved as an ordinary package named after the service; the first card steps aside.
+  // Saved as an ordinary package named after the service, shown as a short card; the first card steps aside.
+  await expect(page.getByTestId("package-card")).toContainText("Photography");
+  await page.getByTestId("package-card").first().locator("> summary").click();
   await expect(page.getByTestId("package-form").first()).toBeVisible();
   await expect(page.getByTestId("package-form").first().locator('input[name="title"]')).toHaveValue("Photography");
   await expect(page.getByTestId("package-form").first().locator('input[name="priceJod"]')).toHaveValue("150");
