@@ -58,7 +58,7 @@ test("two milestones: pay in, deliver, changes (rounds), dispute with evidence, 
   await expect(doc).toContainText("2 rounds of changes");
   await expect(doc).not.toContainText("held by Sawwiq");
   await sign(client, "Hala Haddad");
-  await client.getByRole("button", { name: /Pay 150 JOD into protection/ }).click();
+  await client.getByRole("button", { name: /Pay 150 JOD/ }).click();
   await expect(client.getByTestId("payments-readiness")).toContainText("Test checkout: no real money");
   await client.getByRole("button", { name: "Pay now (test)" }).click();
   await expect(client.getByTestId("funded-ok")).toBeVisible();
@@ -156,7 +156,7 @@ test("two milestones: pay in, deliver, changes (rounds), dispute with evidence, 
   await expect(client.getByTestId("milestone").first()).toHaveAttribute("data-status", "split");
   await expect(client.getByTestId("contract-status")).toHaveText("Active");
   await expect(client.getByTestId("receipt")).toHaveCount(3);
-  await expect(client.getByTestId("receipt").filter({ hasText: "Paid out to the agency" })).toContainText("Gross 75 JOD");
+  await expect(client.getByTestId("receipt").filter({ hasText: "Paid out to the agency" })).toContainText("Amount 75 JOD");
   const pdf = await client.request.get((await client.getByTestId("receipt-pdf").first().getAttribute("href"))!);
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
 });
@@ -216,7 +216,7 @@ test("partner contract: an agency asks a partner for a contract, the partner cre
   await buyer.getByTestId("buying-contract-row").filter({ hasText: title }).click();
   await expect(buyer.getByTestId("buying-contract")).toContainText("You're the client");
   await sign(buyer, "Buyer Owner");
-  await buyer.getByRole("button", { name: /Pay 400 JOD into protection/ }).click();
+  await buyer.getByRole("button", { name: /Pay 400 JOD/ }).click();
   await buyer.getByRole("button", { name: "Pay now (test)" }).click();
   await expect(buyer.getByTestId("funded-ok")).toBeVisible();
   await expect(buyer.getByTestId("money-held")).toContainText("400");

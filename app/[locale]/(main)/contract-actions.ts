@@ -237,8 +237,11 @@ export async function clientSignAction(_: ActionState, formData: FormData): Prom
   if (!c) return { error: "notFound" };
   const visitorId = c.token ? await getVisitorId({ create: true }) : null;
   const r = await signAsClient(c.v, String(formData.get("signer") ?? ""), ip, parseSignatureDataUrl(formData.get("signature")), visitorId);
+  if ("error" in r) return done(r);
+  // Signed: open the contract again at the top, where it says so and names the next step (the signing form is
+  // gone once the contract is active, and the person was left looking at the footer).
   refresh();
-  return done(r);
+  return redirect({ href: `${c.base}?signed=1`, locale: await getLocale() });
 }
 
 /** Before signing: ask the agency to change something (it answers with a revised contract). */

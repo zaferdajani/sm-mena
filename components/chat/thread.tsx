@@ -48,10 +48,15 @@ export function ChatThread({ conversationId, side, token, initialMessages, initi
   const [draft, setDraft] = useState("");
   const scroller = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLElement>(null);
-  // On a phone the page header above can push the reply box below the screen: bring the box's bottom into view once.
+  // On a phone, the page header and banners can push the reply box under the bottom tab bar or below the screen:
+  // bring the whole thread into view once.
   useEffect(() => {
     const el = box.current;
-    if (el && el.getBoundingClientRect().bottom > window.innerHeight) el.scrollIntoView({ block: "end" });
+    if (!el) return;
+    const nav = document.querySelector<HTMLElement>("[data-app-nav]");
+    const limit = nav && nav.offsetParent !== null ? nav.getBoundingClientRect().top : window.innerHeight;
+    const overlap = el.getBoundingClientRect().bottom - limit;
+    if (overlap > 0) window.scrollBy({ top: overlap + 8 });
   }, []);
   const stickToBottom = useRef(true);
   const lastActivity = useRef(0);

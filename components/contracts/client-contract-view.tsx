@@ -21,18 +21,23 @@ import { nextFundable, type ContractView } from "@/lib/data/contracts";
  * or, for partner contracts, by the buying agency in its studio (`hidden` carries
  * the contract id and as=buyer, and `pdfRef` is the contract id).
  */
-export async function ClientContractView({ v, locale, hidden, pdfRef, funded }: { v: ContractView; locale: string; hidden: Record<string, string>; pdfRef: string; funded?: boolean }) {
+export async function ClientContractView({ v, locale, hidden, pdfRef, funded, signed }: { v: ContractView; locale: string; hidden: Record<string, string>; pdfRef: string; funded?: boolean; /** Just signed: say so at the top, with the next step. */ signed?: boolean }) {
   const t = await getTranslations("Contracts");
   const c = v.contract;
   const fundable = nextFundable(v);
   return (
     <div className="space-y-4">
+      {signed && c.status !== "sent" && (
+        <p className="flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-sm" role="status" data-testid="signed-ok">
+          <CheckCircle2 className="size-5 shrink-0 text-brand" /> {t(fundable && c.paymentMode === "protected" ? "client.signedNextPay" : "client.signedOk")}
+        </p>
+      )}
       {funded && (
         <p className="flex items-center gap-2 rounded-xl bg-brand/10 p-3 text-sm" role="status" data-testid="funded-ok">
           <CheckCircle2 className="size-5 text-brand" /> {t("fundPage.paid")}
         </p>
       )}
-      <ContractSummary v={v} locale={locale} />
+      <ContractSummary v={v} locale={locale} audience="client" />
       {c.paymentMode === "protected" && <ReadinessBanner live={c.paymentsLive} compact={c.status !== "sent"} />}
       {c.status === "completed" && v.reviewToken && (
         <section className="space-y-2 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4 text-sm" data-testid="review-prompt">
@@ -62,7 +67,7 @@ export async function ClientContractView({ v, locale, hidden, pdfRef, funded }: 
             <MilestoneList perspective="client" milestones={v.milestones} mode={c.paymentMode} currency={c.currency} active={c.status === "active"} fundableId={fundable?.id ?? null} hidden={hidden} info={milestoneInfo(v, locale)} />
           </section>
           <ProblemPanel v={v} side="client" hidden={hidden} locale={locale} />
-          <ReceiptsList v={v} locale={locale} pdfRef={pdfRef} />
+          <ReceiptsList v={v} locale={locale} pdfRef={pdfRef} audience="client" />
           <UpdatesList v={v} locale={locale} />
           <details className="rounded-2xl border p-4">
             <summary className="cursor-pointer font-semibold">{t("view.readFull")}</summary>

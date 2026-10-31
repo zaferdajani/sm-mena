@@ -12,7 +12,7 @@ export const CONTRACT_STATUS_STYLE: Record<string, string> = {
   disputed: "bg-destructive/10 text-destructive",
 };
 
-export async function ContractSummary({ v, locale }: { v: ContractView; locale: string }) {
+export async function ContractSummary({ v, locale, audience = "agency" }: { v: ContractView; locale: string; /** The client sees the amount passed to the agency, before Sawwiq's fee (630 of 700 read as money gone missing). */ audience?: "agency" | "client" }) {
   const t = await getTranslations("Contracts");
   const c = v.contract;
   const day = (d: string) => formatDate(new Date(`${d}T12:00:00Z`), locale);
@@ -44,7 +44,7 @@ export async function ContractSummary({ v, locale }: { v: ContractView; locale: 
             </div>
             <div className="rounded-xl bg-muted/50 p-2.5">
               <dt className="text-xs text-muted-foreground">{t("view.released")}</dt>
-              <dd className="font-bold tabular-nums">{formatFils(v.money.released, locale, c.currency)}</dd>
+              <dd className="font-bold tabular-nums">{formatFils(audience === "client" ? v.money.released + v.money.fees : v.money.released, locale, c.currency)}</dd>
             </div>
           </>
         )}

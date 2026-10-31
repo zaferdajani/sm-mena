@@ -70,6 +70,30 @@ test("the guided matchmaker walks through choices and stays in Saudi Arabia", as
   await expect(page.getByTestId("chat-input")).toHaveAttribute("placeholder", /الرياض/);
 });
 
+test("with no agency to show, the matchmaker still offers to send the project (no dead end)", async ({ page }) => {
+  // Real mode often has nothing that fits yet: answer as the matchmaker does then (no recommendation at all).
+  await page.route("**/api/match", async (route) => {
+    const res = await route.fetch();
+    const data = await res.json();
+    await route.fulfill({ response: res, json: { ...data, recommendation: null, reply: "No agency fits yet." } });
+  });
+  await page.goto("/ar/match");
+  const choices = page.getByTestId("wizard-choices");
+  await page.getByTestId("choice-group-social_media").click();
+  await page.getByTestId("choice-next").click();
+  await page.getByTestId("choice-any").click();
+  await page.getByTestId("choice-industry-restaurant_cafe").click();
+  await page.getByTestId("choice-not-sure").click();
+  await page.getByTestId("choice-not-sure").click();
+  await page.getByTestId("choice-city-riyadh").click();
+  await expect(choices).toHaveAttribute("data-step", "results", { timeout: 20_000 });
+  const send = page.getByTestId("send-project");
+  await expect(send).toHaveText(/أرسل مشروعي على أي حال/);
+  await send.click();
+  await expect(page).toHaveURL(/\/ar\/request\/new\?city=riyadh$/);
+  await expect(page.getByTestId("request-form")).toBeVisible();
+});
+
 test("a city in another country is questioned, not followed", async ({ page }) => {
   await page.goto("/ar/match");
   await page.getByTestId("chat-input").fill("أحتاج إدارة حساب إنستغرام لمطعم في عمّان");

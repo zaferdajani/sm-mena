@@ -19,7 +19,7 @@ test("client and agency chat about a quote; the agency hears when the client acc
   await page.check('input[name="consent"]');
   await page.getByTestId("request-form").getByRole("button").last().click();
   await expect(page.getByTestId("request-created")).toBeVisible();
-  const link = await page.getByTestId("request-link").innerText();
+  const link = (await page.getByTestId("request-link").getAttribute("data-link"))!;
   await page.goto("/en/requests");
   const href = await page.locator('a[href*="/requests/"]').filter({ hasText: /Photography/ }).first().getAttribute("href");
   const requestId = href!.split("/requests/")[1];
@@ -66,9 +66,11 @@ test("client and agency chat about a quote; the agency hears when the client acc
 
   // 6. The client accepts the quote; the agency is notified.
   await page.goto(link);
-  page.on("dialog", (d) => d.accept());
   await page.getByTestId("accept").click();
+  // Asked on the page, then the next step is spelled out.
+  await page.getByTestId("confirm-yes").click();
   await expect(page.getByText("Closed")).toBeVisible();
+  await expect(page.getByTestId("accepted-next")).toBeVisible();
 
   await agency.goto("/en/studio");
   await expect(visibleBell(agency).getByTestId("bell-count")).toBeVisible();

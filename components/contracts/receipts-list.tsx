@@ -8,7 +8,7 @@ import { formatDate, formatFils } from "@/lib/format";
  * Receipts for every deposit, payout and refund on the contract, each with a
  * PDF in Arabic and English. `pdfRef` is the client's token or the contract id.
  */
-export async function ReceiptsList({ v, locale, pdfRef }: { v: ContractView; locale: string; pdfRef: string }) {
+export async function ReceiptsList({ v, locale, pdfRef, audience = "agency" }: { v: ContractView; locale: string; pdfRef: string; /** The client sees what it paid; Sawwiq's fee and the agency's net are the agency's business. */ audience?: "agency" | "client" }) {
   if (v.contract.paymentMode !== "protected") return null;
   const t = await getTranslations("Contracts.receipts");
   const receipts = receiptsOf(v);
@@ -29,7 +29,13 @@ export async function ReceiptsList({ v, locale, pdfRef }: { v: ContractView; loc
               </span>
               <span className="block text-xs text-muted-foreground">
                 <span dir="ltr">{r.number}</span> · {formatDate(r.date, locale)} ·{" "}
-                {r.kind === "refund" ? t("refunded", { amount: money(r.grossFils) }) : t("amounts", { gross: money(r.grossFils), fee: money(r.feeFils), net: money(r.netFils) })}
+                {r.kind === "refund"
+                  ? t("refunded", { amount: money(r.grossFils) })
+                  : audience === "client"
+                    ? t("clientAmount", { gross: money(r.grossFils) })
+                    : t("amounts", { gross: money(r.grossFils), fee: money(r.feeFils), net: money(r.netFils) })}
+                {/* Test mode charges nothing (the terms say so): a fee shown here is what it would be once payments are live. */}
+                {audience === "agency" && r.test && r.feeFils > 0 && <> · {t("feePreview")}</>}
               </span>
             </span>
             <span className="flex gap-2 text-xs">

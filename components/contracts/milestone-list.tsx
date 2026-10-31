@@ -182,7 +182,7 @@ function ClientActions({ m, mode, fundable, hidden, currency, info }: { m: Ms; m
         <form action={clientFundAction} className="space-y-1">
           <Hidden values={{ ...hidden, milestoneId: m.id }} />
           <SubmitButton className="h-10 w-full sm:w-auto">{t("fund", { amount })}</SubmitButton>
-          <p className="text-xs text-muted-foreground">{t("fundHint")}</p>
+          <p className="text-xs text-muted-foreground">{t("fundExplain")}</p>
         </form>
       )}
       {m.status === "submitted" && (
@@ -240,7 +240,7 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
           active &&
           (perspective === "agency" ? (mode === "protected" ? ["pending", "funded", "changes_requested"] : ["pending", "changes_requested"]).includes(m.status) : m.status === "submitted");
         return (
-          <li key={m.id} className="relative space-y-3 rounded-2xl border bg-card p-4" data-testid="milestone" data-status={m.status}>
+          <li key={m.id} id={`milestone-${m.id}`} className="relative scroll-mt-24 space-y-3 rounded-2xl border bg-card p-4 target:ring-2 target:ring-brand" data-testid="milestone" data-status={m.status}>
             <span className={cn("absolute -start-[1.4rem] top-5 size-3 rounded-full ring-4 ring-background", ["approved", "released"].includes(m.status) ? "bg-brand" : "bg-border")} />
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold" dir="auto">
@@ -262,7 +262,7 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
             {m.status === "changes_requested" && m.changesNote && <p className="rounded-lg bg-destructive/10 p-2 text-sm" dir="auto">{t("changes", { note: m.changesNote })}</p>}
             {!["released", "approved", "refunded", "cancelled", "split"].includes(m.status) && <Rounds info={info[m.id]} />}
             {info[m.id]?.autoApproved && <p className="text-xs text-muted-foreground" data-testid="auto-approved">{t("autoApproved")}</p>}
-            {m.submissionNote && ["submitted", "approved", "released"].includes(m.status) && <p className="rounded-lg bg-muted p-2 text-sm whitespace-pre-line" dir="auto">{t("delivered", { note: m.submissionNote })}</p>}
+            {m.submissionNote && ["submitted", "approved", "released"].includes(m.status) && <p className="rounded-lg bg-muted p-2 text-sm whitespace-pre-line break-words" dir="auto">{t("delivered", { note: "" })}<Linkified text={m.submissionNote} /></p>}
             <Checklist m={m} perspective={perspective} editable={editable} hidden={hidden} />
             {active &&
               (perspective === "agency" ? (
@@ -274,5 +274,20 @@ export function MilestoneList({ perspective, milestones, mode, active, fundableI
         );
       })}
     </ol>
+  );
+}
+
+/** The agency's delivery note with its links tappable (they open the delivered work in a new tab). */
+function Linkified({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(https?:\/\/[^\s<>"']+)/g).map((part, i) =>
+        /^https?:\/\//.test(part) ? (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer nofollow ugc" className="text-brand underline underline-offset-2" dir="ltr">{part}</a>
+        ) : (
+          part
+        ),
+      )}
+    </>
   );
 }

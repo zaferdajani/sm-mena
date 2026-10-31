@@ -19,6 +19,8 @@ import { canUse } from "@/lib/feature-gate";
 import { AppFrame } from "./app-frame";
 import { HelpChat } from "@/components/support/help-chat";
 import { helpAiEnabled } from "@/lib/ai/help-assistant";
+import { hasVisitorRequests } from "@/lib/data/requests";
+import { getVisitorId } from "@/lib/visitor";
 
 /** Side navigation on desktop, top bar and bottom tabs on phones. */
 export async function AppShell({ children }: { children: React.ReactNode }) {
@@ -29,7 +31,10 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const tf = await getTranslations("Footer");
   const user = await getSessionUser();
   const locale = await getLocale();
-  const [country, chosen, matchOpen] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker")]);
+  const [country, chosen, matchOpen, postedProject] = await Promise.all([currentCountry(), chosenCountry(), canUse("ai_matchmaker"), getVisitorId().then(hasVisitorRequests)]);
+  // A business owner (signed in, or a device that posted a project) gets their projects, chats, contracts and
+  // account under "My projects"; "Join" (the provider sign-up) is only for everyone else.
+  const ownerTab: NavItem | null = user?.role === "client" || (!user && postedProject) ? { href: "/requests", label: t("myProjects"), icon: "projects" } : null;
   const themeLabels = { dark: th("themeDark"), light: th("themeLight") };
   // Inside the app the logo and the "Home" tab lead to the same place (the landing page stays the front page at /).
   const homeHref = reg ? "/" : "/feed";
@@ -43,7 +48,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   const items: NavItem[] = reg ? [
     { href: "/", label: rt("navHome"), icon: "home" },
     { href: "/examples", label: rt("navExamples"), icon: "explore" },
-    isStaffRole(user?.role) ? { href: "/admin", label: t("admin"), icon: "admin" } : user?.role === "agent" ? { href: "/agent", label: t("agent"), icon: "studio" } : user && user.role !== "client" ? { href: "/studio", label: t("studio"), icon: "studio" } : { href: "/start", label: t("join"), icon: "join" },
+    isStaffRole(user?.role) ? { href: "/admin", label: t("admin"), icon: "admin" } : user?.role === "agent" ? { href: "/agent", label: t("agent"), icon: "studio" } : user && user.role !== "client" ? { href: "/studio", label: t("studio"), icon: "studio" } : ownerTab ?? { href: "/start", label: t("join"), icon: "join" },
   ] : [
     { href: "/feed", label: t("home"), icon: "home" },
     { href: "/explore", label: t("explore"), icon: "explore" },
@@ -55,7 +60,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
         ? { href: "/agent", label: t("agent"), icon: "studio" }
         : user && user.role !== "client"
           ? { href: "/studio", label: t("studio"), icon: "studio" }
-          : { href: "/start", label: t("join"), icon: "join" },
+          : ownerTab ?? { href: "/start", label: t("join"), icon: "join" },
   ];
   return (
     <AppFrame>

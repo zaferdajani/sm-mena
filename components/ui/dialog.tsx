@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations } from "next-intl"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cn } from "cn"
 
@@ -164,4 +165,10 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+}
+
+/** The close button's spoken label in the page's language (it was always English). */
+function CloseLabel() {
+  const t = useTranslations("Common")
+  return <span className="sr-only">{t("close")}</span>
 }

@@ -38,7 +38,7 @@ export default async function StudioContract({ params, searchParams }: PageProps
         <p className="flex items-center gap-2 rounded-xl bg-muted p-3 text-sm">
           <Handshake className="size-4 text-brand" /> {t("buying.intro", { agency: bought.agency.name })}
         </p>
-        <ClientContractView v={bought} locale={locale} hidden={{ contractId: bought.contract.id, as: "buyer" }} pdfRef={bought.contract.id} funded={sp.funded === "1"} />
+        <ClientContractView v={bought} locale={locale} hidden={{ contractId: bought.contract.id, as: "buyer" }} pdfRef={bought.contract.id} funded={sp.funded === "1"} signed={sp.signed === "1"} />
       </div>
     );
   }

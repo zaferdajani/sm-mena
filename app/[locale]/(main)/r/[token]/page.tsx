@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ClientContracts } from "@/components/requests/client-contracts";
 import { RequestView } from "@/components/requests/request-view";
-import { FileSignature } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { clientToken, contractsForRequest } from "@/lib/data/contracts";
+import { contractsForRequest } from "@/lib/data/contracts";
 import { getRequestByToken } from "@/lib/data/requests";
 
 export const metadata: Metadata = { robots: { index: false } };
@@ -17,18 +16,13 @@ export default async function RequestByTokenPage({ params }: PageProps<"/[locale
     return <p className="px-4 py-20 text-center text-muted-foreground">{t("notFound")}</p>;
   }
   // Contracts the agency sent for this request, linked for the client.
-  const contracts = await contractsForRequest(data.request.id);
-  const tc = await getTranslations("Contracts");
+  const contracts = (await contractsForRequest(data.request.id)).filter((c) => c.status !== "cancelled");
+  const agencyName = (agencyId: string) => data.proposals.find((p) => p.agency.id === agencyId)?.agency.name ?? "";
   return (
     <>
-      {contracts
-        .map((c) => ({ c, link: clientToken(c) }))
-        .filter(({ c, link }) => c.status !== "cancelled" && link)
-        .map(({ c, link }) => (
-          <Link key={c.id} href={`/c/${link}`} className="mx-4 mt-4 flex items-center gap-2 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4 text-sm font-medium sm:mx-auto sm:max-w-2xl" data-testid="request-contract">
-            <FileSignature className="size-5 text-brand" /> {tc("requestContract", { agency: data.proposals.find((p) => p.agency.id === c.agencyId)?.agency.name ?? "" })}
-          </Link>
-        ))}
+      <div className="mx-4 mt-4 sm:mx-auto sm:max-w-2xl">
+        <ClientContracts rows={contracts.map((contract) => ({ contract, agencyName: agencyName(contract.agencyId) }))} title={false} />
+      </div>
       <RequestView {...data} access={{ token }} />
     </>
   );
