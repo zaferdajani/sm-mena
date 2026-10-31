@@ -47,6 +47,17 @@ export function ChatThread({ conversationId, side, token, initialMessages, initi
   const [loadingEarlier, setLoadingEarlier] = useState(false);
   const [draft, setDraft] = useState("");
   const scroller = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLElement>(null);
+  // On a phone, the page header and banners can push the reply box under the bottom tab bar or below the screen:
+  // bring the whole thread into view once.
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const nav = document.querySelector<HTMLElement>("[data-app-nav]");
+    const limit = nav && nav.offsetParent !== null ? nav.getBoundingClientRect().top : window.innerHeight;
+    const overlap = el.getBoundingClientRect().bottom - limit;
+    if (overlap > 0) window.scrollBy({ top: overlap + 8 });
+  }, []);
   const stickToBottom = useRef(true);
   const lastActivity = useRef(0);
   const lastId = useRef(initialMessages.at(-1)?.id ?? 0);
@@ -167,7 +178,7 @@ export function ChatThread({ conversationId, side, token, initialMessages, initi
   const failedError = pending.find((p) => p.state === "failed")?.error;
 
   return (
-    <section className={cn("flex h-[calc(100dvh-14rem)] min-h-[24rem] flex-col overflow-hidden rounded-2xl border bg-background md:h-[calc(100dvh-12rem)]", className)} data-testid="chat-thread">
+    <section ref={box} className={cn("flex h-[calc(100dvh-14rem)] min-h-[24rem] scroll-mb-24 flex-col overflow-hidden rounded-2xl border bg-background md:h-[calc(100dvh-12rem)] md:scroll-mb-4", className)} data-testid="chat-thread">
       <div className="flex shrink-0 items-start gap-2 border-b bg-muted/60 px-3 py-2 text-xs text-muted-foreground" role="note" data-testid="chat-notice">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
         <p>

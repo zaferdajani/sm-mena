@@ -1,3 +1,4 @@
+import { ConfirmSubmit } from "@/components/admin/confirm-submit";
 import { CheckCircle2, Circle, CircleDashed, FlaskConical, Link2 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { DisputeDecisionForm } from "@/components/admin/dispute-decision-form";
@@ -142,8 +143,8 @@ export async function EscrowOverview({ locale }: { locale: string }) {
                     </p>
                     <input name="note" required minLength={3} placeholder={t("admin.decisionNote")} className="h-9 w-full rounded-md border bg-background px-2 text-xs" dir="auto" />
                     <div className="flex gap-2">
-                      <button name="decision" value="release" className="rounded-md border px-2.5 py-1.5 text-xs hover:bg-muted">{t("admin.release")}</button>
-                      <button name="decision" value="refund" className="rounded-md border border-destructive/40 px-2.5 py-1.5 text-xs text-destructive hover:bg-destructive/10">{t("admin.refund")}</button>
+                      <ConfirmSubmit name="decision" value="release" message={t("admin.confirmRelease", { amount: money(m.amountFils, cur) })} className="rounded-md border px-2.5 py-1.5 text-xs hover:bg-muted">{t("admin.release")}</ConfirmSubmit>
+                      <ConfirmSubmit name="decision" value="refund" message={t("admin.confirmRefund", { amount: money(m.amountFils, cur) })} className="rounded-md border border-destructive/40 px-2.5 py-1.5 text-xs text-destructive hover:bg-destructive/10">{t("admin.refund")}</ConfirmSubmit>
                     </div>
                   </form>
                 ))}
@@ -153,8 +154,7 @@ export async function EscrowOverview({ locale }: { locale: string }) {
                 <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
                   {v.events.slice(0, 40).map((e) => (
                     <li key={e.id} dir="auto">
-                      {formatDate(e.createdAt, locale)} · {t(`actors.${e.actor}` as "actors.agency")} · {e.type}
-                      {e.note ? `: ${e.note}` : ""}
+                      {formatDate(e.createdAt, locale)} · {t.has(`events.${e.type}`) ? t(`events.${e.type}` as "events.signed", { actor: t(`actors.${e.actor}` as "actors.agency"), note: e.note ?? "" }) : `${t(`actors.${e.actor}` as "actors.agency")}${e.note ? `: ${e.note}` : ""}`}
                     </li>
                   ))}
                 </ul>

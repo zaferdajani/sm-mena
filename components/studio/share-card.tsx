@@ -61,7 +61,8 @@ export function ShareCard({ card }: { card: BehindCardData }) {
       <div className="mt-3 flex flex-wrap items-start gap-4">
         {/* Preview: the real card scaled down. */}
         <div className="h-[320px] w-[180px] shrink-0 overflow-hidden rounded-lg border" data-testid="share-card-preview">
-          <div style={{ transform: "scale(0.1667)", transformOrigin: "top left" }}>
+          {/* Scaled from the start corner: in RTL the card hangs from the right, so a left origin pushed it out of the box. */}
+          <div className="origin-top-left rtl:origin-top-right" style={{ transform: "scale(0.1667)" }}>
             <BehindCard card={card} />
           </div>
         </div>

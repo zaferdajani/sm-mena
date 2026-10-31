@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page, type Request } from "@playwright/test";
-import { signInClient } from "./helpers";
+import { joinAgency, signInClient } from "./helpers";
 
 test("following, liking and saving ask visitors to sign in, then come back", async ({ page }) => {
   await page.goto("/en/a/aqaba.waves");
@@ -85,8 +85,11 @@ test("a business can message an agency without an account", async ({ page }) => 
   await expect(page.getByTestId("inquiry-sent")).toBeVisible();
 });
 
-test("WhatsApp contact links carry a prefilled message", async ({ page }) => {
-  await page.goto("/en/a/petra.growth");
+test("WhatsApp contact links carry a prefilled message", async ({ page, browser }) => {
+  // A real provider (demo agencies hide their numbers), seen by a visitor.
+  const { handle } = await joinAgency(page, "wa");
+  page = await (await browser.newContext()).newPage();
+  await page.goto(`/en/a/${handle}`);
   const href = await page.getByTestId("contact-whatsapp").first().getAttribute("href");
   expect(href).toMatch(/^https:\/\/wa\.me\/962\d+\?text=/);
 });

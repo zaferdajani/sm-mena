@@ -56,6 +56,7 @@ export default async function StudioPartnersPage({ params, searchParams }: PageP
             </p>
             <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-muted-foreground">{t("lookingFor")}:</span>
+              {!agency.seeksRoles.length && <span data-testid="seeks-empty">{t("seeksEmpty")}</span>}
               {agency.seeksRoles.map((r) => (
                 <Link key={r} href={{ pathname: "/studio/partners", query: { role: r } }} className={cn(chip, wanted.length === 1 && wanted[0] === r && "border-primary bg-primary text-primary-foreground")}>
                   {roleLabel(r, locale)}

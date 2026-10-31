@@ -17,7 +17,10 @@ test("an agency adds a video link to a post; a bad link is refused and the playe
   await expect(page.getByTestId("post-embed").locator("iframe")).toHaveAttribute("src", "https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ");
 
   // The editor shows the link back, and clearing it removes the player.
-  const postUrl = page.url();
+  // Published: the owner is told so and offered the next step.
+  await expect(page.getByTestId("post-published")).toBeVisible();
+  await expect(page.getByTestId("published-add-another")).toHaveAttribute("href", "/en/studio/new");
+  const postUrl = page.url().split("?")[0];
   const id = postUrl.split("/p/")[1];
   await page.goto(`/en/studio/posts/${id}`);
   await expect(page.getByTestId("post-video")).toHaveValue("https://www.youtube.com/watch?v=aqz-KE-bpKQ");

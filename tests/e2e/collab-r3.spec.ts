@@ -168,6 +168,7 @@ test("plan from a template, work through an order, leave feedback both ways, dis
   const row = admin.getByTestId("admin-collab-feedback-row").filter({ hasText: "Great light" }).filter({ hasText: free.handle });
   await expect(row).toHaveAttribute("data-status", "disputed");
   await expect(row.getByTestId("collab-feedback-publish")).toBeVisible(); // staff may publish or hide a disputed record
+  admin.once("dialog", (d) => void d.accept()); // hiding asks first
   await row.getByTestId("collab-feedback-moderate").click(); // "Hide": stays out of public view
   await expect(admin.getByTestId("admin-collab-feedback-row").filter({ hasText: "Great light" }).filter({ hasText: free.handle })).toHaveAttribute("data-status", "hidden");
 

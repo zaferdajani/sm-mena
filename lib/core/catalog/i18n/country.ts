@@ -85,7 +85,8 @@ export function visitorCountry(): string | null {
 /** Country name in the given language, falling back to the code. */
 export function countryName(code: string, locale: string): string {
   try {
-    return new Intl.DisplayNames([locale], { type: "region" }).of(code) || code;
+    // Region codes are upper case: Intl gave back "jo" unchanged for our lower-case keys (admin stats showed "jo").
+    return new Intl.DisplayNames([locale], { type: "region" }).of(code.toUpperCase()) || code;
   } catch {
     return code;
   }

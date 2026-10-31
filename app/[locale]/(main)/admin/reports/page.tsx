@@ -1,20 +1,25 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ReportButtons } from "@/components/admin/admin-buttons";
+import { FilterChips } from "@/components/admin/filter-chips";
 import { Link } from "@/i18n/navigation";
 import { requireStaff } from "@/lib/auth/guards";
 import { listOpenReports } from "@/lib/data/admin";
 import { timeAgo } from "@/lib/format";
 
-export default async function AdminReports({ params }: PageProps<"/[locale]/admin/reports">) {
+export default async function AdminReports({ params, searchParams }: PageProps<"/[locale]/admin/reports">) {
   const { locale } = await params;
+  const handled = (await searchParams).show === "handled";
   setRequestLocale(locale);
   await requireStaff("content.moderate");
   const t = await getTranslations("Admin");
   const tr = await getTranslations("Report");
-  const rows = await listOpenReports();
-  if (!rows.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t("noReports")}</p>;
+  const rows = await listOpenReports(handled);
+  const chips = <FilterChips pathname="/admin/reports" param="show" current={handled ? "handled" : "open"} options={[{ value: "open", label: t("reportsOpen") }, { value: "handled", label: t("reportsHandled") }]} />;
+  if (!rows.length) return <div className="space-y-4">{chips}<p className="py-10 text-center text-sm text-muted-foreground">{t(handled ? "noHandledReports" : "noReports")}</p></div>;
   return (
+    <div className="space-y-4">
+    {chips}
     <ul className="space-y-3" data-testid="admin-reports">
       {rows.map(({ report, post, agency, coverUrl }) => (
         <li key={report.id} className="flex gap-3 rounded-xl border p-3">
@@ -29,10 +34,14 @@ export default async function AdminReports({ params }: PageProps<"/[locale]/admi
             <p className="text-xs text-muted-foreground">
               {agency && <span dir="ltr">@{agency.handle}</span>} · {timeAgo(report.createdAt.toISOString(), locale)}
             </p>
-            <ReportButtons id={report.id} postId={post?.id ?? null} hidden={post?.status === "hidden"} />
+            {handled ? (
+              <p className="text-xs font-medium" data-testid="report-outcome">{t(report.status === "resolved" ? "reportHidden" : "reportDismissed")}</p>
+            ) : null}
+            {(!handled || post?.status === "hidden") && <ReportButtons id={report.id} postId={post?.id ?? null} hidden={post?.status === "hidden"} handled={handled} />}
           </div>
         </li>
       ))}
     </ul>
+    </div>
   );
 }

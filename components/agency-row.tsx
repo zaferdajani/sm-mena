@@ -32,7 +32,7 @@ export async function AgencyRow({ agency, viewCountry }: { agency: AgencySummary
           {agency.kind === "freelancer" && <span className="shrink-0 rounded bg-brand-soft px-1.5 text-[11px] font-medium text-brand">{tpart("kinds.freelancer")}</span>}
         </p>
         <p className="truncate text-sm text-muted-foreground">
-          <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)} · {agency.postCount} {tp("posts")}
+          <span dir="ltr">@{agency.handle}</span> · {COUNTRIES.find((c) => c.code === agency.country)?.flag} {tCity(agency.city)} · {tp("accountPosts", { count: agency.postCount })}
         </p>
         {note && <p className="truncate text-xs font-medium text-brand" data-testid="serves-note">{note}</p>}
         {agency.ratingAverage !== null && <RatingBadge average={agency.ratingAverage} count={agency.ratingCount} />}

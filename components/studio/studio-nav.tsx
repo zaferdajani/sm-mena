@@ -13,7 +13,7 @@ export type NavItem = { href: string; label: string; badge?: number };
  */
 export function StudioNav({ items, more = [], moreLabel = "…" }: { items: NavItem[]; more?: NavItem[]; moreLabel?: string }) {
   const pathname = usePathname();
-  const nav = useRef<HTMLElement>(null);
+  const nav = useRef<HTMLDivElement>(null);
   const details = useRef<HTMLDetailsElement>(null);
   const isActive = (item: NavItem) => (item.href === items[0]?.href ? pathname === item.href : pathname.startsWith(item.href));
   const moreActive = more.some(isActive) && !items.some(isActive);
@@ -34,8 +34,10 @@ export function StudioNav({ items, more = [], moreLabel = "…" }: { items: NavI
     </Link>
   );
   return (
-    <nav ref={nav} className="sw-workspace-nav relative flex gap-1 overflow-x-auto border-b px-2 [scrollbar-width:none]" data-testid="studio-nav">
-      {items.map(tab)}
+    // The tabs scroll sideways; "More" sits outside the scrolling strip, because a scrolling box clips anything
+    // that drops out of it (the menu opened invisibly on phones).
+    <nav className="sw-workspace-nav relative flex items-stretch border-b" data-testid="studio-nav">
+      <div ref={nav} className="flex min-w-0 flex-1 gap-1 overflow-x-auto px-2 [scrollbar-width:none]">{items.map(tab)}</div>
       {more.length > 0 && (
         <details ref={details} className="relative shrink-0" data-testid="studio-more">
           <summary className={cn("-mb-px flex min-h-11 cursor-pointer list-none items-center gap-1 border-b-2 border-transparent px-3 py-3 text-sm text-muted-foreground [&::-webkit-details-marker]:hidden", moreActive && "border-foreground font-semibold text-foreground")}>

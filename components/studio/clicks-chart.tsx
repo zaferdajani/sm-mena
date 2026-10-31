@@ -10,6 +10,7 @@ export function ClicksChart({
   tableLabel,
   dateLabel,
   valueLabel,
+  maxLabel,
   locale,
 }: {
   data: { date: string; clicks: number }[];
@@ -17,6 +18,8 @@ export function ClicksChart({
   tableLabel: string;
   dateLabel: string;
   valueLabel: string;
+  /** "Highest" in the page's language, before the chart's top value. */
+  maxLabel: string;
   locale: string;
 }) {
   const max = Math.max(1, ...data.map((d) => d.clicks));
@@ -26,7 +29,7 @@ export function ClicksChart({
     <figure className="rounded-xl border p-4">
       <figcaption className="mb-3 flex items-baseline justify-between text-sm font-semibold">
         {title}
-        <span className="text-xs font-normal text-muted-foreground">max {max}</span>
+        <span className="text-xs font-normal text-muted-foreground">{maxLabel} {max}</span>
       </figcaption>
       <div className="relative h-32" dir="ltr">
         <div className="absolute inset-x-0 bottom-0 border-t border-border" />

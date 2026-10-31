@@ -34,7 +34,7 @@ export function FeatureSwitch({ featureKey, state, pilots }: { featureKey: strin
       {value === "soon" && (
         <label className="grid gap-1 text-xs text-muted-foreground">
           {t("pilots")}
-          <input name="pilots" defaultValue={pilots.join(", ")} dir="ltr" placeholder="agency.handle, other.agency" className="h-9 rounded-md border bg-transparent px-2 text-sm text-foreground" data-testid={`feature-${featureKey}-pilots`} />
+          <input name="pilots" defaultValue={pilots.join(", ")} dir="ltr" placeholder={t("pilotsPlaceholder")} className="h-9 rounded-md border bg-transparent px-2 text-sm text-foreground" data-testid={`feature-${featureKey}-pilots`} />
         </label>
       )}
       <div className="flex items-center gap-2">

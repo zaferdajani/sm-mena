@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { OwnerAdminControls } from "./controls";
 import { requireStaff } from "@/lib/auth/guards";
-import { countryName } from "@/lib/core/catalog/countries";
+import { cityName, countryName } from "@/lib/core/catalog/countries";
 import { SERVICE_GROUPS } from "@/lib/core/catalog/services/catalog";
 import { OWNER_MATCH_EMAILS, ownerOverview } from "@/lib/data/owner-matching";
 import { ownerNeedsStats } from "@/lib/data/owner-needs";
@@ -22,38 +22,35 @@ export default async function AdminOwnersPage({ params }: PageProps<"/[locale]/a
         <p className="mt-1 text-sm text-muted-foreground">{t("intro", { count: stats.total })}</p>
       </div>
       <OwnerAdminControls sendOpen={sendOpen} />
-      <div className="overflow-x-auto rounded-xl border">
-        <table className="w-full min-w-[720px] text-sm">
-          <thead className="bg-muted/50 text-start text-xs text-muted-foreground">
-            <tr>
-              <th className="px-3 py-2 text-start">{t("cols.owner")}</th>
-              <th className="px-3 py-2 text-start">{t("cols.where")}</th>
-              <th className="px-3 py-2 text-start">{t("cols.needs")}</th>
-              <th className="px-3 py-2 text-start">{t("cols.timing")}</th>
-              <th className="px-3 py-2 text-start">{t("cols.matches")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!rows.length && <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">{t("empty")}</td></tr>}
-            {rows.map((r) => (
-              <tr key={r.userId} className="border-t align-top" data-testid="admin-owner-row">
-                <td className="px-3 py-2"><bdi dir="ltr">{r.emailMasked}</bdi><div className="text-xs text-muted-foreground">{fmt.format(r.createdAt)}</div></td>
-                <td className="px-3 py-2">{r.city} · {countryName(r.country, locale)}{r.businessType && <div className="text-xs text-muted-foreground">{tInd(r.businessType)}</div>}</td>
-                <td className="px-3 py-2">{r.services.map(groupLabel).join("، ")}</td>
-                <td className="px-3 py-2">{t(`timings.${r.timing}` as "timings.now")}</td>
-                <td className="px-3 py-2">
-                  {!r.matches.length && <span className="text-muted-foreground">{t("noMatches")}</span>}
-                  {r.matches.length > 0 && (
-                    <ul className="grid gap-1">
-                      {r.matches.map((m) => <li key={m.handle}><bdi>{m.agencyName}</bdi> <span className="text-xs text-muted-foreground">{m.score} · {t(`status.${m.status}` as "status.suggested")}</span></li>)}
-                    </ul>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Cards, not a table: one owner per card reads on a phone without sideways scrolling. */}
+      {!rows.length && <p className="rounded-xl border px-3 py-6 text-center text-sm text-muted-foreground">{t("empty")}</p>}
+      <ul className="grid gap-3 lg:grid-cols-2">
+        {rows.map((r) => (
+          <li key={r.userId} className="rounded-xl border p-3 text-sm" data-testid="admin-owner-row">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <bdi dir="ltr" className="font-medium">{r.emailMasked}</bdi>
+              <span className="text-xs text-muted-foreground">{fmt.format(r.createdAt)}</span>
+            </div>
+            <dl className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1">
+              <dt className="text-xs text-muted-foreground">{t("cols.where")}</dt>
+              <dd>{[cityName(r.city, locale), countryName(r.country, locale)].filter(Boolean).join("، ")}{r.businessType && <span className="text-muted-foreground"> · {tInd(r.businessType)}</span>}</dd>
+              <dt className="text-xs text-muted-foreground">{t("cols.needs")}</dt>
+              <dd>{r.services.map(groupLabel).join("، ")}</dd>
+              <dt className="text-xs text-muted-foreground">{t("cols.timing")}</dt>
+              <dd>{t(`timings.${r.timing}` as "timings.now")}</dd>
+              <dt className="text-xs text-muted-foreground">{t("cols.matches")}</dt>
+              <dd>
+                {!r.matches.length && <span className="text-muted-foreground">{t("noMatches")}</span>}
+                {r.matches.length > 0 && (
+                  <ul className="grid gap-1">
+                    {r.matches.map((m) => <li key={m.handle}><bdi>{m.agencyName}</bdi> <span className="text-xs text-muted-foreground">{m.score} · {t(`status.${m.status}` as "status.suggested")}</span></li>)}
+                  </ul>
+                )}
+              </dd>
+            </dl>
+          </li>
+        ))}
+      </ul>
       <p className="text-xs text-muted-foreground">{t("note")}</p>
     </div>
   );

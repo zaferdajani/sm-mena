@@ -3,18 +3,17 @@ import { SwissWorkspace } from "@/components/layout/swiss-workspace";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
-import { StudioNav } from "@/components/studio/studio-nav";
+import { StudioNav, type NavItem } from "@/components/studio/studio-nav";
 import { requireAdmin } from "@/lib/auth/guards";
 import { can, type Permission } from "@/lib/auth/permissions";
-import { bugBadge } from "@/lib/data/bugs";
-import { pendingTagCount } from "@/lib/services/tags";
+import { adminAttention } from "@/lib/data/admin-attention";
 
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // allowEnroll: the layout renders for /admin/security too; every page and action checks again.
   const user = await requireAdmin({ allowEnroll: true });
-  const [bugs, pendingServices] = await Promise.all([bugBadge(), pendingTagCount()]);
+  const attention = await adminAttention();
   const t = await getTranslations("Admin");
   const ta = await getTranslations("Auth");
   const tr = await getTranslations("Reviews");
@@ -26,22 +25,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const tag = await getTranslations("AdminAgents");
   const tpr = await getTranslations("AdminProspects");
   const tow = await getTranslations("AdminOwners");
+  const treq = await getTranslations("AdminRequests");
   // Each person sees only the sections their role allows (pages check again on the server).
   const nav: { href: string; label: string; badge?: number; perm: Permission }[] = [
     { href: "/admin", label: t("dashboard"), perm: "dashboard.view" },
     { href: "/admin/stats", label: t("statistics"), perm: "stats.view" },
-    { href: "/admin/payments", label: t("payments"), perm: "payments.view" },
+    { href: "/admin/payments", label: t("payments"), badge: attention.disputes, perm: "payments.view" },
     { href: "/admin/features", label: tf("nav"), perm: "features.manage" },
-    { href: "/admin/bugs", label: t("bugs"), badge: bugs, perm: "support.manage" },
+    { href: "/admin/bugs", label: t("bugs"), badge: attention.supportReports + attention.siteErrors, perm: "support.manage" },
     { href: "/admin/agencies", label: t("agencies"), perm: "agencies.view" },
-    { href: "/admin/services", label: ts("nav"), badge: pendingServices, perm: "agencies.moderate" },
-    { href: "/admin/reports", label: t("reports"), perm: "content.moderate" },
+    { href: "/admin/services", label: ts("nav"), badge: attention.services, perm: "agencies.moderate" },
+    { href: "/admin/reports", label: t("reports"), badge: attention.postReports, perm: "content.moderate" },
     { href: "/admin/reviews", label: tr("admin.title"), perm: "content.moderate" },
     { href: "/admin/conversations", label: tchat("admin.nav"), perm: "conversations.view" },
     { href: "/admin/promotions", label: t("promotions"), perm: "promotions.manage" },
     { href: "/admin/agents", label: tag("nav"), perm: "agents.manage" },
     { href: "/admin/prospects", label: tpr("nav"), perm: "prospects.manage" },
     { href: "/admin/owners", label: tow("nav"), perm: "owners.manage" },
+    { href: "/admin/requests", label: treq("nav"), perm: "agencies.view" },
     { href: "/admin/users", label: t("users"), perm: "users.view" },
     { href: "/admin/team", label: tt("nav"), perm: "staff.manage" },
     { href: "/admin/appearance", label: tp("nav"), perm: "appearance.manage" },
@@ -65,9 +66,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </form>
       </div>
       <div className="mt-3">
-        <StudioNav items={nav.filter((i) => can(user.role, i.perm)).map(({ href, label, badge }) => ({ href, label, badge }))} />
+        {/* Four tabs fit a phone (docs/65): the dashboard, then whatever has news, then agencies; the rest is under "More". */}
+        <AdminNav items={nav.filter((i) => can(user.role, i.perm)).map(({ href, label, badge }) => ({ href, label, badge }))} moreLabel={t("more")} />
       </div>
       <div className="sw-workspace-body py-5">{children}</div>
     </SwissWorkspace>
   );
+}
+
+function AdminNav({ items, moreLabel }: { items: NavItem[]; moreLabel: string }) {
+  const [home, ...rest] = items;
+  const promoted = rest.filter((i) => i.badge);
+  const fill = rest.filter((i) => !i.badge && i.href === "/admin/agencies");
+  const primary = [home, ...promoted, ...fill].filter(Boolean).slice(0, Math.max(4, 1 + promoted.length));
+  const more = items.filter((i) => !primary.includes(i));
+  return <StudioNav items={primary} more={more} moreLabel={moreLabel} />;
 }

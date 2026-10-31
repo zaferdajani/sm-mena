@@ -26,6 +26,11 @@ export default async function InboxPage({ params, searchParams }: PageProps<"/[l
 
   return (
     <div className="space-y-3">
+      {/* Two places hold messages: say which this is (contact details left with the "Message" button) and where chats are. */}
+      <p className="text-sm text-muted-foreground" data-testid="inbox-intro">
+        {t("intro")}{" "}
+        <Link href="/studio/messages" className="font-medium text-brand underline underline-offset-4">{tchat("tab")}</Link>
+      </p>
       <div className="flex justify-end">
         <Link href={{ pathname: "/studio/inbox", query: archived ? {} : { view: "archived" } }} className="text-xs text-brand">
           {archived ? t("showActive") : t("showArchived")}

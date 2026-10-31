@@ -25,6 +25,7 @@ export default async function OwnerMatchesPage({ params }: PageProps<"/[locale]/
   const need = await getOwnerNeed(user.id);
   if (!need) redirect(`/${locale}/owner/needs`);
   const t = await getTranslations("OwnerMatches");
+  const tCity = await getTranslations("Cities");
   const matches = (await listOwnerMatches(user.id)).filter(visibleToOwner);
   const groupLabel = (key: string) => { const g = SERVICE_GROUPS.find((x) => x.key === key); return g ? (locale === "ar" ? g.name_ar : g.name_en) : key; };
   const open = matches.filter((m) => m.status === "sent");
@@ -33,7 +34,7 @@ export default async function OwnerMatchesPage({ params }: PageProps<"/[locale]/
     <div data-testid="owner-matches">
       <p className="text-xs text-muted-foreground">{t("signedInAs")} <bdi dir="ltr">{user.email}</bdi></p>
       <h1 className="mt-1 text-2xl font-extrabold leading-tight">{t("title")}</h1>
-      <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("intro", { city: need.city, country: countryName(need.country, locale) })}</p>
+      <p className="mt-2 text-sm leading-7 text-muted-foreground">{t("intro", { city: tCity(need.city), country: countryName(need.country, locale) })}</p>
       {!matches.length && (
         <div className="mt-5 rounded-xl border bg-brand-soft/60 p-4 text-sm leading-7" data-testid="owner-matches-empty">
           <p className="font-semibold">{t(isRegistrationPhase() ? "empty.closedTitle" : "empty.openTitle")}</p>

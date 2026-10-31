@@ -52,6 +52,19 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
   useEffect(() => {
     end.current?.scrollIntoView({ block: "end" });
   }, [lines, step]);
+  // Tucked away while scrolling down (reading or filling a form), back on any scroll up or at the top.
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - last) < 12) return;
+      setTucked(y > last && y > 120);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   // Their reports and any unread reply (the dot on the Help button), on load and whenever the chat opens.
   useEffect(() => {
     myReportsAction().then(setStatuses).catch(() => {});
@@ -197,13 +210,17 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
             setOpen(true);
             if (!lines.length) restart();
           }}
+          // On phones a small round icon that steps aside while the page scrolls down, so it never sits on a
+          // tab, a share button or a form field for long; the word "Help" shows from tablet width up.
           className={cn(
-            "fixed end-4 z-40 flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg hover:opacity-90",
-            aboveNav ? "bottom-[calc(5rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(1rem+env(safe-area-inset-bottom))]",
+            "fixed end-3 z-40 flex size-11 items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-lg transition-[transform,opacity] duration-200 hover:opacity-90 md:end-4 md:size-auto md:px-4 md:py-2.5",
+            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+            tucked && "pointer-events-none translate-y-4 opacity-0 md:pointer-events-auto md:translate-y-0 md:opacity-100",
           )}
+          aria-label={t("open")}
           data-testid="help-open"
         >
-          <LifeBuoy className="size-4" aria-hidden /> {t("open")}
+          <LifeBuoy className="size-5 md:size-4" aria-hidden /> <span className="sr-only md:not-sr-only">{t("open")}</span>
           {statuses.some((s) => s.unread) && <span className="size-2.5 rounded-full bg-destructive ring-2 ring-primary" aria-label={t("newReply")} data-testid="help-unread" />}
         </button>
       )}

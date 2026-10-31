@@ -140,7 +140,7 @@ test("the app reads and clears notifications, and its crash reports reach Admin 
   });
   expect(crash.status()).toBe(204);
   await login(page, ADMIN.email, ADMIN.password);
-  await page.goto("/en/admin/bugs");
+  await page.goto("/en/admin/bugs?tab=errors");
   const row = page.getByTestId("error-list").locator("li", { hasText: marker });
   await expect(row).toBeVisible();
   await expect(row).toContainText("[email]");
