@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { requireAgency } from "@/lib/auth/guards";
 import { publicationFor } from "@/lib/data/publication";
-import { PROFILE_VISIBILITIES } from "@/lib/launch-phase";
+import { isRegistrationPhase, PROFILE_VISIBILITIES } from "@/lib/launch-phase";
 import { SubmitButton } from "@/components/submit-button";
 import { Link } from "@/i18n/navigation";
 import { savePublication } from "./actions";
@@ -13,7 +13,9 @@ export default async function PublicationPage({ params, searchParams }: PageProp
   const { agency } = await requireAgency();
   const [t, current, sp] = await Promise.all([getTranslations("Registration.publication"), publicationFor(agency.id), searchParams]);
   return <section className="registration-card" data-testid="publication-settings"><h1 className="text-2xl font-bold">{t("title")}</h1><p>{t("intro")}</p>
-    {current.legacy && <p className="registration-notice">{t("legacy")}</p>}
+    {/* One plain line first: where the page stands now (a page without a choice is public outside registration). */}
+    <p className="mt-3 rounded-lg bg-muted px-3 py-2 font-medium" data-testid="publication-now">{t("now", { state: t(`states.${current.visibility}.title`) })}</p>
+    {current.legacy && isRegistrationPhase() && <p className="registration-notice">{t("legacy")}</p>}
     {sp.saved === "1" && <p role="status" className="registration-notice">{t("saved")}</p>}{sp.error && <p role="alert">{t("consentError")}</p>}
     <form action={savePublication} className="mt-6 space-y-5"><fieldset className="space-y-3"><legend className="mb-3 font-bold">{t("choose")}</legend>{PROFILE_VISIBILITIES.map((visibility) => <label key={visibility} className="registration-visibility-option"><input type="radio" name="visibility" value={visibility} defaultChecked={current.visibility === visibility} /><span><strong>{t(`states.${visibility}.title`)}</strong><span>{t(`states.${visibility}.body`)}</span></span></label>)}</fieldset>
       <label className="flex items-start gap-3"><input type="checkbox" name="acknowledge" required className="mt-2" /><span>{t("acknowledge")}</span></label><p className="registration-note">{t("mediaNote")}</p><SubmitButton>{t("save")}</SubmitButton>

@@ -9,6 +9,7 @@ import { INDUSTRIES, PLATFORMS, TEAM_SIZES } from "@/lib/labels";
 import { ROLES } from "@/lib/services/catalog";
 import { pendingTexts } from "@/lib/services/tags";
 import { mediaUrl } from "@/lib/storage";
+import { Link } from "@/i18n/navigation";
 
 export default async function StudioProfilePage({ params, searchParams }: PageProps<"/[locale]/studio/profile">) {
   const { locale } = await params;
@@ -33,9 +34,11 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
           <BehanceShortcut testId="welcome-behance" />
         </div>
       )}
-      <div className="mb-6">
-        <GoogleForm current={agency.googleMapsUrl ?? agency.googlePlaceId} />
-      </div>
+      {/* Who can see the page lives on its own page; say where from the editor too. */}
+      <p className="mb-4 text-sm text-muted-foreground" data-testid="profile-visibility-link">
+        {t("visibilityHint")}{" "}
+        <Link href="/studio/publication" className="font-medium text-brand underline underline-offset-4">{t("nav.visibility")}</Link>
+      </p>
       <ProfileForm
         welcome={welcome}
         agency={{ ...agency, avatarUrl: mediaUrl(agency.avatarKey), pendingTexts: (await pendingTexts(agency.pendingServices)).map((p) => p.text) }}
@@ -49,6 +52,10 @@ export default async function StudioProfilePage({ params, searchParams }: PagePr
           teamSizes: TEAM_SIZES.map((key) => ({ key, label: tTeam(key) })),
         }}
       />
+      {/* After the page's own fields and their save button, so nobody taps this box's save for the whole page. */}
+      <div className="mt-8">
+        <GoogleForm current={agency.googleMapsUrl ?? agency.googlePlaceId} />
+      </div>
     </div>
   );
 }

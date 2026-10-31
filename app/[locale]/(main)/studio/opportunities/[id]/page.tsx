@@ -49,7 +49,8 @@ export default async function OpportunityPage({ params }: PageProps<"/[locale]/s
           {/* Contact details only once the buyer chose this agency (shortlisted or accepted its quote). */}
           {o.myProposal && (o.myProposal.status === "shortlisted" || o.myProposal.status === "accepted") ? (
             <p className="flex flex-wrap items-center gap-2">
-              {r.clientName}{r.businessName ? ` · ${r.businessName}` : ""} ·{" "}
+              {/* The separator only between parts that exist. */}
+              <span>{[r.clientName, r.businessName].filter(Boolean).join(" · ")}</span>
               <a href={whatsappLink(r.phone)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-brand" dir="ltr" data-testid="client-phone">
                 <Phone className="size-3.5" /> {r.phone}
               </a>

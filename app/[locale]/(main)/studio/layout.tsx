@@ -21,6 +21,7 @@ import { openInquiryCount } from "@/lib/data/collab-inquiries";
 import { pendingOrderCount } from "@/lib/data/work-orders";
 import { mediaUrl } from "@/lib/storage";
 import { featureGate } from "@/lib/feature-gate";
+import { ADAPTERS, readiness, type SocialProviderId } from "@/lib/social/providers";
 
 export const metadata: Metadata = { robots: { index: false } };
 
@@ -49,6 +50,7 @@ export default async function StudioLayout({ children }: { children: React.React
     unreadNotificationCount({ agencyId: agency.id }),
     pendingPartnerCount(agency.id),
   ]);
+  const connectionsReady = (Object.keys(ADAPTERS) as SocialProviderId[]).some((p) => readiness(p).state === "ready");
   return (
     <SwissWorkspace>
       <div className="flex min-w-0 flex-wrap items-center gap-3">
@@ -81,6 +83,7 @@ export default async function StudioLayout({ children }: { children: React.React
           ]}
           more={[
             { href: "/studio/packages", label: tp("studio.tab") },
+            { href: "/studio/publication", label: t("nav.visibility") },
             { href: "/studio/clients", label: t("clients") },
             { href: "/studio/import", label: t("nav.import") },
             { href: "/studio/followers", label: t("followers") },
@@ -93,7 +96,8 @@ export default async function StudioLayout({ children }: { children: React.React
             { href: "/studio/reviews", label: tr("studio.tab") },
             { href: "/studio/contracts", label: t("contracts") },
             { href: "/studio/ndas", label: tl("ndaStudio.tab") },
-            { href: "/studio/connections", label: tg("connectionsNav") },
+            // Hidden while no platform can be connected: a page of "not available yet" cards is a dead end.
+            ...(connectionsReady ? [{ href: "/studio/connections", label: tg("connectionsNav") }] : []),
             { href: "/studio/setup", label: tg("nav") },
             { href: "/studio/billing", label: t("billing") },
           ]}

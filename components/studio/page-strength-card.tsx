@@ -48,9 +48,11 @@ export async function PageStrengthCard({ agency, visibility, packageCount }: { a
     <section className="registration-card space-y-4" data-testid="page-strength" data-next={s.next ?? ""} data-match-ready={s.matchReady}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="!m-0">{t("title")}</h2>
-        <span className={`rounded-full px-3 py-1 text-xs font-bold ${visibility === "public" ? "bg-brand-soft text-brand" : "bg-muted text-muted-foreground"}`} data-testid="page-status">
+        {/* The status is also the way to change it (who can see the page): one tap to the visibility settings. */}
+        <Link href="/studio/publication" className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${visibility === "public" ? "bg-brand-soft text-brand" : "bg-muted text-muted-foreground"}`} data-testid="page-status">
           {t(`status.${visibility}`)}
-        </span>
+          <span className="underline underline-offset-2">{t("change")}</span>
+        </Link>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={s.percent} aria-label={t("title")}>
         <div className="h-full rounded-full bg-primary" style={{ inlineSize: `${s.percent}%` }} />

@@ -15,11 +15,11 @@ import { setInquiryStatus, markAllRead } from "@/lib/data/inbox";
 import { createPackage, deletePackage, updatePackage } from "@/lib/data/packages";
 import { answerPartnerRequest, sendPartnerRequest } from "@/lib/data/partners";
 import { deleteClient, ensureConfirmToken, ownsClient, resetConfirmation, saveClient, setClientLogo } from "@/lib/data/portfolio-clients";
-import { createPost, deletePost, togglePin, updatePost } from "@/lib/data/posts";
+import { createPost, deletePost, editPostImages, togglePin, updatePost } from "@/lib/data/posts";
 import { createReviewInvite, replyToReview } from "@/lib/data/reviews";
 import { normalizeLines } from "@/lib/deliverables";
 import { connectGoogle } from "@/lib/google";
-import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar } from "@/lib/images";
+import { ImageError, MAX_IMAGES_PER_POST, newAvatarKey, newClientLogoKey, processAvatar, processImage } from "@/lib/images";
 import { COUNTRY_CODES, countryOfCity } from "@/lib/countries";
 import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
@@ -115,7 +115,8 @@ export async function createPostAction(_: StudioState, formData: FormData): Prom
   }
   if (!agency.isDemo) pingIndexNow([`/a/${agency.handle}`, `/p/${postId}`]);
   const locale = await getLocale();
-  return redirect({ href: `/p/${postId}`, locale });
+  // The post page says it was published and offers the next step (only to the owner).
+  return redirect({ href: `/p/${postId}?published=1`, locale });
 }
 
 export async function updatePostAction(_: StudioState, formData: FormData): Promise<StudioState> {
@@ -130,6 +131,20 @@ export async function updatePostAction(_: StudioState, formData: FormData): Prom
   if ("error" in video) return video;
   const updated = await updatePost(postId.data, agency.id, withApp(raw, video));
   if (!updated) return { error: "generic" };
+  // Photos: removed ones, a new cover, added files (the editor sends only what changed).
+  const ids = z.array(z.string().uuid());
+  const remove = ids.safeParse(formData.getAll("removeImage").map(String));
+  const cover = z.string().uuid().safeParse(formData.get("coverImage"));
+  const files = formData.getAll("images").filter((f): f is File => f instanceof File && f.size > 0);
+  if (files.length > MAX_IMAGES_PER_POST) return { error: "tooMany" };
+  try {
+    const add = await Promise.all(files.map(async (f) => processImage(Buffer.from(await f.arrayBuffer()))));
+    const imageError = await editPostImages(postId.data, agency.id, { remove: remove.success ? remove.data : [], cover: cover.success ? cover.data : null, add }, MAX_IMAGES_PER_POST);
+    if (imageError === "notFound") return { error: "generic" };
+    if (imageError) return { error: imageError };
+  } catch (error) {
+    return { error: error instanceof ImageError ? error.code : "generic" };
+  }
   revalidatePath("/[locale]", "layout");
   return { ok: true };
 }

@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/p/[id]">
   });
 }
 
-export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">) {
+export default async function PostPage({ params, searchParams }: PageProps<"/[locale]/p/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
   const found = await getPost(id);
@@ -67,9 +67,21 @@ export default async function PostPage({ params }: PageProps<"/[locale]/p/[id]">
   const tc = await getTranslations("Common");
   // The owner edits or deletes the project right here instead of reporting it.
   const isOwner = (await getCurrentAgency())?.id === post.agency.id;
+  const justPublished = isOwner && (await searchParams).published === "1";
 
   return (
     <div className="mx-auto w-full max-w-[470px] sm:pt-6">
+      {justPublished && (
+        <div role="status" className="mx-3 mb-3 mt-3 rounded-xl border border-brand-line bg-brand-soft p-4 text-sm sm:mt-0" data-testid="post-published">
+          <p className="font-semibold">✓ {tc("publishedTitle")}</p>
+          <p className="mt-1 text-muted-foreground">{tc("publishedBody")}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link href="/studio/new" className="inline-flex h-9 items-center rounded-lg bg-brand px-3 font-medium text-white hover:bg-brand-deep" data-testid="published-add-another">{tc("addAnother")}</Link>
+            <Link href={`/a/${post.agency.handle}`} className="inline-flex h-9 items-center rounded-lg border px-3 font-medium hover:bg-muted">{tc("viewMyPage")}</Link>
+            <Link href="/studio" className="inline-flex h-9 items-center rounded-lg px-3 font-medium text-brand hover:bg-muted">{tc("backToStudio")}</Link>
+          </div>
+        </div>
+      )}
       <h1 className="sr-only">{tSeo("postTitle", { agency: post.agency.name, service: post.services[0] ? serviceLabel(post.services[0], locale) : "" })}</h1>
       {post.agency.isDemo && (
         <div className="px-3 pb-3 pt-3 sm:pt-0">

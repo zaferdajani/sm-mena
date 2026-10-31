@@ -23,9 +23,13 @@ export function ReviewInvite({ agencyName }: { agencyName: string }) {
     <section className="space-y-3 rounded-xl border p-4">
       <h2 className="font-semibold">{t("inviteTitle")}</h2>
       <p className="text-sm text-muted-foreground">{t("inviteBody")}</p>
-      <form action={action} className="flex gap-2">
-        <Input name="clientName" maxLength={80} placeholder={t("clientName")} aria-label={t("clientName")} className="h-9" />
+      {/* A visible label: the name is what tells the links apart later. */}
+      <form action={action} className="grid gap-1.5">
+        <label htmlFor="invite-client" className="text-sm font-medium">{t("clientName")}</label>
+        <div className="flex gap-2">
+        <Input id="invite-client" name="clientName" maxLength={80} placeholder={t("clientNamePlaceholder")} className="h-9" />
         <SubmitButton className="h-9 shrink-0">{t("create")}</SubmitButton>
+        </div>
       </form>
       {link && (
         <div className="space-y-2 rounded-lg bg-accent p-3 text-sm text-accent-foreground">

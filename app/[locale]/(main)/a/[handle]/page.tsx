@@ -122,8 +122,11 @@ export default async function AgencyPage({ params, searchParams }: PageProps<"/[
     [t("services"), [...agency.services.map((s) => serviceLabel(s, locale)), ...pendingServices].join("، ") || t("notSet")],
     [t("platforms"), agency.platforms.map((p) => tPlat(p)).join("، ") || t("notSet")],
     [t("industries"), agency.industries.map((i) => tInd(i)).join("، ") || t("notSet")],
-    [t("team"), agency.teamSize ? tTeam(agency.teamSize) : t("notSet")],
-    [t("founded"), agency.foundedYear ? String(agency.foundedYear) : t("notSet")],
+    // A freelancer is one person: no team size or founding year.
+    ...(agency.kind === "freelancer" ? [] : [
+      [t("team"), agency.teamSize ? tTeam(agency.teamSize) : t("notSet")] as [string, string],
+      [t("founded"), agency.foundedYear ? String(agency.foundedYear) : t("notSet")] as [string, string],
+    ]),
     [t("languages"), agency.languages.map((l) => tLang(l)).join("، ")],
   ];
 
