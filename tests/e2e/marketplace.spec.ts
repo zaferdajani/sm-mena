@@ -58,6 +58,8 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
 
   // The agency sends a contract from the accepted quote; the client hears about it and finds it in their account.
   await agency.getByTestId("create-contract").click();
+  await agency.getByTestId("split-1").click();
+  await agency.getByTestId("milestone-row").locator("textarea").fill("First month of work");
   await agency.fill("#c-signer", "Agency Signer");
   await drawSignature(agency);
   await agency.getByText(/I agree to this document on behalf of/).click();
