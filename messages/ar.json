@@ -869,7 +869,8 @@
         "dates": "تاريخ الانتهاء يجب أن يكون بعد البداية.",
         "generic": "تعذر الإنشاء."
       },
-      "free": "الترويج مجاني حالياً (تجربة). السعر المقترح لاحقاً: {price} د.أ يومياً."
+      "free": "الترويج مجاني حالياً (تجربة). السعر المقترح لاحقاً: {price} د.أ يومياً.",
+      "endConfirm": "إنهاء هذا الترويج؟ لا يمكن التراجع عن ذلك."
     },
     "statistics": "الإحصاءات",
     "payments": "المدفوعات",
@@ -889,7 +890,14 @@
       "off": "متوقف",
       "mfaMissingKey": "لم يُضبط MFA_ENCRYPTION_KEY: لا يمكن للمشرفين استخدام التحقق بخطوتين.",
       "mfaYouOff": "حسابك بلا تحقق بخطوتين.",
-      "turnOn": "فعّله"
+      "turnOn": "فعّله",
+      "ready": "جاهز",
+      "localCopy": "نسخة اختبار محلية",
+      "localFiles": "على هذا الخادم فقط",
+      "aiBasic": "الوضع الأساسي (دون مفتاح ذكاء اصطناعي)",
+      "aiOn": "مفعّل",
+      "paymentsTest": "وضع الاختبار: لا أموال حقيقية",
+      "technical": "تفاصيل تقنية"
     },
     "deactivated": "مُعطَّل",
     "reactivate": "إعادة التفعيل",
@@ -908,7 +916,25 @@
       "postReports": "{count, plural, one {منشور مُبلَّغ عنه للمراجعة} other {# منشورات مُبلَّغ عنها للمراجعة}}",
       "services": "{count, plural, one {خدمة جديدة بانتظار الاعتماد} other {# خدمات جديدة بانتظار الاعتماد}}",
       "siteErrors": "{count, plural, one {خطأ في الموقع للمراجعة} other {# أخطاء في الموقع للمراجعة}}"
-    }
+    },
+    "reportsOpen": "للمراجعة",
+    "reportsHandled": "تمت معالجتها",
+    "noHandledReports": "لا بلاغات معالَجة بعد.",
+    "reportHidden": "أُخفي المنشور",
+    "reportDismissed": "رُفض البلاغ وبقي المنشور",
+    "hidePostConfirm": "إخفاء هذا المنشور؟ لن يراه الزوار حتى تعيد إظهاره.",
+    "dismissConfirm": "تجاهل هذا البلاغ وإبقاء المنشور ظاهرًا؟",
+    "agencyFilters": {
+      "all": "الكل",
+      "new": "جديدة هذا الأسبوع",
+      "unverified": "غير موثّقة",
+      "suspended": "موقوفة"
+    },
+    "noAgencies": "لا صفحات هنا.",
+    "newAgency": "جديدة",
+    "postsCount": "{count, plural, =0 {لا منشورات} one {منشور واحد} two {منشوران} few {# منشورات} many {# منشورًا} other {# منشور}}",
+    "editPlan": "تعديل الخطة",
+    "planUntilLabel": "الخطة سارية حتى (اختياري)"
   },
   "Hire": {
     "indexTitle": "شركات التسويق ووسائل التواصل الاجتماعي في الأردن حسب الخدمة",
@@ -1036,7 +1062,8 @@
       "title": "التقييمات",
       "hide": "إخفاء",
       "show": "إظهار",
-      "hidden": "مخفي"
+      "hidden": "مخفي",
+      "hideConfirm": "إخفاء هذا من الصفحة العامة؟ يمكنك إظهاره لاحقًا."
     },
     "completedProject": "مراجعة مشروع مكتمل"
   },
@@ -1379,7 +1406,13 @@
     "fromReporter": "المُبلِّغ",
     "fromAgent": "الوكيل",
     "fromStaff": "الفريق",
-    "confirmedByReporter": "أكّد المُبلِّغ أن الإصلاح نجح"
+    "confirmedByReporter": "أكّد المُبلِّغ أن الإصلاح نجح",
+    "statusAfter": "الحالة بعد الرد",
+    "keepStatus": "تبقى: {status}",
+    "replySent": "أُرسل الرد. يراه المُبلِّغ في محادثته ويصله رابط بالبريد.",
+    "internalNote": "ملاحظة داخلية (يراها الفريق فقط)",
+    "statusOnlyHint": "تغيير الحالة دون رسالة. «مخطط» و«تم» تُرسلان بريدًا إلى المُبلِّغ.",
+    "technical": "تفاصيل تقنية"
   },
   "AdminStats": {
     "range": "{days, plural, =365 {سنة} other {# يوماً}}",
@@ -1569,7 +1602,8 @@
     "stuckStatus": {
       "failed": "فشلت",
       "pending": "بانتظار الشريك"
-    }
+    },
+    "testProvider": "وضع الاختبار (دون أموال حقيقية)"
   },
   "AdminUsers": {
     "search": "ابحث بالبريد أو اسم المستخدم",
@@ -1685,7 +1719,8 @@
         "name": "الدعم",
         "body": "يساعد الناس: بلاغات المستخدمين، والبحث عن المستخدمين والوكالات، والتوثيق ومراجعة المحتوى. بلا دفعات ولا إعدادات نظام."
       }
-    }
+    },
+    "permissionsCount": "{count, plural, one {صلاحية واحدة} two {صلاحيتان} few {# صلاحيات} many {# صلاحية} other {# صلاحية}}"
   },
   "AdminAudit": {
     "intro": "كل إجراءات المشرفين وتسجيلات دخولهم وتغييرات التحقق بخطوتين والمدفوعات، الأحدث أولاً.",
@@ -1693,7 +1728,113 @@
     "when": "متى",
     "who": "من",
     "action": "الإجراء",
-    "details": "التفاصيل"
+    "details": "التفاصيل",
+    "actions": {
+      "auth_login": "سجّل الدخول",
+      "account_close": "أغلق حسابًا",
+      "account_email_changed": "غيّر بريد حساب",
+      "account_password_changed": "غيّر كلمة مرور",
+      "account_password_reset": "أعاد تعيين كلمة مرور",
+      "agency_verify": "وثّق صفحة",
+      "agency_unverify": "أزال توثيق صفحة",
+      "agency_suspended": "أوقف صفحة",
+      "agency_active": "أعاد تفعيل صفحة",
+      "agency_reactivated": "أعاد تفعيل صفحة مغلقة",
+      "agency_plan": "غيّر خطة صفحة",
+      "agency_update": "عدّل صفحة",
+      "agency_deactivated_owner": "أغلق مقدّم خدمة صفحته",
+      "agency_deactivated_admin": "أغلق صفحة",
+      "service_approve": "اعتمد خدمة جديدة",
+      "service_merge": "دمج خدمة مكتوبة في خدمة موجودة",
+      "service_reject": "رفض خدمة مكتوبة",
+      "report_hide": "أخفى منشورًا مُبلَّغًا عنه",
+      "report_dismiss": "تجاهل بلاغًا",
+      "post_hidden": "أخفى منشورًا",
+      "post_published": "أعاد إظهار منشور",
+      "post_delete": "حذف منشورًا",
+      "review_hidden": "أخفى تقييمًا",
+      "review_published": "أعاد إظهار تقييم",
+      "collab_feedback_hidden": "أخفى ملاحظات شريك",
+      "collab_feedback_published": "نشر ملاحظات شريك",
+      "promotion_create": "بدأ ترويجًا",
+      "promotion_paused": "أوقف ترويجًا مؤقتًا",
+      "promotion_active": "استأنف ترويجًا",
+      "promotion_ended": "أنهى ترويجًا",
+      "support_staff_reply": "ردّ على بلاغ دعم",
+      "support_reporter_reply": "ردّ المُبلِّغ",
+      "support_reporter_confirmed": "أكّد المُبلِّغ أن المشكلة حُلّت",
+      "support_planned": "جعل بلاغ دعم «مخطط»",
+      "support_done": "جعل بلاغ دعم «تم»",
+      "support_declined": "رفض بلاغ دعم",
+      "support_waiting": "جعل بلاغ دعم «بانتظار المُبلِّغ»",
+      "support_new": "أعاد فتح بلاغ دعم",
+      "bug_resolve_stale": "أغلق أخطاء قديمة في الموقع",
+      "escrow_dispute_decision": "أصدر قرارًا في نزاع دفع",
+      "escrow_dispute_closed": "أغلق نزاع دفع",
+      "escrow_release": "حوّل مبلغًا محجوزًا إلى وكالة",
+      "escrow_refund": "أعاد مبلغًا محجوزًا إلى عميل",
+      "escrow_chargeback_opened": "سجّل استرجاعًا من البنك",
+      "payment_manual": "سجّل دفعة يدوية",
+      "payment_refund": "أعاد دفعة",
+      "payments_export_test_ledger": "صدّر سجل الدفعات التجريبية",
+      "receipt_pdf_view": "فتح إيصالًا",
+      "contract_pdf_view": "فتح ملف عقد",
+      "nda_pdf_view": "فتح ملف اتفاقية سرية",
+      "mfa_enable": "فعّل التحقق بخطوتين",
+      "mfa_disable": "أوقف التحقق بخطوتين",
+      "mfa_reset_by_admin": "أعاد ضبط التحقق بخطوتين لأحدهم",
+      "mfa_backup_code_used": "استخدم رمزًا احتياطيًا",
+      "mfa_backup_codes_regenerated": "أنشأ رموزًا احتياطية جديدة",
+      "staff_invite": "دعا عضوًا إلى الفريق",
+      "staff_invite_revoke": "ألغى دعوة إلى الفريق",
+      "staff_accept": "انضم إلى الفريق",
+      "staff_role": "غيّر دور عضو في الفريق",
+      "staff_disable": "أوقف حساب عضو في الفريق",
+      "staff_enable": "أعاد تفعيل حساب عضو في الفريق",
+      "staff_expiry": "غيّر تاريخ انتهاء وصول عضو في الفريق",
+      "ownership_assign": "عيّن مالك المنصة",
+      "ownership_transfer": "نقل ملكية المنصة",
+      "feature_set": "غيّر مفتاح ميزة",
+      "demo_remove": "حذف البيانات التجريبية",
+      "conversation_hide": "أخفى محادثة",
+      "conversation_unhide": "أعاد إظهار محادثة",
+      "appearance_background_add": "أضاف خلفية",
+      "appearance_background_remove": "حذف خلفية",
+      "appearance_background_on": "فعّل خلفية",
+      "appearance_background_off": "أوقف خلفية",
+      "owners_matches_computed": "حسب مطابقات أصحاب المشاريع",
+      "owners_matches_sent": "أرسل رسائل المطابقات لأصحاب المشاريع",
+      "prospect_added": "أضاف جهة محتملة",
+      "prospect_imported": "استورد جهات محتملة",
+      "prospect_updated": "حدّث جهة محتملة",
+      "prospect_removed": "حذف جهة محتملة",
+      "referrals_agent_created": "أضاف وكيل إحالة",
+      "referrals_agent_updated": "حدّث وكيل إحالة",
+      "referrals_payout": "سجّل دفعة إحالة",
+      "referrals_void": "ألغى إحالة",
+      "referrals_restore": "استعاد إحالة",
+      "referrals_tiers": "غيّر نسب الإحالة",
+      "pioneer_extended": "مدّد ختم الرواد",
+      "golive_tick": "أشّر على خطوة إطلاق",
+      "golive_untick": "ألغى التأشير على خطوة إطلاق",
+      "social_connect": "ربط حساب تواصل",
+      "social_connect_failed": "فشل ربط حساب تواصل",
+      "social_disconnect": "فصل حساب تواصل",
+      "social_select": "اختار أعمالًا من حساب تواصل",
+      "behance_import_read": "قرأ ملف Behance",
+      "behance_import_post": "استورد مشروعًا من Behance",
+      "behance_import_apply": "طبّق استيرادًا من Behance",
+      "portfolio_import_read": "قرأ ملف أعمال",
+      "portfolio_import_apply": "طبّق استيراد ملف أعمال",
+      "share_proposed": "اقترح مرحلة مشتركة",
+      "share_accepted": "قبل مرحلة مشتركة",
+      "share_declined": "رفض مرحلة مشتركة",
+      "collab_inquiry_sent": "أرسل استفسارًا لشريك",
+      "collab_inquiry_converted": "حوّل استفسار شريك إلى عمل"
+    },
+    "other": "إجراء آخر",
+    "by": "بواسطة",
+    "system": "النظام"
   },
   "Deliverables": {
     "groups": {
@@ -2146,7 +2287,10 @@
         "reason": "اكتب أسبابًا واضحة (10 أحرف على الأقل).",
         "locked": "لا يمكن اتخاذ قرار على هذا الخلاف الآن.",
         "invalid": "تحقق من الحقول."
-      }
+      },
+      "confirm": "إصدار هذا القرار؟ يُحوَّل {agency} إلى الوكالة ويُعاد {client} إلى العميل، ويُبلَّغ الطرفان.",
+      "confirmRelease": "تحويل {amount} إلى الوكالة؟ لا يمكن التراجع عن ذلك.",
+      "confirmRefund": "إعادة {amount} إلى العميل؟ لا يمكن التراجع عن ذلك."
     },
     "fromPackage": "إنشاء عقد من هذه الباقة",
     "commit": {
@@ -2852,7 +2996,8 @@
       "target": "اختر وسماً للدمج فيه.",
       "notFound": "تمت مراجعتها مسبقاً."
     },
-    "nameEnOptional": "اختياري: يُستخدم الاسم العربي إن تُرك فارغًا"
+    "nameEnOptional": "اختياري: يُستخدم الاسم العربي إن تُرك فارغًا",
+    "rejectConfirm": "رفض «{name}»؟ يُبلَّغ مقدّم الخدمة وتُزال من صفحته."
   },
   "Partners": {
     "tab": "الشركاء",
@@ -3059,17 +3204,17 @@
       },
       "collaboration": {
         "name": "التعاون",
-        "desc": "اكتشاف المتعاونين، التوفر، القائمة الخاصة، طلبات العمل المنظّمة (الإصدار الثاني، الدفعة الأولى).",
+        "desc": "اكتشاف المتعاونين، التوفر، القائمة الخاصة، طلبات العمل المنظّمة.",
         "soon": "أدوات التعاون قيد الإنشاء."
       },
       "collaboration_delivery": {
         "name": "أوامر العمل",
-        "desc": "أوامر عمل بنسخ متفق عليها، محادثات بنطاقين، نسخ ملفات مع تعليقات مثبّتة، ومسار المراجعة فوق أدوات التعاون (الإصدار الثاني، الدفعة الثانية).",
+        "desc": "أوامر عمل بنسخ متفق عليها، محادثات بنطاقين، نسخ ملفات مع تعليقات مثبّتة، ومسار المراجعة فوق أدوات التعاون.",
         "soon": "أوامر العمل قيد الإنشاء. الاستفسارات وعروض الأسعار تعمل كالمعتاد."
       },
       "collaboration_intelligence": {
         "name": "المخطِّط وورقة التكاليف والتقييم",
-        "desc": "مخطِّط من النطاق إلى الفريق، ورقة تكاليف خاصة وقوالب، تقييم المتعاونين، الخطوات التالية والتذكيرات (الإصدار الثاني، الدفعة الثالثة).",
+        "desc": "مخطِّط من النطاق إلى الفريق، ورقة تكاليف خاصة وقوالب، تقييم المتعاونين، الخطوات التالية والتذكيرات.",
         "soon": "المخطِّط وورقة التكاليف والتقييم قيد الإنشاء. أوامر العمل تعمل كالمعتاد."
       }
     },
@@ -3097,7 +3242,8 @@
         "disputeCover": "تم تكليف شخص بمراجعة الخلافات والتحويلات المتعثرة يومياً",
         "liveSwitch": "تم ضبط مفتاح التفعيل في النشر"
       }
-    }
+    },
+    "pilotsPlaceholder": "أسماء المستخدمين، مثل: nakhla.studio, petra.growth"
   },
   "Closest": {
     "title": "لا توجد نتائج مطابقة تماماً",
@@ -5797,5 +5943,45 @@
     "stale": "هل ما زلت متاحاً لمشاريع جديدة؟ مضى وقت على آخر تأكيد.",
     "confirm": "نعم، ما زلت متاحاً",
     "closeNow": "أوقف مؤقتاً"
+  },
+  "StaffAlertEmail": {
+    "supportReport": {
+      "subject": "بلاغ دعم جديد في سوّق",
+      "body": "أرسل أحدهم بلاغ دعم. اقرأه وردّ عليه من الإدارة ← الأعطال:"
+    },
+    "postReport": {
+      "subject": "بلاغ عن منشور في سوّق",
+      "body": "أبلغ زائر عن منشور. راجِعه ثم أخفِه أو تجاهل البلاغ من الإدارة ← البلاغات:"
+    },
+    "dispute": {
+      "subject": "فُتح نزاع دفع في سوّق",
+      "body": "فتح عميل أو وكالة نزاعًا على دفعة محمية. اقرأ أقوال الطرفين واتخذ القرار من الإدارة ← المدفوعات:"
+    },
+    "appeal": {
+      "subject": "طُعن في قرار نزاع في سوّق",
+      "body": "طعن أحد الطرفين في قرارك. القرار النهائي لك من الإدارة ← المدفوعات:"
+    }
+  },
+  "AdminRequests": {
+    "nav": "الطلبات",
+    "title": "طلبات المشاريع",
+    "intro": "ما طلبه أصحاب المشاريع وإلى أين وصل كل طلب، دون اسم العميل أو هاتفه.",
+    "empty": "لا طلبات هنا.",
+    "noType": "لم يُحدَّد نوع النشاط",
+    "budget": "{min}–{max} {currency}",
+    "viaAssistant": "عبر المساعد الذكي",
+    "demo": "تجريبي",
+    "stuck": "لا عروض بعد يومين: يستحق المتابعة.",
+    "status": {
+      "open": "مفتوحة",
+      "closed": "مغلقة",
+      "all": "الكل"
+    },
+    "counts": {
+      "matched": "مطابَقة",
+      "invited": "مدعوّة",
+      "seen": "شاهدته",
+      "quotes": "عروض"
+    }
   }
 }

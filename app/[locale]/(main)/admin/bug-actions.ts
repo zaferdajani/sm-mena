@@ -40,7 +40,7 @@ export async function updateSupportAction(formData: FormData) {
 }
 
 /** A reply to the reporter (docs/63): it appears in their conversation, and they get a link by email. */
-export async function replySupportAction(formData: FormData) {
+export async function replySupportAction(_: { ok?: boolean } | undefined, formData: FormData): Promise<{ ok?: boolean }> {
   const admin = await requireStaff("support.manage");
   const data = z
     .object({ id: z.string().uuid(), body: z.string().trim().min(2).max(3000), status: z.union([z.literal(""), z.enum(SUPPORT_STATUSES)]).optional() })
@@ -49,4 +49,5 @@ export async function replySupportAction(formData: FormData) {
   await audit(admin.id, "support.staff_reply", "support_request", data.id, { status: data.status || null });
   await sendSupportReplies().catch((e) => console.warn("[support] reply email:", e instanceof Error ? e.message : e));
   revalidatePath("/[locale]/admin", "layout");
+  return { ok: true };
 }

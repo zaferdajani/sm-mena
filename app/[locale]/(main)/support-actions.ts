@@ -1,5 +1,6 @@
 "use server";
 
+import { notifyStaff } from "@/lib/data/staff-notify";
 import { headers } from "next/headers";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
@@ -60,5 +61,6 @@ export async function submitSupportAction(_: SupportState, formData: FormData): 
   });
   // The receipt email is a courtesy; the report is already stored.
   await notifySupportReceived(id).catch((e) => console.warn("[support] receipt email:", e instanceof Error ? e.message : e));
+  await notifyStaff("supportReport");
   return { done: true, ref: supportRef(id), token: accessToken ?? undefined };
 }

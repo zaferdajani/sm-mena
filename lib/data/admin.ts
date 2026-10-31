@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, inArray, ne, or, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { agencies, appSettings, auditLogs, contracts, events, inquiries, postImages, posts, projectRequests, promotions, reports, users } from "@/lib/db/schema";
+import { agencies, appSettings, auditLogs, contracts, events, inquiries, postImages, posts, projectRequests, promotions, proposals, reports, requestMatches, users } from "@/lib/db/schema";
 import { mediaUrl, storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
 import { ofRealAgency, ofRealAgencyOrNone } from "@/lib/data/real-data";
@@ -56,9 +56,18 @@ export function monetizationReadiness(s: Awaited<ReturnType<typeof platformStats
   ].map((c) => ({ ...c, met: c.value >= c.target }));
 }
 
-export async function adminListAgencies(q?: string) {
+export const AGENCY_FILTERS = ["all", "new", "unverified", "suspended"] as const;
+export type AgencyFilter = (typeof AGENCY_FILTERS)[number];
+
+/** Admin → Agencies, newest first; `filter` narrows to what needs a look: joined this week, not verified yet, paused. */
+export async function adminListAgencies(q?: string, filter: AgencyFilter = "all") {
   const db = await getDb();
-  const where = q ? sql`${agencies.searchText} like ${`%${normalizeForSearch(q)}%`}` : undefined;
+  const narrow =
+    filter === "new" ? gte(agencies.createdAt, new Date(Date.now() - 7 * 86_400_000))
+    : filter === "unverified" ? and(eq(agencies.isVerified, false), eq(agencies.isDemo, false), eq(agencies.status, "active"))
+    : filter === "suspended" ? eq(agencies.status, "suspended")
+    : undefined;
+  const where = and(q ? sql`${agencies.searchText} like ${`%${normalizeForSearch(q)}%`}` : undefined, narrow);
   const rows = await db
     .select({ agency: agencies, email: users.email })
     .from(agencies)
@@ -66,7 +75,8 @@ export async function adminListAgencies(q?: string) {
     .where(where)
     .orderBy(desc(agencies.createdAt))
     .limit(200);
-  return rows.map((r) => ({ ...r.agency, ownerEmail: r.email, avatarUrl: mediaUrl(r.agency.avatarKey) }));
+  const weekAgo = Date.now() - 7 * 86_400_000;
+  return rows.map((r) => ({ ...r.agency, ownerEmail: r.email, avatarUrl: mediaUrl(r.agency.avatarKey), isNew: r.agency.createdAt.getTime() > weekAgo }));
 }
 
 export async function setAgencyFlags(agencyId: string, patch: Partial<{ isVerified: boolean; status: "active" | "suspended"; plan: "free" | "pro" | "business"; planExpiresAt: Date | null }>) {
@@ -113,15 +123,16 @@ export async function removeDemoData(actorUserId: string | null = null) {
   return { deleted: remove.length, deactivated: keep.length };
 }
 
-export async function listOpenReports() {
+/** Reports to act on, or (handled) the last ones already resolved or dismissed, so a decision never just disappears. */
+export async function listOpenReports(handled = false) {
   const db = await getDb();
   const rows = await db
     .select({ report: reports, post: posts, agency: agencies })
     .from(reports)
     .leftJoin(posts, eq(reports.postId, posts.id))
     .leftJoin(agencies, eq(posts.agencyId, agencies.id))
-    .where(eq(reports.status, "open"))
-    .orderBy(desc(reports.createdAt))
+    .where(handled ? inArray(reports.status, ["resolved", "dismissed"]) : eq(reports.status, "open"))
+    .orderBy(desc(handled ? reports.resolvedAt : reports.createdAt))
     .limit(100);
   const postIds = rows.flatMap((r) => (r.post ? [r.post.id] : []));
   const covers = postIds.length
@@ -210,9 +221,44 @@ export async function adminListUsers(q?: string) {
 export async function listAuditLog(limit = 200) {
   const db = await getDb();
   return db
-    .select({ id: auditLogs.id, action: auditLogs.action, entity: auditLogs.entity, entityId: auditLogs.entityId, meta: auditLogs.meta, createdAt: auditLogs.createdAt, actor: users.email })
+    .select({ id: auditLogs.id, action: auditLogs.action, entity: auditLogs.entity, entityId: auditLogs.entityId, meta: auditLogs.meta, createdAt: auditLogs.createdAt, actor: users.email, agencyHandle: agencies.handle, agencyName: agencies.name })
     .from(auditLogs)
     .leftJoin(users, eq(users.id, auditLogs.actorUserId))
+    // Entries about an agency link to its page (the log showed only "agency:ef1140c4").
+    .leftJoin(agencies, and(eq(auditLogs.entity, "agency"), sql`${auditLogs.entityId} = ${agencies.id}::text`))
     .orderBy(desc(auditLogs.createdAt))
     .limit(limit);
+}
+
+/**
+ * Admin → Requests: what business owners asked for and how far each request got (matched, invited, seen,
+ * quotes). Read-only and without the client's name or phone: what the team needs is where a request is stuck.
+ */
+export async function adminRequests(status: "open" | "closed" | "all" = "open", limit = 100) {
+  const db = await getDb();
+  const rows = await db
+    .select({
+      id: projectRequests.id,
+      businessType: projectRequests.businessType,
+      services: projectRequests.services,
+      country: projectRequests.country,
+      city: projectRequests.city,
+      budgetMinJod: projectRequests.budgetMinJod,
+      budgetMaxJod: projectRequests.budgetMaxJod,
+      source: projectRequests.source,
+      status: projectRequests.status,
+      createdAt: projectRequests.createdAt,
+      expiresAt: projectRequests.expiresAt,
+      matched: sql<number>`(select count(*)::int from ${requestMatches} m where m.request_id = ${projectRequests}.id)`,
+      invited: sql<number>`(select count(*)::int from ${requestMatches} m where m.request_id = ${projectRequests}.id and m.invited)`,
+      seen: sql<number>`(select count(*)::int from ${requestMatches} m where m.request_id = ${projectRequests}.id and m.viewed_at is not null)`,
+      quotes: sql<number>`(select count(*)::int from ${proposals} p where p.request_id = ${projectRequests}.id)`,
+    })
+    .from(projectRequests)
+    .where(status === "all" ? undefined : eq(projectRequests.status, status))
+    .orderBy(desc(projectRequests.createdAt))
+    .limit(limit);
+  // Open, no quote after two days: the case the team should look at first.
+  const twoDaysAgo = Date.now() - 2 * 86_400_000;
+  return rows.map((r) => ({ ...r, stuck: r.status === "open" && r.quotes === 0 && r.createdAt.getTime() < twoDaysAgo }));
 }
