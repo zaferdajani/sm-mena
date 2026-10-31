@@ -302,6 +302,13 @@
       "when": 1793434618723,
       "tag": "0042_accepting_projects",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793445630523,
+      "tag": "0043_onboarding_stages",
+      "breakpoints": true
     }
   ]
 }

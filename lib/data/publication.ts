@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { agencies, auditLogs, profilePublications, type Agency } from "@/lib/db/schema";
 import { canReadProfile, isRegistrationPhase, profileIndexable, PUBLICATION_CONSENT_VERSION, type ProfileVisibility } from "@/lib/launch-phase";
+import { recordFunnel } from "@/lib/data/funnel";
 
 /** Legacy accounts keep their already-published links; new registration accounts get an explicit private row. */
 export async function publicationFor(agencyId: string): Promise<{ visibility: ProfileVisibility; legacy: boolean }> {
@@ -47,6 +48,7 @@ export async function setPublication(ownerUserId: string, agencyId: string, visi
     await tx.insert(profilePublications).values({ agencyId, visibility, consentVersion: PUBLICATION_CONSENT_VERSION, updatedAt: new Date() })
       .onConflictDoUpdate({ target: profilePublications.agencyId, set: { visibility, consentVersion: PUBLICATION_CONSENT_VERSION, updatedAt: new Date() } });
     await tx.insert(auditLogs).values({ actorUserId: ownerUserId, action: "profile.publication_changed", entity: "agency", entityId: agencyId, meta: { visibility, version: PUBLICATION_CONSENT_VERSION } });
+    if (visibility === "public") await recordFunnel("page_published", agencyId, tx);
     return true;
   });
 }

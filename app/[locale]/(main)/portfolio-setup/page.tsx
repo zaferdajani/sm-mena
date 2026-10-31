@@ -57,6 +57,7 @@ export default async function PortfolioSetupPage({ params, searchParams }: PageP
         siteUrl={SITE_URL}
         acceptingProjects={agency.acceptingProjects}
         reviewsOn={reviewsOn}
+        sharedIn={/^\d{1,2}$/.test(one(q.shared)) ? Number(one(q.shared)) : null}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))}
         importsOn={imports}
         providers={providerStates()}

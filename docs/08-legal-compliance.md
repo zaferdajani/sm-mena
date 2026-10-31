@@ -243,3 +243,10 @@ Owner decision after the research summarised here (not legal advice; confirm wit
 
 ### Sign-up from the phone app (30 Oct 2026)
 `POST /api/v1/auth/signup` creates the same provider account as `/join` (`lib/data/provider-signup.ts`): the person ticks the terms-and-privacy consent and the 18-or-older confirmation in the app, the account stores `consentVersion` and `consentAt` and `ageConfirmedAt` exactly as on the web, and the same WhatsApp number and email are kept under the same retention. No new personal-data field. Crash reports from the app (`/api/v1/errors`) have emails and phone numbers removed before they are stored.
+
+## Setup reminders and the onboarding funnel (docs/65, 31 Oct 2026)
+- **Setup reminders:** an unticked box at sign-up ("Remind me by email to finish my page"). When ticked, at most three emails go to the account email, a day, three days and a week after sign-up, and none once the page is match-ready; `agencies.setup_reminders_opt_in`, `setup_reminders_sent`, `setup_reminder_at` record the choice and what was sent. The owner can switch it off under Studio → Account (audited `agency.setup_reminders`). The email names the next step and the link to the Studio; it never quotes the page. No address is logged (`lib/data/setup-reminders.ts`).
+- **Funnel events:** `events` rows of type `join_view`, `account_created`, `first_photo_uploaded`, `page_published`, `link_shared` carry at most the agency id, never a visitor id, name, email or phone. They feed counts on the admin overview only.
+- **"Open to new projects"** (`agencies.accepting_projects`): a business fact the owner sets, audited `agency.availability`; shown on the page.
+- **Share target:** pictures shared from the phone into the installed app go to `/share-target`, which stages them in the owner's private setup draft exactly like an upload (same storage, same 60-day retention). Nothing is published by sharing.
+- **Old page links** (`agencies.previous_handle`): after a handle change the old handle redirects to the new one and cannot be taken by another account.

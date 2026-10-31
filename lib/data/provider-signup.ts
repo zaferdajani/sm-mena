@@ -7,6 +7,7 @@ import { JOIN_ROLES } from "@/lib/services/catalog";
 import { normalizeRoleSelection } from "@/lib/services/role-input";
 import { resolveServices } from "@/lib/services/tags";
 import { validateHandle } from "@/lib/text";
+import { recordFunnel } from "@/lib/data/funnel";
 import type { JoinInput } from "@/lib/validation/auth";
 
 // Creating a provider account: the one set of rules the web sign-up (app/[locale]/(auth)/actions.ts) and the
@@ -23,6 +24,8 @@ export type ProviderSignupInput = Pick<JoinInput, "name" | "handle" | "city" | "
   newServices?: string[];
   teamRoles?: string[];
   ref?: string | null;
+  /** Setup reminders by email (docs/65 stage 4): only when the box was ticked. */
+  reminders?: boolean;
 };
 
 export async function registerProvider(input: ProviderSignupInput): Promise<{ ok: true; userId: string; agencyId: string } | { error: ProviderSignupError }> {
@@ -54,8 +57,9 @@ export async function registerProvider(input: ProviderSignupInput): Promise<{ ok
       teamRoles,
       // An agency is offered partners for the key roles it doesn't have in house (it can change this in the studio).
       seeksRoles: kind === "agency" ? JOIN_ROLES.filter((r) => !teamRoles.includes(r)) : [],
-    });
+    }, { setupRemindersOptIn: input.reminders === true });
     agencyId = created.id;
+    await recordFunnel("account_created", created.id);
     // The marketing agent whose link or code brought them (docs/42).
     await attributeReferral(created.id, input.ref ?? null, input.email).catch(() => false);
   } catch {

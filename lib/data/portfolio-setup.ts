@@ -12,6 +12,7 @@ import { BehanceImportError, importBehanceProject } from "@/lib/behance/import";
 import { embedFor } from "@/lib/social/embed";
 import { storage } from "@/lib/storage";
 import { normalizeForSearch } from "@/lib/text";
+import { recordFunnel } from "@/lib/data/funnel";
 
 // First-run portfolio setup (docs/53). One private draft per agency, resumable
 // from the server: the step, the choices, and images staged in private storage.
@@ -200,6 +201,7 @@ export async function addSetupMedia(agencyId: string, files: Buffer[], source: "
       if (n + staged.length > MAX_IMAGES_PER_POST) throw new SetupPublishConflict("tooMany");
       await tx.insert(portfolioSetupMedia).values(staged.map((image, position) => ({ ...image, position: n + position })));
       await tx.update(portfolioSetups).set({ version: sql`${portfolioSetups.version} + 1`, updatedAt: new Date() }).where(eq(portfolioSetups.agencyId, agencyId));
+      if (n === 0) await recordFunnel("first_photo_uploaded", agencyId, tx);
     });
     return await mediaOf(agencyId);
   } catch (error) {
