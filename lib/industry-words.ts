@@ -5,7 +5,7 @@ import { normalizeForSearch } from "@/lib/text";
  * filed under (data/service-taxonomy.json business_types). Searching "مخبز" or "bakery" found nothing, because
  * no agency writes "bakery" in its name; the type "restaurants and cafés" is what fits.
  */
-const WORDS: Record<string, string[]> = {
+export const BUSINESS_WORDS: Record<string, string[]> = {
   restaurant_cafe: ["مخبز", "مخابز", "فرن", "حلويات", "كنافة", "مطعم", "مطاعم", "مقهى", "مقاهي", "كافيه", "كوفي", "قهوة", "شاورما", "بيتزا", "bakery", "bakeries", "sweets", "dessert", "restaurant", "cafe", "café", "coffee", "pizza", "food"],
   clinic_health: ["عيادة", "عيادات", "طبيب", "دكتور", "أسنان", "صيدلية", "مستشفى", "مختبر", "clinic", "dental", "dentist", "doctor", "pharmacy", "hospital", "health"],
   retail_shop: ["متجر", "محل", "محلات", "بوتيك", "ملابس", "أزياء", "أحذية", "عطور", "مجوهرات", "shop", "store", "boutique", "fashion", "clothes", "perfume", "jewelry"],
@@ -14,10 +14,13 @@ const WORDS: Record<string, string[]> = {
   beauty_fitness: ["صالون", "تجميل", "سبا", "نادي", "جيم", "رياضة", "حلاق", "salon", "beauty", "spa", "gym", "fitness", "barber"],
   ecommerce: ["متجر إلكتروني", "تسوق إلكتروني", "online store", "ecommerce", "e-commerce"],
   tourism_hospitality: ["فندق", "فنادق", "سياحة", "سفر", "منتجع", "hotel", "tourism", "travel", "resort"],
+  professional_services: ["محاماة", "محامي", "محاسبة", "استشارات", "law firm", "lawyer", "accounting", "consulting"],
+  manufacturing: ["مصنع", "مصانع", "factory", "manufacturing"],
+  ngo: ["جمعية", "منظمة", "خيرية", "ngo", "charity", "nonprofit"],
 };
 
 // Phrases first, so "متجر إلكتروني" (online store) is not read as "متجر" (shop).
-const INDEX = Object.entries(WORDS)
+const INDEX = Object.entries(BUSINESS_WORDS)
   .flatMap(([industry, words]) => words.map((w) => [normalizeForSearch(w), industry] as const))
   .sort((a, b) => Number(b[0].includes(" ")) - Number(a[0].includes(" ")));
 
