@@ -119,7 +119,8 @@ async function invitedCount(requestId: string) {
 export async function listVisitorRequests(visitorId: string) {
   const db = await getDb();
   return db
-    .select({ request: projectRequests, proposals: sql<number>`(select count(*)::int from proposals p where p.request_id = ${projectRequests.id})` })
+    // The outer column is written with its table: a bare "id" inside the subquery meant the proposal's own id, so every count was 0.
+    .select({ request: projectRequests, proposals: sql<number>`(select count(*)::int from proposals p where p.request_id = "project_requests"."id")` })
     .from(projectRequests)
     .where(eq(projectRequests.visitorId, visitorId))
     .orderBy(desc(projectRequests.createdAt))

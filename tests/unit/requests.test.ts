@@ -2,7 +2,7 @@ import "./setup-db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createAgency } from "@/lib/data/agencies";
 import { createPackage } from "@/lib/data/packages";
-import { createProjectRequest, getRequestByToken, listOpportunities, newOpportunityCount, submitProposal, setProposalStatus, getRequestForVisitor } from "@/lib/data/requests";
+import { createProjectRequest, getRequestByToken, listOpportunities, newOpportunityCount, submitProposal, setProposalStatus, getRequestForVisitor, listVisitorRequests } from "@/lib/data/requests";
 import { listNotifications } from "@/lib/data/notifications";
 import { getDb } from "@/lib/db";
 import { notifications, projectRequests } from "@/lib/db/schema";
@@ -81,6 +81,8 @@ describe("project requests and proposals", () => {
     expect(view?.proposals).toHaveLength(2);
     expect(view?.proposals[0].priceJod).toBe(250); // cheapest first
     expect(await getRequestForVisitor(request.id, "someone-else")).toBeNull();
+    // "My projects" counts the quotes (it once compared the proposal's own id and always showed none).
+    expect((await listVisitorRequests("visitor-1")).find((r) => r.request.id === request.id)?.proposals).toBe(2);
 
     if (!("proposal" in p2) || !p2.proposal) throw new Error("expected a proposal");
     await setProposalStatus(request.id, p2.proposal.id, "accepted");
