@@ -38,7 +38,9 @@ describe("demo seed", () => {
     const [shifa] = await db.select().from(agencies).where(eq(agencies.handle, "shifa.digital"));
     expect(shifa.industries).toEqual(["clinic_health"]);
     const pkgs = await db.select().from(packages).where(eq(packages.agencyId, shifa.id));
-    expect(pkgs.map((p) => p.title)).toEqual(["باقة العيادة", "Bookings Growth"]);
+    // An Arabic-voice agency's packages are Arabic, with English in the translation.
+    expect(pkgs.map((p) => p.title)).toEqual(["باقة العيادة", "نمو الحجوزات"]);
+    expect(pkgs.map((p) => p.translation.title)).toEqual(["Clinic Package", "Bookings Growth"]);
     expect(pkgs[0].items).toContainEqual({ key: "reels", quantity: 8, platform: "instagram" });
 
     // A deployment seeded before this agency existed gets it on the next boot.

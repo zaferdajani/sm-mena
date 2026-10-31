@@ -21,7 +21,7 @@ describe("option builders without Next", () => {
     expect(options.cities.some((c) => c.key === "amman" && c.label === arMessages.Cities.amman)).toBe(true);
     expect(options.cities.every((c) => !/riyadh|dubai/.test(c.key))).toBe(true);
     const seo = options.services.find((s) => s.key === "seo");
-    expect(seo?.label).toBe("SEO");
+    expect(seo?.label).toBe("تحسين الظهور في محركات البحث (SEO)");
     expect(options.platforms.length).toBeGreaterThan(3);
   });
   it("puts the agency's own services first in the post form", () => {

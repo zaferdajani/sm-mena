@@ -1159,6 +1159,13 @@
     "mockMode": "Test mode: mock AI for testing"
   },
   "Requests": {
+    "serviceGroups": {
+      "chosen": "Chosen services",
+      "remove": "Remove {service}",
+      "hint": "Open a category and tap what you need (up to {count}).",
+      "max": "That's the maximum of {count} services. Remove one to add another.",
+      "count": "{count, plural, one {{count} service} other {{count} services}}"
+    },
     "formTitle": "Send your project and get quotes",
     "formSubtitle": "We send your project to up to 5 well-matched agencies, and other specialised agencies can quote. Your name and phone stay private: an agency sees them only after you shortlist or accept its quote.",
     "name": "Your name",
