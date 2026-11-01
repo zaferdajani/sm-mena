@@ -22,6 +22,7 @@ export async function notifyNewInquiry(agency: Agency, inquiry: Inquiry) {
   }
   await fetch("https://api.resend.com/emails", {
     method: "POST",
+    signal: AbortSignal.timeout(10_000),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
   });
@@ -48,6 +49,7 @@ export async function notifyNewMessage(agency: Agency, conversation: Pick<Conver
   }
   await fetch("https://api.resend.com/emails", {
     method: "POST",
+    signal: AbortSignal.timeout(10_000),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
   });
@@ -74,6 +76,7 @@ export async function sendPlainEmail(to: string | null | undefined, subject: str
   try {
     await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject, text }),
     });

@@ -26,7 +26,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
   const t = await getTranslations("Studio");
   const ent = entitlementsFor(agency);
   const days = Math.min(30, ent.insightsDays);
-  const [insights, top, packages, seat, publication] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id), seatOf(agency), publicationFor(agency.id)]);
+  const [insights, top, packages, seat, publication, clients] = await Promise.all([agencyInsights(agency.id, days), topPosts(agency.id), listPackages(agency.id), seatOf(agency), publicationFor(agency.id), listClients(agency.id)]);
   const n = (v: number) => v.toLocaleString(locale === "ar" ? "ar-JO-u-nu-latn" : "en");
 
   const tiles = [
@@ -53,7 +53,7 @@ export default async function StudioOverview({ params, searchParams }: PageProps
       {/* Where the page stands and the next step come first; the founding perks follow. */}
       <PageStrengthCard agency={agency} visibility={publication.visibility} packageCount={packages.length} />
       {seat && <FoundingPanel status={foundingStatus(agency, seat.seat)} eligible={founderEligibility({ ...agency, packageCount: packages.length }).eligible} />}
-      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: isRegistrationPhase() ? null : agency.foundingSeat, accounts: (await listClients(agency.id)).sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
+      <ShareCard card={{ name: agency.name, handle: agency.handle, avatarUrl: mediaUrl(agency.avatarKey), memberNo: isRegistrationPhase() ? null : agency.foundingSeat, accounts: clients.sort((a, b) => Number(Boolean(b.confirmedAt)) - Number(Boolean(a.confirmedAt))).slice(0, 8).map((c) => ({ id: c.id, name: c.name, logoUrl: mediaUrl(c.logoKey), confirmed: Boolean(c.confirmedAt) })) }} />
       <section>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">{t("period", { days })}</h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-testid="insight-tiles">
