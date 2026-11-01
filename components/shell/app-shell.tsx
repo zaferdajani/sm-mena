@@ -63,7 +63,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AppFrame>
       <InterfaceBackground />
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-dvh w-52 shrink-0 lg:w-60 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
         <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} />
         </Link>
@@ -80,6 +80,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
           <Link href="/support" className="hover:underline" data-testid="report-problem">{tf("report")}</Link>
           <Link href="/legal" className="hover:underline">{tf("legal")}</Link>
+          <Link href="/privacy" className="hover:underline">{tf("privacy")}</Link>
+          <Link href="/terms" className="hover:underline">{tf("terms")}</Link>
+          <Link href="/delete-account" className="hover:underline">{tf("deleteAccount")}</Link>
           <p>{tf("rights", { year: new Date().getFullYear() })}</p>
         </div>
       </aside>

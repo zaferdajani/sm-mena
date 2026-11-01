@@ -31,13 +31,16 @@ export default async function AdminReports({ params, searchParams }: PageProps<"
           <div className="min-w-0 flex-1 space-y-1 text-sm">
             <p className="font-semibold">{tr(`reasons.${report.reason}`)}</p>
             {report.details && <p className="text-muted-foreground">{report.details}</p>}
+            {report.conversationId && (
+              <Link href={`/admin/conversations/${report.conversationId}`} className="text-brand underline" data-testid="chat-report-link">{t("reportedChat")}</Link>
+            )}
             <p className="text-xs text-muted-foreground">
               {agency && <span dir="ltr">@{agency.handle}</span>} · {timeAgo(report.createdAt.toISOString(), locale)}
             </p>
             {handled ? (
               <p className="text-xs font-medium" data-testid="report-outcome">{t(report.status === "resolved" ? "reportHidden" : "reportDismissed")}</p>
             ) : null}
-            {(!handled || post?.status === "hidden") && <ReportButtons id={report.id} postId={post?.id ?? null} hidden={post?.status === "hidden"} handled={handled} />}
+            {(!handled || post?.status === "hidden" || (report.conversationId && !handled)) && <ReportButtons id={report.id} postId={post?.id ?? null} hidden={post?.status === "hidden" || Boolean(report.conversationId)} handled={handled} />}
           </div>
         </li>
       ))}

@@ -3,6 +3,7 @@ import { featureOpen } from "@/lib/features";
 import { CheckCircle2, FlaskConical, XCircle } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SubmitButton } from "@/components/submit-button";
+import { PriceBadge } from "@/components/billing/price-badge";
 import { requireAgency } from "@/lib/auth/guards";
 import { listPayments, PLAN_MONTHS, planPriceFils } from "@/lib/data/payments";
 import { formatDate } from "@/lib/format";
@@ -36,7 +37,10 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
       )}
       <section className="rounded-xl border p-4">
         <p className="text-xs text-muted-foreground">{t("current")}</p>
-        <p className="text-xl font-bold" data-testid="current-plan">{t(`plans.${active ? agency.plan : "free"}`)}</p>
+        <p className="flex items-center gap-2 text-xl font-bold" data-testid="current-plan">
+          {t(`plans.${active ? agency.plan : "free"}`)}
+          <PriceBadge paid={active} label={t(active ? "paidBadge" : "freeBadge")} />
+        </p>
         {active && agency.planExpiresAt && <p className="text-sm text-muted-foreground">{t("until", { date: formatDate(agency.planExpiresAt, locale) })}</p>}
         {!monetizationEnabled() && <p className="mt-2 text-sm text-brand">{t("freeDuringLaunch")}</p>}
       </section>
@@ -47,11 +51,11 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
         </p>
       )}
 
-      {documentsOpen() && <div className="grid gap-3 sm:grid-cols-2">
+      {documentsOpen() && <div className="grid gap-3 sm:grid-cols-2 xl:max-w-4xl">
         {(["pro", "business"] as const).map((plan) => (
           <section key={plan} className={cn("space-y-3 rounded-xl border p-4", agency.plan === plan && active && "border-brand")}>
             <div>
-              <h2 className="font-bold">{t(`plans.${plan}`)}</h2>
+              <h2 className="flex items-center gap-2 font-bold">{t(`plans.${plan}`)} <PriceBadge paid label={t("paidBadge")} /></h2>
               <p className="text-sm text-muted-foreground">{t("perMonth", { price: formatFils(planPriceFils(plan, 1), locale) })}</p>
             </div>
             <ul className="space-y-1 text-sm">
@@ -82,6 +86,7 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
           </section>
         ))}
       </div>}
+      {documentsOpen() && <p className="text-xs text-muted-foreground" data-testid="paid-note">{t("paidNote")}</p>}
       <p className="text-xs text-muted-foreground">{t("limitsNote", { free: PLANS.free.proposalsPerMonth ?? 0 })}</p>
 
       <section className="space-y-2">

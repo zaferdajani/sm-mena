@@ -37,6 +37,9 @@ export async function SiteFooter() {
             <li><Link href="/who-runs" className="hover:underline">{t("whoRuns")}</Link></li>
             <li><Link href="/sawwiq50" className="hover:underline">{t("top")}</Link></li>
             <li><Link href="/legal" className="hover:underline">{t("legal")}</Link></li>
+            <li><Link href="/privacy" className="hover:underline">{t("privacy")}</Link></li>
+            <li><Link href="/terms" className="hover:underline">{t("terms")}</Link></li>
+            <li><Link href="/delete-account" className="hover:underline">{t("deleteAccount")}</Link></li>
             <li><Link href="/support" className="hover:underline">{t("report")}</Link></li>
             <li><OtherLanguageLink label={t("otherLanguage")} className="hover:underline" /></li>
             <li className="md:hidden"><ThemeToggle labels={{ dark: tHead("themeDark"), light: tHead("themeLight") }} withText className="-mx-2 w-fit px-2 py-1" /></li>

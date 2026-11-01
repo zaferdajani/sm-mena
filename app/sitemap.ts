@@ -1,3 +1,4 @@
+import { showComingSoon } from "@/lib/coming-soon";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
 import type { MetadataRoute } from "next";
@@ -31,7 +32,7 @@ function entries(path: string, lastModified?: Date | null, priority = 0.6): Meta
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!siteIndexable()) return [];
-  if (isRegistrationPhase()) return ["", "/soon", "/contact", "/join", "/start", "/legal"].flatMap((p) => entries(p));
+  if (isRegistrationPhase()) return ["", "/soon", "/contact", "/join", "/start", "/legal", "/privacy", "/terms"].flatMap((p) => entries(p));
   const db = await getDb();
   const real = and(eq(agencies.status, "active"), eq(agencies.isDemo, false), discoverableProfiles());
   const [agencyRows, postRows, [{ latest }], { services, pairs, countries }] = await Promise.all([
@@ -65,8 +66,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries("/about", null, 0.5),
     ...entries("/contact", null, 0.4),
     ...entries("/join", null, 0.4),
-    ...entries("/soon", latest, 0.6),
+    ...(showComingSoon() ? entries("/soon", latest, 0.6) : []),
     ...entries("/legal", null, 0.2),
+    ...entries("/privacy", null, 0.2),
+    ...entries("/terms", null, 0.2),
+    ...entries("/delete-account", null, 0.2),
     ...agencyRows.flatMap((a) => entries(`/a/${a.handle}`, a.updatedAt, 0.8)),
     ...postRows.filter((p) => postIndexable(p.caption)).flatMap((p) => entries(`/p/${p.id}`, p.createdAt, 0.5)),
   ];

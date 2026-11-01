@@ -39,7 +39,11 @@ for (const locale of ["ar", "en"]) {
         localStorage.setItem("sw_role", "browse");
         if (value) localStorage.setItem("sw_theme", "dark"); else localStorage.removeItem("sw_theme");
       }, dark);
-      for (const route of ["?intro=0", "soon", "explore?tab=agencies", `a/${DEMO_AGENCY.handle}`, "hire", "start", "join", "signin", "login", "legal"]) {
+      // "soon" is a coming-soon teaser: hidden (404) in production builds unless
+      // NEXT_PUBLIC_SHOW_COMING_SOON=true (App Store guideline 2.1 / 2.3.1).
+      const soonResponse = await page.goto(`/${locale}/soon`);
+      if (process.env.NEXT_PUBLIC_SHOW_COMING_SOON !== "true") expect(soonResponse?.status(), "soon hidden").toBe(404);
+      for (const route of ["?intro=0", ...(process.env.NEXT_PUBLIC_SHOW_COMING_SOON === "true" ? ["soon"] : []), "explore?tab=agencies", `a/${DEMO_AGENCY.handle}`, "hire", "start", "join", "signin", "login", "legal"]) {
         const response = await page.goto(`/${locale}/${route}`);
         expect(response?.status(), route).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");

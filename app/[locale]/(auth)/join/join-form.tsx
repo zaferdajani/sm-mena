@@ -257,7 +257,7 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
           <input type="checkbox" name="consent" required className="mt-1 size-4 accent-[var(--primary)]" {...invalid("consent")} />
           <span>
             {t("consent")}{" "}
-            <Link href="/legal" className="text-brand underline">{t("consentLink")}</Link>
+            <Link href="/privacy" className="text-brand underline">{t("consentLink")}</Link>
           </span>
         </label>
         {errorLine("consent")}
