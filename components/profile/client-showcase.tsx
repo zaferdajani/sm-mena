@@ -77,7 +77,7 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
               <div className="shrink-0">
                 {c.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.logoUrl} alt="" className="size-12 rounded-full border bg-white object-cover" />
+                  <img loading="lazy" decoding="async" src={c.logoUrl} alt="" className="size-12 rounded-full border bg-white object-cover" />
                 ) : (
                   <span className="grid size-12 place-items-center rounded-full border bg-muted text-lg font-bold text-muted-foreground">{c.name.slice(0, 1)}</span>
                 )}
@@ -122,7 +122,7 @@ export async function ClientShowcaseList({ clients: rows, lang = "ar", handle, a
                   {c.thumbs.map((th) => (
                     <Link key={th.postId} href={`/p/${th.postId}`} className="block aspect-square overflow-hidden rounded-md" style={{ background: th.color }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={th.url} alt="" loading="lazy" className="size-full object-cover" />
+                      <img loading="lazy" decoding="async" src={th.url} alt="" className="size-full object-cover" />
                     </Link>
                   ))}
                 </div>

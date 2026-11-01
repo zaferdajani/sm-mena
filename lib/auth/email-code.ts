@@ -60,6 +60,7 @@ export async function sendCodeEmail(to: string, code: string, purpose: "signin" 
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: process.env.EMAIL_FROM || "Sawwiq <noreply@sawwiq.org>", to, subject: `${code} · سوّق Sawwiq`, text }),
     });
