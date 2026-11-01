@@ -80,6 +80,9 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
           <Link href="/support" className="hover:underline" data-testid="report-problem">{tf("report")}</Link>
           <Link href="/legal" className="hover:underline">{tf("legal")}</Link>
+          <Link href="/privacy" className="hover:underline">{tf("privacy")}</Link>
+          <Link href="/terms" className="hover:underline">{tf("terms")}</Link>
+          <Link href="/delete-account" className="hover:underline">{tf("deleteAccount")}</Link>
           <p>{tf("rights", { year: new Date().getFullYear() })}</p>
         </div>
       </aside>

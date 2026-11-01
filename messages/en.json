@@ -40,7 +40,10 @@
     "contact": "Contact",
     "otherLanguage": "العربية",
     "whoRuns": "Who runs this page?",
-    "top": "The Sawwiq 50"
+    "top": "The Sawwiq 50",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "deleteAccount": "Delete your account"
   },
   "NotFound": {
     "title": "Page not found",
@@ -949,7 +952,8 @@
     "newAgency": "New",
     "postsCount": "{count, plural, =0 {no posts} one {one post} other {# posts}}",
     "editPlan": "Change plan",
-    "planUntilLabel": "Plan valid until (optional)"
+    "planUntilLabel": "Plan valid until (optional)",
+    "reportedChat": "Reported chat — open"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -2783,7 +2787,27 @@
     },
     "inquiryNotice": "Your message also starts a chat with the agency on Sawwiq. Chats are recorded and may be reviewed by our team for quality assurance.",
     "openChats": "Open my chats",
-    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in"
+    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in",
+    "safety": {
+      "report": "Report",
+      "block": "Block",
+      "reasonLabel": "Reason",
+      "details": "More details (optional)",
+      "sendReport": "Send report",
+      "cancel": "Cancel",
+      "blockBody": "Blocking closes this chat: neither side can send new messages. Support can reopen it.",
+      "confirmBlock": "Block and close chat",
+      "reported": "Thanks. Our team will review this chat.",
+      "blocked": "Chat blocked.",
+      "error": "Something went wrong. Try again.",
+      "reasons": {
+        "spam": "Spam or scam",
+        "inappropriate": "Abusive or inappropriate",
+        "misleading": "Misleading",
+        "underage": "The person seems to be under 18",
+        "other": "Something else"
+      }
+    }
   },
   "Notifications": {
     "tab": "Notifications",
@@ -6092,5 +6116,60 @@
     "off": "Off.",
     "turnOff": "Turn off",
     "turnOn": "Turn on"
+  },
+  "PolicyCommon": {
+    "review": "Draft text for owner and legal review. It is not final legal advice.",
+    "links": "Legal and account links",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "support": "Support",
+    "delete": "Delete your account"
+  },
+  "PolicyPrivacy": {
+    "title": "Privacy Policy",
+    "intro": "This explains what personal data Sawwiq collects, why, and your choices. Contact: privacy@sawwiq.org.",
+    "s1t": "What we collect",
+    "s1": "Account details (name, email, phone for agencies and business owners), the content you publish or send (profile, posts, requests, quotes, chat messages), and basic usage data such as pages visited and device type.",
+    "s2t": "Why we use it",
+    "s2": "To run the marketplace, match business owners with agencies, deliver messages and notifications, keep the service safe, and meet legal duties. We do not sell personal data.",
+    "s3t": "Who sees it",
+    "s3": "Briefs are anonymous to agencies until a proposal is submitted. Contact details are shared only when you choose to. Service providers (hosting, email, storage) process data on our behalf.",
+    "s4t": "Chats and moderation",
+    "s4": "Chats are recorded for quality assurance and dispute handling. You can report or block anyone in a chat; our team reviews reports.",
+    "s5t": "Retention and deletion",
+    "s5": "We keep data while your account is active. You can delete your account at any time (see Delete your account). Financial records are kept as the law requires.",
+    "s6t": "Your rights",
+    "s6": "You can ask to access, correct or delete your data, or withdraw consent, by contacting privacy@sawwiq.org or Support."
+  },
+  "PolicyTerms": {
+    "title": "Terms of Service",
+    "intro": "These terms govern your use of Sawwiq, a marketplace that connects businesses with marketing agencies in Jordan and the region.",
+    "s1t": "Using Sawwiq",
+    "s1": "You must be 18 or older. Keep your sign-in details safe and provide accurate information.",
+    "s2t": "Agencies and business owners",
+    "s2": "Sawwiq introduces the parties. Services are agreed and delivered between them. Sawwiq is not a party to the work unless a protected contract says so.",
+    "s3t": "Content and conduct",
+    "s3": "You are responsible for what you publish or send. Do not post spam, stolen work, misleading claims or abusive content. We may hide content, close chats and suspend accounts that break these rules.",
+    "s4t": "Paid features",
+    "s4": "Any paid plan or fee is shown with its price before you commit. Paid plans can add priority, never better ranking relevance, and are labelled Featured.",
+    "s5t": "Liability",
+    "s5": "Sawwiq does not guarantee business results. Our liability is limited as far as the law allows.",
+    "s6t": "Changes and contact",
+    "s6": "We may update these terms and will tell you about material changes. Questions: see Support."
+  },
+  "PolicyDelete": {
+    "title": "Delete your Sawwiq account",
+    "intro": "You can delete your account yourself, in the app or on the website, at any time.",
+    "s1t": "Agencies",
+    "s1": "Sign in, open Studio → Security → Close my account, type your agency handle and password, and confirm. Your page is hidden everywhere and you are signed out.",
+    "s2t": "Business owners",
+    "s2": "Sign in, open My requests, choose Close my account, type your email and confirm. The needs you told us about are deleted.",
+    "s3t": "What is kept",
+    "s3": "Signed contracts and the payment ledger are kept for legal and accounting reasons, as the law requires. Other personal data is removed or anonymised.",
+    "s4t": "Cannot sign in or need help?",
+    "s4": "Contact Support or write to privacy@sawwiq.org from your account email and we will delete the account for you."
+  },
+  "Offline": {
+    "message": "You are offline. Some things may not load or send until you reconnect."
   }
 }

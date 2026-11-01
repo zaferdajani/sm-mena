@@ -250,3 +250,7 @@ Owner decision after the research summarised here (not legal advice; confirm wit
 - **"Open to new projects"** (`agencies.accepting_projects`): a business fact the owner sets, audited `agency.availability`; shown on the page.
 - **Share target:** pictures shared from the phone into the installed app go to `/api/share-target`, which stages them in the owner's private setup draft exactly like an upload (same storage, same 60-day retention). Nothing is published by sharing.
 - **Old page links** (`agencies.previous_handle`): after a handle change the old handle redirects to the new one and cannot be taken by another account.
+
+## Store compliance additions (Nov 2026)
+- `reports.conversation_id` links a chat report to its conversation. No new personal data: the report holds a reason, optional free text (max 1000 chars) and the reporter's pseudonymous visitor id. Retention follows the reports table (kept while the report is open and for dispute records). Staff opening the chat is covered by the existing conversation audit entries; `chat.reported` and `chat.blocked` audit entries are written.
+- `/privacy`, `/terms` and `/delete-account` are public pages; the text of the first two is a draft for owner and lawyer review.

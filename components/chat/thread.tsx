@@ -4,6 +4,7 @@ import { Check, CheckCheck, Loader2, SendHorizontal, ShieldCheck } from "lucide-
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { sendChatMessageAction } from "@/app/[locale]/(main)/chat-actions";
+import { ChatSafety } from "@/components/chat/chat-safety";
 import { Button } from "@/components/ui/button";
 import { MESSAGE_MAX, pollDelay, type ChatMessage, type ChatSide } from "@/lib/chat";
 import { cn } from "@/lib/utils";
@@ -37,9 +38,11 @@ function merge(current: ChatMessage[], incoming: ChatMessage[]) {
  * optimistic sending reconciled by id, and polling that slows down when idle
  * and stops while the tab is hidden.
  */
-export function ChatThread({ conversationId, side, token, initialMessages, initialOtherLastReadId, hasEarlier: initialHasEarlier, closed = false, className }: ThreadProps) {
+export function ChatThread({ conversationId, side, token, initialMessages, initialOtherLastReadId, hasEarlier: initialHasEarlier, closed: closedProp = false, className }: ThreadProps) {
   const t = useTranslations("Chat");
   const locale = useLocale();
+  const [blocked, setBlocked] = useState(false);
+  const closed = closedProp || blocked;
   const [messages, setMessages] = useState(initialMessages);
   const [pending, setPending] = useState<Pending[]>([]);
   const [otherRead, setOtherRead] = useState(initialOtherLastReadId);
@@ -185,6 +188,7 @@ export function ChatThread({ conversationId, side, token, initialMessages, initi
           <span className="font-semibold text-foreground">{t("noticeTitle")}.</span> {t("notice")}
         </p>
       </div>
+      <ChatSafety conversationId={conversationId} side={side} token={token} onBlocked={() => setBlocked(true)} />
 
       <div ref={scroller} onScroll={onScroll} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-3 py-3" aria-live="polite" data-testid="chat-messages">
         {hasEarlier && (
