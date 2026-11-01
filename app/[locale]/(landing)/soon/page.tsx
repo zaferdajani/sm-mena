@@ -5,6 +5,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { TeaserView } from "@/components/teaser/teaser-view";
 import { accountLink } from "@/lib/account-link";
 import { pageMeta } from "@/lib/seo";
+import { notFound } from "next/navigation";
+import { showComingSoon } from "@/lib/coming-soon";
 
 export const dynamic = "force-dynamic";
 
@@ -30,5 +32,7 @@ export default async function SoonPage({ params }: PageProps<"/[locale]/soon">) 
   const { locale } = await params;
   setRequestLocale(locale);
   if (isRegistrationPhase()) return <RegistrationView locale={locale} />;
+  // The pre-launch teaser is a "coming soon" screen: hidden in production builds.
+  if (!showComingSoon()) notFound();
   return <TeaserView locale={locale} account={await accountLink(locale)} />;
 }

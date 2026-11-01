@@ -1597,7 +1597,10 @@
       "failed": "Failed",
       "refunded": "Refunded",
       "cancelled": "Cancelled"
-    }
+    },
+    "paidBadge": "Paid",
+    "freeBadge": "Free",
+    "paidNote": "Paid plans are billed in advance for the period you choose. The Free plan stays free."
   },
   "AdminPayments": {
     "provider": "Payment provider: {name}",
@@ -2414,7 +2417,8 @@
       "checkoutTest": "Test checkout: no real money is charged.",
       "soonTitle": "Protected payments: coming soon",
       "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee.",
-      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%."
+      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%.",
+      "directTitle": "Direct payment"
     },
     "cancelMutual": {
       "title": "Cancel by agreement",
@@ -6167,7 +6171,11 @@
     "s3t": "What is kept",
     "s3": "Signed contracts and the payment ledger are kept for legal and accounting reasons, as the law requires. Other personal data is removed or anonymised.",
     "s4t": "Cannot sign in or need help?",
-    "s4": "Contact Support or write to privacy@sawwiq.org from your account email and we will delete the account for you."
+    "s4": "Contact Support or write to privacy@sawwiq.org from your account email and we will delete the account for you.",
+    "goTitle": "Delete my account now",
+    "goAgency": "Agency: Studio → Security",
+    "goOwner": "Business owner: My requests",
+    "goSignin": "Sign in to delete"
   },
   "Offline": {
     "message": "You are offline. Some things may not load or send until you reconnect."

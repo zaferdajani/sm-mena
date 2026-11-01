@@ -1,3 +1,4 @@
+import { showComingSoon } from "@/lib/coming-soon";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { discoverableProfiles } from "@/lib/data/publication";
 import type { MetadataRoute } from "next";
@@ -65,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries("/about", null, 0.5),
     ...entries("/contact", null, 0.4),
     ...entries("/join", null, 0.4),
-    ...entries("/soon", latest, 0.6),
+    ...(showComingSoon() ? entries("/soon", latest, 0.6) : []),
     ...entries("/legal", null, 0.2),
     ...entries("/privacy", null, 0.2),
     ...entries("/terms", null, 0.2),

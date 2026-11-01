@@ -5,6 +5,7 @@ import { CountryPicker } from "@/components/country-picker";
 import { COUNTRIES, type CountryCode } from "@/lib/countries";
 import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./ctas";
 import { MilestoneLedger } from "./ledger";
+import { showComingSoon } from "@/lib/coming-soon";
 import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
 export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
@@ -54,7 +55,7 @@ export function PaymentsSection({ lang, country, live }: { lang: Lang; country: 
   return (
     <section aria-labelledby="payments-title" className="sw-pay" id="payments">
       <div className="sw-pay__text">
-        <p className="sw-eyebrow">{live ? p.eyebrow : p.eyebrowSoon}</p>
+        <p className="sw-eyebrow">{live || !showComingSoon() ? p.eyebrow : p.eyebrowSoon}</p>
         <h2 className="sw-h2" id="payments-title">
           {p.title}
         </h2>
@@ -72,7 +73,7 @@ export function PaymentsSection({ lang, country, live }: { lang: Lang; country: 
         </ul>
         <p className="sw-pay__direct">{p.direct}</p>
         {/* Nothing is promised as live until lib/payments/readiness.ts says so. */}
-        {!live && <p className="sw-pay__direct" data-testid="payments-soon">{p.soon}</p>}
+        {!live && showComingSoon() && <p className="sw-pay__direct" data-testid="payments-soon">{p.soon}</p>}
       </div>
       <div className="sw-pay__panel">
         <MilestoneLedger country={country} lang={lang} />

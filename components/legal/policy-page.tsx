@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { getSessionUser } from "@/lib/auth/session";
 
 type Namespace = "PolicyPrivacy" | "PolicyTerms" | "PolicyDelete";
 
@@ -18,6 +19,7 @@ export async function PolicyPage({ ns, sections, review = true }: { ns: Namespac
           <p className="text-sm leading-relaxed">{t(`s${n}` as "s1")}</p>
         </section>
       ))}
+      {ns === "PolicyDelete" && <DeleteActions />}
       <nav aria-label={tc("links")} className="flex flex-wrap gap-4 border-t pt-4 text-sm">
         <Link href="/privacy" className="underline">{tc("privacy")}</Link>
         <Link href="/terms" className="underline">{tc("terms")}</Link>
@@ -25,5 +27,28 @@ export async function PolicyPage({ ns, sections, review = true }: { ns: Namespac
         <Link href="/delete-account" className="underline">{tc("delete")}</Link>
       </nav>
     </article>
+  );
+}
+
+/** Delete account: one tap to the real in-app deletion screen (App Store 5.1.1(v)). */
+async function DeleteActions() {
+  const t = await getTranslations("PolicyDelete");
+  const user = await getSessionUser().catch(() => null);
+  const btn = "inline-flex h-10 items-center justify-center rounded-lg border border-destructive/40 px-4 text-sm font-semibold text-destructive hover:bg-destructive/10";
+  return (
+    <section className="space-y-2 rounded-xl border border-destructive/30 p-4" data-testid="delete-account-actions">
+      <h2 className="font-semibold">{t("goTitle")}</h2>
+      <div className="flex flex-wrap gap-2">
+        {!user ? (
+          <Link href="/signin?next=/delete-account" className={btn} data-testid="delete-signin">{t("goSignin")}</Link>
+        ) : (
+          <>
+            {user.role === "client"
+              ? <Link href="/requests" className={btn} data-testid="delete-owner">{t("goOwner")}</Link>
+              : <Link href="/studio/security" className={btn} data-testid="delete-agency">{t("goAgency")}</Link>}
+          </>
+        )}
+      </div>
+    </section>
   );
 }
