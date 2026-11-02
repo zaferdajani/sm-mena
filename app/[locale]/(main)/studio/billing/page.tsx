@@ -37,8 +37,8 @@ export default async function StudioBilling({ params, searchParams }: PageProps<
       )}
       <section className="rounded-xl border p-4">
         <p className="text-xs text-muted-foreground">{t("current")}</p>
-        <p className="flex items-center gap-2 text-xl font-bold" data-testid="current-plan">
-          {t(`plans.${active ? agency.plan : "free"}`)}
+        <p className="flex items-center gap-2 text-xl font-bold">
+          <span data-testid="current-plan">{t(`plans.${active ? agency.plan : "free"}`)}</span>
           <PriceBadge paid={active} label={t(active ? "paidBadge" : "freeBadge")} />
         </p>
         {active && agency.planExpiresAt && <p className="text-sm text-muted-foreground">{t("until", { date: formatDate(agency.planExpiresAt, locale) })}</p>}
