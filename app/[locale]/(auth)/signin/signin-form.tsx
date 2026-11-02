@@ -49,7 +49,7 @@ export function SignInForm({ next }: { next: string }) {
         <input type="checkbox" name="consent" required className="mt-0.5" />
         <span>
           {t("consent")}{" "}
-          <Link href="/legal" className="underline">
+          <Link href="/privacy" className="underline">
             {t("privacy")}
           </Link>
         </span>

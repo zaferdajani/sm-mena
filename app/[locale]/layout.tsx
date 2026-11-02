@@ -10,6 +10,7 @@ import { LanguageOffer } from "@/components/language-offer";
 import { FlagPolyfill } from "@/components/flag-polyfill";
 import { ServiceRegistry } from "@/components/service-registry";
 import { customTags } from "@/lib/services/tags";
+import { OfflineBanner } from "@/components/offline-banner";
 import { PageTracker } from "@/components/page-tracker";
 import { ThemeSync } from "@/components/theme-sync";
 import { themeScript } from "@/lib/theme";
@@ -75,6 +76,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <NextIntlClientProvider>
             <ServiceRegistry tags={approvedTags} />
             <LanguageOffer texts={offerTexts} />
+            <OfflineBanner />
             {children}
             <PageTracker />
             <FlagPolyfill />
