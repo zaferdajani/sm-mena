@@ -10,6 +10,7 @@ import { LanguageOffer } from "@/components/language-offer";
 import { FlagPolyfill } from "@/components/flag-polyfill";
 import { ServiceRegistry } from "@/components/service-registry";
 import { customTags } from "@/lib/services/tags";
+import { WebVitals } from "@/components/web-vitals";
 import { PageTracker } from "@/components/page-tracker";
 import { ThemeSync } from "@/components/theme-sync";
 import { themeScript } from "@/lib/theme";
@@ -80,6 +81,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <FlagPolyfill />
           </NextIntlClientProvider>
           <ErrorReporter />
+          <WebVitals />
         </DirectionProvider>
       </body>
     </html>

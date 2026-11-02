@@ -77,7 +77,7 @@ export function PostCard({ post: raw, priority = false, linkToPost = true }: { p
           <Link href={`/a/${post.agency.handle}/c/${post.client.id}`} className="flex w-fit items-center gap-1.5 text-xs font-medium text-brand" data-testid="post-account">
             {post.client.logoUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={post.client.logoUrl} alt="" className="size-5 rounded-full border bg-white object-cover" />
+              <img loading="lazy" decoding="async" src={post.client.logoUrl} alt="" className="size-5 rounded-full border bg-white object-cover" />
             )}
             {tp("forClient", { name: locale !== post.contentLang && post.client.nameTranslation ? post.client.nameTranslation : post.client.name })}
           </Link>

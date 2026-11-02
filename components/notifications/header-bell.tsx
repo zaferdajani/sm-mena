@@ -6,10 +6,10 @@ import { NotificationBell } from "./bell";
 
 /** One lookup per request, shared by the phone header and the desktop sidebar. */
 const bellState = cache(async () => {
-  const current = await currentRecipient();
+  const [current, user] = await Promise.all([currentRecipient(), getSessionUser()]);
   const count = current ? await unreadNotificationCount(current.recipient).catch(() => 0) : 0;
   // A visitor with no account and nothing ever received gets no bell: it only opened an empty page.
-  const show = Boolean(await getSessionUser()) || count > 0 || (current ? (await listNotifications(current.recipient, 1).catch(() => [])).length > 0 : false);
+  const show = Boolean(user) || count > 0 || (current ? (await listNotifications(current.recipient, 1).catch(() => [])).length > 0 : false);
   return { show, count, href: current?.kind === "agency" ? ("/studio/notifications" as const) : ("/notifications" as const) };
 });
 

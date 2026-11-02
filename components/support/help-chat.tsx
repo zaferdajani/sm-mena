@@ -2,6 +2,7 @@
 
 import { ImagePlus, LifeBuoy, Mail, Send, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { helpChatAction, myReportsAction } from "@/app/[locale]/(main)/help-actions";
@@ -9,12 +10,14 @@ import type { ThreadSummary } from "@/lib/data/support-threads";
 import { submitSupportAction } from "@/app/[locale]/(main)/support-actions";
 import { Link } from "@/i18n/navigation";
 import { VoiceButton } from "@/components/match/voice-button";
-import { VideoField, VoiceNoteField } from "@/components/support/media-inputs";
 import { RichReply } from "@/components/support/rich-reply";
 import { HELP_OPEN_EVENT } from "@/lib/help/open-event";
 import { matchTopics, composeReport, type HelpDraft, type HelpKind, type HelpTopic } from "@/lib/help/topics";
 import { compressForRequest, POST_UPLOAD } from "@/lib/media/image-compress";
 import { cn } from "@/lib/utils";
+
+const VideoField = dynamic(() => import("@/components/support/media-inputs").then((m) => m.VideoField));
+const VoiceNoteField = dynamic(() => import("@/components/support/media-inputs").then((m) => m.VoiceNoteField));
 
 // The help chat (docs/62): a button on every page that opens a short chat.
 // Guided mode needs no AI: a few questions, then a report into the same queue

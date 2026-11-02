@@ -7,7 +7,7 @@ import { recordFunnel } from "@/lib/data/funnel";
 /** Legacy accounts keep their already-published links; new registration accounts get an explicit private row. */
 export async function publicationFor(agencyId: string): Promise<{ visibility: ProfileVisibility; legacy: boolean }> {
   const db = await getDb();
-  const [row] = await db.select().from(profilePublications).where(eq(profilePublications.agencyId, agencyId));
+  const [row] = await db.select({ visibility: profilePublications.visibility }).from(profilePublications).where(eq(profilePublications.agencyId, agencyId));
   return row ? { visibility: row.visibility, legacy: false } : { visibility: "public", legacy: true };
 }
 /** SQL boundary for bulk discovery; unlisted/private profiles never enter recommendations, counts or sitemaps. */
