@@ -4,7 +4,7 @@ This is a Next.js 16 App Router app with React Server Components, Drizzle, Postg
 
 | # | Item | Status | Reason |
 |---|---|---|---|
-| 1 | Skeleton loaders | Applied | Localized main-route loading boundary preserves navigation, reserves space, and respects reduced motion. |
+| 1 | Skeleton loaders | Not applied | A route-level `loading.tsx` streams the response, so `notFound()` and redirects raised in a page reach the browser as HTTP 200 (missing agencies, deactivated pages and switched-off features stop returning 404). Use component-level `<Suspense>` instead. |
 | 2 | WebP/AVIF images | Already in place | `lib/images.ts` produces size-bounded WebP uploads and thumbnails; public artwork already uses WebP. |
 | 3 | Dedupe API calls | Applied | Header/sidebar bells share pending count requests, with no retained response cache; server session and bell reads already use React cache. |
 | 4 | Debounce search | Not applicable | Explore searches submit a form; service-picker suggestions search local data, so neither triggers an API call per keystroke. |
