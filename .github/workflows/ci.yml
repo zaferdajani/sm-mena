@@ -35,6 +35,9 @@ jobs:
     env:
       LAUNCH_PHASE: full
       CI: "true"
+      # Production builds hide "Coming soon" screens (App Review, lib/coming-soon.ts); the suite
+      # exercises the feature switches and the pre-launch teaser, so it builds with them shown.
+      NEXT_PUBLIC_SHOW_COMING_SOON: "true"
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
