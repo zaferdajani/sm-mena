@@ -38,7 +38,7 @@ export async function registerProvider(input: ProviderSignupInput): Promise<{ ok
   const whatsapp = internationalPhone(input.whatsappCountry ?? "", input.whatsapp);
   if (!/^\+?\d{8,15}$/.test(whatsapp)) return { error: "invalidPhone" };
 
-  const user = await createUser(input.email, input.password, "agency", { ageConfirmed: true }).catch(() => null);
+  const user = await createUser(input.email, input.password, "agency", { ageConfirmed: true, marketing: input.reminders === true }).catch(() => null);
   if (!user) return { error: "emailTaken" };
   let agencyId: string;
   try {

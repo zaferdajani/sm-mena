@@ -17,7 +17,7 @@ import { getVisitorId } from "@/lib/visitor";
 // Client accounts (docs/41): business owners sign in with a code sent to
 // their email, to follow agencies and save and like work on any device.
 
-export type SignInState = { step?: "code"; email?: string; shownCode?: string; error?: string } | undefined;
+export type SignInState = { step?: "code"; email?: string; shownCode?: string; marketing?: boolean; error?: string } | undefined;
 
 const emailSchema = z.object({ email: z.string().trim().toLowerCase().email().max(200), consent: z.literal("on") });
 const codeSchema = z.object({ email: z.string().trim().toLowerCase().email().max(200), code: z.string().trim().regex(/^\d{6}$/) });
@@ -42,9 +42,9 @@ export async function requestCodeAction(_: SignInState, formData: FormData): Pro
   // A closed account stays closed: support can reopen it (docs/08).
   if (existing?.disabledAt) return { error: "closedAccount" };
   const code = await issueCode(email);
-  if (showCodesOnScreen()) return { step: "code", email, shownCode: code };
+  if (showCodesOnScreen()) return { step: "code", email, shownCode: code, marketing: raw.marketing === "on" };
   if (!(await sendCodeEmail(email, code))) return { error: "sendFailed" };
-  return { step: "code", email };
+  return { step: "code", email, marketing: raw.marketing === "on" };
 }
 
 export async function verifyCodeAction(_: SignInState, formData: FormData): Promise<SignInState> {
@@ -59,7 +59,7 @@ export async function verifyCodeAction(_: SignInState, formData: FormData): Prom
   if (user?.disabledAt) return { error: "closedAccount" };
   // First sign-in creates the account. It has no usable password: codes only.
   // The code was asked for with the 18+ box ticked (requestCodeAction); accounts from before the rule record it now.
-  if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client", { ageConfirmed: true });
+  if (!user) user = await createUser(parsed.data.email, randomBytes(32).toString("base64url"), "client", { ageConfirmed: true, marketing: formData.get("marketing") === "on" });
   else if (!user.ageConfirmedAt) await confirmAge(user.id);
   await createSession(user.id);
   await mergeDeviceInteractions(await getVisitorId(), user.id);

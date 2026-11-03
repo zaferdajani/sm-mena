@@ -3672,6 +3672,7 @@
       "closedAccount": "This account was closed. To reopen it, contact support.",
       "adult": "Sawwiq accounts are for people aged 18 or older."
     },
+    "marketing": "Optional: send me occasional Sawwiq news by email. You can leave this unticked and still sign in.",
     "adult": "I am 18 or older (or the legal age where I live, if higher).",
     "back": "Back",
     "why": "Sign in to keep what you like, save and follow, on any device."
@@ -5985,6 +5986,11 @@
       "body": "Sawwiq support replied on your report {ref}.\nOpen the conversation to read it and answer, or to confirm the problem is solved:"
     },
     "worksSent": "I confirmed it works now ✓"
+  },
+  "DownloadMyData": {
+    "title": "Download my data",
+    "body": "Get a copy of the personal data we hold about you (account, consents, your page, saved items and requests) as a JSON file. Passwords and security secrets are never included.",
+    "button": "Download my data (JSON)"
   },
   "CloseClientAccount": {
     "title": "Close my account",
