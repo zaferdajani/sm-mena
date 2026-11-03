@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 
-type Namespace = "PolicyPrivacy" | "PolicyTerms" | "PolicyDelete";
+type Namespace = "PolicyPrivacy" | "PolicySubprocessors" | "PolicyTerms" | "PolicyDelete";
 
 /** A simple titled page of numbered sections from messages (Privacy, Terms, Delete account). */
 export async function PolicyPage({ ns, sections, review = true }: { ns: Namespace; sections: number; review?: boolean }) {
@@ -22,6 +22,7 @@ export async function PolicyPage({ ns, sections, review = true }: { ns: Namespac
       {ns === "PolicyDelete" && <DeleteActions />}
       <nav aria-label={tc("links")} className="flex flex-wrap gap-4 border-t pt-4 text-sm">
         <Link href="/privacy" className="underline">{tc("privacy")}</Link>
+        <Link href="/subprocessors" className="underline">{tc("subprocessors")}</Link>
         <Link href="/terms" className="underline">{tc("terms")}</Link>
         <Link href="/support" className="underline">{tc("support")}</Link>
         <Link href="/delete-account" className="underline">{tc("delete")}</Link>

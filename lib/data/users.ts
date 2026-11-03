@@ -3,7 +3,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { getDb } from "@/lib/db";
 import { consentLog, users } from "@/lib/db/schema";
 
-export const CONSENT_VERSION = "2026-09";
+export const CONSENT_VERSION = "2026-11";
 
 /** `marketing`: the person ticked the optional emails box. `ageConfirmed`: the person confirmed at sign-up that they are 18 or older, or of age where they live if higher (docs/08). */
 export async function createUser(email: string, password: string, role: (typeof users.role.enumValues)[number] = "agency", { ageConfirmed = false, marketing = false } = {}) {

@@ -69,6 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...(showComingSoon() ? entries("/soon", latest, 0.6) : []),
     ...entries("/legal", null, 0.2),
     ...entries("/privacy", null, 0.2),
+    ...entries("/subprocessors", null, 0.2),
     ...entries("/terms", null, 0.2),
     ...entries("/delete-account", null, 0.2),
     ...agencyRows.flatMap((a) => entries(`/a/${a.handle}`, a.updatedAt, 0.8)),

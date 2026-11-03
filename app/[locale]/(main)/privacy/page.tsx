@@ -12,5 +12,5 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/privacy"
 export default async function Page({ params }: PageProps<"/[locale]/privacy">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <PolicyPage ns="PolicyPrivacy" sections={6} review={true} />;
+  return <PolicyPage ns="PolicyPrivacy" sections={13} review={true} />;
 }

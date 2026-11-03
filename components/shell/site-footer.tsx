@@ -1,6 +1,7 @@
 import { RegistrationFooter } from "@/components/registration/registration-view";
 import { isRegistrationPhase } from "@/lib/launch-phase";
 import { getLocale, getTranslations } from "next-intl/server";
+import { CookieSettingsLink } from "@/components/analytics-consent";
 import { OtherLanguageLink } from "@/components/other-language-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ReleaseStamp } from "@/components/release-stamp";
@@ -38,7 +39,9 @@ export async function SiteFooter() {
             <li><Link href="/sawwiq50" className="hover:underline">{t("top")}</Link></li>
             <li><Link href="/legal" className="hover:underline">{t("legal")}</Link></li>
             <li><Link href="/privacy" className="hover:underline">{t("privacy")}</Link></li>
+            <li><Link href="/subprocessors" className="hover:underline">{t("subprocessors")}</Link></li>
             <li><Link href="/terms" className="hover:underline">{t("terms")}</Link></li>
+            <li><CookieSettingsLink /></li>
             <li><Link href="/delete-account" className="hover:underline">{t("deleteAccount")}</Link></li>
             <li><Link href="/support" className="hover:underline">{t("report")}</Link></li>
             <li><OtherLanguageLink label={t("otherLanguage")} className="hover:underline" /></li>

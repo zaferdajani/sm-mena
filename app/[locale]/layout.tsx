@@ -4,6 +4,7 @@ import { Noto_Sans_Arabic } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { AnalyticsConsent } from "@/components/analytics-consent";
 import { DomGuard } from "@/components/dom-guard";
 import { ErrorReporter } from "@/components/error-reporter";
 import { LanguageOffer } from "@/components/language-offer";
@@ -79,6 +80,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             <OfflineBanner />
             {children}
             <PageTracker />
+            <AnalyticsConsent />
             <FlagPolyfill />
           </NextIntlClientProvider>
           <ErrorReporter />
