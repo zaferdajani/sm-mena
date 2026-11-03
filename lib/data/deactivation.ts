@@ -3,6 +3,7 @@ import { and, asc, eq, inArray, or, sql } from "drizzle-orm";
 import { destroyAllSessions } from "@/lib/auth/session";
 import { getDb } from "@/lib/db";
 import { agencies, contracts, escrowLedger, milestones, users } from "@/lib/db/schema";
+import { eraseAgencyFiles } from "./account-erasure";
 import { audit } from "./agencies";
 
 // Deactivating an account (docs/32-payment-partner.md). Any agency
@@ -68,10 +69,13 @@ export async function deactivateAgency(agencyId: string, by: DeactivateBy, actor
     await tx.update(users).set({ disabledAt: now }).where(eq(users.id, a.ownerUserId));
   });
   await destroyAllSessions(a.ownerUserId);
+  // The holder's own request erases their uploaded files too (docs/08); admin and demo closures keep them so support can reopen.
+  const filesErased = by === "self" ? await eraseAgencyFiles(agencyId) : 0;
   await audit(actorUserId, `agency.deactivated.${by}`, "agency", agencyId, {
     handle: a.handle,
     demo: a.isDemo,
     note: note?.slice(0, 500) ?? null,
+    filesErased,
     testContracts: summary.contracts,
     testLedgerEntries: summary.entries,
     testLedgerByType: summary.byType,
