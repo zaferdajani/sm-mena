@@ -40,7 +40,11 @@
     "contact": "Contact",
     "otherLanguage": "العربية",
     "whoRuns": "Who runs this page?",
-    "top": "The Sawwiq 50"
+    "top": "The Sawwiq 50",
+    "subprocessors": "Subprocessors",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "deleteAccount": "Delete your account"
   },
   "NotFound": {
     "title": "Page not found",
@@ -949,7 +953,8 @@
     "newAgency": "New",
     "postsCount": "{count, plural, =0 {no posts} one {one post} other {# posts}}",
     "editPlan": "Change plan",
-    "planUntilLabel": "Plan valid until (optional)"
+    "planUntilLabel": "Plan valid until (optional)",
+    "reportedChat": "Reported chat — open"
   },
   "Hire": {
     "indexTitle": "Marketing and social media agencies in Jordan by service",
@@ -1593,7 +1598,10 @@
       "failed": "Failed",
       "refunded": "Refunded",
       "cancelled": "Cancelled"
-    }
+    },
+    "paidBadge": "Paid",
+    "freeBadge": "Free",
+    "paidNote": "Paid plans are billed in advance for the period you choose. The Free plan stays free."
   },
   "AdminPayments": {
     "provider": "Payment provider: {name}",
@@ -2410,7 +2418,8 @@
       "checkoutTest": "Test checkout: no real money is charged.",
       "soonTitle": "Protected payments: coming soon",
       "soonBody": "Until Sawwiq's licensed payment partner is connected, this contract uses direct payment: the client pays you each milestone directly. Sawwiq keeps the contract, checklists and review deadlines, and takes no fee.",
-      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%."
+      "builderFeeFounder": "As a founding member: {first}% on your first project that comes through Sawwiq, then {rate}% during your founding year. Contracts with your own clients: {fee}%.",
+      "directTitle": "Direct payment"
     },
     "cancelMutual": {
       "title": "Cancel by agreement",
@@ -2783,7 +2792,27 @@
     },
     "inquiryNotice": "Your message also starts a chat with the agency on Sawwiq. Chats are recorded and may be reviewed by our team for quality assurance.",
     "openChats": "Open my chats",
-    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in"
+    "studioIntro": "Written conversations with clients on Sawwiq. Requests where someone left their name and phone are in",
+    "safety": {
+      "report": "Report",
+      "block": "Block",
+      "reasonLabel": "Reason",
+      "details": "More details (optional)",
+      "sendReport": "Send report",
+      "cancel": "Cancel",
+      "blockBody": "Blocking closes this chat: neither side can send new messages. Support can reopen it.",
+      "confirmBlock": "Block and close chat",
+      "reported": "Thanks. Our team will review this chat.",
+      "blocked": "Chat blocked.",
+      "error": "Something went wrong. Try again.",
+      "reasons": {
+        "spam": "Spam or scam",
+        "inappropriate": "Abusive or inappropriate",
+        "misleading": "Misleading",
+        "underage": "The person seems to be under 18",
+        "other": "Something else"
+      }
+    }
   },
   "Notifications": {
     "tab": "Notifications",
@@ -3644,6 +3673,7 @@
       "closedAccount": "This account was closed. To reopen it, contact support.",
       "adult": "Sawwiq accounts are for people aged 18 or older."
     },
+    "marketing": "Optional: send me occasional Sawwiq news by email. You can leave this unticked and still sign in.",
     "adult": "I am 18 or older (or the legal age where I live, if higher).",
     "back": "Back",
     "why": "Sign in to keep what you like, save and follow, on any device."
@@ -5958,6 +5988,11 @@
     },
     "worksSent": "I confirmed it works now ✓"
   },
+  "DownloadMyData": {
+    "title": "Download my data",
+    "body": "Get a copy of the personal data we hold about you (account, consents, your page, saved items and requests) as a JSON file. Passwords and security secrets are never included.",
+    "button": "Download my data (JSON)"
+  },
   "CloseClientAccount": {
     "title": "Close my account",
     "body": "You won't be able to sign in with this email again, and what you told us about your business needs is deleted. Providers will no longer be offered to you. To reopen it later, contact support.",
@@ -6092,5 +6127,107 @@
     "off": "Off.",
     "turnOff": "Turn off",
     "turnOn": "Turn on"
+  },
+  "PolicyCommon": {
+    "review": "Draft text for owner and legal review. It is not final legal advice.",
+    "links": "Legal and account links",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "support": "Support",
+    "delete": "Delete your account",
+    "subprocessors": "Subprocessors"
+  },
+  "PolicyPrivacy": {
+    "title": "Privacy Policy",
+    "intro": "This explains what personal data Sawwiq collects, why, who receives it, how long we keep it and your rights under the Saudi Personal Data Protection Law (PDPL), Jordan's Personal Data Protection Law and, where it applies, the EU General Data Protection Regulation (GDPR). Version 2026-11. Questions or requests: privacy@sawwiq.org.",
+    "s1t": "Who is responsible",
+    "s1": "The controller of your personal data is [LEGAL ENTITY NAME], the operator of Sawwiq (sawwiq.org), [REGISTERED ADDRESS]. Privacy contact: privacy@sawwiq.org.",
+    "s2t": "What we collect",
+    "s2": "Account details (email, password hash, name, WhatsApp number for agencies and business owners, city); what you publish or send (profile, posts and images, packages, requests, quotes, contracts, reviews, chat messages); your consents with the policy version and time; a declaration that you are 18 or older; support reports you send (text, screenshots, voice notes); and basic usage data (pages visited, device type, language, time zone) from our own counters. We do not collect national IDs or payment card numbers; card and bank details go to our licensed payment partner.",
+    "s3t": "Why we use it and our legal basis",
+    "s3": "To create and run your account and the marketplace (contract); to match business owners with agencies, deliver messages and notifications and handle disputes (contract and legitimate interest); to keep the service safe and prevent abuse (legitimate interest); to keep accounting and contract records (legal obligation); and to send optional product news or use optional analytics cookies (your consent, which you can withdraw at any time). We do not sell personal data and do not use it for automated decisions with legal effect.",
+    "s4t": "AI features",
+    "s4": "The matchmaker and help assistant send the text of your request or question to an AI provider (Anthropic and/or OpenAI) to produce a reply. Client phone numbers and emails are never sent to them. Agency profile text is treated as untrusted data. The providers process this text to answer us and, under our agreements, do not use it to train their models. When no AI key is configured, a built-in rule-based matcher is used and nothing leaves our servers.",
+    "s5t": "Who receives your data",
+    "s5": "Briefs are anonymous to agencies until a proposal is submitted; your contact details are shared with the other party only when you choose to. Our service providers process data for us under written agreements: Vercel (hosting, London), Supabase (database and file storage, London), Anthropic and OpenAI (AI features), Resend (transactional email), Google (Places lookups for address search; Analytics only if you accept it), and a licensed payment partner for protected contracts. The current list with purposes and locations is on the Subprocessors page. Authorities receive data only where the law requires it.",
+    "s6t": "International transfers",
+    "s6": "Our database and storage run in London (UK) and our functions run in London. Some providers (Anthropic, OpenAI, Google, Resend) process data in the United States or other countries. Where your data leaves Saudi Arabia, Jordan, the EEA or the UK, we rely on the transfer mechanisms the law allows: standard contractual clauses or an adequacy decision, your consent where required, and the minimisation described above. You may ask us for a copy of the safeguards.",
+    "s7t": "Cookies and analytics",
+    "s7": "We use a visitor cookie and a sign-in cookie that the service needs to work, and first-party counters (page views, no IP address, no names). Google Analytics, if switched on, loads only after you press Accept in the cookie banner; Reject keeps it off, and you can change your choice any time under Cookie settings in the footer. Nothing from Google loads before you choose.",
+    "s8t": "How long we keep data",
+    "s8": "Account and profile: while your account is open; files you uploaded are deleted when you close your own account. Chat messages: 24 months. Notifications: 90 days. Page views: 13 months. Sessions: until they expire. Support reports and screenshots: 12 months after handling. Setup drafts and staged images: 60 days. Briefs and requests: 24 months. Signed contracts, the payment ledger and consent records: as long as the law requires (typically up to 7 years for accounting records), then deleted or anonymised. Backups are overwritten within 35 days.",
+    "s9t": "Your rights",
+    "s9": "You may ask to access your data, receive a copy (the Download my data button in your account gives you a JSON file), correct it, delete it, restrict or object to its use, withdraw consent, and move your data to another service. Closing your account in the app deletes your files and hides your page; some records are kept as described above. You can also complain to the Saudi Data & AI Authority (SDAIA), the data-protection authority in Jordan, or your EU/EEA supervisory authority.",
+    "s10t": "How to make a request",
+    "s10": "Email privacy@sawwiq.org from the address on your account, or use Support in the app. We answer within 30 days, and tell you if we need longer or cannot act and why. We may ask you to prove who you are.",
+    "s11t": "Children",
+    "s11": "Sawwiq is for people aged 18 or older (or the legal age where you live, if higher). You confirm this when you sign up and we do not knowingly hold data of anyone younger. If you think a child has an account, report it and we will remove it.",
+    "s12t": "Security and breaches",
+    "s12": "Passwords are hashed, staff accounts use two-factor sign-in, documents use signed links, and the database denies direct public access. If a breach puts your rights at risk, we notify SDAIA and the competent GDPR authority within 72 hours and tell affected people without undue delay.",
+    "s13t": "Changes",
+    "s13": "When this policy changes in a way that matters, we publish a new version number here and ask for your consent again where the law requires it."
+  },
+  "PolicySubprocessors": {
+    "title": "Subprocessors",
+    "intro": "These are the companies we share personal data with to run Sawwiq, why, and where. We update this page when it changes. Questions: privacy@sawwiq.org.",
+    "s1t": "Vercel Inc.",
+    "s1": "Purpose: Hosting and serving the website and server functions. Data: All site traffic, IP addresses in server logs. Location: London, UK (region lhr1); company in the USA.",
+    "s2t": "Supabase Inc.",
+    "s2": "Purpose: Postgres database and file storage. Data: All account, content and file data. Location: London, UK (eu-west-2); company in the USA.",
+    "s3t": "Anthropic PBC",
+    "s3": "Purpose: AI matchmaker and help assistant (Claude). Data: Request or question text; no phone numbers or emails. Location: USA.",
+    "s4t": "OpenAI OpCo, LLC",
+    "s4": "Purpose: AI matchmaker and help assistant (alternative provider). Data: Request or question text; no phone numbers or emails. Location: USA.",
+    "s5t": "Resend, Inc.",
+    "s5": "Purpose: Transactional email (sign-in codes, notifications). Data: Recipient email address and message text. Location: USA.",
+    "s6t": "Google LLC (Places)",
+    "s6": "Purpose: Address and place lookups. Data: Search text typed into address fields. Location: USA / global.",
+    "s7t": "Google LLC (Analytics)",
+    "s7": "Purpose: Optional website analytics, only after you accept cookies. Data: Pseudonymous usage data, IP address. Location: USA / global.",
+    "s8t": "Licensed payment partner [NAME TO BE CONFIRMED]",
+    "s8": "Purpose: Protected-contract payments; Sawwiq never holds client money (docs/32). Data: Payer and payee details, amounts. Location: [Jordan / partner location]."
+  },
+  "AnalyticsConsent": {
+    "text": "We would like to use Google Analytics to understand how Sawwiq is used. It stays off unless you accept. You can change this at any time in the footer.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "link": "Cookie settings",
+    "privacy": "Privacy Policy",
+    "label": "Cookie choices"
+  },
+  "PolicyTerms": {
+    "title": "Terms of Service",
+    "intro": "These terms govern your use of Sawwiq, a marketplace that connects businesses with marketing agencies in Jordan and the region.",
+    "s1t": "Using Sawwiq",
+    "s1": "You must be 18 or older. Keep your sign-in details safe and provide accurate information.",
+    "s2t": "Agencies and business owners",
+    "s2": "Sawwiq introduces the parties. Services are agreed and delivered between them. Sawwiq is not a party to the work unless a protected contract says so.",
+    "s3t": "Content and conduct",
+    "s3": "You are responsible for what you publish or send. Do not post spam, stolen work, misleading claims or abusive content. We may hide content, close chats and suspend accounts that break these rules.",
+    "s4t": "Paid features",
+    "s4": "Any paid plan or fee is shown with its price before you commit. Paid plans can add priority, never better ranking relevance, and are labelled Featured.",
+    "s5t": "Liability",
+    "s5": "Sawwiq does not guarantee business results. Our liability is limited as far as the law allows.",
+    "s6t": "Changes and contact",
+    "s6": "We may update these terms and will tell you about material changes. Questions: see Support."
+  },
+  "PolicyDelete": {
+    "title": "Delete your Sawwiq account",
+    "intro": "You can delete your account yourself, in the app or on the website, at any time.",
+    "s1t": "Agencies",
+    "s1": "Sign in, open Studio → Security → Close my account, type your agency handle and password, and confirm. Your page is hidden everywhere and you are signed out.",
+    "s2t": "Business owners",
+    "s2": "Sign in, open My requests, choose Close my account, type your email and confirm. The needs you told us about are deleted.",
+    "s3t": "What is kept",
+    "s3": "Signed contracts and the payment ledger are kept for legal and accounting reasons, as the law requires. Other personal data is removed or anonymised.",
+    "s4t": "Cannot sign in or need help?",
+    "s4": "Contact Support or write to privacy@sawwiq.org from your account email and we will delete the account for you.",
+    "goTitle": "Delete my account now",
+    "goAgency": "Agency: Studio → Security",
+    "goOwner": "Business owner: My requests",
+    "goSignin": "Sign in to delete"
+  },
+  "Offline": {
+    "message": "You are offline. Some things may not load or send until you reconnect."
   }
 }

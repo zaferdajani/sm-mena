@@ -3,6 +3,7 @@
 import { Construction, FlaskConical, Handshake, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { currencyLabel } from "@/lib/countries";
+import { showComingSoon } from "@/lib/coming-soon";
 import { useActionState, useMemo, useState } from "react";
 import { createContractAction } from "@/app/[locale]/(main)/contract-actions";
 import { FormError } from "@/components/form-error";
@@ -374,7 +375,7 @@ export function ContractBuilder({
         {!protectedOpen ? (
           <div className="space-y-1 rounded-xl border-2 border-dashed p-4" data-testid="direct-payment">
             <span className="flex items-center gap-2 font-semibold">
-              <Construction className="size-5 text-muted-foreground" /> {tr("soonTitle")}
+              <Construction className="size-5 text-muted-foreground" /> {showComingSoon() ? tr("soonTitle") : tr("directTitle")}
             </span>
             <span className="block text-sm text-muted-foreground">{tr("soonBody")}</span>
           </div>

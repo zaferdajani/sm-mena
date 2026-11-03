@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { SecurityPage } from "@/components/security/security-page";
+import { DownloadMyData } from "@/components/account/download-my-data";
 import { CloseAccount } from "@/components/studio/close-account";
 import { SetupRemindersToggle } from "@/components/studio/setup-reminders-toggle";
 import { requireAgency } from "@/lib/auth/guards";
@@ -14,7 +15,8 @@ export default async function StudioSecurity({ params }: PageProps<"/[locale]/st
       <div className="max-w-xl">
         <SetupRemindersToggle optIn={agency.setupRemindersOptIn} />
       </div>
-      <div className="max-w-xl">
+      <div className="max-w-xl space-y-4">
+        <DownloadMyData />
         <CloseAccount handle={agency.handle} />
       </div>
     </div>

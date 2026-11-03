@@ -28,6 +28,7 @@ export function SignInForm({ next }: { next: string }) {
         )}
         <input type="hidden" name="email" value={email ?? ""} />
         <input type="hidden" name="next" value={next} />
+        {sent?.marketing && <input type="hidden" name="marketing" value="on" />}
         <div className="grid gap-1.5">
           <Label htmlFor="code">{t("code")}</Label>
           <Input id="code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required dir="ltr" className="max-w-40 text-center text-lg tracking-[0.4em]" autoFocus />
@@ -49,7 +50,7 @@ export function SignInForm({ next }: { next: string }) {
         <input type="checkbox" name="consent" required className="mt-0.5" />
         <span>
           {t("consent")}{" "}
-          <Link href="/legal" className="underline">
+          <Link href="/privacy" className="underline">
             {t("privacy")}
           </Link>
         </span>
@@ -57,6 +58,11 @@ export function SignInForm({ next }: { next: string }) {
       <label className="flex items-start gap-2 text-xs text-muted-foreground">
         <input type="checkbox" name="adult" required className="mt-0.5" data-testid="signin-adult" />
         <span>{t("adult")}</span>
+      </label>
+      {/* Optional and unticked by default: product news only, never needed to sign in. */}
+      <label className="flex items-start gap-2 text-xs text-muted-foreground">
+        <input type="checkbox" name="marketing" className="mt-0.5" data-testid="signin-marketing" />
+        <span>{t("marketing")}</span>
       </label>
       <FormError message={err(sent) ?? err(checked)} />
       <SubmitButton className="w-full">{t("sendCode")}</SubmitButton>
