@@ -254,3 +254,17 @@ Owner decision after the research summarised here (not legal advice; confirm wit
 ## Store compliance additions (Nov 2026)
 - `reports.conversation_id` links a chat report to its conversation. No new personal data: the report holds a reason, optional free text (max 1000 chars) and the reporter's pseudonymous visitor id. Retention follows the reports table (kept while the report is open and for dispute records). Staff opening the chat is covered by the existing conversation audit entries; `chat.reported` and `chat.blocked` audit entries are written.
 - `/privacy`, `/terms` and `/delete-account` are public pages; the text of the first two is a draft for owner and lawyer review.
+
+
+## Privacy compliance pass (2026-11)
+
+| Data | Why | Personal? | Retention |
+|---|---|---|---|
+| `consent_log` (user id, kind `privacy` / `age` / `marketing`, policy version, granted, time). Written at every sign-up (`createUser`); the optional marketing box is never pre-ticked. No IP address. | Prove consent (PDPL art. 5, GDPR art. 7) | Pseudonymous; `user_id` is set null when the account is erased | Kept as long as accounting records (up to 7 years), then deleted |
+| Analytics choice (`sawwiq_analytics_consent` in the browser's localStorage) | Remember Accept/Reject for Google Analytics | Not sent to us | Until the visitor clears it or changes it in the footer |
+| Data export (`/api/account/export`, audited as `account.export`) | Access and portability | The person's own data only | Generated on demand, not stored |
+
+- Policy text: messages `PolicyPrivacy` (13 sections, version 2026-11 = `CONSENT_VERSION`), `/subprocessors`.
+- Closing your own agency account deletes avatar, post images, client logos and staged setup images from Storage (`lib/data/account-erasure.ts`).
+- Row Level Security is enabled on every public table (migration 0046); the app's server role bypasses it. See docs/PRIVACY_COMPLIANCE_sm-menaRT.md.
+- Database-side retention jobs (pg_cron, migration 0047): sessions, page views 13 months, events 26 months, error events 12 months.
