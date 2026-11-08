@@ -11,3 +11,14 @@ export const CRAWLER_RE =
 export function isCrawler(ua: string | null | undefined): boolean {
   return !ua || CRAWLER_RE.test(ua);
 }
+
+/**
+ * Did this browser error come from a browser at all? Some page runners execute
+ * our scripts inside Deno or Node while presenting a Chrome user agent; their
+ * stack traces carry runtime frames no browser produces (bug-queue error 833).
+ */
+export const NON_BROWSER_STACK_RE = /\bext:(?:core|deno_[a-z_]+|runtime)\/|\bnode:internal\/|\bdeno:\/\//;
+
+export function isNonBrowserStack(stack: string | null | undefined): boolean {
+  return !!stack && NON_BROWSER_STACK_RE.test(stack);
+}

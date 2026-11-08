@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCrawler } from "@/lib/crawler";
+import { isCrawler, isNonBrowserStack } from "@/lib/crawler";
 import { fitDescription, fitTitle, languageAlternates, pageMeta, postIndexable } from "@/lib/seo";
 import { agencyLd } from "@/lib/structured-data";
 
@@ -79,5 +79,11 @@ describe("crawler filter", () => {
       "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/330.0.1 Mobile/15E148 Safari/604.1",
     ])
       expect(isCrawler(person)).toBe(false);
+  });
+  it("tells a Deno or Node page runner's stack trace from a browser's", () => {
+    expect(isNonBrowserStack("TypeError: Cannot read properties of undefined (reading 'getReader')\n    at ep (<script>:1:22107)\n    at ext:core/01_core.js:294:9\n    at eventLoopTick (ext:core/01_core.js:178:7)")).toBe(true);
+    expect(isNonBrowserStack("Error: boom\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)")).toBe(true);
+    expect(isNonBrowserStack("TypeError: Failed to fetch\n    at https://sawwiq.org/_next/static/chunks/app/layout-1a2b.js:1:4567")).toBe(false);
+    expect(isNonBrowserStack(null)).toBe(false);
   });
 });
