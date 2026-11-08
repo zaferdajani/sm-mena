@@ -67,6 +67,8 @@ Work from a fresh checkout of `origin/main`. Use the branch the session was give
    - Reports the reporter reopened carry the conversation in their case file. Read what they said after your last reply before you answer again.
 11. **Finish** with a short summary for the owner: fixed (number and one line each), waiting on the owner (number and the decision needed), declined. Delete `$SCRATCH/bugq`.
 
+The error journal drops two kinds of browser report before they are stored: Next.js's own navigation signals (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`), which the router has already handled, and errors whose stack trace carries Deno or Node runtime frames (`ext:core/`, `node:internal/`), which come from page runners executing our scripts behind a browser user agent, not from people (`isNonBrowserStack`, `lib/crawler.ts`; error 833).
+
 If a run stops halfway, nothing is lost. Items stay **New** and the next run exports them again. An error marked fixed that happens again reopens by itself (`recordError`).
 
 ## Schedule

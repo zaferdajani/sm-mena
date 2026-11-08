@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isCrawler } from "@/lib/crawler";
+import { isCrawler, isNonBrowserStack } from "@/lib/crawler";
 import { recordError } from "@/lib/data/bugs";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -22,6 +22,8 @@ export async function POST(request: Request) {
   if (!parsed.success) return new Response(null, { status: 400 });
   // Older pages still in browsers report Next.js's handled redirect signal; it is not a bug (docs/61).
   if (/^(Error: )?NEXT_(REDIRECT|NOT_FOUND|HTTP_ERROR_FALLBACK)\b/.test(parsed.data.message)) return new Response(null, { status: 204 });
+  // Page runners that execute our scripts in Deno or Node behind a browser user agent are not users (docs/61).
+  if (isNonBrowserStack(parsed.data.stack)) return new Response(null, { status: 204 });
   await recordError({ source: "client", ...parsed.data, userAgent: ua }).catch(() => {});
   return new Response(null, { status: 204 });
 }
