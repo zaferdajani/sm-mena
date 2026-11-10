@@ -13,7 +13,7 @@ The agency reviews everything first. The flow follows Aida's document pipeline i
 
 ## Flow
 
-1. **Read on the device** (`lib/portfolio-import/read-pdf.ts`). pdf.js (legacy build, for older phones) renders each page, up to 40 pages. Each page becomes:
+1. **Read on the device** (`lib/portfolio-import/read-pdf.ts`). pdf.js (legacy build, for older phones) renders every page (a ceiling of 200 pages guards memory; real portfolios are 20 to 80). On a portfolio over 60 pages the full image is 1280 px instead of 1600, still above what a post needs, and only the pages Claude looks at as pictures get a small copy. Each page becomes:
    - a full-size JPEG, used as the post image;
    - a small JPEG, at most 220 KB;
    - its text;
@@ -28,7 +28,7 @@ The agency reviews everything first. The flow follows Aida's document pipeline i
 
    The pdf.js worker, fonts and character maps are served from `/engines/pdfjs`. The PDF itself never leaves the device.
 2. **Propose drafts** (`analyzePortfolioAction`). The pages' text, layout and small images go to the server:
-   - **With `ANTHROPIC_API_KEY`**, Claude looks at every page (text and image, up to 24 pages) and fills a single `portfolio_plan` tool (`lib/portfolio-import/ai.ts`):
+   - **With `ANTHROPIC_API_KEY`**, Claude reads every page's text (shortened evenly on a long portfolio so the whole thing fits) and looks at the first 24 pages as pictures too; a later page with no text is filed with the project before it and fills a single `portfolio_plan` tool (`lib/portfolio-import/ai.ts`):
      - it classifies each page: work, cover, about, services, clients or contact;
      - it groups the pages of each project;
      - it writes a short caption;
