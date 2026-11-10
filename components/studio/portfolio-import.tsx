@@ -107,7 +107,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
           setProgress({ done: p.done, total: p.total });
         },
         undefined,
-        { ocrPages: aiAvailable ? 0 : 8 },
+        { ocrPages: aiAvailable ? 0 : 8, thumbPages: aiAvailable ? IMPORT_LIMITS.aiPages : 0 },
       );
       setPages(read.pages);
       setTruncated(read.totalPages > read.pages.length);
@@ -249,7 +249,7 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
           {busy ? <Loader2 className="size-8 animate-spin text-brand" /> : <FileUp className="size-8 text-brand" />}
           <span className="font-semibold" data-testid="import-status">{status}</span>
           {phase === "ocr" && <span className="text-xs text-muted-foreground">{t("ocrHint")}</span>}
-          {!busy && <span className="text-sm text-muted-foreground">{t("chooseHint", { pages: IMPORT_LIMITS.pages, mb: MAX_MB })}</span>}
+          {!busy && <span className="text-sm text-muted-foreground">{t("chooseHint", { mb: MAX_MB })}</span>}
         </button>
         <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(e) => {
             void choose(e.target.files?.[0] ?? undefined);
@@ -292,8 +292,8 @@ export function PortfolioImport({ services, platforms, industries, clients, agen
     <div className="grid gap-5" data-testid="import-review">
       <div className="flex flex-wrap items-center gap-2 rounded-xl bg-brand-soft p-3 text-sm">
         <Sparkles className="size-4 text-brand" />
-        <span>{t(mode === "ai" ? "readByAi" : "readByText", { pages: pages.length })}</span>
-        {truncated && <span className="text-muted-foreground">{t("truncated", { pages: IMPORT_LIMITS.pages })}</span>}
+        <span data-testid="import-read-count">{t(mode === "ai" ? "readByAi" : "readByText", { pages: pages.length })}</span>
+        {truncated && <span className="text-muted-foreground" data-testid="import-truncated">{t("truncated", { pages: IMPORT_LIMITS.pages })}</span>}
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <PicturePicker

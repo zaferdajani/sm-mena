@@ -1,9 +1,10 @@
 // What Studio → Import sends to the server to read a portfolio
 // (analyzePortfolioAction). Vercel refuses a request body over 4.5 MB, whatever
-// Next allows, and 40 pages with a 220 KB thumbnail each are about 12 MB as
+// Next allows, and even 24 pages with a 220 KB thumbnail each are about 7 MB as
 // base64. Page images only help when Claude reads the portfolio, and Claude
-// sees only the first IMPORT_LIMITS.aiPages pages, so those are the only ones
-// sent, and only while the request stays inside the budget. Text always goes.
+// looks at the first IMPORT_LIMITS.aiPages pages as pictures, so those are the
+// only images sent, and only while the request stays inside the budget. Every
+// page's text always goes (200 pages of text are under 1 MB).
 
 import { IMPORT_LIMITS } from "./types";
 

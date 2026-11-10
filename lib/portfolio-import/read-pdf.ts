@@ -1,5 +1,5 @@
 // Reads a PDF portfolio in the browser (docs/36-portfolio-import.md). For each
-// page (up to 40): a full-size JPEG (a future post image), a small JPEG the AI
+// page (every page; IMPORT_LIMITS.pages is only a safety ceiling): a full-size JPEG (a future post image), a small JPEG the AI
 // can look at, its text, and its layout. Pages that are pictures only get
 // their text read off the image on the device (lib/portfolio-import/ocr.ts);
 // photo grids and logo walls are cut into pieces, each a crop of its own.
@@ -89,7 +89,7 @@ function pageText(items: { str?: string; hasEOL?: boolean }[]) {
  * device (slow on a phone: tens of seconds a page). When Claude reads the
  * portfolio it reads the page images itself, so the importer passes 0.
  */
-export async function readPdf(file: File, onProgress: (p: ReadProgress) => void, signal?: AbortSignal, { ocrPages = Infinity }: { ocrPages?: number } = {}): Promise<{ pages: ReadPage[]; totalPages: number }> {
+export async function readPdf(file: File, onProgress: (p: ReadProgress) => void, signal?: AbortSignal, { ocrPages = Infinity, thumbPages = IMPORT_LIMITS.aiPages }: { ocrPages?: number; /** How many pages get the small copy Claude looks at (the rest keep only their full image). */ thumbPages?: number } = {}): Promise<{ pages: ReadPage[]; totalPages: number }> {
   // The legacy build runs in older browsers too (the modern one needs very recent JavaScript).
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
   pdfjs.GlobalWorkerOptions.workerSrc = `${ENGINE}/pdf.worker.min.mjs`;
@@ -100,6 +100,9 @@ export async function readPdf(file: File, onProgress: (p: ReadProgress) => void,
     standardFontDataUrl: `${ENGINE}/standard_fonts/`,
   }).promise;
   const count = Math.min(doc.numPages, IMPORT_LIMITS.pages);
+  // A long portfolio keeps a full image per page in memory for publishing: a little smaller each past 60 pages,
+  // still above the 1080 px a post needs.
+  const fullSide = count > 60 ? 1280 : FULL_SIDE;
   const pages: ReadPage[] = [];
   // Only the small copies OCR reads wait between pages, never a full-size page.
   const toOcr: { page: ReadPage; canvas: HTMLCanvasElement | null; crops: HTMLCanvasElement[] }[] = [];
@@ -109,7 +112,7 @@ export async function readPdf(file: File, onProgress: (p: ReadProgress) => void,
       const page = await doc.getPage(i);
       const text = pageText((await page.getTextContent()).items as { str?: string; hasEOL?: boolean }[]);
       const base = page.getViewport({ scale: 1 });
-      const scale = Math.min(3, FULL_SIDE / Math.max(base.width, base.height));
+      const scale = Math.min(3, fullSide / Math.max(base.width, base.height));
       const viewport = page.getViewport({ scale });
       const canvas = document.createElement("canvas");
       canvas.width = Math.ceil(viewport.width);
@@ -134,7 +137,7 @@ export async function readPdf(file: File, onProgress: (p: ReadProgress) => void,
         crops.push({ full: blob, preview: URL.createObjectURL(blob), text: "", box: pieces[n] });
       }
       const full = await canvasToBlob(canvas, 0.88);
-      const read: ReadPage = { index: i - 1, text, full, thumb: thumbnail(canvas), preview: URL.createObjectURL(full), layout: layout.kind, header: layout.header ? up(layout.header) : null, background: layout.background, crops };
+      const read: ReadPage = { index: i - 1, text, full, thumb: i <= thumbPages ? thumbnail(canvas) : "", preview: URL.createObjectURL(full), layout: layout.kind, header: layout.header ? up(layout.header) : null, background: layout.background, crops };
       pages.push(read);
       // Pictures-only pages get their text read off the image; logos their wordmarks.
       const needsText = text.length < IMPORT_LIMITS.ocrMinChars;
