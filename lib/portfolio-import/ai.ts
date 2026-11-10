@@ -99,24 +99,35 @@ let client: Anthropic | undefined;
 // Within the import page's 60 s function limit, so a slow answer falls back to the rules instead of failing.
 const getClient = async () => (client ??= new (await import("@anthropic-ai/sdk")).default({ timeout: 50_000, maxRetries: 0 }));
 
-/** Asks Claude to read the portfolio. Throws on any failure (the caller falls back to the rules). */
-export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[]; country: CountryCode }, locale: string): Promise<ImportPlan> {
-  const shown = pages.slice(0, IMPORT_LIMITS.aiPages);
+/**
+ * What the model reads: every page's text (shortened evenly when the portfolio is long, so the whole
+ * portfolio fits), and the first IMPORT_LIMITS.aiPages pages as pictures too. Pure, so it is unit-tested.
+ */
+export function aiContent(pages: ImportPage[], agency: { name: string; services: string[] }, locale: string): Anthropic.ContentBlockParam[] {
+  const perPage = Math.max(300, Math.min(IMPORT_LIMITS.textPerPage, Math.floor(IMPORT_LIMITS.aiTextChars / Math.max(1, pages.length))));
+  const withImage = IMPORT_LIMITS.aiPages;
   const content: Anthropic.ContentBlockParam[] = [
     {
       type: "text",
       text:
         `Agency: ${agency.name}. Services it lists: ${agency.services.join(", ") || "none yet"}. ` +
         `Its Sawwiq page is read in ${locale === "ar" ? "Arabic" : "English"}; write captions in the portfolio's own language. ` +
-        `The portfolio has ${pages.length} pages; each follows as its index, its text, and its image.`,
+        `The portfolio has ${pages.length} pages; each follows as its index and its text` +
+        (pages.length > withImage ? `, and the first ${withImage} also as an image. A later page with no text is a picture page: file it with the project before it.` : `, and its image.`),
     },
   ];
-  for (const p of shown) {
+  pages.forEach((p, n) => {
     const layout = p.layout === "gallery" ? ` (a grid of ${p.crops} photos, each will be a post image)` : p.layout === "logos" ? ` (a wall of ${p.crops} client logos)` : "";
-    content.push({ type: "text", text: `Page ${p.index}${layout}:\n${p.text.slice(0, IMPORT_LIMITS.textPerPage) || "(no text)"}` });
-    const data = p.image?.replace(/^data:image\/jpeg;base64,/, "");
+    content.push({ type: "text", text: `Page ${p.index}${layout}:\n${p.text.slice(0, perPage) || "(no text)"}` });
+    const data = n < withImage ? p.image?.replace(/^data:image\/jpeg;base64,/, "") : undefined;
     if (data) content.push({ type: "image", source: { type: "base64", media_type: "image/jpeg", data } });
-  }
+  });
+  return content;
+}
+
+/** Asks Claude to read the portfolio. Throws on any failure (the caller falls back to the rules). */
+export async function planWithAi(pages: ImportPage[], agency: { name: string; services: string[]; country: CountryCode }, locale: string): Promise<ImportPlan> {
+  const content = aiContent(pages, agency, locale);
   const response = await (await getClient()).messages.create({
     model: importModel(),
     // Room for the model's thinking as well as the plan; with less, a long portfolio ends before the tool call.

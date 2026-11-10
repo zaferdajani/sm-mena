@@ -29,7 +29,8 @@ describe("what the importer sends to be read", () => {
   it("sends no images when no AI will look at them", () => {
     const sent = analysisPayload(portfolio, false);
     expect(sent.every((p) => p.image === null)).toBe(true);
-    expect(bytes(sent)).toBeLessThan(1_000_000);
+    // Even the 200-page ceiling, text only, stays well inside the host's body limit.
+    expect(bytes(sent)).toBeLessThan(ANALYZE_BUDGET_BYTES);
   });
 
   it("keeps every thumbnail of a short portfolio", () => {

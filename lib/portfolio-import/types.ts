@@ -47,4 +47,7 @@ export type ImportPlan = {
   profile: ProfileSuggestion;
 };
 
-export const IMPORT_LIMITS = { pages: 40, textPerPage: 4000, imagesPerPost: 10, aiPages: 24, thumbBytes: 220_000, cropsPerPage: 20, ocrMinChars: 40 } as const;
+// `pages` is a safety ceiling, not a working size: every page of a real portfolio (20 to 80 pages) is read.
+// `aiPages` is how many pages Claude also sees as pictures; it reads every page's text. `aiTextChars` caps the
+// text sent in total, so a long portfolio shortens each page's text instead of overflowing the model.
+export const IMPORT_LIMITS = { pages: 200, textPerPage: 4000, imagesPerPost: 10, aiPages: 24, aiTextChars: 160_000, thumbBytes: 220_000, cropsPerPage: 20, ocrMinChars: 40 } as const;

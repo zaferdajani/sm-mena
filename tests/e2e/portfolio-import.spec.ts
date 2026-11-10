@@ -104,8 +104,8 @@ test("a PDF that cannot be read says so and reports why", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: "تعذّرت قراءة الملف" })).toBeVisible();
 });
 
-/** A full-size portfolio: 40 pages, each a full-page photo with a heading (noise, so the pictures compress as badly as real photos). */
-async function bigPortfolioPdf(pages = 40) {
+/** A full-size portfolio: 48 pages (more than the old 40-page cap), each a full-page photo with a heading (noise, so the pictures compress as badly as real photos). */
+async function bigPortfolioPdf(pages = 48) {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
   for (let i = 0; i < pages; i++) {
@@ -142,6 +142,9 @@ test("a full-size photo portfolio is read and published with every request under
   const review = page.getByTestId("import-review");
   await expect(review).toBeVisible({ timeout: 240_000 });
   await expect(review.getByTestId("import-draft").first()).toBeVisible();
+  // Every page was read: none dropped past an old cap, and the page count says so.
+  await expect(page.getByTestId("import-read-count")).toContainText("48");
+  await expect(page.getByTestId("import-truncated")).toHaveCount(0);
 
   const drafts = review.getByTestId("import-draft");
   const count = await drafts.count();
