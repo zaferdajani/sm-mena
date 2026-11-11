@@ -138,6 +138,25 @@ export const users = pgTable("users", {
 });
 
 /**
+ * Append-only proof of consent (PDPL art. 5 / GDPR art. 7): who agreed to what, which policy version, when.
+ * No IP address or other extra personal data. user_id is set null when the account is erased; the row
+ * then proves a consent existed without identifying anyone. Retention: docs/PRIVACY_COMPLIANCE_sm-menaRT.md.
+ */
+export const consentLog = pgTable(
+  "consent_log",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    // privacy: policy + terms accepted · age: 18+ declaration · marketing: optional emails · analytics: optional cookies
+    kind: text("kind").notNull(),
+    policyVersion: text("policy_version").notNull(),
+    granted: boolean("granted").notNull().default(true),
+    createdAt: createdAt(),
+  },
+  (t) => [index("consent_log_user_idx").on(t.userId, t.createdAt)],
+);
+
+/**
  * What a business owner needs, captured when they register during the early
  * phase (docs/58-owner-early-registration.md): one row per client account,
  * rewritten when they edit it. Services are catalog group keys; the city tells
@@ -588,6 +607,8 @@ export const reports = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),
     agencyId: uuid("agency_id").references(() => agencies.id, { onDelete: "cascade" }),
+    // A reported chat (App Store 1.2): staff read it in Admin → Conversations.
+    conversationId: uuid("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
     reason: reportReason("reason").notNull(),
     details: text("details").notNull().default(""),
     visitorId: text("visitor_id"),

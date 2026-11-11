@@ -2,6 +2,7 @@ import { discoverableProfiles } from "@/lib/data/publication";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CloseClientAccount } from "@/components/account/close-client-account";
+import { DownloadMyData } from "@/components/account/download-my-data";
 import { AgencyRow } from "@/components/agency-row";
 import { PostGrid } from "@/components/post/post-grid";
 import { Link } from "@/i18n/navigation";
@@ -88,6 +89,7 @@ export default async function SavedPage({ params }: PageProps<"/[locale]/saved">
       </section>
       {user?.role === "client" && (
         <div className="px-4 pb-8 sm:px-0">
+          <div className="mb-4"><DownloadMyData /></div>
           <CloseClientAccount email={user.email} />
         </div>
       )}

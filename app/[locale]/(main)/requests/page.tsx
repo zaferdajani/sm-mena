@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { logout } from "@/app/[locale]/(auth)/actions";
 import { CloseClientAccount } from "@/components/account/close-client-account";
+import { DownloadMyData } from "@/components/account/download-my-data";
 import { ClientContracts } from "@/components/requests/client-contracts";
 import { SubmitButton } from "@/components/submit-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -86,6 +87,7 @@ export default async function MyRequestsPage({ params }: PageProps<"/[locale]/re
                   <SubmitButton variant="outline" className="h-9 px-3 text-sm">{ts("signOut")}</SubmitButton>
                 </form>
                 <div className="mt-4">
+                  <div className="mb-4"><DownloadMyData /></div>
                   <CloseClientAccount email={user.email} />
                 </div>
               </>
