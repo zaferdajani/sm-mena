@@ -3,9 +3,16 @@ import { getTranslations } from "next-intl/server";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { FeatureKey } from "@/lib/features";
+import { notFound } from "next/navigation";
+import { showComingSoon } from "@/lib/coming-soon";
 
 /** Shown instead of a feature that is switched to "Coming soon" (Admin → Features). */
 export async function ComingSoon({ feature, compact = false }: { feature: FeatureKey; compact?: boolean }) {
+  // Production: an unfinished feature is simply not there (no placeholder screen).
+  if (!showComingSoon()) {
+    if (compact) return null;
+    notFound();
+  }
   const t = await getTranslations("Features");
   if (compact) {
     return (

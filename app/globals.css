@@ -298,3 +298,13 @@ html.reel-snap [data-testid="site-footer"] {
   /* The letters wrapper can itself be a direct child of body, so exclude it as well as its ancestors. */
   body > *:not(.pioneer-letters):not(:has(.pioneer-letters)) { display: none !important; }
 }
+
+/* Tablet (iPad portrait 768px → iPad Pro landscape 1366px): the side rail is
+   visible, so page content gets less width than on desktop. Keep wide content
+   inside the column instead of pushing the page sideways. */
+@media (min-width: 768px) and (max-width: 1366px) {
+  [data-testid="app-page-content"] { overflow-wrap: anywhere; }
+  [data-testid="app-page-content"] :where(img, video, iframe, canvas, svg) { max-width: 100%; height: auto; }
+  [data-testid="app-page-content"] :where(table) { display: block; max-width: 100%; overflow-x: auto; }
+  [data-testid="app-page-content"] :where(pre) { max-width: 100%; overflow-x: auto; }
+}

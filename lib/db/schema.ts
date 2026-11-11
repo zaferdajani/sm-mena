@@ -588,6 +588,8 @@ export const reports = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),
     agencyId: uuid("agency_id").references(() => agencies.id, { onDelete: "cascade" }),
+    // A reported chat (App Store 1.2): staff read it in Admin → Conversations.
+    conversationId: uuid("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
     reason: reportReason("reason").notNull(),
     details: text("details").notNull().default(""),
     visitorId: text("visitor_id"),
