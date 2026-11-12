@@ -1,5 +1,6 @@
 import { FlaskConical } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { KeepCardFields } from "@/components/payments/keep-card-fields";
 import { SubmitButton } from "@/components/submit-button";
 import { formatFils } from "@/lib/format";
 import { TEST_CARDS, formatCardNumber } from "@/lib/payments/virtual-cards";
@@ -42,7 +43,8 @@ export async function VirtualCardForm({
         )}
       </div>
       {error && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive" role="alert" data-testid="card-error">{t(`errors.${error}`)}</p>}
-      <form action={action} className="grid gap-3">
+      <KeepCardFields formId="virtual-card-form" testCards={Object.values(TEST_CARDS)} />
+      <form id="virtual-card-form" action={action} className="grid gap-3">
         {Object.entries(hidden).map(([k, val]) => (
           <input key={k} type="hidden" name={k} value={val} />
         ))}

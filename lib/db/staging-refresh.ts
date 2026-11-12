@@ -22,6 +22,10 @@ async function main() {
   const { refreshDemoTexts } = await import("./demo-text-refresh");
   const demo = await refreshDemoTexts(console.log);
   if (demo) console.log("Staging refresh: demo texts updated.");
+  // QA test sign-ups (`qa.` handles) stay off staging Explore (QA H-05).
+  const { hideQaFixtures } = await import("./staging-qa-fixtures");
+  const hidden = await hideQaFixtures();
+  if (hidden) console.log(`Staging refresh: ${hidden} QA test page(s) made private.`);
   console.log("Staging refresh: done.");
 }
 
