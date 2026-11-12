@@ -521,7 +521,7 @@ export function ScrollScrub({
     let idleHandle = 0;
     const afterLoad = () => {
       idleHandle =
-        "requestIdleCallback" in window
+        typeof window.requestIdleCallback === "function"
           ? window.requestIdleCallback(allowMedia, { timeout: 2500 })
           : window.setTimeout(allowMedia, 1200);
     };
@@ -596,7 +596,7 @@ export function ScrollScrub({
       window.removeEventListener("pointerdown", onFirstGesture);
       window.removeEventListener("touchstart", onFirstGesture);
       window.removeEventListener("load", afterLoad);
-      if ("cancelIdleCallback" in window) {
+      if (typeof window.cancelIdleCallback === "function") {
         window.cancelIdleCallback(idleHandle);
       }
       window.clearTimeout(idleHandle);
