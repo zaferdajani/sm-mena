@@ -10,7 +10,7 @@ export function ReleaseStamp() {
     <span
       data-testid="release-stamp" data-ui-revision={release.revision}
       data-release-sha={release.commit ?? "unknown"} data-release-environment={release.environment}
-      className="inline-block font-mono text-[10px] leading-5 text-muted-foreground/60"
+      className="inline-block font-mono text-[10px] leading-5 text-muted-foreground"
       title={release.revision}>
       <bdi dir="ltr">v{release.commit ? ` ${release.commit.slice(0, 7)}` : ""}</bdi>
     </span>

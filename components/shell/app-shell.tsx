@@ -22,7 +22,7 @@ import { helpAiEnabled } from "@/lib/ai/help-assistant";
 import { hasVisitorRequests } from "@/lib/data/requests";
 import { getVisitorId } from "@/lib/visitor";
 
-/** Side navigation on desktop, top bar and bottom tabs on phones. */
+/** Side navigation on laptops and desktops; top bar and bottom tabs on phones and tablets, where a 15rem sidebar would take a third of the screen (QA H-04). */
 export async function AppShell({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("Nav");
   const reg = isRegistrationPhase();
@@ -63,7 +63,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AppFrame>
       <InterfaceBackground />
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-e px-3 py-6 lg:flex">
         <Link href="/" className="mb-8 flex items-center gap-2 px-3 font-heading text-2xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} />
         </Link>
@@ -83,7 +83,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <p>{tf("rights", { year: new Date().getFullYear() })}</p>
         </div>
       </aside>
-      <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur md:hidden">
+      <header data-app-header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/95 px-4 py-2.5 backdrop-blur lg:hidden">
         <Link href="/" className="flex shrink-0 items-center gap-2 font-heading text-xl font-bold text-brand" translate="no">
           <BrandLockup label={th("brand")} compact />
         </Link>
@@ -100,12 +100,12 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
           <LocaleSwitcher label={th("switchLocale")} ariaLabel={th("switchLocaleLabel")} />
         </div>
       </header>
-      <main className="flex min-h-dvh min-w-0 flex-1 flex-col pb-20 md:pb-10">
+      <main className="flex min-h-dvh min-w-0 flex-1 flex-col pb-20 lg:pb-10">
         {!reg && <DemoBanner />}
         <div className="min-w-0 flex-1" data-testid="app-page-content">{children}</div>
         <SiteFooter />
       </main>
-      <nav data-app-nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+      <nav data-app-nav aria-label={t("menu")} className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         <BottomNav items={items} />
       </nav>
       <HelpChat aiEnabled={helpAiEnabled()} aboveNav />

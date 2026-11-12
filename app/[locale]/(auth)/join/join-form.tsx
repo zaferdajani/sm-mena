@@ -61,7 +61,7 @@ function firstProblem(fd: FormData): { field: Field; error: string } | null {
   return null;
 }
 
-export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = "", invite = "", aside }: { countries: CountryOption[]; defaultCountry: string; phoneCountry: string; refCode?: string; /** A collaborator's invitation token (docs/48), accepted once the page exists. */ invite?: string; /** Notices shown under the form (registration phase). */ aside?: ReactNode }) {
+export function JoinForm({ countries, defaultCountry, refCode = "", invite = "", aside }: { countries: CountryOption[]; defaultCountry: string; refCode?: string; /** A collaborator's invitation token (docs/48), accepted once the page exists. */ invite?: string; /** Notices shown under the form (registration phase). */ aside?: ReactNode }) {
   const t = useTranslations("Auth");
   const tk = useTranslations("Partners.form");
   const [state, action] = useActionState(join, undefined);
@@ -71,6 +71,8 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
   const [restored, setRestored] = useState(false);
   const [problem, setProblem] = useState<{ field: Field; error: string } | null>(null);
   const [kind, setKind] = useState<"agency" | "freelancer">("agency");
+  // The business country picked above; the WhatsApp code follows it until the person picks a code (QA M-01).
+  const [bizCountry, setBizCountry] = useState<string | undefined>(undefined);
   const [handle, setHandle] = useState(state?.fields?.handle ?? "");
   // Letters the link can't hold (Arabic, spaces) were typed: say so instead of silently dropping them.
   const [dropped, setDropped] = useState(false);
@@ -220,13 +222,13 @@ export function JoinForm({ countries, defaultCountry, phoneCountry, refCode = ""
           {errorLine("handle")}
         </div>
         <div className="sw-join-location-grid grid gap-4">
-          <CountryCityField countries={countries} defaultCountry={defaultCountry} defaultCity={f.city || d.city || undefined} countryLabel={t("country")} cityLabel={t("city")} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm" />
+          <CountryCityField countries={countries} defaultCountry={defaultCountry} onCountryChange={setBizCountry} defaultCity={f.city || d.city || undefined} countryLabel={t("country")} cityLabel={t("city")} className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm" />
         </div>
         {errorLine("city")}
         <div data-step-panel="2" className="grid gap-4">
         <div className="sw-join-field sw-join-phone-field grid gap-1.5">
           <Label htmlFor="whatsapp">{t("whatsapp")}</Label>
-          <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || d.whatsappCountry || phoneCountry} defaultValue={f.whatsapp || d.whatsapp} countryLabel={t("phoneCountry")} />
+          <PhoneField id="whatsapp" name="whatsapp" required defaultCountry={f.whatsappCountry || d.whatsappCountry || defaultCountry} defaultValue={f.whatsapp || d.whatsapp} countryLabel={t("phoneCountry")} follow={bizCountry} />
           {errorLine("whatsapp")}
         </div>
         <div className="sw-join-field grid gap-1.5">

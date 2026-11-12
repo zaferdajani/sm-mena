@@ -5,6 +5,7 @@ import { CountryPicker } from "@/components/country-picker";
 import { COUNTRIES, type CountryCode } from "@/lib/countries";
 import { FloodBand, Icon, LangSwitch, ProfileRingCard, StarReadout } from "./ctas";
 import { MilestoneLedger } from "./ledger";
+import { HeaderMenu } from "./header-menu";
 import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
 export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
@@ -22,6 +23,7 @@ export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; cou
         ))}
       </nav>
       <div className="sw-header__tools">
+        <HeaderMenu label={c.menu} items={c.nav} />
         <CountryPicker
           chosen={chosen}
           current={country}
@@ -32,7 +34,7 @@ export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; cou
         />
         <LangSwitch lang={lang} />
         {account.href.endsWith("/login") && (
-          <a className="sw-join" href={`/${lang}/start`} data-testid="landing-join">
+          <a className="sw-join" href={`/${lang}/start`} data-testid="landing-join" aria-label={c.signUp.label}>
             <span className="sw-join__long">{c.signUp.label}</span>
             <span className="sw-join__short" aria-hidden="true">{c.signUp.short}</span>
           </a>

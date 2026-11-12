@@ -13,9 +13,17 @@ import { ARAB_FIRST, DIAL_CODES, flagOf } from "@/lib/dial-codes";
  * country. Submits `<name>` (the number as typed) and `<name>Country` (ISO code);
  * the server joins them (lib/dial-codes.ts → internationalPhone).
  */
-export function PhoneField({ id, name, defaultCountry, defaultValue = "", required = false, placeholder, countryLabel }: { id: string; name: string; defaultCountry: string; defaultValue?: string; required?: boolean; placeholder?: string; countryLabel: string }) {
+export function PhoneField({ id, name, defaultCountry, defaultValue = "", required = false, placeholder, countryLabel, follow }: { id: string; name: string; defaultCountry: string; defaultValue?: string; required?: boolean; placeholder?: string; countryLabel: string; /** The country chosen elsewhere on the form: the code follows it until the person picks a code themselves (QA M-01). */ follow?: string }) {
   const locale = useLocale();
   const [country, setCountry] = useState(defaultCountry.toUpperCase());
+  const [picked, setPicked] = useState(false);
+  const [followed, setFollowed] = useState(follow);
+  if (follow !== followed) {
+    // Adjusting state while rendering (React's documented pattern for "derive from a changing prop").
+    setFollowed(follow);
+    const next = follow?.toUpperCase();
+    if (!picked && next && next in DIAL_CODES) setCountry(next);
+  }
   // Country names and their order come from the browser's Intl data, which can
   // differ from the server's: the full list is built after hydration, so the
   // first render (server and browser alike) holds just the chosen country.
@@ -47,7 +55,10 @@ export function PhoneField({ id, name, defaultCountry, defaultValue = "", requir
         <select
           name={`${name}Country`}
           value={country}
-          onChange={(e) => setCountry(e.target.value)}
+          onChange={(e) => {
+            setCountry(e.target.value);
+            setPicked(true);
+          }}
           aria-label={countryLabel}
           className="absolute inset-0 cursor-pointer opacity-0"
           data-testid="phone-country"

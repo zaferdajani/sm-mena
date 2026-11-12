@@ -63,7 +63,7 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   const count = posts ? posts.items.filter((i) => !i.sponsored).length : (agencies?.length ?? 0);
   const requirements = { services: filters.service ? [filters.service] : [], city: filters.city, country, platforms: filters.platforms, budgetMin: filters.minPrice, budgetMax: filters.maxPrice, industry: filters.industry, fullService: filters.fullService, verified: filters.verified };
   const closest = count === 0 && hasRequirements(requirements) ? await closestAgencies(requirements, { includeDemo: filters.includeDemo }) : null;
-  const closestBlock = closest ? (
+  const closestBlock = closest?.length ? (
     <>
       <ClosestMatches matches={closest} currency={currency} viewCountry={country}
         sendHref={(await canUse("quote_requests")) ? { pathname: "/request/new", query: { ...(filters.service ? { service: filters.service } : {}), ...(filters.city ? { city: filters.city } : {}) } } : null} />
@@ -78,7 +78,8 @@ export default async function ExplorePage({ params, searchParams }: PageProps<"/
   );
   // A handful of real results: say the sample agencies exist too (FEW = fewer than a screenful).
   const fewResults = count > 0 && count < FEW;
-  const resultLabel = t("results", { count }) + (posts?.nextCursor ? "+" : "");
+  // With no exact match the closest agencies still show below: the count must not read "No results" over them (QA M-09).
+  const resultLabel = closest?.length ? t("resultsClosest") : t("results", { count }) + (posts?.nextCursor ? "+" : "");
   const query = Object.fromEntries(Object.entries(sp).filter(([k, v]) => k !== "tab" && typeof v === "string")) as Record<string, string>;
   return (
     <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-testid="explore-page">

@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { cookies, headers } from "next/headers";
 import { isCrawler } from "@/lib/crawler";
 import { recordFunnel } from "@/lib/data/funnel";
-import { currentCountry, phoneCountry } from "@/lib/country-choice";
+import { currentCountry } from "@/lib/country-choice";
 import { isReferralCode, normalizeCode, REFERRAL_COOKIE } from "@/lib/referrals";
 import { countryOptions } from "@/lib/country-options";
 import { JoinForm } from "./join-form";
@@ -33,7 +33,7 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
   // The funnel's first step (docs/65 stage 5): a count, never who.
   if (!isCrawler((await headers()).get("user-agent") ?? "")) await recordFunnel("join_view");
   const t = await getTranslations("Auth");
-  const [countries, country, phoneFrom] = await Promise.all([countryOptions(locale), currentCountry(), phoneCountry()]);
+  const [countries, country] = await Promise.all([countryOptions(locale), currentCountry()]);
   const r = await getTranslations("Registration");
   const registration = isRegistrationPhase();
   return (
@@ -43,7 +43,6 @@ export default async function JoinPage({ params, searchParams }: PageProps<"/[lo
       <JoinForm
         countries={countries}
         defaultCountry={country}
-        phoneCountry={phoneFrom}
         refCode={refCode}
         invite={invite}
         aside={registration && <aside className="registration-notice" data-testid="registration-join-notice"><strong>{r("phaseLabel")}</strong><p>{r("joinNotice")}</p><Link href="/examples">{r("exampleCta")}</Link></aside>}

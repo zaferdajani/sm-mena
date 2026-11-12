@@ -99,7 +99,7 @@ export function LangSwitch({ lang }: { lang: Lang }) {
   const c = siteCopy[lang];
   return (
     <a
-      aria-label={c.otherLangName}
+      aria-label={`ع / EN · ${c.otherLangName}`}
       className="sw-switch"
       data-lang={lang}
       href={c.otherLangHref}

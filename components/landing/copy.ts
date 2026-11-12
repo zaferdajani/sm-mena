@@ -21,6 +21,8 @@ export interface SiteCopy {
   otherLangHref: string;
   otherLangName: string;
   nav: { href: string; label: string }[];
+  /** The menu button that holds `nav` on narrow screens. */
+  menu: string;
   country: { label: string; locate: string };
   /** Header button for visitors who are not signed in; `short` on narrow phones. */
   signUp: { label: string; short: string };
@@ -64,6 +66,7 @@ const ar: SiteCopy = {
     { href: "#services", label: "الخدمات" },
     { href: "#agencies", label: "للوكالات" },
   ],
+  menu: "القائمة",
   country: { label: "الدولة", locate: "حدّد دولتي من موقعي" },
   signUp: { label: "انضم مجاناً", short: "انضم" },
   cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "شاهد تقييمات الوكالات" },
@@ -195,6 +198,7 @@ const en: SiteCopy = {
     { href: "#services", label: "Services" },
     { href: "#agencies", label: "For agencies" },
   ],
+  menu: "Menu",
   country: { label: "Country", locate: "Use my location" },
   signUp: { label: "Join free", short: "Join" },
   cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "See agency ratings" },

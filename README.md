@@ -96,7 +96,7 @@ The site runs on **Vercel** (the **Pro** plan: Hobby is for personal, non-commer
 
 Other buttons in **Actions → Vercel**: `status` (latest deployments, build log, DNS check) and `logs` (recent server errors). In **Actions → Maintenance**: `migrate`, `seed-demo`, `rebuild-demo-media`, `reset-staff-2fa`, `recover-owner`.
 
-`GET /api/health` reports the database, storage, AI and monetization mode (never secrets). Locally, without `DATABASE_URL`, the app uses an embedded database (PGlite) and a local upload folder, so `npm run dev` needs nothing else.
+`GET /api/health` answers `{ ok }`; with `Authorization: Bearer $CRON_SECRET` it also reports the database, storage, AI and monetization mode (never secrets). Locally, without `DATABASE_URL`, the app uses an embedded database (PGlite) and a local upload folder, so `npm run dev` needs nothing else.
 
 ## Documents
 

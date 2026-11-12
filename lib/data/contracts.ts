@@ -72,6 +72,9 @@ export const REPORTING_CADENCES = ["weekly", "biweekly", "monthly"] as const;
 export type ReportingCadence = (typeof REPORTING_CADENCES)[number];
 export const CADENCE_DAYS: Record<ReportingCadence, number> = { weekly: 7, biweekly: 14, monthly: 31 };
 export const MAX_MILESTONES = 12;
+/** A contract total from 1 JOD to 1,000,000 JOD (in fils). Smaller or larger totals are typing mistakes (QA M-10). */
+export const MIN_CONTRACT_FILS = 1_000;
+export const MAX_CONTRACT_FILS = 1_000_000_000;
 /**
  * Sawwiq's fee for guaranteeing payment and delivery: 10% of every released
  * milestone by default (PLATFORM_FEE_PERCENT overrides it, 0–30).
@@ -147,7 +150,8 @@ export function validateContract(input: Pick<ContractInput, "startDate" | "endDa
     if (!Number.isInteger(m.amountFils) || m.amountFils < 0) return "amounts";
     if (!m.checks.some((c) => c.trim())) return "emptyChecklist";
   }
-  if (input.milestones.reduce((s, m) => s + m.amountFils, 0) <= 0) return "amounts";
+  const total = input.milestones.reduce((s, m) => s + m.amountFils, 0);
+  if (total < MIN_CONTRACT_FILS || total > MAX_CONTRACT_FILS) return "amounts";
   if ((input.kpis?.length ?? 0) > MAX_KPIS || input.kpis?.some((k) => !k.label.trim() || !k.target.trim())) return "kpis";
   if (input.signerName.trim().length < 3) return "signer";
   return null;

@@ -39,7 +39,7 @@ export async function SiteFooter() {
             <li><Link href="/legal" className="hover:underline">{t("legal")}</Link></li>
             <li><Link href="/support" className="hover:underline">{t("report")}</Link></li>
             <li><OtherLanguageLink label={t("otherLanguage")} className="hover:underline" /></li>
-            <li className="md:hidden"><ThemeToggle labels={{ dark: tHead("themeDark"), light: tHead("themeLight") }} withText className="-mx-2 w-fit px-2 py-1" /></li>
+            <li className="lg:hidden"><ThemeToggle labels={{ dark: tHead("themeDark"), light: tHead("themeLight") }} withText className="-mx-2 w-fit px-2 py-1" /></li>
           </ul>
         </section>
       </div>

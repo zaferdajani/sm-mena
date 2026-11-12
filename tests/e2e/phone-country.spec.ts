@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { uniqueHandle, nextJoinStep } from "./helpers";
 
-// The WhatsApp field starts with the visitor's country (from the IP address),
-// and any country can be picked (lib/dial-codes.ts).
-test("sign-up starts the WhatsApp code from the visitor's country, and any country can be chosen", async ({ browser }) => {
+// The WhatsApp code starts at the business country and follows it until the person picks a code
+// themselves (QA M-01); any country can be picked (lib/dial-codes.ts).
+test("sign-up's WhatsApp code follows the business country until another code is chosen", async ({ browser }) => {
   const page = await (await browser.newContext({ extraHTTPHeaders: { "x-vercel-ip-country": "SA" } })).newPage();
   await page.goto("/en/join");
   const handle = uniqueHandle("phone");
@@ -14,7 +14,12 @@ test("sign-up starts the WhatsApp code from the visitor's country, and any count
   // The WhatsApp field is on the contact step.
   const field = page.getByTestId("phone-whatsapp");
   await expect(field.getByTestId("phone-dial")).toHaveText("+966");
+  await page.getByTestId("country-select").selectOption("jo");
+  await expect(field.getByTestId("phone-dial")).toHaveText("+962");
   await field.getByTestId("phone-country").selectOption("EG");
+  await expect(field.getByTestId("phone-dial")).toHaveText("+20");
+  // A code the person picked is theirs: changing the business country again leaves it.
+  await page.getByTestId("country-select").selectOption("sa");
   await expect(field.getByTestId("phone-dial")).toHaveText("+20");
   await page.fill("#whatsapp", "0101 234 5678");
   await page.fill("#email", `${handle}@test.jo`);

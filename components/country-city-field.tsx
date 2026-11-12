@@ -12,7 +12,10 @@ export function CountryCityField({
   countryLabel,
   cityLabel,
   className,
+  onCountryChange,
 }: {
+  /** Tells the form which country is shown (after hydration and on every change). */
+  onCountryChange?: (code: string) => void;
   countries: CountryOption[];
   defaultCountry: string;
   defaultCity?: string;
@@ -31,6 +34,7 @@ export function CountryCityField({
     if (!picked || picked === initial || !countries.some((c) => c.code === picked)) return;
     const id = setTimeout(() => {
       setCountry(picked);
+      onCountryChange?.(picked);
       setCity(countries.find((c) => c.code === picked)?.cities[0]?.key ?? "");
     }, 0);
     return () => clearTimeout(id);
@@ -47,6 +51,7 @@ export function CountryCityField({
           onChange={(e) => {
             const next = e.target.value;
             setCountry(next);
+            onCountryChange?.(next);
             setCity(countries.find((c) => c.code === next)?.cities[0]?.key ?? "");
           }}
           className={`w-full min-w-0 ${className}`}

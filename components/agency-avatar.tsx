@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { AvatarImage } from "@/components/avatar-image";
 import { cn } from "@/lib/utils";
 
 export function AgencyAvatar({
@@ -27,7 +27,8 @@ export function AgencyAvatar({
       className="relative flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent font-bold text-accent-foreground"
       style={{ width: size, height: size, fontSize: Math.max(10, size / 2.8) }}
     >
-      {src ? <Image src={src} alt="" fill sizes={`${size}px`} unoptimized className="object-cover" /> : initials}
+      {src ? <span aria-hidden>{initials}</span> : initials}
+      {src && <AvatarImage src={src} size={size} />}
     </span>
   );
   if (!ring) return <span className={cn("inline-flex", className)}>{inner}</span>;

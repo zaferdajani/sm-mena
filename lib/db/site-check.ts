@@ -26,7 +26,7 @@ type Expectation = { finalPath?: RegExp; contains?: string[]; json?: (body: unkn
 const STAMP = 'data-release-sha="';
 /** What each page must answer with. Redirects are followed and the final address is checked, so a page that "answers 200" by bouncing to the front page still fails. */
 const PAGES: Record<string, Expectation> = {
-  "/api/health": { finalPath: /^\/api\/health$/, json: (b) => ((b as { ok?: boolean }).ok ? null : `health not ok (database: ${(b as { database?: string }).database ?? "?"})`) },
+  "/api/health": { finalPath: /^\/api\/health$/, json: (b) => ((b as { ok?: boolean }).ok ? null : "health not ok") },
   "/ar": { finalPath: /^\/ar(\/soon)?$/, contains: [STAMP, 'lang="ar"'] },
   "/en": { finalPath: /^\/en(\/soon)?$/, contains: [STAMP, 'lang="en"'] },
   "/ar/explore": { finalPath: /^\/ar\/(explore|soon|login)/, contains: [STAMP] },

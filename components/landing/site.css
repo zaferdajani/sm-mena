@@ -176,6 +176,23 @@
 }
 .sw-join:hover { background: color-mix(in srgb, var(--sw-green) 10%, transparent); }
 .sw-join__short { display: none; }
+/* The section links' menu: only where the inline links have no room (below 960 px). */
+.sw-menu { position: relative; display: none; flex: none; }
+.sw-menu__button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border: 1px solid var(--sw-line); border-radius: var(--sw-pill);
+  color: var(--sw-ink); cursor: pointer; list-style: none;
+}
+.sw-menu__button::-webkit-details-marker { display: none; }
+.sw-menu[open] .sw-menu__button { background: color-mix(in srgb, var(--sw-green) 10%, transparent); }
+.sw-menu__panel {
+  position: absolute; inset-inline-end: 0; top: calc(100% + 0.5rem); z-index: 50;
+  display: grid; min-width: 13rem; padding: 0.5rem;
+  border: 1px solid var(--sw-line); border-radius: 1rem; background: var(--sw-stone);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+}
+.sw-menu__panel a { display: block; min-height: 2.75rem; padding: 0.7rem 0.9rem; border-radius: 0.6rem; color: var(--sw-ink); font-weight: 500; }
+.sw-menu__panel a:hover { background: color-mix(in srgb, var(--sw-green) 10%, transparent); }
 /* The smallest phones (320–360 px): the logo mark alone, tighter tools, so
    Join and Sign in both stay on screen. */
 @media (max-width: 360px) {
@@ -631,6 +648,7 @@
 /* ---------- Mobile collapse (declared per section) ---------- */
 @media (max-width: 960px) {
   .sw-header__nav { display: none; }
+  .sw-menu { display: block; }
   .sw-header__nav + .sw-header__tools { margin-inline-start: auto; }
   .sw-pay, .sw-agency { grid-template-columns: 1fr; }
   .sw-pay__text { position: static; }
