@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, drawSignature, joinAgency, login, newPackageForm } from "./helpers";
+import { ADMIN, drawSignature, joinAgency, login, newPackageForm, confirmSignerEmail } from "./helpers";
 
 async function tickAll(page: Page) {
   const milestone = page.getByTestId("milestone").first();
@@ -63,9 +63,15 @@ test("protected contract: sign, pay in, deliver, confirm and release", async ({ 
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
   expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
   await expect(client.getByTestId("contract-document")).toContainText("★ Owner approves captions before posting");
+  // QA H-01: the link alone can't sign; the signer proves an email first.
   await client.fill("#signer", "Nour Khalil");
   await drawSignature(client);
   await client.getByText(/I have read this document and agree to it/).click();
+  await client.getByRole("button", { name: "Sign contract" }).click();
+  // Without the code the form does not go through.
+  expect(await client.getByTestId("sign-code").evaluate((el) => (el as HTMLInputElement).validity.valueMissing)).toBe(true);
+  await expect(client.getByTestId("contract-status")).not.toHaveText("Active");
+  await confirmSignerEmail(client);
   await client.getByRole("button", { name: "Sign contract" }).click();
   await expect(client.getByTestId("contract-status")).toHaveText("Active");
   // Signed: said at the top of the page, with the next step (paying the first milestone).
@@ -134,6 +140,7 @@ test("protections: targets and reporting, extra money only by the client's appro
   await expect(doc).toContainText("The agency is owed nothing extra for work not approved this way");
   await expect(doc).toContainText("Two rounds of revisions per design.");
   await expect(doc).toContainText("No work for our direct competitors during the contract.");
+  await confirmSignerEmail(client);
   await client.fill("#signer", "Omar Khalil");
   await drawSignature(client);
   await client.getByText(/I have read this document and agree to it/).click();
@@ -199,6 +206,7 @@ test("NDA: the agency signs and sends, the client asks for a change, then signs;
   await page.reload();
   await expect(page.getByTestId("nda-client-note")).toContainText("sister company");
 
+  await confirmSignerEmail(client);
   await client.fill("#nda-signer", "Hala Haddad");
   await drawSignature(client);
   await client.getByText(/I have read this document and agree to it/).click();

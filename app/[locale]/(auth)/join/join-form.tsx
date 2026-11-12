@@ -47,18 +47,24 @@ function focusIn(form: HTMLFormElement | null, field: Field) {
   el?.focus({ preventScroll: true });
 }
 
-/** The same rules as lib/validation/auth.ts (joinSchema), checked before the form leaves the browser. */
-function firstProblem(fd: FormData): { field: Field; error: string } | null {
+type Problems = Partial<Record<Field, string>>;
+
+/**
+ * The same rules as lib/validation/auth.ts (joinSchema), checked before the form leaves the browser.
+ * Every problem at once, in form order, so one submit shows all that needs fixing (QA L-01).
+ */
+function allProblems(fd: FormData): Problems {
   const v = (k: string) => String(fd.get(k) ?? "").trim();
-  if (v("name").length < 2) return { field: "name", error: "required" };
-  if (!HANDLE_PATTERN.test(v("handle").toLowerCase()) || v("handle").includes("..")) return { field: "handle", error: "handleInvalid" };
-  if (!v("city")) return { field: "city", error: "required" };
-  if (v("whatsapp").replace(/\D/g, "").length < 7) return { field: "whatsapp", error: "invalidPhone" };
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email"))) return { field: "email", error: "invalidEmail" };
-  if (String(fd.get("password") ?? "").length < 8) return { field: "password", error: "passwordShort" };
-  if (fd.get("consent") !== "on") return { field: "consent", error: "consentRequired" };
-  if (fd.get("adult") !== "on") return { field: "adult", error: "adultRequired" };
-  return null;
+  const found: Problems = {};
+  if (v("name").length < 2) found.name = "required";
+  if (!HANDLE_PATTERN.test(v("handle").toLowerCase()) || v("handle").includes("..")) found.handle = "handleInvalid";
+  if (!v("city")) found.city = "required";
+  if (v("whatsapp").replace(/\D/g, "").length < 7) found.whatsapp = "invalidPhone";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email"))) found.email = "invalidEmail";
+  if (String(fd.get("password") ?? "").length < 8) found.password = "passwordShort";
+  if (fd.get("consent") !== "on") found.consent = "consentRequired";
+  if (fd.get("adult") !== "on") found.adult = "adultRequired";
+  return found;
 }
 
 export function JoinForm({ countries, defaultCountry, refCode = "", invite = "", aside }: { countries: CountryOption[]; defaultCountry: string; refCode?: string; /** A collaborator's invitation token (docs/48), accepted once the page exists. */ invite?: string; /** Notices shown under the form (registration phase). */ aside?: ReactNode }) {
@@ -69,7 +75,7 @@ export function JoinForm({ countries, defaultCountry, refCode = "", invite = "",
   // The draft is read after mount (sessionStorage is this browser's); the fields remount once with it.
   const [draft, setDraft] = useState<Draft | null>(null);
   const [restored, setRestored] = useState(false);
-  const [problem, setProblem] = useState<{ field: Field; error: string } | null>(null);
+  const [problems, setProblems] = useState<Problems>({});
   const [kind, setKind] = useState<"agency" | "freelancer">("agency");
   // The business country picked above; the WhatsApp code follows it until the person picks a code (QA M-01).
   const [bizCountry, setBizCountry] = useState<string | undefined>(undefined);
@@ -100,7 +106,7 @@ export function JoinForm({ countries, defaultCountry, refCode = "", invite = "",
     const error = state.error;
     const id = setTimeout(() => {
       const field = FIELD_OF_ERROR[error];
-      setProblem(field ? { field, error } : null);
+      setProblems(field ? { [field]: error } : {});
       if (field === "handle") handleEdited.current = true;
       const saved = readDraft();
       if (saved) writeDraft({ ...saved, submitted: false });
@@ -129,12 +135,12 @@ export function JoinForm({ countries, defaultCountry, refCode = "", invite = "",
     return () => window.removeEventListener("pagehide", flush);
   }, [save]);
 
-  const err = (field: Field) => (problem?.field === field ? t(`errors.${problem.error}` as never) : null);
+  const err = (field: Field) => (problems[field] ? t(`errors.${problems[field]}` as never) : null);
   const errorLine = (field: Field) => {
     const text = err(field);
     return text ? <p id={`join-error-${field}`} role="alert" className="sw-field-error" data-testid={`join-error-${field}`}>{text}</p> : null;
   };
-  const invalid = (field: Field) => (problem?.field === field ? { "aria-invalid": true as const, "aria-describedby": `join-error-${field}` } : {});
+  const invalid = (field: Field) => (problems[field] ? { "aria-invalid": true as const, "aria-describedby": `join-error-${field}` } : {});
 
   const onName = (value: string) => {
     if (handleEdited.current) return;
@@ -162,14 +168,15 @@ export function JoinForm({ countries, defaultCountry, refCode = "", invite = "",
       onInput={save}
       onChange={save}
       onSubmit={(e) => {
-        const found = firstProblem(new FormData(e.currentTarget));
-        if (found) {
+        const found = allProblems(new FormData(e.currentTarget));
+        const first = (Object.keys(found) as Field[])[0];
+        if (first) {
           e.preventDefault();
-          setProblem(found);
-          focusIn(form.current, found.field);
+          setProblems(found);
+          focusIn(form.current, first);
           return;
         }
-        setProblem(null);
+        setProblems({});
         const saved = readDraft();
         writeDraft({ ...(saved ?? {}), submitted: true });
       }}

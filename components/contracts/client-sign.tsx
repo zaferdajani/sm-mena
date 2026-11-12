@@ -3,28 +3,35 @@
 import { MessageSquareDiff, PenLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { clientAmendAction, clientDeclineAction, clientSignAction } from "@/app/[locale]/(main)/contract-actions";
+import { clientAmendAction, clientDeclineAction, clientSignAction, clientSignCodeAction } from "@/app/[locale]/(main)/contract-actions";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SignaturePad } from "./signature-pad";
+import { SignerCodeField, SignerCodeForm } from "./signer-verify";
 
-/** `hidden` is the client's token, or the contract id with as=buyer for a buying agency. */
-export function ClientSign({ hidden }: { hidden: Record<string, string> }) {
+/**
+ * `hidden` is the client's token, or the contract id with as=buyer for a buying agency. `verify` is the
+ * email step for a private-link signer (QA H-01): the masked address on the contract, or null to type one.
+ */
+export function ClientSign({ hidden, verify }: { hidden: Record<string, string>; verify: { masked: string | null } | null }) {
   const hiddenInputs = Object.entries(hidden).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />);
   const t = useTranslations("Contracts.client");
   const tl = useTranslations("Agreements");
   const [state, action] = useActionState(clientSignAction, undefined);
   const [amend, amendAction] = useActionState(clientAmendAction, undefined);
+  const [code, codeAction] = useActionState(clientSignCodeAction, undefined);
   return (
     <section className="space-y-3 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4" data-testid="client-sign">
       <h2 className="flex items-center gap-2 font-semibold">
         <PenLine className="size-5 text-brand" /> {t("sign")}
       </h2>
+      {verify && <SignerCodeForm state={code} action={codeAction} hidden={hidden} masked={verify.masked} />}
       <form action={action} className="space-y-3">
         {hiddenInputs}
+        {verify && <SignerCodeField state={code} />}
         <div className="grid gap-1.5">
           <Label htmlFor="signer">{t("signer")}</Label>
           <Input id="signer" name="signer" required minLength={3} className="bg-background font-serif text-lg italic" dir="auto" />

@@ -8,6 +8,9 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
+import { getSessionUser } from "@/lib/auth/session";
+import { maskEmail, sendSignerCode, signerEmail, verifySigner } from "@/lib/auth/signer-check";
+import type { SignCodeState } from "@/components/contracts/signer-verify";
 import { MAX_REVISION_ROUNDS } from "@/lib/contracts/rules";
 import { acceptCancellation, declineCancellation, proposeCancellation, withdrawCancellation } from "@/lib/data/contract-cancel";
 import { acceptDecision, addEvidence, appealDispute } from "@/lib/data/contract-disputes";
@@ -229,14 +232,56 @@ async function partyContract(formData: FormData): Promise<{ v: ContractView; sid
 
 const done = (r: { ok: true } | { error: string }): ActionState => ("error" in r ? { error: r.error } : { ok: true });
 
+/**
+ * Whether the person on the private link must prove an email before signing (QA H-01). A signed-in client
+ * whose account email is the one on the contract has proved it already; the buying agency signs signed in.
+ */
+async function linkSignerProven(v: ContractView): Promise<string | null> {
+  const user = await getSessionUser();
+  const email = v.contract.clientEmail?.trim().toLowerCase();
+  return user && email && user.email.toLowerCase() === email ? email : null;
+}
+
+/** Step one of signing from the private link: a one-time code to the client's email (QA H-01). */
+export async function clientSignCodeAction(_: SignCodeState, formData: FormData): Promise<SignCodeState> {
+  const ip = await clientIp();
+  if (!rateLimit(`sign-code:${ip}`, 10, 60 * 60 * 1000)) return { error: "rateLimited" };
+  const c = await clientContract(formData);
+  if (!c?.token) return { error: "notFound" };
+  if (c.v.contract.status !== "sent") return { error: "notSignable" };
+  const to = signerEmail(c.v.contract.clientEmail, formData.get("signEmail"));
+  if ("error" in to) return { error: to.error };
+  if (!rateLimit(`sign-code:${to.email}`, 5, 60 * 60 * 1000)) return { error: "rateLimited" };
+  const sent = await sendSignerCode(to.email);
+  if ("error" in sent) return { error: sent.error, email: c.v.contract.clientEmail ? undefined : to.email };
+  // The typed address goes back so the signing form can carry it; an address from the contract never does.
+  return { sent: true, masked: maskEmail(to.email), email: c.v.contract.clientEmail ? undefined : to.email, shownCode: sent.shownCode };
+}
+
 export async function clientSignAction(_: ActionState, formData: FormData): Promise<ActionState> {
   const ip = await clientIp();
   if (!rateLimit(`sign:${ip}`, 10, 10 * 60 * 1000)) return { error: "rateLimited" };
   if (formData.get("agree") !== "on") return { error: "agree" };
   const c = await clientContract(formData);
   if (!c) return { error: "notFound" };
+  const signer = String(formData.get("signer") ?? "");
+  const signature = parseSignatureDataUrl(formData.get("signature"));
+  // Cheap checks first, so a missing name or drawing never uses up the one-time code.
+  if (signer.trim().length < 3) return { error: "signer" };
+  if (c.v.contract.termsVersion >= 3 && !signature?.length) return { error: "signature" };
+  let provenEmail: string | null = null;
+  if (c.token) {
+    provenEmail = await linkSignerProven(c.v);
+    if (!provenEmail) {
+      const who = signerEmail(c.v.contract.clientEmail, formData.get("signEmail"));
+      if ("error" in who) return { error: "verify" };
+      const ok = await verifySigner(who.email, formData.get("signCode"));
+      if ("error" in ok) return { error: ok.error };
+      provenEmail = who.email;
+    }
+  }
   const visitorId = c.token ? await getVisitorId({ create: true }) : null;
-  const r = await signAsClient(c.v, String(formData.get("signer") ?? ""), ip, parseSignatureDataUrl(formData.get("signature")), visitorId);
+  const r = await signAsClient(c.v, signer, ip, signature, visitorId, provenEmail);
   if ("error" in r) return done(r);
   // Signed: open the contract again at the top, where it says so and names the next step (the signing form is
   // gone once the contract is active, and the person was left looking at the footer).

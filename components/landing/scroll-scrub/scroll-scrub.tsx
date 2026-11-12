@@ -243,6 +243,9 @@ export function ScrollScrub({
     let viewportHeight = window.innerHeight;
     let layoutWidth = window.innerWidth;
     let userReady = false;
+    // The first poster is the page's largest paint on phones; clips (megabytes) wait until the page has
+    // loaded and gone idle, or the visitor scrolls, so they never compete with it (QA M-07).
+    let mediaReady = false;
 
     const unloadClip = (segment: RuntimeSegment) => {
       segment.abort?.abort();
@@ -300,6 +303,7 @@ export function ScrollScrub({
       if (
         reduceMotion ||
         destroyed ||
+        !mediaReady ||
         segment.loading ||
         segment.ready ||
         segment.failed ||
@@ -507,8 +511,25 @@ export function ScrollScrub({
       frame = window.requestAnimationFrame(tick);
     };
 
+    const allowMedia = () => {
+      if (mediaReady) {
+        return;
+      }
+      mediaReady = true;
+      dirty = true;
+    };
+    let idleHandle = 0;
+    const afterLoad = () => {
+      idleHandle =
+        "requestIdleCallback" in window
+          ? window.requestIdleCallback(allowMedia, { timeout: 2500 })
+          : window.setTimeout(allowMedia, 1200);
+    };
     const onScroll = () => {
       dirty = true;
+      if (window.scrollY > 0) {
+        allowMedia();
+      }
     };
     const onResize = () => {
       if (coarsePointer && window.innerWidth === layoutWidth) {
@@ -556,6 +577,12 @@ export function ScrollScrub({
       passive: true,
     });
 
+    if (document.readyState === "complete") {
+      afterLoad();
+    } else {
+      window.addEventListener("load", afterLoad, { once: true });
+    }
+
     layout();
     frame = window.requestAnimationFrame(tick);
 
@@ -568,6 +595,11 @@ export function ScrollScrub({
       window.removeEventListener("orientationchange", layout);
       window.removeEventListener("pointerdown", onFirstGesture);
       window.removeEventListener("touchstart", onFirstGesture);
+      window.removeEventListener("load", afterLoad);
+      if ("cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleHandle);
+      }
+      window.clearTimeout(idleHandle);
       root.style.removeProperty("--ss-progress");
       delete root.dataset.activeSection;
 

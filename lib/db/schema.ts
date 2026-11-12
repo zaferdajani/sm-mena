@@ -895,6 +895,10 @@ export const contracts = pgTable(
     clientSignerName: text("client_signer_name"),
     clientSignedAt: timestamp("client_signed_at", { withTimezone: true }),
     clientSignIpHash: text("client_sign_ip_hash"),
+    // The email the link signer proved with a one-time code (QA H-01; docs/08), or the
+    // signed-in client's account email. Null for contracts signed before the check.
+    clientSignerEmail: text("client_signer_email"),
+    clientVerifiedAt: timestamp("client_verified_at", { withTimezone: true }),
     // Terms v3 (docs/22-legal-documents.md): the universal general conditions
     // (version `legalVersion`), the law and courts of the agency's country,
     // both parties' legal identity, each side's special conditions, and a
@@ -1259,6 +1263,9 @@ export const ndas = pgTable(
     clientSignedAt: timestamp("client_signed_at", { withTimezone: true }),
     clientSignature: text("client_signature"),
     clientSignIpHash: text("client_sign_ip_hash"),
+    /** The email the link signer proved with a one-time code before signing (QA H-01; docs/08). */
+    clientSignerEmail: text("client_signer_email"),
+    clientVerifiedAt: timestamp("client_verified_at", { withTimezone: true }),
     /** The client's reason for declining, or the change it asked for before signing. */
     clientNote: text("client_note"),
     createdAt: createdAt(),

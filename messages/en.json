@@ -2144,6 +2144,10 @@
       "decline": "Decline",
       "declineReason": "Why? (optional)",
       "errors": {
+        "verify": "Send the confirmation code to your email and enter it before signing.",
+        "badCode": "That code is not right.",
+        "expired": "The code has expired or was used. Ask for a new one.",
+        "tooMany": "Too many tries. Ask for a new code.",
         "signer": "Type your full name to sign.",
         "agree": "Tick the box to agree.",
         "notSignable": "This contract can't be signed any more.",
@@ -2554,6 +2558,7 @@
     "eg": "Egypt"
   },
   "Agreements": {
+    "verify": {"title": "Confirm your email before signing", "hintFixed": "To make sure you are the person signing, we send a 6-digit code to {email}.", "hintOpen": "To confirm who is signing, enter your email and we send it a 6-digit code. The address is kept with your signature.", "email": "Your email", "send": "Send code", "resend": "Send a new code", "sent": "We sent the code to {email}. It works for 10 minutes.", "shownCode": "Test copy: the code is {code}", "code": "Confirmation code (6 digits)", "errors": {"email": "Enter a valid email address.", "wrongEmail": "That is not the email on this agreement.", "unavailable": "Codes can't be sent right now. Try again later or contact the agency.", "sendFailed": "The code could not be sent. Try again.", "rateLimited": "Too many requests. Wait a little and try again.", "notFound": "We couldn't find this agreement.", "notSignable": "This agreement is no longer waiting for a signature."}},
     "pdfAr": "PDF (Arabic)",
     "pdfEn": "PDF (English)",
     "drawSignature": "Draw your signature",
@@ -2646,6 +2651,10 @@
       "decline": "Decline",
       "answered": "Sent to the agency.",
       "errors": {
+        "verify": "Send the confirmation code to your email and enter it before signing.",
+        "badCode": "That code is not right.",
+        "expired": "The code has expired or was used. Ask for a new one.",
+        "tooMany": "Too many tries. Ask for a new code.",
         "signer": "Type your full name to sign.",
         "signature": "Draw your signature to sign.",
         "agree": "Tick the box to agree.",

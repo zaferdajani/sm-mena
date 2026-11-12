@@ -190,7 +190,8 @@ export const ndaClientToken = (n: Nda) => tryOpen(n.clientTokenEnc);
 
 type Result = { ok: true } | { error: string };
 
-export async function signNda(token: string, signerName: string, ip: string, signature: Uint8Array | null): Promise<Result> {
+/** The client signs from its private link. `signerEmail` is the address it proved with a one-time code (QA H-01). */
+export async function signNda(token: string, signerName: string, ip: string, signature: Uint8Array | null, signerEmail?: string | null): Promise<Result> {
   const v = await getNdaByToken(token);
   if (!v) return { error: "notFound" };
   if (v.nda.status !== "sent") return { error: "notSignable" };
@@ -201,7 +202,7 @@ export async function signNda(token: string, signerName: string, ip: string, sig
   const db = await getDb();
   await db
     .update(ndas)
-    .set({ status: "signed", clientSignerName: name, clientSignedAt: new Date(), clientSignature: b64(signature), clientSignIpHash: ipHash(ip), updatedAt: new Date() })
+    .set({ status: "signed", clientSignerName: name, clientSignedAt: new Date(), clientSignature: b64(signature), clientSignIpHash: ipHash(ip), ...(signerEmail ? { clientSignerEmail: signerEmail, clientVerifiedAt: new Date() } : {}), updatedAt: new Date() })
     .where(and(eq(ndas.id, v.nda.id), eq(ndas.status, "sent")));
   return { ok: true };
 }

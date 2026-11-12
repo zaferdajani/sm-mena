@@ -3,8 +3,9 @@
 import { PenLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
-import { answerNdaAction, signNdaAction } from "@/app/[locale]/(main)/nda-actions";
+import { answerNdaAction, ndaSignCodeAction, signNdaAction } from "@/app/[locale]/(main)/nda-actions";
 import { SignaturePad } from "@/components/contracts/signature-pad";
+import { SignerCodeField, SignerCodeForm } from "@/components/contracts/signer-verify";
 import { FormError } from "@/components/form-error";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +13,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 /** The client's side of an NDA: sign (typed name + drawn signature), ask for a change, or decline. */
-export function NdaSign({ token }: { token: string }) {
+export function NdaSign({ token, masked }: { token: string; /** The NDA's client email, masked; null when the signer types one (QA H-01). */ masked: string | null }) {
   const t = useTranslations("Agreements.ndaClient");
   const tl = useTranslations("Agreements");
   const [state, action] = useActionState(signNdaAction, undefined);
   const [answer, answerAction] = useActionState(answerNdaAction, undefined);
+  const [code, codeAction] = useActionState(ndaSignCodeAction, undefined);
   return (
     <section className="space-y-3 rounded-2xl border-2 border-brand/40 bg-brand/5 p-4" data-testid="nda-sign">
       <h2 className="flex items-center gap-2 font-semibold">
         <PenLine className="size-5 text-brand" /> {t("sign")}
       </h2>
+      <SignerCodeForm state={code} action={codeAction} hidden={{ token }} masked={masked} />
       <form action={action} className="space-y-3">
         <input type="hidden" name="token" value={token} />
+        <SignerCodeField state={code} />
         <div className="grid gap-1.5">
           <Label htmlFor="nda-signer">{t("signer")}</Label>
           <Input id="nda-signer" name="signer" required minLength={3} className="bg-background font-serif text-lg italic" dir="auto" />

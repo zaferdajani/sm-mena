@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { drawSignature, login } from "./helpers";
+import { drawSignature, login, confirmSignerEmail } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 
@@ -73,6 +73,7 @@ test("AI matchmaker recommends agencies, estimates a budget and posts the projec
   await page.goto("/en/requests");
   await expect(page.getByTestId("client-contracts").getByTestId("request-contract")).toHaveCount(1);
   await page.getByTestId("client-contracts").getByTestId("request-contract").click();
+  await confirmSignerEmail(page);
   await page.fill("#signer", "E2E Client");
   await drawSignature(page);
   await page.getByText(/I have read this document and agree to it/).click();
