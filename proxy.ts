@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { LANG_COOKIE, routing } from "./i18n/routing";
+import { stagingHostMisconfigured } from "./lib/core/rules/staging";
 
 const intl = createMiddleware(routing);
 const VISITOR_COOKIE = "sw_vid";
@@ -19,6 +20,19 @@ const CANONICAL_HOST = (() => {
 // ("/" opens Arabic) and gives every browser an anonymous visitor id used for
 // likes, saves and follows without an account.
 export function proxy(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  // staging.sawwiq.org attached to production, or to a preview that still has
+  // the live database, must not serve that data. API and media are included.
+  if (stagingHostMisconfigured(forwarded)) {
+    return new NextResponse("Staging host is not configured for an isolated staging database.", {
+      status: 503,
+      headers: { "cache-control": "no-store", "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+  const path = request.nextUrl.pathname;
+  if (path === "/api" || path.startsWith("/api/") || path === "/media" || path.startsWith("/media/")) {
+    return NextResponse.next();
+  }
   // "/" opens the language the visitor chose before (switcher or offer), else
   // Arabic. Only a saved choice redirects; bots have no cookie and always get
   // the default, and explicit /ar or /en URLs are never changed.
@@ -28,7 +42,7 @@ export function proxy(request: NextRequest) {
     url.pathname = `/${saved}`;
     return NextResponse.redirect(url);
   }
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const host = forwarded;
   if (process.env.NODE_ENV === "production" && CANONICAL_HOST && host && host !== CANONICAL_HOST) {
     // www sends people and search engines to the bare domain (permanently, keeping the path).
     if (host === `www.${CANONICAL_HOST}`) {
@@ -54,8 +68,12 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Everything except API routes, media, Next.js internals and static files.
-    "/((?!api|media|_next|_vercel|.*\\..*).*)",
+    // Everything except Next.js internals and static files. API and media are
+    // included so the staging-host guard covers them; proxy skips locale
+    // routing for those paths.
+    "/((?!_next|_vercel|.*\\..*).*)",
+    "/api/:path*",
+    "/media/:path*",
     // Agency handles may contain dots (e.g. /ar/a/nakhla.studio), which the
     // rule above would mistake for files.
     "/(ar|en)/a/:handle*",

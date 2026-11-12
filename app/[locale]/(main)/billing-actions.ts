@@ -26,6 +26,41 @@ export async function checkoutPlanAction(formData: FormData) {
  * The built-in test checkout: behaves like a gateway calling our webhook, so
  * the same verified path (idempotent event, amount check, activation) runs.
  */
+/** Staging sandbox for plan checkout. The one-click test button stays for every other deployment. */
+export async function virtualPlanPayAction(formData: FormData) {
+  const { agency, user } = await requireAgency();
+  const locale = await getLocale();
+  const { virtualCheckoutEnabled, debitVirtualWallet, recordVirtualDecline, creditVirtualWallet } = await import("@/lib/payments/virtual-wallet");
+  const { evaluateTestCard } = await import("@/lib/payments/virtual-cards");
+  if (!virtualCheckoutEnabled()) return redirect({ href: "/studio/billing", locale });
+  const id = z.string().uuid().parse(formData.get("id"));
+  const payment = await getPayment(id);
+  if (!payment || payment.agencyId !== agency.id || payment.status !== "pending") return redirect({ href: "/studio/billing", locale });
+  const outcome = evaluateTestCard({
+    number: String(formData.get("card") ?? ""),
+    expiry: String(formData.get("expiry") ?? ""),
+    cvc: String(formData.get("cvc") ?? ""),
+    name: String(formData.get("holder") ?? ""),
+  });
+  const back = `/pay/${payment.id}`;
+  if (outcome !== "success") {
+    await recordVirtualDecline(user.email, payment.amountFils, "JOD", `decline:${payment.id}:${outcome}`, outcome);
+    return redirect({ href: `${back}?card=${outcome}`, locale });
+  }
+  const paid = await debitVirtualWallet(user.email, payment.amountFils, "JOD", `plan:${payment.id}`, payment.plan ?? "plan");
+  if (!paid.ok) {
+    await recordVirtualDecline(user.email, payment.amountFils, "JOD", `decline:${payment.id}:insufficient`, "insufficient");
+    return redirect({ href: `${back}?card=insufficient`, locale });
+  }
+  const event: ProviderEvent = { id: `evt_${crypto.randomUUID()}`, type: "payment.succeeded", paymentRef: payment.id, providerRef: payment.providerRef ?? `mock_${payment.id.slice(0, 8)}`, amountFils: payment.amountFils };
+  const applied = await applyProviderEvent(paymentProvider().id, event);
+  if (applied !== "ok" && applied !== "duplicate") {
+    await creditVirtualWallet(user.email, payment.amountFils, "JOD", `undo:${payment.id}`, "plan payment was not applied");
+    return redirect({ href: `${back}?card=declined`, locale });
+  }
+  return redirect({ href: "/studio/billing?paid=1", locale });
+}
+
 export async function mockPayAction(formData: FormData) {
   const { agency } = await requireAgency();
   const locale = await getLocale();

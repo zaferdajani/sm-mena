@@ -98,6 +98,10 @@ export async function settleMilestone(
   if (result === "ok") {
     const { dispatchMoneyOut } = await import("./money-out");
     await dispatchMoneyOut({ milestoneId }).catch((e) => console.error("[money-out]", e));
+    if (s.refundFils > 0 && process.env.VIRTUAL_PAYMENTS === "sandbox") {
+      const { creditContractRefund } = await import("@/lib/payments/virtual-wallet");
+      await creditContractRefund(contract.id, milestoneId, s.refundFils).catch((e) => console.error("[virtual-wallet]", e));
+    }
   }
   return result;
 }

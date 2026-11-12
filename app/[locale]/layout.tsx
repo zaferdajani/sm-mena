@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DomGuard } from "@/components/dom-guard";
+import { StagingBanner } from "@/components/staging/staging-banner";
 import { ErrorReporter } from "@/components/error-reporter";
 import { LanguageOffer } from "@/components/language-offer";
 import { FlagPolyfill } from "@/components/flag-polyfill";
@@ -73,6 +74,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <ThemeSync />
           <DomGuard />
           <NextIntlClientProvider>
+            <StagingBanner />
             <ServiceRegistry tags={approvedTags} />
             <LanguageOffer texts={offerTexts} />
             {children}

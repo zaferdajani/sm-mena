@@ -1,5 +1,11 @@
 import type { Instrumentation } from "next";
 
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== "nodejs") return;
+  const { assertStagingDatabase } = await import("@/lib/core/rules/staging");
+  assertStagingDatabase();
+}
+
 // Server-side errors (pages, route handlers, server actions) go to the same
 // error journal as browser errors (Admin → Bugs).
 export const onRequestError: Instrumentation.onRequestError = async (error, request, context) => {

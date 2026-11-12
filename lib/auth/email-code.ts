@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import { and, desc, eq, gt, isNull, lt } from "drizzle-orm";
+import { isProductionDeployment } from "@/lib/core/rules/staging";
 import { getDb } from "@/lib/db";
 import { loginCodes } from "@/lib/db/schema";
 
@@ -10,8 +11,8 @@ import { loginCodes } from "@/lib/db/schema";
 const TTL_MS = 10 * 60 * 1000;
 export const MAX_TRIES = 5;
 
-/** Tests and local development show the code on screen when no email provider is set. Never in production. */
-export const showCodesOnScreen = () => !process.env.RESEND_API_KEY && (process.env.NODE_ENV !== "production" || process.env.AUTH_SHOW_CODES === "true");
+/** Tests and local development show the code on screen when no email provider is set. Never on the live deployment. */
+export const showCodesOnScreen = () => !isProductionDeployment() && !process.env.RESEND_API_KEY && (process.env.NODE_ENV !== "production" || process.env.AUTH_SHOW_CODES === "true");
 export const emailCodesAvailable = () => Boolean(process.env.RESEND_API_KEY) || showCodesOnScreen();
 
 const hashCode = (email: string, code: string) => createHmac("sha256", process.env.MFA_ENCRYPTION_KEY || "sawwiq-login-code").update(`${email}:${code}`).digest("hex");

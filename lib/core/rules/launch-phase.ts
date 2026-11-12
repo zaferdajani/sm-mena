@@ -1,12 +1,19 @@
+import { isStagingMode, type Env } from "@/lib/core/rules/staging";
+
 /**
  * A reversible release boundary, not an account type or a second application.
  * Server deployment setting only. Missing/invalid configuration fails closed.
  * Stage changes never rewrite feature settings, memberships or commercial terms.
+ *
+ * Staging (`STAGING_MODE=true` off the live host) is always `full`: discovery
+ * and contracts follow the feature switches, and registration-only gating is
+ * not applied. The live site keeps the default of `registration`.
  */
 export const LAUNCH_PHASES = ["registration", "discovery", "full"] as const;
 export type LaunchPhase = (typeof LAUNCH_PHASES)[number];
 /** The configured phase. `env` is injectable so native clients and tests can pass their own configuration. */
-export function launchPhase(env: Record<string, string | undefined> = process.env): LaunchPhase {
+export function launchPhase(env: Env = process.env): LaunchPhase {
+  if (isStagingMode(env)) return "full";
   const raw = env.LAUNCH_PHASE;
   return LAUNCH_PHASES.find((p) => p === raw) ?? "registration";
 }
