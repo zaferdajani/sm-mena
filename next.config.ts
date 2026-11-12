@@ -9,14 +9,17 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 // here or over https (a payment partner's checkout). HSTS already keeps every request on https.
 // `next dev` (hot reload) needs eval and a websocket; production builds need neither.
 const DEV = process.env.NODE_ENV === "development";
+// Vercel preview deployments (staging) inject the Vercel comment toolbar from vercel.live; production never does.
+const PREVIEW = process.env.VERCEL_ENV === "preview";
+const LIVE = PREVIEW ? " https://vercel.live" : "";
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${DEV ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${DEV ? " 'unsafe-eval'" : ""}${LIVE}`,
+  `style-src 'self' 'unsafe-inline'${LIVE}`,
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob: https:",
-  "font-src 'self' data:",
-  `connect-src 'self'${DEV ? " ws: wss:" : ""}`,
+  `font-src 'self' data:${PREVIEW ? " https://vercel.live https://assets.vercel.com" : ""}`,
+  `connect-src 'self'${DEV ? " ws: wss:" : ""}${PREVIEW ? " https://vercel.live wss://ws-us3.pusher.com" : ""}`,
   "frame-src 'self' https:",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
