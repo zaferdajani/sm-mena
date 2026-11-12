@@ -55,6 +55,8 @@ export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = 
  * (a buying agency, or a signed-in client whose email is on the contract).
  */
 export async function confirmSignerEmail(page: Page, email = `signer.${Date.now()}@test.jo`) {
+  // The signature-name field is on every sign form; wait for it so a slow page load does not skip the step.
+  await expect(page.locator("#signer")).toBeVisible();
   const step = page.getByTestId("signer-verify");
   if (!(await step.count())) return;
   const field = step.locator('input[name="signEmail"]');
