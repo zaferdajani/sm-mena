@@ -23,6 +23,8 @@ export interface SiteCopy {
   nav: { href: string; label: string }[];
   /** The menu button that holds `nav` on narrow screens. */
   menu: string;
+  /** The app's own "Explore" entry, the same label as the app navigation, so both headers lead to the same place (QA L-03). */
+  navExplore: string;
   country: { label: string; locate: string };
   /** Header button for visitors who are not signed in; `short` on narrow phones. */
   signUp: { label: string; short: string };
@@ -67,6 +69,7 @@ const ar: SiteCopy = {
     { href: "#agencies", label: "للوكالات" },
   ],
   menu: "القائمة",
+  navExplore: "استكشف",
   country: { label: "الدولة", locate: "حدّد دولتي من موقعي" },
   signUp: { label: "انضم مجاناً", short: "انضم" },
   cta: { match: "اسأل المطابق الذكي", browse: "تصفّح الوكالات", join: "أنشئ صفحتك مجاناً", reviews: "شاهد تقييمات الوكالات" },
@@ -199,6 +202,7 @@ const en: SiteCopy = {
     { href: "#agencies", label: "For agencies" },
   ],
   menu: "Menu",
+  navExplore: "Explore",
   country: { label: "Country", locate: "Use my location" },
   signUp: { label: "Join free", short: "Join" },
   cta: { match: "Ask the matchmaker", browse: "Browse agencies", join: "Create your free page", reviews: "See agency ratings" },

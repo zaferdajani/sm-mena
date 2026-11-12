@@ -15,9 +15,10 @@ test("one screen: a suggested link, inline errors, a draft that survives navigat
   await expect(page.getByTestId("join-step-page")).toHaveCount(0);
   await expect(page.locator("#email")).toBeVisible();
 
-  // Submitting an empty form shows the first problem under its field and stays on the page.
+  // Submitting an empty form shows every problem under its field at once (QA L-01), focuses the first, and stays on the page.
   await page.getByRole("button", { name: "Create page" }).click();
-  await expect(page.getByTestId("join-error-name")).toBeVisible();
+  for (const field of ["name", "whatsapp", "email", "password", "consent", "adult"]) await expect(page.getByTestId(`join-error-${field}`)).toBeVisible();
+  await expect(page.locator("#name")).toBeFocused();
   await expect(page).toHaveURL(/\/en\/join$/);
 
   // The link follows the name until the person edits it.

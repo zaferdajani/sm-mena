@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LegalDocumentView } from "@/components/legal/legal-document-view";
 import { NdaSign } from "@/components/ndas/nda-sign";
 import { Link } from "@/i18n/navigation";
+import { maskEmail } from "@/lib/auth/signer-check";
 import { getNdaByToken } from "@/lib/data/ndas";
 import { ndaDocument } from "@/lib/legal/document";
 
@@ -43,7 +44,7 @@ export default async function ClientNda({ params }: PageProps<"/[locale]/n/[toke
           ]}
         />
       </div>
-      {n.status === "sent" && <NdaSign token={token} />}
+      {n.status === "sent" && <NdaSign token={token} masked={n.clientEmail ? maskEmail(n.clientEmail.trim().toLowerCase()) : null} />}
     </div>
   );
 }

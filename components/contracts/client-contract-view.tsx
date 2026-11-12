@@ -15,6 +15,8 @@ import { ReceiptsList } from "@/components/contracts/receipts-list";
 import { buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { nextFundable, type ContractView } from "@/lib/data/contracts";
+import { getSessionUser } from "@/lib/auth/session";
+import { maskEmail } from "@/lib/auth/signer-check";
 
 /**
  * The client's side of a contract: reached through the private link (`token`),
@@ -54,7 +56,7 @@ export async function ClientContractView({ v, locale, hidden, pdfRef, funded, si
           <div className="rounded-2xl border p-4">
             <ContractDocument v={v} locale={locale} pdfRef={pdfRef} />
           </div>
-          <ClientSign hidden={hidden} />
+          <ClientSign hidden={hidden} verify={await signerStep(v, hidden)} />
         </>
       )}
       {c.status === "disputed" && <p className="rounded-xl bg-destructive/10 p-3 text-sm">{t("dispute.active")}</p>}
@@ -81,4 +83,16 @@ export async function ClientContractView({ v, locale, hidden, pdfRef, funded, si
       )}
     </div>
   );
+}
+
+/**
+ * The email step before signing from the private link (QA H-01): none for the buying agency (signed in)
+ * or for a signed-in client whose account email is the one on the contract.
+ */
+async function signerStep(v: ContractView, hidden: Record<string, string>): Promise<{ masked: string | null } | null> {
+  if (!hidden.token) return null;
+  const email = v.contract.clientEmail?.trim().toLowerCase() ?? null;
+  const user = await getSessionUser();
+  if (email && user?.email.toLowerCase() === email) return null;
+  return { masked: email ? maskEmail(email) : null };
 }

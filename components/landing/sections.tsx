@@ -10,20 +10,22 @@ import { appUrl, landingCopy, siteCopy, type Lang, type WhoItem } from "./copy";
 
 export function SiteHeader({ lang, country, chosen, account }: { lang: Lang; country: CountryCode; chosen: boolean; account: { href: string; label: string } }) {
   const c = siteCopy[lang];
+  // The page's sections, then the app's main entry (QA L-03).
+  const nav = [...c.nav, { href: appUrl(lang, "explore"), label: c.navExplore }];
   return (
     <header className="sw-header">
       <a className="sw-header__brand" href={`/${lang}`}>
         <BrandLockup label={c.brand} />
       </a>
       <nav aria-label={lang === "ar" ? "أقسام الصفحة" : "Page sections"} className="sw-header__nav">
-        {c.nav.map((item) => (
+        {nav.map((item) => (
           <a href={item.href} key={item.href}>
             {item.label}
           </a>
         ))}
       </nav>
       <div className="sw-header__tools">
-        <HeaderMenu label={c.menu} items={c.nav} />
+        <HeaderMenu label={c.menu} items={nav} />
         <CountryPicker
           chosen={chosen}
           current={country}

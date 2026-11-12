@@ -53,11 +53,13 @@ export async function checkCode(email: string, code: string, now = new Date()): 
 const SIGN_IN_TEXT = (code: string) => [`رمز الدخول إلى سوّق: ${code}`, "صالح لمدة 10 دقائق. إذا لم تطلبه، تجاهل هذه الرسالة.", "", `Your Sawwiq sign-in code: ${code}`, "It works for 10 minutes. If you didn't ask for it, ignore this email."];
 const RESET_TEXT = (code: string) => [`رمز إعادة تعيين كلمة المرور في سوّق: ${code}`, "صالح لمدة 10 دقائق. إذا لم تطلبه، تجاهل هذه الرسالة: كلمة المرور الحالية لن تتغير.", "", `Your Sawwiq password reset code: ${code}`, "It works for 10 minutes. If you didn't ask for it, ignore this email: your password stays as it is."];
 
-/** Emails the code (Arabic and English): a sign-in code, or a password reset code (docs/61). The address is never logged. */
-export async function sendCodeEmail(to: string, code: string, purpose: "signin" | "reset" = "signin") {
+const SIGN_TEXT = (code: string) => [`رمز تأكيد التوقيع في سوّق: ${code}`, "صالح لمدة 10 دقائق. أدخله في صفحة الاتفاقية لتوقّعها. إذا لم تطلبه، تجاهل هذه الرسالة.", "", `Your Sawwiq signing code: ${code}`, "It works for 10 minutes. Enter it on the agreement page to sign. If you didn't ask for it, ignore this email."];
+
+/** Emails the code (Arabic and English): sign-in, password reset (docs/61), or confirming who signs an agreement (QA H-01). The address is never logged. */
+export async function sendCodeEmail(to: string, code: string, purpose: "signin" | "reset" | "sign" = "signin") {
   const key = process.env.RESEND_API_KEY;
   if (!key) return false;
-  const text = (purpose === "reset" ? RESET_TEXT : SIGN_IN_TEXT)(code).join("\n");
+  const text = (purpose === "reset" ? RESET_TEXT : purpose === "sign" ? SIGN_TEXT : SIGN_IN_TEXT)(code).join("\n");
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",

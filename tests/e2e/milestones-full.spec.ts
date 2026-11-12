@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN, drawSignature, joinAgency, login } from "./helpers";
+import { ADMIN, drawSignature, joinAgency, login, confirmSignerEmail } from "./helpers";
 
 // The whole milestone system (docs/14): test-mode payments said plainly,
 // review deadline, revision rounds, a dispute with evidence from both sides,
@@ -17,6 +17,7 @@ async function tickAll(page: Page, index = 0) {
 }
 
 async function sign(page: Page, name: string) {
+  await confirmSignerEmail(page);
   await page.fill("#signer", name);
   await drawSignature(page);
   await page.getByText(/I have read this document and agree to it/).click();

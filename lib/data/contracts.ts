@@ -639,14 +639,18 @@ type Result = { ok: true } | { error: string };
 /** Checks what is stored still matches what the agency signed (used before showing "signed" copies too). */
 export const termsIntact = (v: ContractView) => storedTermsHash(v) === v.contract.termsHash;
 
-export async function clientSign(token: string, signerName: string, ip: string, signature?: Uint8Array | null, visitorId?: string | null): Promise<Result> {
+export async function clientSign(token: string, signerName: string, ip: string, signature?: Uint8Array | null, visitorId?: string | null, signerEmail?: string | null): Promise<Result> {
   const v = await getContractByToken(token);
   if (!v) return { error: "notFound" };
-  return signAsClient(v, signerName, ip, signature, visitorId);
+  return signAsClient(v, signerName, ip, signature, visitorId, signerEmail);
 }
 
-/** The client (private link, or the buying agency signed in) signs the exact terms the agency signed. */
-export async function signAsClient(v: ContractView, signerName: string, ip: string, signature?: Uint8Array | null, visitorId?: string | null): Promise<Result> {
+/**
+ * The client (private link, or the buying agency signed in) signs the exact terms the agency signed.
+ * `signerEmail` is the address the link signer proved with a one-time code, or a signed-in client's
+ * account email (QA H-01). The caller checks it; it is recorded with the signature.
+ */
+export async function signAsClient(v: ContractView, signerName: string, ip: string, signature?: Uint8Array | null, visitorId?: string | null, signerEmail?: string | null): Promise<Result> {
   if (v.contract.status !== "sent") return { error: "notSignable" };
   if (signerName.trim().length < 3) return { error: "signer" };
   // Contracts with the universal conditions need a drawn signature as well as the typed name.
@@ -661,6 +665,7 @@ export async function signAsClient(v: ContractView, signerName: string, ip: stri
       clientSignedAt: new Date(),
       clientSignIpHash: ipHash(ip),
       clientSignature: b64(signature),
+      ...(signerEmail ? { clientSignerEmail: signerEmail, clientVerifiedAt: new Date() } : {}),
       ...(visitorId && !v.contract.clientAgencyId ? { clientVisitorId: visitorId } : {}),
       updatedAt: new Date(),
     })

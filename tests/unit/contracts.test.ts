@@ -94,10 +94,13 @@ describe("protected contract", () => {
     expect(v.milestones[0].checks.map((c) => [c.text, c.source])).toContainEqual(["Arabic captions reviewed by the owner before posting", "special_request"]);
     expect(nextFundable(v)).toBeNull(); // not signed yet
 
-    expect(await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG)).toEqual({ ok: true });
+    expect(await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG, null, "nour@example.test")).toEqual({ ok: true });
     expect(await clientSign(token, "Nour Khalil", "1.2.3.4", SIGNATURE_PNG)).toEqual({ error: "notSignable" });
     v = (await getContractByToken(token))!;
     expect(v.contract.status).toBe("active");
+    // QA H-01: the address the signer proved is kept with the signature.
+    expect(v.contract.clientSignerEmail).toBe("nour@example.test");
+    expect(v.contract.clientVerifiedAt).toBeInstanceOf(Date);
 
     // Can't deliver before the client pays in.
     await tickAll(token, "agency", 0);

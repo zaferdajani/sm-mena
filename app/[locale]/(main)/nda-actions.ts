@@ -6,8 +6,10 @@ import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { requireAgency } from "@/lib/auth/guards";
+import { maskEmail, sendSignerCode, signerEmail, verifySigner } from "@/lib/auth/signer-check";
+import type { SignCodeState } from "@/components/contracts/signer-verify";
 import { NDA_YEARS } from "@/lib/data/contracts";
-import { answerNda, cancelNda, createNda, NDA_DIRECTIONS, signNda } from "@/lib/data/ndas";
+import { answerNda, cancelNda, createNda, getNdaByToken, NDA_DIRECTIONS, signNda } from "@/lib/data/ndas";
 import { parseSignatureDataUrl } from "@/lib/pdf/signature-image";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request";
@@ -65,11 +67,38 @@ export async function cancelNdaAction(formData: FormData) {
   refresh();
 }
 
+/** Step one of signing an NDA from its private link: a one-time code by email (QA H-01). */
+export async function ndaSignCodeAction(_: SignCodeState, formData: FormData): Promise<SignCodeState> {
+  const ip = await clientIp();
+  if (!rateLimit(`sign-code:${ip}`, 10, 60 * 60 * 1000)) return { error: "rateLimited" };
+  const v = await getNdaByToken(String(formData.get("token") ?? ""));
+  if (!v) return { error: "notFound" };
+  if (v.nda.status !== "sent") return { error: "notSignable" };
+  const to = signerEmail(v.nda.clientEmail, formData.get("signEmail"));
+  if ("error" in to) return { error: to.error };
+  if (!rateLimit(`sign-code:${to.email}`, 5, 60 * 60 * 1000)) return { error: "rateLimited" };
+  const sent = await sendSignerCode(to.email);
+  if ("error" in sent) return { error: sent.error, email: v.nda.clientEmail ? undefined : to.email };
+  return { sent: true, masked: maskEmail(to.email), email: v.nda.clientEmail ? undefined : to.email, shownCode: sent.shownCode };
+}
+
 export async function signNdaAction(_: NdaActionState, formData: FormData): Promise<NdaActionState> {
   const ip = await clientIp();
   if (!rateLimit(`sign:${ip}`, 10, 10 * 60 * 1000)) return { error: "rateLimited" };
   if (formData.get("agree") !== "on") return { error: "agree" };
-  const r = await signNda(String(formData.get("token") ?? ""), String(formData.get("signer") ?? ""), ip, parseSignatureDataUrl(formData.get("signature")));
+  const token = String(formData.get("token") ?? "");
+  const signer = String(formData.get("signer") ?? "");
+  const signature = parseSignatureDataUrl(formData.get("signature"));
+  // Cheap checks first, so a missing name or drawing never uses up the one-time code.
+  if (signer.trim().length < 3) return { error: "signer" };
+  if (!signature?.length) return { error: "signature" };
+  const v = await getNdaByToken(token);
+  if (!v) return { error: "notFound" };
+  const who = signerEmail(v.nda.clientEmail, formData.get("signEmail"));
+  if ("error" in who) return { error: "verify" };
+  const ok = await verifySigner(who.email, formData.get("signCode"));
+  if ("error" in ok) return { error: ok.error };
+  const r = await signNda(token, signer, ip, signature, who.email);
   refresh();
   return "error" in r ? { error: r.error } : { ok: true };
 }

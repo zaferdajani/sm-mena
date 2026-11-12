@@ -49,6 +49,25 @@ export async function joinAgency(page: Page, prefix = "e2e", { stay = false } = 
 }
 
 /** Draws a short squiggle on the (first visible) signature pad inside `scope`. */
+/**
+ * The email step before signing from a private link (QA H-01): ask for the code (typing `email` when the
+ * agreement has none) and enter the code the test server shows. Does nothing where there is no such step
+ * (a buying agency, or a signed-in client whose email is on the contract).
+ */
+export async function confirmSignerEmail(page: Page, email = `signer.${Date.now()}@test.jo`) {
+  // The signature-name field is on every sign form; wait for it so a slow page load does not skip the step.
+  await expect(page.locator("#signer, #nda-signer").first()).toBeVisible();
+  const step = page.getByTestId("signer-verify");
+  if (!(await step.count())) return;
+  const field = step.locator('input[name="signEmail"]');
+  if (await field.count()) await field.fill(email);
+  await page.getByTestId("send-sign-code").click();
+  const shown = page.getByTestId("shown-sign-code");
+  await expect(shown).toBeVisible();
+  const code = ((await shown.textContent()) ?? "").match(/\d{6}/)?.[0] ?? "";
+  await page.getByTestId("sign-code").fill(code);
+}
+
 export async function drawSignature(page: Page, scope: Locator | Page = page) {
   const canvas = scope.getByTestId("signature-pad").locator("canvas").first();
   await canvas.scrollIntoViewIfNeeded();

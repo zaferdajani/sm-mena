@@ -35,7 +35,7 @@ The builder is one page of short steps:
 
 A contract can start from scratch, from a package, from a won quote, or from a partner (see "Partner contracts" below).
 
-The client needs no account. The agency sends a private link (a WhatsApp button is included). The client reads the full agreement there and signs with a typed name and a drawn signature.
+The client needs no account. The agency sends a private link (a WhatsApp button is included). The client reads the full agreement there and signs with a typed name and a drawn signature. Before signing, the person on the link confirms an email address with a one-time code: the client email on the contract when the agency entered one, otherwise an address they type. The confirmed address is kept with the signature (QA H-01, `lib/auth/signer-check.ts`). NDAs from a private link work the same way.
 
 **Signed terms.** Both signatures cover a SHA-256 fingerprint of the exact terms. Terms **v4** (`TERMS_VERSION = 4`) add four things to v3:
 - the review period (`reviewDays`);

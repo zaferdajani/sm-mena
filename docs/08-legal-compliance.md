@@ -73,6 +73,7 @@ In force since 17 March 2024, fully enforceable since 17 March 2025. Applies to 
 | Data | Why | Personal? | Retention |
 |---|---|---|---|
 | Drawn signature (PNG) and typed name of each signer | Electronic signature of a contract or NDA | Yes (biometric-like mark; not used for identification) | Signed record kept for at least 10 years after the contract ends, or as long as the law requires |
+| Email address the client signer confirmed with a one-time code, and when (QA H-01, Nov 2026) | Shows who signed from a private contract or NDA link; the code proves control of the address | No new consent screen: the signer asks for the code on the signing page, which says the address is kept with the signature | Kept with the signed record (at least 10 years after the contract ends). The one-time code is stored only as a keyed hash and deleted after a day |
 | Party legal name and commercial registration / ID number | Identify the parties so the contract is enforceable | Business data; an individual's ID number is personal | Same as the signed record |
 | Hashed IP at signing (`sha256("sawwiq-sign:" + ip)`) | Evidence of the signing event | Pseudonymous | Same as the signed record |
 | Client's change request / decline note on an NDA | Negotiation before signing | May contain personal data | Same as the document |
@@ -250,3 +251,8 @@ Owner decision after the research summarised here (not legal advice; confirm wit
 - **"Open to new projects"** (`agencies.accepting_projects`): a business fact the owner sets, audited `agency.availability`; shown on the page.
 - **Share target:** pictures shared from the phone into the installed app go to `/api/share-target`, which stages them in the owner's private setup draft exactly like an upload (same storage, same 60-day retention). Nothing is published by sharing.
 - **Old page links** (`agencies.previous_handle`): after a handle change the old handle redirects to the new one and cannot be taken by another account.
+
+## Signer email on private agreement links (QA H-01, 12 Nov 2026)
+
+Before anyone signs a contract or NDA from its private link, they confirm an email address with a 6-digit code (`lib/auth/signer-check.ts`). If the agency entered the client's email, the code goes only there and the page shows it masked; otherwise the signer types an address. The confirmed address and time are stored on the agreement (`client_signer_email`, `client_verified_at`) as part of the signed record. The address is never logged. A signed-in client whose account email is on the contract, and a buying agency signing from its studio, skip the step because their sign-in already proves who they are.
+

@@ -3,14 +3,35 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-// Hardening headers on every response (QA M-03, L-06). The framing rule is set two ways for old and
-// new browsers; no page of ours is meant to be framed by another site. A full script CSP is not set
-// here: it needs nonces through the app and a staging trial first.
+// The Content-Security-Policy (QA M-03). Scripts, styles, fonts and requests come from this site only;
+// Next.js still needs inline scripts and styles. Photos, videos and embeds (YouTube, TikTok, app demos)
+// come from https hosts. No plugins, no <base> rewrites, no framing by other sites, and forms post only
+// here or over https (a payment partner's checkout). HSTS already keeps every request on https.
+// `next dev` (hot reload) needs eval and a websocket; production builds need neither.
+const DEV = process.env.NODE_ENV === "development";
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${DEV ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob: https:",
+  "font-src 'self' data:",
+  `connect-src 'self'${DEV ? " ws: wss:" : ""}`,
+  "frame-src 'self' https:",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https:",
+  "frame-ancestors 'self'",
+].join("; ");
+
+// Hardening headers on every response (QA M-03, L-06). The framing rule is set two ways for old and new browsers.
 const SECURITY_HEADERS = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
-  { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+  { key: "Content-Security-Policy", value: CSP },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Voice notes (microphone), photos (camera), "use my location" and the payment sheet stay available to our own pages only.
   { key: "Permissions-Policy", value: "camera=(self), microphone=(self), geolocation=(self), payment=(self), usb=(), serial=(), hid=(), browsing-topics=()" },

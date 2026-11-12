@@ -27,19 +27,22 @@ The owner shared an external QA report of staging.sawwiq.org (27 findings: 0 Cri
 | M-11 | The test wallet shows readable labels. A declined attempt is struck through and says nothing was charged. |
 | L-09 | The TEST MODE banner hides "Sign in" for a signed-in user. |
 
-## Waiting on the owner
+## Fixed in the second round (owner asked to fix all)
 
-- **H-01: who may sign a client contract.** The client signs from a private link with a typed name and a drawn signature, with no account (docs/14). That is the documented design. Adding an identity step (for example a one-time code to the client's WhatsApp or email before signing) changes the contract and authentication rules, so it needs the owner's decision before go-live.
-- **H-05 and L-11: test data on the staging database.** Two QA sign-up accounts are public on staging Explore, and the staging agency has leftover managed accounts. These are rows on the staging database, not code. Hide or remove them in staging Admin, or refresh staging data.
-- **Test data from the QA run** (the report's "Test data to clean up" list) is on staging only.
-- **Testing gaps** named by the report: a second agency account for recipient-side collaboration, and a Business plan test account for roles.
+| ID | Fix |
+| --- | --- |
+| H-01 | Before a client signs a contract or NDA from a private link, they prove they hold the email it was sent to: they type that address, get a one-time code (purpose `sign`) and enter it. The contract and NDA store `client_signer_email` and `client_verified_at` (migration 0044). Signed-in owners who already proved the email skip the code. `lib/auth/signer-check.ts`, `components/contracts/signer-verify.tsx`. |
+| L-01 | The sign-up form shows every problem at once and moves focus to the first. |
+| L-03 | The landing header links to Explore, inline and in the phone menu. |
+| CSP | Every response sends a full Content-Security-Policy (`default-src 'self'`, no plugins, `base-uri 'self'`). Scripts keep `'unsafe-inline'` until nonces are added; `tests/e2e/security-headers.spec.ts` fails on any CSP violation on the main pages. |
+| M-07 | The landing scroll video and its posters wait until the page has loaded and gone idle (or the visitor scrolls). Mobile page weight on first load fell from 5.8 MB to 0.75 MB. The hero photo is preloaded; the rest of the LCP time is script work on a throttled phone. |
+| M-08 | axe found no contrast problems on the main public and Studio pages, light and dark, at 390 px. |
+| L-10 (staging) | After a declined test payment the form keeps the test card number and CVC for the tab (session storage, test cards only). |
+| H-05 (staging) | Each staging build hides agencies whose handle starts with `qa.` from Explore (audited as `staging.qa_fixture_hidden`). |
 
-## Planned, not built
+## Left with the owner
 
-- **M-07**: mobile homepage LCP (5.6 s) comes from the hero video and posters. It needs a measured performance pass, not a guess.
-- **M-08 (rest)**: the other contrast hits sit over video or background images and need a visual check.
-- **A full script CSP** needs nonces through the app and a trial on staging first.
-- **L-01**: the sign-up form names the first problem; showing every problem at once is a design change.
-- **L-02**: the logo and photos with empty alt sit next to text that says the same; they are decorative by design.
-- **L-03**: the landing page and the app have different navigation by design.
-- **L-10**: keeping card details after a declined test payment would mean carrying them through the URL; left as is.
+- **L-11 and QA run data**: leftover managed accounts and portfolio clients on the staging agency stay; the staging seed keeps what users add. Remove them in staging Studio. Contracts and payments from the QA run stay: the escrow ledger is append-only.
+- **Testing gaps**: a second agency account for recipient-side collaboration, and a Business plan test account for roles.
+- **L-02**: empty alt text is on decorative images next to text that says the same; no change.
+- Rotate the staging agency password used in the QA run.
