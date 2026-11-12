@@ -14,12 +14,12 @@ test("sign-up's WhatsApp code follows the business country until another code is
   // The WhatsApp field is on the contact step.
   const field = page.getByTestId("phone-whatsapp");
   await expect(field.getByTestId("phone-dial")).toHaveText("+966");
-  await page.getByTestId("country-select").selectOption("JO");
+  await page.getByTestId("country-select").selectOption("jo");
   await expect(field.getByTestId("phone-dial")).toHaveText("+962");
   await field.getByTestId("phone-country").selectOption("EG");
   await expect(field.getByTestId("phone-dial")).toHaveText("+20");
   // A code the person picked is theirs: changing the business country again leaves it.
-  await page.getByTestId("country-select").selectOption("SA");
+  await page.getByTestId("country-select").selectOption("sa");
   await expect(field.getByTestId("phone-dial")).toHaveText("+20");
   await page.fill("#whatsapp", "0101 234 5678");
   await page.fill("#email", `${handle}@test.jo`);

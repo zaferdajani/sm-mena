@@ -198,7 +198,8 @@ test("Swiss v2 Studio and admin share a measured workspace without tab collision
     const metrics = await frame.evaluate((node) => {
       const rect = node.getBoundingClientRect();
       const nav = node.querySelector(".sw-workspace-nav");
-      const tabs = nav ? [...nav.querySelectorAll("a")] : [];
+      // The tab strip's own links; the "More" menu (a <details> beside the strip) stacks its items vertically by design.
+      const tabs = nav ? [...nav.querySelectorAll(":scope > div a")] : [];
       return {
         width: rect.width,
         left: rect.left,
