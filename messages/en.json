@@ -455,6 +455,7 @@
     "anyBudget": "Any budget",
     "upTo": "Up to {price} JOD",
     "results": "{count, plural, =0 {No results} one {1 result} other {# results}}",
+    "resultsClosest": "No exact matches; the closest agencies are below",
     "metaDescription": "Explore work by marketing and social media agencies in Jordan: filter by service, city, platform, industry and budget, and contact them directly.",
     "platforms": "Platforms",
     "platformsHint": "(pick one or more)",
@@ -2016,7 +2017,7 @@
         "tooManyMilestones": "Up to 12 milestones.",
         "dates": "Check the start and end dates.",
         "milestoneDate": "Each milestone date must be inside the contract dates.",
-        "amounts": "Enter the amounts (the total must be more than 0).",
+        "amounts": "Enter the amounts: the total must be between 1 and 1,000,000 JOD, and no amount can be negative.",
         "emptyChecklist": "Every milestone needs at least one checklist item.",
         "signer": "Type your full name to sign.",
         "agree": "Tick the box to agree.",
@@ -5587,7 +5588,7 @@
     "removed": "Selection removed."
   },
   "OwnerEarly": {
-    "metaTitle": "Register as a business owner · Sawwiq",
+    "metaTitle": "Register as a business owner",
     "metaDescription": "Tell Sawwiq what marketing help your business needs. When the first providers' pages open, you are matched first.",
     "title": "Have a business and need marketing? Register now.",
     "intro": "Providers are building their pages during this early phase. Register your business and what you need, and you get first pick when their pages open.",
@@ -5599,7 +5600,7 @@
     "provider": "Offer marketing services?",
     "providerLink": "Create your provider page",
     "needs": {
-      "metaTitle": "What your business needs · Sawwiq",
+      "metaTitle": "What your business needs",
       "signedInAs": "Signed in as",
       "title": "What does your business need?",
       "titleEdit": "Update what your business needs",
@@ -5632,7 +5633,7 @@
       }
     },
     "done": {
-      "metaTitle": "You are registered · Sawwiq",
+      "metaTitle": "You are registered",
       "eyebrow": "Registered",
       "title": "Thank you. You are on the list.",
       "intro": "We have your needs and your city in {country}. Nothing else to do now.",
@@ -5659,7 +5660,7 @@
     }
   },
   "OwnerMatches": {
-    "metaTitle": "Your provider matches · Sawwiq",
+    "metaTitle": "Your provider matches",
     "signedInAs": "Signed in as",
     "title": "Providers that fit your business",
     "intro": "Chosen for {city}, {country}, from what you registered. You decide whom to talk to; nobody contacts you before you accept.",

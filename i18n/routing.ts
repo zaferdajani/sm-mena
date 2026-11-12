@@ -17,6 +17,9 @@ export const routing = defineRouting({
   // header would add a conflicting set whose x-default is an unprefixed URL
   // that redirects.
   alternateLinks: false,
+  // Detection is off and the visitor's pick lives in our own cookie (LANG_COOKIE), so next-intl's
+  // NEXT_LOCALE cookie did nothing but sit there without Secure or HttpOnly (QA L-05).
+  localeCookie: false,
 });
 
 export function directionOf(locale: string): "rtl" | "ltr" {

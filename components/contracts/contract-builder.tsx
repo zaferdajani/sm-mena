@@ -125,7 +125,8 @@ export function ContractBuilder({
       .join("\n");
 
   const split = (n: number) => {
-    const total = Number(totalJod) || 0;
+    // A negative total is never split into negative milestones (QA M-10).
+    const total = Math.max(0, Number(totalJod) || 0);
     const span = daysBetween(start, end);
     const each = Math.floor((total / n) * 1000) / 1000;
     setMilestones(
@@ -244,7 +245,7 @@ export function ContractBuilder({
         <div className="flex flex-wrap items-end gap-3">
           <div className="grid gap-1.5">
             <Label htmlFor="c-total">{tl("totalPrice", { currency: money })}</Label>
-            <Input id="c-total" type="number" min={0} step="0.001" value={totalJod} onChange={(e) => setTotalJod(e.target.value)} className="w-36" dir="ltr" />
+            <Input id="c-total" type="number" min={1} max={1000000} step="0.001" value={totalJod} onChange={(e) => setTotalJod(e.target.value)} className="w-36" dir="ltr" />
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-sm">
             <span className="text-muted-foreground">{t("split")}</span>
@@ -274,7 +275,7 @@ export function ContractBuilder({
               <div className="grid gap-2 sm:grid-cols-[1fr_10rem_8rem]">
                 <Input aria-label={t("mTitle")} value={m.title} onChange={(e) => setM(i, { title: e.target.value })} dir="auto" required />
                 <Input aria-label={t("mDue")} type="date" value={m.dueDate} min={start} max={end} onChange={(e) => setM(i, { dueDate: e.target.value })} dir="ltr" required />
-                <Input aria-label={t("mAmount")} type="number" min={0} step="0.001" value={m.amountJod} onChange={(e) => setM(i, { amountJod: e.target.value })} dir="ltr" required />
+                <Input aria-label={t("mAmount")} type="number" min={0} max={1000000} step="0.001" value={m.amountJod} onChange={(e) => setM(i, { amountJod: e.target.value })} dir="ltr" required />
               </div>
               <Textarea aria-label={t("mChecks")} value={m.checks} onChange={(e) => setM(i, { checks: e.target.value })} placeholder={t("mChecksPh")} rows={3} dir="auto" />
             </li>

@@ -7,7 +7,7 @@ import styles from "./app-frame.module.css";
 export function AppFrame({ children }: { children: React.ReactNode }) {
   const focused = usePathname() === "/portfolio-setup";
   return (
-    <div className={`sw-app min-h-dvh md:flex ${focused ? styles.focused : ""}`}
+    <div className={`sw-app min-h-dvh lg:flex ${focused ? styles.focused : ""}`}
       data-design-surface="app" data-onboarding-focused={focused ? "true" : undefined}>
       {children}
     </div>

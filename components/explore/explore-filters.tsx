@@ -120,8 +120,9 @@ export function ExploreFilters({ options, resultLabel, currency }: { options: Fi
         </form>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger render={<Button variant="outline" className="h-10 gap-2" data-testid="filters-button" />}>
-            <SlidersHorizontal className="size-4" />
-            <span className="hidden sm:inline">{t("filters")}</span>
+            <SlidersHorizontal className="size-4" aria-hidden />
+            {/* Visually hidden on phones, never hidden from screen readers (QA M-05). */}
+            <span className="sr-only sm:not-sr-only">{t("filters")}</span>
             {chips.length > 0 && <span className="rounded-full bg-primary px-1.5 text-xs text-primary-foreground">{chips.length}</span>}
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-2xl sm:mx-auto sm:max-w-lg">

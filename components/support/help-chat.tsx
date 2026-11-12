@@ -214,7 +214,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
           // tab, a share button or a form field for long; the word "Help" shows from tablet width up.
           className={cn(
             "fixed end-3 z-40 flex size-11 items-center justify-center gap-2 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-lg transition-[transform,opacity] duration-200 hover:opacity-90 md:end-4 md:size-auto md:px-4 md:py-2.5",
-            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
             tucked && "pointer-events-none translate-y-4 opacity-0 md:pointer-events-auto md:translate-y-0 md:opacity-100",
           )}
           aria-label={t("open")}
@@ -230,7 +230,7 @@ export function HelpChat({ aiEnabled, aboveNav = false }: { aiEnabled: boolean; 
           aria-label={t("title")}
           className={cn(
             "fixed inset-x-2 z-50 flex max-h-[min(36rem,80dvh)] flex-col overflow-hidden rounded-2xl border bg-background shadow-2xl sm:inset-x-auto sm:end-4 sm:w-96",
-            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] md:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
+            aboveNav ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-6" : "bottom-[calc(0.75rem+env(safe-area-inset-bottom))]",
           )}
           data-testid="help-chat"
           data-mode={ai ? "ai" : "guided"}

@@ -72,6 +72,11 @@ describe("contract drafts", () => {
     expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], dueDate: "2027-01-01" }] })).toBe("milestoneDate");
     expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], checks: [" "] }] })).toBe("emptyChecklist");
     expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], amountFils: 0 }] })).toBe("amounts");
+    // QA M-10: a negative milestone, a 0.005 JOD total and a 99,999,999,999 JOD total are all refused.
+    expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], amountFils: -250_000 }] })).toBe("amounts");
+    expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], amountFils: 5 }] })).toBe("amounts");
+    expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], amountFils: 99_999_999_999_000 }] })).toBe("amounts");
+    expect(validateContract({ ...d, milestones: [{ ...d.milestones[0], amountFils: 1_000 }] })).toBeNull();
     expect(validateContract({ ...d, signerName: "S" })).toBe("signer");
     expect(d.items).toEqual([{ key: "reels", quantity: 8, platform: "instagram" }, { key: "account_management", quantity: 2, platform: "instagram" }]);
   });

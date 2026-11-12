@@ -256,7 +256,7 @@ async function aiDoctor(project) {
   if (changed) {
     if ((await deploy(project)) !== "READY") process.exit(1);
   } else console.log("Nothing to change; no redeploy.");
-  const health = await fetch(`https://${DOMAIN}/api/health`).then((r) => r.json()).catch(() => null);
+  const health = await fetch(`https://${DOMAIN}/api/health`, { headers: process.env.CRON_SECRET ? { authorization: `Bearer ${process.env.CRON_SECRET}` } : {} }).then((r) => r.json()).catch(() => null);
   console.log(`Live site AI: ${health?.ai ?? "unknown"}`);
 }
 
