@@ -276,7 +276,7 @@ export async function clientFundAction(formData: FormData) {
 /** Staging sandbox card checkout. Refuses to run unless the virtual gateway is explicitly enabled off production. */
 export async function clientVirtualPayAction(formData: FormData) {
   const locale = await getLocale();
-  const { virtualCheckoutEnabled, debitVirtualWallet, recordVirtualDecline, creditVirtualWallet } = await import("@/lib/payments/virtual-wallet");
+  const { virtualCheckoutEnabled, debitVirtualWallet, recordVirtualDecline, creditVirtualWallet, openContractClientWallet, contractPayerKey } = await import("@/lib/payments/virtual-wallet");
   const { evaluateTestCard } = await import("@/lib/payments/virtual-cards");
   const c = await clientContract(formData);
   if (!c || c.v.contract.paymentsLive || !virtualCheckoutEnabled()) return redirect({ href: "/", locale });
@@ -289,7 +289,8 @@ export async function clientVirtualPayAction(formData: FormData) {
     cvc: String(formData.get("cvc") ?? ""),
     name: String(formData.get("holder") ?? ""),
   });
-  const payer = c.v.contract.clientEmail || `contract:${c.v.contract.id}`;
+  const payer = contractPayerKey(c.v.contract);
+  await openContractClientWallet(c.v.contract, m.amountFils);
   if (outcome !== "success") {
     await recordVirtualDecline(payer, m.amountFils, c.v.contract.currency, `decline:${m.id}:${outcome}`, outcome);
     refresh();

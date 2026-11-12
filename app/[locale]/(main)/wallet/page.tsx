@@ -8,16 +8,30 @@ import { notFound } from "next/navigation";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
-function EntryList({ entries, locale }: { entries: VirtualEntry[]; locale: string }) {
+const REASONS = ["declined", "insufficient", "expired", "cvc", "invalid", "unknown"] as const;
+
+/** Readable labels, not raw keys; a declined attempt shows that nothing was charged (QA M-11). */
+async function EntryList({ entries, locale }: { entries: VirtualEntry[]; locale: string }) {
+  const t = await getTranslations("VirtualPay");
+  const noteOf = (e: VirtualEntry) => {
+    if (e.kind === "open") return "";
+    if (e.kind === "decline") {
+      const reason = REASONS.find((r) => r === e.note);
+      return t("declineNote", { reason: reason ? t(`reasons.${reason}`) : e.note });
+    }
+    return e.note;
+  };
   return (
     <ul className="divide-y text-sm">
       {entries.map((e) => (
-        <li key={e.id} className="flex items-baseline justify-between gap-3 py-2" data-testid="wallet-entry">
+        <li key={e.id} className="flex items-baseline justify-between gap-3 py-2" data-testid="wallet-entry" data-kind={e.kind}>
           <span>
-            <span className="font-medium">{e.kind}</span>
-            <span className="ms-2 text-muted-foreground">{e.note}</span>
+            <span className="font-medium">{t(`kinds.${e.kind}`)}</span>
+            {noteOf(e) && <span className="ms-2 text-muted-foreground" dir="auto">{noteOf(e)}</span>}
           </span>
-          <span className="shrink-0 tabular-nums">{formatFils(e.amountFils, locale, e.currency)}</span>
+          <span className={e.kind === "decline" ? "shrink-0 tabular-nums text-muted-foreground line-through" : "shrink-0 tabular-nums"}>
+            {e.kind === "debit" ? "−" : e.kind === "decline" ? "" : "+"}{formatFils(e.amountFils, locale, e.currency)}
+          </span>
         </li>
       ))}
     </ul>

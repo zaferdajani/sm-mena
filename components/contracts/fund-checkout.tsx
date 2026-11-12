@@ -6,7 +6,7 @@ import { SubmitButton } from "@/components/submit-button";
 import { Link } from "@/i18n/navigation";
 import type { ContractView } from "@/lib/data/contracts";
 import { formatFils } from "@/lib/format";
-import { readVirtualWallet, virtualCheckoutEnabled } from "@/lib/payments/virtual-wallet";
+import { contractPayerKey, openContractClientWallet, readVirtualWallet, virtualCheckoutEnabled } from "@/lib/payments/virtual-wallet";
 
 /**
  * The built-in test checkout for paying a milestone into protection, for
@@ -16,7 +16,8 @@ export async function FundCheckout({ v, milestoneId, hidden, back, locale, cardE
   const t = await getTranslations("Contracts");
   const m = v.milestones.find((x) => x.id === milestoneId)!;
   if (virtualCheckoutEnabled()) {
-    const wallet = await readVirtualWallet(v.contract.clientEmail || `contract:${v.contract.id}`);
+    await openContractClientWallet(v.contract, m.amountFils);
+    const wallet = await readVirtualWallet(contractPayerKey(v.contract));
     return (
       <div className="space-y-4">
         <VirtualCardForm

@@ -5989,6 +5989,9 @@
     "admin": "Admin"
   },
   "VirtualPay": {
+    "kinds": { "open": "Opening balance", "debit": "Payment", "credit": "Returned to wallet", "decline": "Declined attempt" },
+    "declineNote": "{reason} · nothing was charged",
+    "reasons": { "declined": "Card declined", "insufficient": "Not enough balance", "expired": "Expired card", "cvc": "CVC declined", "invalid": "Invalid card details", "unknown": "Not a test card" },
     "title": "TEST MODE - virtual money",
     "body": "This checkout is a sandbox. It accepts only the test card numbers below. Nothing is sent to a bank or a payment company.",
     "balance": "Virtual balance: {amount}",

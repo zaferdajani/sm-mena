@@ -1,7 +1,7 @@
 import "./setup-db";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { closeDb } from "@/lib/db";
-import { creditVirtualWallet, debitVirtualWallet, openVirtualWallet, readVirtualWallet, recordVirtualDecline } from "@/lib/payments/virtual-wallet";
+import { contractPayerKey, creditVirtualWallet, debitVirtualWallet, openContractClientWallet, openVirtualWallet, readVirtualWallet, recordVirtualDecline } from "@/lib/payments/virtual-wallet";
 
 afterAll(() => closeDb());
 afterEach(() => vi.unstubAllEnvs());
@@ -16,6 +16,18 @@ function enable() {
 }
 
 describe("virtual wallet", () => {
+  it("opens a contract client's wallet once, with enough for the milestone (QA H-02)", async () => {
+    enable();
+    const contract = { id: "6f0c4c2e-0000-4000-8000-000000000001", clientEmail: null, currency: "JOD" };
+    expect(contractPayerKey(contract)).toBe(`contract:${contract.id}`);
+    await openContractClientWallet(contract, 50_000);
+    await openContractClientWallet(contract, 50_000);
+    expect((await readVirtualWallet(contractPayerKey(contract))).balances.JOD).toBe(2_000_000);
+    expect(await debitVirtualWallet(contractPayerKey(contract), 50_000, "JOD", "dep:client", "milestone")).toEqual({ ok: true, balance: 1_950_000 });
+    const big = { id: "6f0c4c2e-0000-4000-8000-000000000002", clientEmail: "Client@Example.test", currency: "JOD" };
+    await openContractClientWallet(big, 5_000_000);
+    expect((await readVirtualWallet("client@example.test")).balances.JOD).toBe(5_000_000);
+  });
   it("opens a balance, debits once, records a decline, and credits a refund idempotently", async () => {
     enable();
     await openVirtualWallet("staging.owner.jo@sawwiq.test", "JOD", 2_000_000);

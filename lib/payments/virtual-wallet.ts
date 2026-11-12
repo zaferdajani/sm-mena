@@ -128,6 +128,20 @@ export async function creditVirtualWallet(emailOrKey: string, amountFils: number
   });
 }
 
+/** What a staging account starts with (2,000 in its currency). */
+export const VIRTUAL_OPENING_FILS = 2_000_000;
+
+/** The wallet a contract's client pays from: their email, or the contract itself when no email was given. */
+export const contractPayerKey = (contract: { id: string; clientEmail: string | null }) => contract.clientEmail || `contract:${contract.id}`;
+
+/**
+ * A contract's client has no staging account, so nothing opened their wallet and every test card,
+ * 4242 included, failed as "insufficient" (QA H-02). Opens it once, with enough for the milestone.
+ */
+export async function openContractClientWallet(contract: { id: string; clientEmail: string | null; currency: string }, amountFils: number) {
+  await openVirtualWallet(contractPayerKey(contract), contract.currency, Math.max(VIRTUAL_OPENING_FILS, amountFils));
+}
+
 /** Puts a milestone refund back on the contract client's virtual wallet. No-op unless the sandbox is on. */
 export async function creditContractRefund(contractId: string, milestoneId: string, amountFils: number) {
   if (!virtualCheckoutEnabled() || amountFils <= 0) return;
