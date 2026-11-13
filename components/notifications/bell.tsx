@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { fetchNotificationCount } from "@/lib/notification-count";
 
 const POLL_MS = 60_000;
 
@@ -19,12 +20,13 @@ export function NotificationBell({ initialCount, href, variant = "icon" }: { ini
   const [count, setCount] = useState(initialCount);
 
   useEffect(() => {
+    let active = true;
     let timer: ReturnType<typeof setInterval> | undefined;
     const refresh = async () => {
       if (document.hidden) return;
       try {
-        const res = await fetch("/api/notifications/count", { cache: "no-store" });
-        if (res.ok) setCount(((await res.json()) as { count: number }).count);
+        const next = await fetchNotificationCount();
+        if (active && next !== null) setCount(next);
       } catch {
         // offline: keep the last count
       }
@@ -44,6 +46,7 @@ export function NotificationBell({ initialCount, href, variant = "icon" }: { ini
     start();
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
+      active = false;
       clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisibility);
     };

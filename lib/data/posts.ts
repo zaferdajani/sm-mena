@@ -351,16 +351,16 @@ function agencyView(a: Agency): PostView["agency"] {
 export async function attachImages(rows: { post: typeof posts.$inferSelect; agency: Agency }[]): Promise<PostView[]> {
   if (!rows.length) return [];
   const db = await getDb();
-  const images = await db
-    .select()
-    .from(postImages)
-    .where(inArray(postImages.postId, rows.map((r) => r.post.id)))
-    .orderBy(asc(postImages.position));
-  // The accounts the posts are filed under, for the "For {client}" line and link.
+  // Both child collections depend only on the posts, not on each other.
   const clientIds = [...new Set(rows.map((r) => r.post.clientId).filter((id): id is string => Boolean(id)))];
-  const clientRows = clientIds.length
-    ? await db.select({ id: portfolioClients.id, name: portfolioClients.name, translation: portfolioClients.translation, logoKey: portfolioClients.logoKey }).from(portfolioClients).where(inArray(portfolioClients.id, clientIds))
-    : [];
+  const [images, clientRows] = await Promise.all([
+    db.select().from(postImages)
+      .where(inArray(postImages.postId, rows.map((r) => r.post.id)))
+      .orderBy(asc(postImages.position)),
+    clientIds.length
+      ? db.select({ id: portfolioClients.id, name: portfolioClients.name, translation: portfolioClients.translation, logoKey: portfolioClients.logoKey }).from(portfolioClients).where(inArray(portfolioClients.id, clientIds))
+      : Promise.resolve([]),
+  ]);
   const clientById = new Map(clientRows.map((c) => [c.id, { id: c.id, name: c.name, nameTranslation: c.translation?.name?.trim() || null, logoUrl: mediaUrl(c.logoKey) }]));
   const byPost = new Map<string, ImageView[]>();
   for (const i of images) {
