@@ -47,6 +47,28 @@ test("an agent's link credits the sign-up, and the agent sees it on their page",
   await expect(row.getByTestId("referral-status")).toHaveText("Not complete yet");
   expect(await agent.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
+  // Swiss v2 keeps authenticated agent reports readable in both directions,
+  // without changing referral credit, permissions, payout or QR behavior.
+  for (const locale of ["ar", "en"] as const) {
+    for (const width of [390, 1440]) {
+      await agent.setViewportSize({ width, height: 900 });
+      await agent.goto(`/${locale}/agent`);
+      const workspace = agent.locator('[data-design-surface="agent-workspace"]');
+      await expect(workspace).toBeVisible();
+      await expect(agent.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
+      const measure = await workspace.evaluate((node) => ({
+        width: node.getBoundingClientRect().width,
+        viewport: document.documentElement.clientWidth,
+        page: document.documentElement.scrollWidth,
+      }));
+      expect(measure.width).toBeLessThanOrEqual(Math.min(1088, measure.viewport) + 1);
+      expect(measure.page).toBeLessThanOrEqual(measure.viewport + 1);
+      await info.attach(`swiss-agent-${locale}-${width}`, {
+        body: await agent.screenshot({ animations: "disabled" }), contentType: "image/png",
+      });
+    }
+  }
+
   // Admin sees it too, and the CSV export works.
   await admin.goto("/en/admin/agents");
   await expect(admin.getByTestId("agent-row").filter({ hasText: code })).toContainText("1");

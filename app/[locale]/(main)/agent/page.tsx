@@ -35,31 +35,31 @@ export default async function AgentPage({ params }: PageProps<"/[locale]/agent">
   const firstName = (n: string) => n.trim().split(/\s+/)[0];
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8 px-4 py-6" data-testid="agent-page">
-      <header>
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-testid="agent-page" data-design-surface="agent-workspace">
+      <header className="rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-xl font-bold">{t("hello", { name: firstName(agent.name) })}</h1>
         <p className="text-sm text-muted-foreground">{t("intro", { rate: money(agent.rateFils) })}</p>
         {!agent.active && <p className="mt-2 rounded-lg bg-destructive/10 p-2 text-sm">{t("paused")}</p>}
       </header>
 
-      <section className="grid gap-4 rounded-2xl border p-4 sm:grid-cols-[1fr_10rem]">
-        <div>
+      <section className="grid min-w-0 gap-6 rounded-xl border bg-card p-5 sm:grid-cols-[minmax(0,1fr)_10rem] sm:p-6">
+        <div className="min-w-0">
           <h2 className="mb-2 font-semibold">{t("yourLink")}</h2>
           <AgentLink url={url} code={agent.code} />
         </div>
-        <div className="mx-auto w-40 rounded-xl bg-white p-2" aria-label={t("qr")} role="img" dangerouslySetInnerHTML={{ __html: qr }} data-testid="agent-qr" />
+        <div className="mx-auto w-40 max-w-full rounded-lg bg-white p-2" aria-label={t("qr")} role="img" dangerouslySetInnerHTML={{ __html: qr }} data-testid="agent-qr" />
       </section>
 
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-testid="agent-stats">
+      <dl className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-4" data-testid="agent-stats">
         {[
           [t("stats.signedUp"), String(stats.signedUp)],
           [t("stats.active"), String(stats.active)],
           [t("stats.earned"), money(stats.money.total)],
           [t("stats.owed"), money(stats.owed)],
         ].map(([label, value]) => (
-          <div key={label} className="flex flex-col-reverse rounded-xl border p-3">
+          <div key={label} className="flex min-w-0 flex-col-reverse rounded-xl border bg-card p-4">
             <dt className="text-xs text-muted-foreground">{label}</dt>
-            <dd className="text-xl font-bold tabular-nums">{value}</dd>
+            <dd className="break-words text-xl font-bold tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>
@@ -67,7 +67,7 @@ export default async function AgentPage({ params }: PageProps<"/[locale]/agent">
         {t("paidSoFar", { amount: money(stats.paid) })} · {t("payNote")}
       </p>
 
-      <section className="rounded-2xl border p-4">
+      <section className="rounded-xl border bg-card p-5 sm:p-6">
         <h2 className="font-semibold">{t("bonusTitle")}</h2>
         <ol className="mt-3 flex flex-wrap gap-2 text-sm">
           {tiers.map((tier) => (
@@ -79,7 +79,7 @@ export default async function AgentPage({ params }: PageProps<"/[locale]/agent">
         {stats.money.next && <p className="mt-3 text-sm font-medium" data-testid="agent-next-tier">{t("toNext", { count: stats.money.toNext, bonus: money(stats.money.next.bonusFils) })}</p>}
       </section>
 
-      <section className="space-y-2">
+      <section className="min-w-0 space-y-4 rounded-xl border bg-card p-5 sm:p-6">
         <h2 className="font-semibold">{t("referredTitle")}</h2>
         <p className="text-sm text-muted-foreground">{t("activeRule")}</p>
         {stats.referred.length ? (
@@ -105,7 +105,7 @@ export default async function AgentPage({ params }: PageProps<"/[locale]/agent">
         )}
       </section>
 
-      <section className="space-y-2">
+      <section className="min-w-0 space-y-4 rounded-xl border bg-card p-5 sm:p-6">
         <h2 className="flex items-center gap-2 font-semibold">
           <Trophy className="size-4 text-brand" aria-hidden /> {t("boardTitle")}
         </h2>
@@ -121,7 +121,9 @@ export default async function AgentPage({ params }: PageProps<"/[locale]/agent">
         </ol>
       </section>
 
-      <SignInPanel email={user.email} mfaEnabled={user.mfaEnabled} />
+      <section className="min-w-0 rounded-xl border bg-card p-5 sm:p-6">
+        <SignInPanel email={user.email} mfaEnabled={user.mfaEnabled} />
+      </section>
     </div>
   );
 }

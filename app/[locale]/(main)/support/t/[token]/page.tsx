@@ -19,7 +19,7 @@ export default async function ThreadPage({ params }: PageProps<"/[locale]/suppor
   setRequestLocale(locale);
   const t = await getTranslations("SupportThread");
   const thread = await threadByToken(token);
-  if (!thread) return <p className="mx-auto max-w-lg px-4 py-10 text-center text-sm text-muted-foreground" data-testid="thread-missing">{t("notFound")}</p>;
+  if (!thread) return <p className="mx-auto w-full max-w-[68rem] px-4 py-10 text-center text-sm text-muted-foreground sm:px-6" data-testid="thread-missing">{t("notFound")}</p>;
   const { request: r, messages } = thread;
   if (r.reporterUnread) await markThreadRead(r.id);
   const media = (keys: string[], att: { key: string; kind: string }[]) => [...keys, ...att.map((a) => a.key)];
@@ -38,13 +38,13 @@ export default async function ThreadPage({ params }: PageProps<"/[locale]/suppor
     );
   const label = { reporter: t("you"), agent: t("agent"), staff: t("staff") } as Record<string, string>;
   return (
-    <div className="mx-auto max-w-lg space-y-4 px-4 py-6" data-testid="support-thread" data-status={r.status}>
-      <header className="space-y-1">
+    <div className="mx-auto w-full min-w-0 max-w-[68rem] space-y-6 px-4 py-6 sm:px-6 sm:py-8" data-testid="support-thread" data-design-surface="support-thread" data-status={r.status}>
+      <header className="min-w-0 space-y-2 rounded-xl border bg-card p-5 sm:p-6">
         <h1 className="text-xl font-bold" dir="auto">{t("title", { ref: supportRef(r.id) })}</h1>
         <p className="text-sm text-muted-foreground">{t("intro")}</p>
         <p className="inline-block rounded-full bg-muted px-3 py-1 text-xs font-medium" data-testid="thread-status">{t(`status.${r.status}`)}</p>
       </header>
-      <ol className="space-y-3">
+      <ol className="mx-auto w-full min-w-0 max-w-[44rem] space-y-3 rounded-xl border bg-card p-4 sm:p-6">
         <li className="ms-auto max-w-[90%] rounded-2xl rounded-se-sm bg-primary/10 p-3 text-sm">
           <p className="mb-1 text-xs font-semibold">{t("original")}</p>
           <p className="whitespace-pre-line" dir="auto">{r.message}</p>
@@ -69,7 +69,9 @@ export default async function ThreadPage({ params }: PageProps<"/[locale]/suppor
           </form>
         )
       )}
-      <ThreadReply token={token} done={r.status === "done"} />
+      <div className="mx-auto w-full min-w-0 max-w-[44rem] rounded-xl border bg-card p-4 sm:p-6">
+        <ThreadReply token={token} done={r.status === "done"} />
+      </div>
     </div>
   );
 }
